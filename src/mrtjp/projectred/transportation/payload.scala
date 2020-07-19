@@ -242,11 +242,9 @@ class NetworkPayload(payloadID:Int) extends AbstractPipePayload(payloadID)
         resetTrip()
     }
 
-    /** Server-side Routing, used if moving through network pipes **/
     var destinationIP = -1
     var destinationUUID:UUID = null
     var hasArrived = false
-    var travelLog = BitSet()
 
     def netPriority = Priorities(priorityIndex)
 
@@ -257,7 +255,6 @@ class NetworkPayload(payloadID:Int) extends AbstractPipePayload(payloadID)
         val router = RouterServices.getRouter(ip)
         if (router != null) destinationUUID = router.getID
         else destinationIP = -1
-
         this
     }
 
@@ -266,7 +263,7 @@ class NetworkPayload(payloadID:Int) extends AbstractPipePayload(payloadID)
         if (destinationIP > -1) {
             val r = RouterServices.getRouter(destinationIP)
             if (r != null) //r.getParent.itemLost(payload)
-                r.getParent.postNetworkEvent(PayloadLostEnrouteEvent(payload.key, payload.stackSize))
+                r.getContainer.postNetworkEvent(PayloadLostEnrouteEvent(payload.key, payload.stackSize))
         }
         destinationIP = -1
         destinationUUID = null

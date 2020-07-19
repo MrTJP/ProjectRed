@@ -17,84 +17,55 @@ import net.minecraft.world.World
 
 import scala.collection.immutable.BitSet
 
-trait IWorldRouter
+trait IRouterContainer
 {
+    def getWorld:World
+    def getPipe:TNetworkPipe
     def getRouter:Router
 
-    def needsWork:Boolean
-
-    def refreshState()
-
-    def getContainer:TNetworkPipe
-    def getWorld:World
-    def getCoords:BlockCoord
-
-    /** Item Syncing **/
-//    @deprecated def itemExpected(stack:ItemKeyStack)
-//    @deprecated def itemLost(stack:ItemKeyStack)
-//    @deprecated def itemReceived(stack:ItemKeyStack)
+    def refreshState(sideMask:Int)
 
     def postNetworkEvent(e:NetworkEvent)
 
-    def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse
+    /** Separation of function **/
+    def searchForLinks:Vector[StartEndPath]
+
+    /** TODO move all of the following to their own services **/
 
     /** Item Requesting **/
-    // Handled via subclasses.
+    def getActiveFreeSpace(item:ItemKey):Int
 
     /** Item Broadcasting **/
-    // Handled via subclasses.
+    def requestPromise(request:RequestBranchNode, existingPromises:Int){}
+    def deliverPromise(promise:DeliveryPromise, requester:IRouterContainer){}
+    def getBroadcasts(col:ItemQueue){}
+    def getBroadcastPriority:Int = 0
+    def getWorkLoad:Double = 0
 
     /** Item Crafting **/
-    // Handled via subclasses.
-}
+    def requestCraftPromise(request:RequestBranchNode):Seq[CraftingPromise] = Seq()
+    def registerExcess(promise:DeliveryPromise){}
+    def getCraftedItems:Seq[ItemKeyStack] = Seq()
+    def itemsToProcess:Int = 0
 
-trait IWorldRequester extends IWorldRouter
-{
-    def getActiveFreeSpace(item:ItemKey):Int
-}
-
-trait IWorldBroadcaster extends IWorldRouter
-{
-    def requestPromise(request:RequestBranchNode, existingPromises:Int)
-
-    def deliverPromise(promise:DeliveryPromise, requester:IWorldRequester)
-
-    def getBroadcasts(col:ItemQueue){}
-
-    def getBroadcastPriority:Int
-
-    def getWorkLoad:Double
-}
-
-trait IWorldCrafter extends IWorldRequester with IWorldBroadcaster
-{
-    def requestCraftPromise(request:RequestBranchNode):Seq[CraftingPromise]
-
-    def registerExcess(promise:DeliveryPromise)
-
-    def getCraftedItems:Seq[ItemKeyStack]
-
-    def itemsToProcess:Int
-}
-
-trait TRouteLayer
-{
-    def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, path:SyncResponse)
+    /** Transport Layer **/
+    def queueStackToSend(item:ItemKey, amount:Int, path:SyncResponse)
     {
-        queueStackToSend(stack, dirOfExtraction, path.priority, path.responder)
+        queueStackToSend(item, amount, path.priority, path.responder)
     }
-    def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:NetworkPriority, destination:Int)
-    def getLogisticPath(stack:ItemKey, exclusions:BitSet, excludeStart:Boolean):SyncResponse
+    def queueStackToSend(item:ItemKey, amount:Int, priority:NetworkPriority, destination:Int)
 
-    def getRouter:Router
-    def getWorldRouter:IWorldRouter
-    def getBroadcaster:IWorldBroadcaster
-    def getRequester:IWorldRequester
-    def getCrafter:IWorldCrafter
-
-    def getWorld:World
-    def getCoords:BlockCoord
+    /** Session Layer **/
+    def getLogisticPath(item:ItemKey, exclusions:BitSet, excludeStart:Boolean):SyncResponse
+    def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse
 }
+
+trait PayloadResolution
+
+case class RecievePayload() extends PayloadResolution
+case class RoutePayload(toDir:Int) extends PayloadResolution
+case class RelayPayload(toDir:Int) extends PayloadResolution
+case class UnresolvedPayload() extends PayloadResolution
 
 abstract class NetworkEvent(isCancelable:Boolean)
 {
@@ -110,7 +81,7 @@ abstract class NetworkEvent(isCancelable:Boolean)
     }
 }
 
-case class PayloadDepartedEvent(item:ItemKey, amount:Int, from:IWorldRouter) extends NetworkEvent(true)
+case class PayloadDepartedEvent(item:ItemKey, amount:Int, from:IRouterContainer) extends NetworkEvent(true)
 {
     var remaining = amount
 }
@@ -125,12 +96,12 @@ case class PayloadLostEnrouteEvent(item:ItemKey, amount:Int) extends NetworkEven
     var remaining = amount
 }
 
-case class TrackedPayloadPendingEvent(item:ItemKey, amount:Int, from:IWorldBroadcaster) extends NetworkEvent(true)
+case class TrackedPayloadPendingEvent(item:ItemKey, amount:Int, from:IRouterContainer) extends NetworkEvent(true)
 {
     var remaining = amount
 }
 
-case class TrackedPayloadCancelledEvent(item:ItemKey, amount:Int, from:IWorldBroadcaster) extends NetworkEvent(true)
+case class TrackedPayloadCancelledEvent(item:ItemKey, amount:Int, from:IRouterContainer) extends NetworkEvent(true)
 {
     var remaining = amount
 }
@@ -157,10 +128,9 @@ trait TNetworkSubsystem extends PayloadPipePart[NetworkPayload]
     override def createNewPayload(id:Int) = new NetworkPayload(id)
 }
 
-trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[NetworkPayload] with IWorldRouter with TRouteLayer with IWorldRequester with TNetworkTravelConditions with TNetworkSubsystem
+trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[NetworkPayload] with IRouterContainer with TNetworkTravelConditions with TNetworkSubsystem
 {
-    var searchDelay =
-    {
+    val searchDelay = {
         TNetworkPipe.delayDelta += 1
         TNetworkPipe.delayDelta%Configurator.detectionFrequency
     }
@@ -171,8 +141,6 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
     var routerId:UUID = null
 
     val routerIDLock = new AnyRef
-
-    var needsWork = true
 
     var sendQueue = Seq[NetworkPayload]()
     var transitQueue = new ItemQueue
@@ -258,7 +226,6 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
 
     override def getRouter:Router =
     {
-        if (needsWork) return null
         if (router == null) routerIDLock synchronized {
             router = RouterServices.getOrCreateRouter(getRouterId, this)
         }
@@ -273,8 +240,7 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         val dest = RouterServices.getRouter(r.destinationIP)
         if (dest != null)
         {
-            val wr = dest.getParent
-//            wr.itemExpected(r.payload)
+            val wr = dest.getContainer
             wr.postNetworkEvent(PayloadDepartedEvent(r.payload.key, r.payload.stackSize, this))
             RouteFX2.spawnType1(RouteFX2.color_sync, this)
         }
@@ -285,18 +251,13 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
 
     final abstract override def update()
     {
-        if (needsWork)
-        {
-            needsWork = false
-            if (!world.isRemote) getRouter
-            return
-        }
-        if (!world.isRemote) getRouter.update(world.getTotalWorldTime%Configurator.detectionFrequency == searchDelay)
         super.update()
 
-        // Dispatch queued items
-        if (sendQueue.nonEmpty)
-        {
+        if (!world.isRemote)
+            getRouter.update(world.getTotalWorldTime)
+
+        // Dispatch next item in queue
+        if (sendQueue.nonEmpty) {
             val out = sendQueue.head
             sendQueue = sendQueue.tail
             dispatchQueuedPayload(out)
@@ -315,26 +276,32 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
                 RouteFX2.spawnType3(RouteFX2.color_blink, i, this)
     }
 
-    override def refreshState()
+    override def refreshState(sideMask:Int)
     {
         if (world.isRemote) return
-        var link = 0
-        for (s <- 0 until 6) if (getRouter.LSAConnectionExists(s)) link |= 1<<s
-        if (linkMap != link)
-        {
-            linkMap = link.toByte
+        if (linkMap != sideMask) {
+            linkMap = sideMask.toByte
             sendLinkMapUpdate()
         }
     }
 
-    override def getContainer = this
+    override def searchForLinks:Vector[StartEndPath] =
+    {
+        LSPathFinder.clear()
+        LSPathFinder.start = this
+        val newAdjacent = LSPathFinder.result()
+        LSPathFinder.clear()
+        newAdjacent
+    }
+
+    override def getPipe = this
 
     override def onRemoved()
     {
         super.onRemoved()
         TNetworkPipe.delayDelta = math.max(TNetworkPipe.delayDelta-1, 0)
         val r = getRouter
-        if (r != null) r.decommission()
+        if (r != null) r.decommision()
     }
 
     override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
@@ -373,69 +340,88 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
 
     override def resolveDestination(r:NetworkPayload)
     {
-        if (needsWork) return
-        var color = -1
+        var colour = getRouter.resolvePayload(r) match {
+            case RoutePayload(toDir) =>
+                r.output = toDir
+                RouteFX2.color_route
+            case RelayPayload(toDir) =>
+                r.output = toDir
+                RouteFX2.color_relay
+            case RecievePayload() =>
+                r.output = getDirForIncomingItem(r)
+                if (r.output != 6)
+                    postNetworkEvent(PayloadArrivedEvent(r.payload.key, r.payload.stackSize)) //TODO router should handle events now
+                RouteFX2.color_receive
+            case UnresolvedPayload() =>
+                r.output = 6
+                RouteFX2.color_routeLost
+        }
 
-        def reRoute()
-        {
+        if (r.output == 6) {
             r.resetTrip()
-
-            LogisticPathFinder.clear()
-            LogisticPathFinder.start = getRouter
-            LogisticPathFinder.payload = r.payload.key
-            LogisticPathFinder.exclusions = r.travelLog
-            val result = LogisticPathFinder.result()
-            LogisticPathFinder.clear()
-
-            if (result != null)
-            {
-                r.setDestination(result.responder, result.priority)
-                color = RouteFX2.color_route
-            }
-        }
-
-        // Reroute if needed
-        r.refreshIP()
-        if (r.destinationIP <= 0 || r.hasArrived) reRoute()
-
-        // Deliver item, or reroute
-        if (r.destinationIP > 0 && r.destinationUUID == getRouter.getID)
-        {
-            r.output = getDirForIncomingItem(r)
-            r.travelLog += getRouter.getIPAddress
-
-            if (r.output == 6)
-            {
-                reRoute()
-            }
-            else
-            {
-                color = RouteFX2.color_receive
-                r.hasArrived = true
-//                itemReceived(r.payload)
-                postNetworkEvent(PayloadArrivedEvent(r.payload.key, r.payload.stackSize))
-            }
-        }
-
-        if (r.destinationUUID != getRouter.getID)
-        {
-            r.output = getRouter.getDirection(r.destinationIP, r.payload.key, r.netPriority)
-            color = RouteFX2.color_relay
-            if (r.output == 6)
-            {
-                var m = 0
-                for (i <- 0 until 6) if (getStraight(i).isInstanceOf[TNetworkSubsystem]) m |= 1<<i
-                chooseRandomDestination(r, ~m)
-                r.resetTrip()
-                r.travelLog = BitSet.empty
-                color = RouteFX2.color_routeLost
-            }
+            var m = 0
+            for (i <- 0 until 6) if (getStraight(i).isInstanceOf[TNetworkSubsystem]) m |= 1<<i
+            chooseRandomDestination(r, ~m)
+            colour = RouteFX2.color_routeLost
         }
 
         adjustSpeed(r)
+        RouteFX2.spawnType1(colour, this)
 
-        if (color == RouteFX2.color_relay) statsRelayed += 1
-        RouteFX2.spawnType1(color, this)
+//        var color = -1
+//
+//        def reRoute() {
+//            r.resetTrip()
+//
+//            LogisticPathFinder.clear()
+//            LogisticPathFinder.start = getRouter
+//            LogisticPathFinder.payload = r.payload.key
+//            LogisticPathFinder.exclusions = r.travelLog
+//            val result = LogisticPathFinder.result()
+//            LogisticPathFinder.clear()
+//
+//            if (result != null)
+//            {
+//                r.setDestination(result.responder, result.priority)
+//                color = RouteFX2.color_route
+//            }
+//        }
+//
+//        // Reroute if needed
+//        r.refreshIP()
+//        if (r.destinationIP <= 0 || r.hasArrived) reRoute()
+//
+//        // Deliver item, or reroute
+//        if (r.destinationIP > 0 && r.destinationUUID == getRouter.getID) {
+//            r.output = getDirForIncomingItem(r)
+//            r.travelLog += getRouter.getIPAddress
+//
+//            if (r.output == 6) {
+//                reRoute()
+//            } else {
+//                color = RouteFX2.color_receive
+//                r.hasArrived = true
+//                postNetworkEvent(PayloadArrivedEvent(r.payload.key, r.payload.stackSize))
+//            }
+//        }
+//
+//        if (r.destinationUUID != getRouter.getID) {
+//            r.output = getRouter.getDirection(r.destinationIP, r.payload.key, r.netPriority)
+//            color = RouteFX2.color_relay
+//            if (r.output == 6) {
+//                var m = 0
+//                for (i <- 0 until 6) if (getStraight(i).isInstanceOf[TNetworkSubsystem]) m |= 1<<i
+//                chooseRandomDestination(r, ~m)
+//                r.resetTrip()
+//                r.travelLog = BitSet.empty
+//                color = RouteFX2.color_routeLost
+//            }
+//        }
+//
+//        adjustSpeed(r)
+//
+//        if (color == RouteFX2.color_relay) statsRelayed += 1
+//        RouteFX2.spawnType1(color, this)
     }
 
     override def injectPayload(r:NetworkPayload, in:Int) =
@@ -452,7 +438,6 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         r.speed = r.netPriority.boost
     }
 
-
     override def postNetworkEvent(event:NetworkEvent)
     {
         event match {
@@ -463,38 +448,23 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         }
     }
 
-//    override def itemExpected(stack:ItemKeyStack)
-//    {
-//        transitQueue.add(stack.key, stack.stackSize)
-//    }
-//
-//    override def itemReceived(stack:ItemKeyStack)
-//    {
-//        transitQueue.remove(stack.key, stack.stackSize)
-//    }
-//
-//    override def itemLost(stack:ItemKeyStack)
-//    {
-//        transitQueue.remove(stack.key, stack.stackSize)
-//    }
-
     override def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse = null
 
-    override def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:NetworkPriority, destination:Int)
+    override def queueStackToSend(item:ItemKey, amount:Int, priority:NetworkPriority, destination:Int)
     {
-        val stack2 = ItemKeyStack.get(stack)
+        val stack2 = ItemKeyStack.get(item, amount)
         var r = new NetworkPayload(AbstractPipePayload.claimID())
         r.payload = stack2
-        r.input = dirOfExtraction
+        r.input = getInterfacedSide
         r.setDestination(destination, priority)
         sendQueue :+= r
     }
 
-    override def getLogisticPath(stack:ItemKey, exclusions:BitSet, excludeStart:Boolean) =
+    override def getLogisticPath(item:ItemKey, exclusions:BitSet, excludeStart:Boolean) =
     {
         LogisticPathFinder.clear()
         LogisticPathFinder.start = getRouter
-        LogisticPathFinder.payload = stack
+        LogisticPathFinder.payload = item
         LogisticPathFinder.exclusions = exclusions
         LogisticPathFinder.excludeSource = excludeStart
         val result = LogisticPathFinder.result()
@@ -502,22 +472,7 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         result
     }
 
-    override def getWorldRouter = this
-    override def getBroadcaster = this match
-    {
-        case b:IWorldBroadcaster => b
-        case _ => null
-    }
-    override def getRequester = this
-
-    override def getCrafter = this match
-    {
-        case c:IWorldCrafter => c
-        case _ => null
-    }
-
     override def getWorld = world
-    override def getCoords = new BlockCoord(tile)
 
     override def getActiveFreeSpace(item:ItemKey) =
     {

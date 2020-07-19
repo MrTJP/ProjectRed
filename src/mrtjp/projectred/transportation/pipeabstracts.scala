@@ -244,7 +244,6 @@ trait TPipeTravelConditions
 abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart with TPipeTravelConditions
 {
     val itemFlow = new PayloadMovement[T]
-    var initialized = false
 
     private implicit def payloadToT(p:AbstractPipePayload):T = p.asInstanceOf[T]
 
@@ -287,8 +286,6 @@ abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart
 
     override def update()
     {
-        super.update()
-        if (!initialized) initialized = true
         pushItemFlow()
     }
 

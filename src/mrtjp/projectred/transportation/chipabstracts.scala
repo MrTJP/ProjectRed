@@ -16,19 +16,19 @@ import scala.collection.mutable.ListBuffer
 
 abstract class RoutingChip
 {
+    private var routerContainer:IRouterContainer = null
     private var invProv:IInventoryProvider = null
-    private var rl:TRouteLayer = null
     private var s = -1
 
-    def setEnvironment(inventoryProvider:IInventoryProvider, routeLayer:TRouteLayer, slot:Int)
+    def setEnvironment(inventoryProvider:IInventoryProvider, irc:IRouterContainer, slot:Int)
     {
         invProv = inventoryProvider
-        rl = routeLayer
+        routerContainer = irc
         s = slot
     }
 
     def invProvider = invProv
-    def routeLayer = rl
+    def router = routerContainer
     def slot = s
 
     def update(){}
@@ -40,7 +40,7 @@ abstract class RoutingChip
 
     /** Broadcasting **/
     def requestPromise(request:RequestBranchNode, existingPromises:Int){}
-    def deliverPromise(promise:DeliveryPromise, requester:IWorldRequester){}
+    def deliverPromise(promise:DeliveryPromise, requester:IRouterContainer){}
     def getBroadcasts(col:ItemQueue){}
 
     def getBroadcastPriority = Integer.MAX_VALUE

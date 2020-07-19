@@ -67,12 +67,12 @@ class ChipCraftingExtension extends RoutingChip with TChipCrafterExtension with 
 
     override def onAdded()
     {
-        ChipCraftingExtension.registerRouter(routeLayer.getRouter.getID, id)
+        ChipCraftingExtension.registerRouter(router.getRouter.getID, id)
     }
 
     override def onRemoved()
     {
-        ChipCraftingExtension.removeRouter(routeLayer.getRouter.getID, id)
+        ChipCraftingExtension.removeRouter(router.getRouter.getID, id)
     }
 
     override def infoCollection(list:ListBuffer[String])
