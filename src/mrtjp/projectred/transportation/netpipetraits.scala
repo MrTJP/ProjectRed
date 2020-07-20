@@ -349,8 +349,6 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
                 RouteFX2.color_relay
             case RecievePayload() =>
                 r.output = getDirForIncomingItem(r)
-                if (r.output != 6)
-                    postNetworkEvent(PayloadArrivedEvent(r.payload.key, r.payload.stackSize)) //TODO router should handle events now
                 RouteFX2.color_receive
             case UnresolvedPayload() =>
                 r.output = 6
@@ -422,6 +420,13 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
 //
 //        if (color == RouteFX2.color_relay) statsRelayed += 1
 //        RouteFX2.spawnType1(color, this)
+    }
+
+    override def passToInventory(r: NetworkPayload): Boolean = {
+        val event = PayloadArrivedEvent(r.payload.key, r.payload.stackSize)
+        val result = super.passToInventory(r)
+        postNetworkEvent(event) //TODO router should handle events now*/
+        result
     }
 
     override def injectPayload(r:NetworkPayload, in:Int) =
