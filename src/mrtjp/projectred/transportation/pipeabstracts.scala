@@ -81,18 +81,18 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
 
     override def onPartChanged(part:TMultiPart)
     {
-        if (!world.isRemote) if (updateOutward()) sendConnUpdate()
+        if (!world.isRemote) if (updateOutward()) onMaskChanged()//sendConnUpdate()
     }
 
     override def onNeighborChanged()
     {
-        if (!world.isRemote) if (updateExternalConns()) sendConnUpdate()
+        if (!world.isRemote) if (updateExternalConns()) onMaskChanged()//sendConnUpdate()
     }
 
     override def onAdded()
     {
         super.onAdded()
-        if (!world.isRemote) if (updateInward()) sendConnUpdate()
+        if (!world.isRemote) if (updateInward()) onMaskChanged()//sendConnUpdate()
     }
 
     override def onRemoved()
@@ -244,7 +244,6 @@ trait TPipeTravelConditions
 abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart with TPipeTravelConditions
 {
     val itemFlow = new PayloadMovement[T]
-    var initialized = false
 
     private implicit def payloadToT(p:AbstractPipePayload):T = p.asInstanceOf[T]
 
@@ -287,8 +286,6 @@ abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart
 
     override def update()
     {
-        super.update()
-        if (!initialized) initialized = true
         pushItemFlow()
     }
 

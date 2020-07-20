@@ -9,9 +9,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
 
-import scala.collection.mutable.{Builder => MBuilder}
-
-class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWorldBroadcaster with IWorldCrafter with INeighborTileChange
+class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with INeighborTileChange
 {
     val chipSlots = new SimpleInventory(4, "chips", 1)
     {
@@ -159,28 +157,23 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
         for (r <- chips) if (r != null) r.requestPromise(request, existingPromises)
     }
 
-    override def deliverPromise(promise:DeliveryPromise, requestor:IWorldRequester)
+    override def deliverPromise(promise:DeliveryPromise, requestor:IRouterContainer)
     {
         for (r <- chips) if (r != null) r.deliverPromise(promise, requestor)
     }
 
-    def postEvent(event:NetworkEvent)
+    def postEventToChips(event:NetworkEvent)
     {
         val it = chips.filter(_ != null).iterator
         while (it.hasNext && !event.isCanceled)
             it.next().onEventReceived(event)
     }
 
-    override def itemReceived(stack:ItemKeyStack)
-    {
-        super.itemReceived(stack)
-        postEvent(new ItemReceivedEvent(stack.key, stack.stackSize))
-    }
 
-    override def itemLost(stack:ItemKeyStack)
+    override def postNetworkEvent(event:NetworkEvent)
     {
-        super.itemLost(stack)
-        postEvent(new ItemLostEvent(stack.key, stack.stackSize))
+        super.postNetworkEvent(event:NetworkEvent)
+        postEventToChips(event)
     }
 
     override def getBroadcasts(col:ItemQueue)
