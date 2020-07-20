@@ -85,7 +85,7 @@ dependencies {
     compile name: 'CoFHCore', version: config.cofhcore.version, ext: 'jar'
 }
 
-def build_number = project.hasProperty("manualbuildnum") ? project.manualbuildnum : (Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1")+51).toString()
+def build_number = project.hasProperty("manualbuildnum") ? project.manualbuildnum : (Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1")+1).toString()
 version = "${project.config.mod.version}."+build_number
 println "Starting build for $archivesBaseName $version for MC $config.mc.version-$config.forge.version"
 
