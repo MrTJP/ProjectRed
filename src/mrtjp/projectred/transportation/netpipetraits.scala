@@ -424,9 +424,12 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
 
     override def passToInventory(r: NetworkPayload): Boolean = {
         val event = PayloadArrivedEvent(r.payload.key, r.payload.stackSize)
-        val result = super.passToInventory(r)
-        postNetworkEvent(event) //TODO router should handle events now*/
-        result
+        val passResult = super.passToInventory(r)
+        if(passResult){
+            postNetworkEvent(event) //TODO router should handle events now*/
+        }
+
+        passResult
     }
 
     override def injectPayload(r:NetworkPayload, in:Int) =
