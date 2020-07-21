@@ -79,6 +79,7 @@ object Configurator extends ModConfig("ProjRed|Core")
     var compat_CCBundledCalbe = true
     var compat_ColoredLights = false
     var compat_MFRDeepStorage = true
+    var compat_StorageDrawers = true
 
     override def getFileName = "ProjectRed"
 

@@ -83,6 +83,7 @@ dependencies {
     compile "codechicken:NotEnoughItems:${config.mc.version}-${config.nei.version}:dev"
     compile "tconstruct:TConstruct:${config.mc.version}-${config.tc.version}:deobf"
     compile name: 'CoFHCore', version: config.cofhcore.version, ext: 'jar'
+    compile ":StorageDrawers:[${config.mc.version}-${config.storagedrawers.version},):dev@jar"
 }
 
 def build_number = project.hasProperty("manualbuildnum") ? project.manualbuildnum : (Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1")+1).toString()
