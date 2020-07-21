@@ -5,6 +5,7 @@ import mrtjp.projectred.ProjectRedCore
 import mrtjp.projectred.compatibility.computercraft.PluginCC_BundledCable
 import mrtjp.projectred.compatibility.cptcoloredlights.PluginColoredLights
 import mrtjp.projectred.compatibility.mfr.PluginMFRDeepStorage
+import mrtjp.projectred.compatibility.storagedrawers.PluginStorageDrawers
 import mrtjp.projectred.compatibility.tconstruct.PluginTConstruct
 import mrtjp.projectred.compatibility.thermalexpansion.PluginThermalExpansion
 import mrtjp.projectred.compatibility.treecapitator.PluginTreecapitator
@@ -18,7 +19,8 @@ object Services
         PluginThermalExpansion,
         PluginCC_BundledCable,
         PluginColoredLights,
-        PluginMFRDeepStorage
+        PluginMFRDeepStorage,
+        PluginStorageDrawers
     )
 
     //List of all loaded plugins
