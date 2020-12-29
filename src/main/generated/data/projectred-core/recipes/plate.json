@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "result": {
+    "item": "projectred-core:plate",
+    "count": 2
+  },
+  "ingredient": {
+    "tag": "forge:stone"
+  },
+  "experience": 0.0,
+  "cookingtime": 200
+}

@@ -1,44 +1,44 @@
 package mrtjp.projectred.core
 
 import codechicken.lib.vec.Vector3
-import net.minecraft.entity.item.EntityItem
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.init.Blocks
+import net.minecraft.block.Blocks
+import net.minecraft.entity.item.ItemEntity
+import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.block.Block
 import net.minecraft.item.ItemStack
-import net.minecraft.util.EnumFacing
+import net.minecraft.util.Direction
 import net.minecraft.util.math.BlockPos
-import net.minecraft.world.World
+import net.minecraft.world.{GameRules, World}
 
 object PRLib
 {
-    def dropTowardsPlayer(w:World, pos:BlockPos, stack:ItemStack, p:EntityPlayer)
+    def dropTowardsPlayer(w:World, pos:BlockPos, stack:ItemStack, p:PlayerEntity)
     {
-        if (!w.isRemote && w.getGameRules.getBoolean("doTileDrops"))
+        if (!w.isRemote && w.getGameRules.getBoolean(GameRules.DO_TILE_DROPS))
         {
             val bpos = Vector3.fromVec3i(pos)
-            val d = new Vector3(p.posX, p.posY, p.posZ).subtract(bpos).normalize()
+            val d = new Vector3(p.getPositionVec).subtract(bpos).normalize()
             val vel = d.copy.multiply(8.0)
-            val tpos = bpos.add(Vector3.center).add(d.copy.multiply(1.25))
+            val tpos = bpos.add(Vector3.CENTER).add(d.copy.multiply(1.25))
 
-            val item = new EntityItem(w, tpos.x, tpos.y, tpos.z, stack)
-            item.motionX = vel.x*0.02
-            item.motionY = vel.y*0.02
-            item.motionZ = vel.z*0.02
+            val item = new ItemEntity(w, tpos.x, tpos.y, tpos.z, stack)
+            vel.multiply(0.02)
+            item.setVelocity(vel.x, vel.y, vel.z)
             item.setPickupDelay(0)
-            w.spawnEntity(item)
+            w.addEntity(item)
         }
     }
 
-    private val wireWhitelist = Seq(Blocks.GLOWSTONE, Blocks.PISTON, Blocks.STICKY_PISTON, Blocks.PISTON_EXTENSION)
-    def canPlaceWireOnSide(w:World, pos:BlockPos, side:Int):Boolean =
+    private val wireWhitelist = Seq(Blocks.GLOWSTONE, Blocks.PISTON, Blocks.STICKY_PISTON, Blocks.PISTON_HEAD)
+    def canPlaceWireOnSide(w:World, pos:BlockPos, side:Direction):Boolean =
     {
         val state = w.getBlockState(pos)
         if (wireWhitelist.contains(state.getBlock)) return true
-        state.isSideSolid(w, pos, EnumFacing.values()(side))
+        Block.hasSolidSide(state, w, pos, side)
     }
 
     private val gateWhiteList = Seq(Blocks.GLASS)
-    def canPlaceGateOnSide(w:World, pos:BlockPos, side:Int):Boolean =
+    def canPlaceGateOnSide(w:World, pos:BlockPos, side:Direction):Boolean =
     {
         if (canPlaceWireOnSide(w, pos, side)) return true
 
@@ -49,12 +49,11 @@ object PRLib
     }
 
 
-    def canPlaceLight(w:World, pos:BlockPos, side:Int):Boolean =
+    def canPlaceLight(w:World, pos:BlockPos, side:Direction):Boolean =
     {
         if (canPlaceWireOnSide(w, pos, side)) return true
-        if (side == 1) {
-            val state = w.getBlockState(pos)
-            return state.getBlock.canPlaceTorchOnTop(state, w, pos)
+        if (side == Direction.UP) {
+            return Block.hasEnoughSolidSide(w, pos, Direction.UP)
         }
         false
     }

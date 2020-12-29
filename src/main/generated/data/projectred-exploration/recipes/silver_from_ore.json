@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "result": {
+    "item": "projectred-core:silver_ingot"
+  },
+  "ingredient": {
+    "tag": "forge:ores/silver"
+  },
+  "experience": 0.8,
+  "cookingtime": 200
+}

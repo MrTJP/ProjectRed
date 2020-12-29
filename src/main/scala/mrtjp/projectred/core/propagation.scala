@@ -1,12 +1,11 @@
 package mrtjp.projectred.core
 
 import java.util.{Stack => JStack}
-
-import codechicken.multipart.handler.MultipartProxy
-import codechicken.multipart.{TMultiPart, TileMultipart}
+import codechicken.multipart.api.part.TMultiPart
+import codechicken.multipart.block.TileMultiPart
+import codechicken.multipart.init.ModContent
 import com.google.common.collect.HashMultimap
-import net.minecraft.block.BlockRedstoneWire
-import net.minecraft.init.Blocks
+import net.minecraft.block.{Blocks, RedstoneWireBlock}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
@@ -14,22 +13,12 @@ import scala.collection.immutable.HashSet
 
 object WirePropagator
 {
-    private val wiresProvidePower =
-    {
-        try {
-            val c = classOf[BlockRedstoneWire].getDeclaredFields.apply(0)
-            c.setAccessible(true)
-            c
-        }
-        catch {case e:Exception => throw new RuntimeException(e)}
-    }
     def setDustProvidePower(b:Boolean)
     {
-        try {wiresProvidePower.setBoolean(Blocks.REDSTONE_WIRE, b)}
-        catch {case t:Throwable =>}
+        Blocks.REDSTONE_WIRE.asInstanceOf[RedstoneWireBlock].canProvidePower = b
     }
 
-    private val rwConnectable = {val b = new ThreadLocal[Boolean]; b.set(true); b}
+    private val rwConnectable = ThreadLocal.withInitial[Boolean](() => true)
     def redwiresConnectable = rwConnectable.get
     def setRedwiresConnectable(b:Boolean) {rwConnectable.set(b)}
 
@@ -96,7 +85,7 @@ class PropagationRun
     var count = 0
     var recalcs = 0
 
-    var partChanges = HashMultimap.create[TileMultipart, TMultiPart]
+    var partChanges = HashMultimap.create[TileMultiPart, TMultiPart]
     var neighborChanges = HashSet.newBuilder[BlockPos]
     var propagationList = Seq.newBuilder[Propagation]
     var analogDrops = Seq.newBuilder[Propagation]
@@ -126,15 +115,15 @@ class PropagationRun
 //        if (CommandDebug.WIRE_READING)
 //            println(count+" propogations, "+partChanges.size+" part changes, "+res_NeighborChanges.size+" block updates")
 
-        import scala.collection.JavaConversions._
-        for (entry <- partChanges.asMap.entrySet) {
+        import scala.jdk.CollectionConverters._
+        for (entry <- partChanges.asMap.entrySet.asScala) {
             val parts = entry.getValue
 
-            for (part <- parts) part.asInstanceOf[IWirePart].onSignalUpdate()
+            for (part <- parts.asScala) part.asInstanceOf[IWirePart].onSignalUpdate()
             entry.getKey.multiPartChange(parts)
         }
 
-        res_NeighborChanges.foreach(b => world.neighborChanged(b.toImmutable, MultipartProxy.block, b.toImmutable))
+        res_NeighborChanges.foreach(b => world.neighborChanged(b.toImmutable, ModContent.blockMultipart, b.toImmutable))
 
         WirePropagator.finishing = parent
 
@@ -182,7 +171,7 @@ class PropagationRun
         finish()
     }
 
-    def add(part:IWirePart, from:TMultiPart, mode:Int)
+    def add(part:IWirePart, from: TMultiPart, mode:Int)
     {
         if (from != lastCaller) {
             lastCaller = from
@@ -199,7 +188,7 @@ class PropagationRun
     }
 }
 
-class Propagation(part:IWirePart, from:TMultiPart, mode:Int)
+class Propagation(part:IWirePart, from: TMultiPart, mode:Int)
 {
     def go()
     {
@@ -246,7 +235,7 @@ trait IWirePart
      *             may be null.
      * @param mode One of RISING, DROPPING, FORCE and FORCED specified above
      */
-    def updateAndPropagate(prev:TMultiPart, mode:Int)
+    def updateAndPropagate(prev: TMultiPart, mode:Int)
 
     /**
      * Called at the end of a propogation run for partChanged events. Marks the

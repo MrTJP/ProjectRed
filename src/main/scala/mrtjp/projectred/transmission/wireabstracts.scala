@@ -1,30 +1,44 @@
 package mrtjp.projectred.transmission
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.raytracer.{CuboidRayTraceResult, IndexedCuboid6}
+import codechicken.lib.raytracer.{IndexedVoxelShape, VoxelShapeCache}
 import codechicken.lib.render.CCRenderState
-import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.{Cuboid6, Rotation, Vector3}
-import codechicken.microblock.handler.MicroblockProxy
-import codechicken.microblock.{ISidedHollowConnect, ItemMicroPart, MicroMaterialRegistry}
+import codechicken.microblock.handler.MicroblockModContent
+import codechicken.microblock.{ItemMicroBlock, MicroMaterialRegistry}
 import codechicken.multipart._
-import mrtjp.projectred.ProjectRedCore
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
 import IWirePart._
-import mrtjp.projectred.transmission.WireDef.WireDef
+import codechicken.lib.render.buffer.TransformingVertexBuilder
+import codechicken.microblock.api.{ISidedHollowConnect, MicroMaterial}
+import codechicken.multipart.api.part.{TMultiPart, TNormalOcclusionPart}
+import codechicken.multipart.block.TileMultiPart
+import codechicken.multipart.util.{PartMap, PartRayTraceResult}
+import com.google.common.collect.ImmutableSet
+import com.mojang.blaze3d.matrix.MatrixStack
+import net.minecraft.block.SoundType
+import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.{BlockRenderLayer, EnumFacing, EnumHand, SoundCategory}
-import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.inventory.EquipmentSlotType
+import net.minecraft.item.{ItemStack, ItemUseContext}
+import net.minecraft.nbt.CompoundNBT
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.shapes.{VoxelShape, VoxelShapes}
+import net.minecraft.util.{ActionResultType, Direction, Hand, SoundCategory}
+import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
-import scala.collection.JavaConversions._
+import java.util.{Collection => JCollection}
+import java.util.Collections
+import scala.jdk.CollectionConverters._
 
-trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagationCommons with TSwitchPacket with TNormalOcclusionPart with TFastRenderPart
+trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagationCommons with TSwitchPacket with TNormalOcclusionPart
 {
-    def preparePlacement(side:Int, meta:Int){}
+    def preparePlacement(side:Direction){}
+
+    override def getPlacementSound(context: ItemUseContext) = SoundType.GLASS
 
     override def onPartChanged(part:TMultiPart)
     {
@@ -39,7 +53,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
         }
     }
 
-    override def onNeighborChanged()
+    override def onNeighborBlockChanged(from: BlockPos)
     {
         if (!world.isRemote) {
             if (dropIfCantStay()) return
@@ -87,19 +101,19 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
 
     def drop()
     {
-        TileMultipart.dropItem(getItem, world, Vector3.fromTileCenter(tile))
+        TileMultiPart.dropItem(getItem, world, Vector3.fromTileCenter(tile))
         tile.remPart(this)
     }
 
     def getItem:ItemStack
 
-    def getWireType:WireDef
+    def getWireType:WireType
 
-    def getThickness = getWireType.thickness
+    def getThickness = getWireType.getThickness
 
-    override def getDrops = Seq(getItem)
+    override def getDrops:JCollection[ItemStack] = Collections.singleton(getItem)
 
-    override def pickItem(hit:CuboidRayTraceResult) = getItem
+    override def pickItem(hit:PartRayTraceResult) = getItem
 
     override def onSignalUpdate()
     {
@@ -108,81 +122,76 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
 
     override def diminishOnSide(side:Int) = true
 
-    def debug(player:EntityPlayer) = false
+    def debug(player:PlayerEntity) = false
 
-    def test(player:EntityPlayer) = false
+    def test(player:PlayerEntity) = false
 
-    override def activate(player:EntityPlayer, hit:CuboidRayTraceResult, held:ItemStack, hand:EnumHand) =
+    override def activate(player:PlayerEntity, hit:PartRayTraceResult, held:ItemStack, hand:Hand): ActionResultType =
     {
         //if (CommandDebug.WIRE_READING) debug(player) else
-        if (!held.isEmpty && held.getItem == ProjectRedCore.itemMultimeter) {
-            held.damageItem(1, player)
+        if (!held.isEmpty && held.getItem == CoreContent.itemMultimeter.get()) {
+            held.damageItem(1, player, (p:PlayerEntity) => p.sendBreakAnimation(EquipmentSlotType.MAINHAND))
             player.swingArm(hand)
-            test(player)
+            if(test(player))
+                return ActionResultType.SUCCESS
         }
-        else false
+        ActionResultType.PASS
     }
 
     def renderHue = -1
 
-    @SideOnly(Side.CLIENT)
-    def getIcon = getWireType.wireSprites(0)
+    @OnlyIn(Dist.CLIENT)
+    def getIcon = getWireType.getTextures.get(0)
 
-    @SideOnly(Side.CLIENT)
-    override def renderStatic(pos:Vector3, layer:BlockRenderLayer, ccrs:CCRenderState) =
+    @OnlyIn(Dist.CLIENT)
+    override def renderStatic(layer:RenderType, ccrs:CCRenderState) =
     {
-        if (layer == getRenderLayer && useStaticRenderer) {
+        if (layer == null || (layer == getRenderLayer && useStaticRenderer)) {
             ccrs.setBrightness(world, this.pos)
-            doStaticTessellation(pos, layer, ccrs)
+            doStaticTessellation(layer, ccrs)
             true
         }
         else false
     }
 
-    @SideOnly(Side.CLIENT)
-    override def renderFast(ccrs:CCRenderState, pos:Vector3, pass:Int, frame:Float)
+    @OnlyIn(Dist.CLIENT)
+    override def renderDynamic(mStack: MatrixStack, buffers: IRenderTypeBuffer, packedLight: Int, packedOverlay: Int, partialTicks: Float)
     {
-        doFastTessellation(pos, frame, pass, ccrs)
+        if(!useStaticRenderer) doFastTessellation(mStack, buffers, packedLight, packedOverlay, partialTicks)
     }
 
-    override def canRenderFast(pass: Int) = pass == 0 && !useStaticRenderer
+    @OnlyIn(Dist.CLIENT)
+    def getRenderLayer = RenderType.getSolid
 
-    @SideOnly(Side.CLIENT)
-    override def renderBreaking(pos:Vector3, texture:TextureAtlasSprite, ccrs:CCRenderState)
-    {
-        ccrs.reset()
-        doBreakTessellation(pos, texture, ccrs)
-    }
+    @OnlyIn(Dist.CLIENT)
+    def doStaticTessellation(layer:RenderType, ccrs:CCRenderState)
 
-    @SideOnly(Side.CLIENT)
-    def getRenderLayer = BlockRenderLayer.SOLID
-
-    @SideOnly(Side.CLIENT)
-    def doStaticTessellation(pos:Vector3, layer:BlockRenderLayer, ccrs:CCRenderState)
-    @SideOnly(Side.CLIENT)
-    def doFastTessellation(pos:Vector3, frame:Float, pass:Int, ccrs:CCRenderState)
-    @SideOnly(Side.CLIENT)
-    def doBreakTessellation(pos:Vector3, texture:TextureAtlasSprite, ccrs:CCRenderState)
+    @OnlyIn(Dist.CLIENT)
+    def doFastTessellation(mStack: MatrixStack, buffers: IRenderTypeBuffer, packedLight: Int, packedOverlay: Int, partialTicks: Float)
 
     def useStaticRenderer = Configurator.staticWires
 }
 
-abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectable with TFacePropagation
+abstract class WirePart(wireType:WireType) extends TMultiPart with TWireCommons with TFaceConnectable with TFacePropagation
 {
-    override def preparePlacement(side:Int, meta:Int)
+    override final def getWireType = wireType
+
+    override final def getType = getWireType.getPartType
+
+    override def preparePlacement(side: Direction)
     {
-        setSide(side^1)
+        setSide(side.ordinal() ^ 1)
     }
 
-    override def save(tag:NBTTagCompound)
+    override def save(tag:CompoundNBT)
     {
-        tag.setInteger("connMap", connMap)
-        tag.setByte("side", side.toByte)
+        tag.putInt("connMap", connMap)
+        tag.putByte("side", side.toByte)
     }
 
-    override def load(tag:NBTTagCompound)
+    override def load(tag:CompoundNBT)
     {
-        connMap = tag.getInteger("connMap")
+        connMap = tag.getInt("connMap")
         setSide(tag.getByte("side"))
     }
 
@@ -208,13 +217,13 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
 
     override def sendConnUpdate()
     {
-        getWriteStreamOf(1).writeInt(connMap)
+        sendUpdate(1, _.writeInt(connMap))
     }
 
     override def canConnectCorner(r:Int) = true
 
     override def canStay = PRLib.canPlaceWireOnSide(world,
-        pos.offset(EnumFacing.getFront(side)), side^1)
+        pos.offset(Direction.byIndex(side)), Direction.byIndex(side^1))
 
     override def getItem = getWireType.makeStack
 
@@ -227,7 +236,7 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
 
     override def discoverOpen(r:Int) =
     {
-        if (tile.partMap(PartMap.edgeBetween(side, absoluteDir(r))) != null) false
+        if (tile.getSlottedPart(PartMap.edgeBetween(side, absoluteDir(r))) != null) false
         else getInternal(r) match {
             case w:WirePart => canConnectPart(w, r)
             case t:TMultiPart => false
@@ -235,68 +244,74 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
         }
     }
 
-    override def getType = getWireType.wireType
+    override def getStrength(player:PlayerEntity, hit:PartRayTraceResult) = 2/30f
 
-    override def getStrength(player:EntityPlayer, hit:CuboidRayTraceResult) = 2/30f
+    override def getOutlineShape = new IndexedVoxelShape(WireBoxes.sShapes(getThickness)(side), 0)
 
-    override def getSubParts = Seq(new IndexedCuboid6(0, WireBoxes.sBounds(getThickness)(side)))
+    override def getCollisionShape = VoxelShapes.empty()
 
-    override def getOcclusionBoxes = Seq(WireBoxes.oBounds(getThickness)(side))
+    override def getOcclusionShape = WireBoxes.oShapes(getThickness)(side)
 
     override def redstoneConductionMap = 0xF
 
     override def solid(side:Int) = false
 
-    @SideOnly(Side.CLIENT)
-    override def doBreakTessellation(pos:Vector3, texture:TextureAtlasSprite, ccrs:CCRenderState)
+    @OnlyIn(Dist.CLIENT)
+    override def doFastTessellation(mStack: MatrixStack, buffers: IRenderTypeBuffer, packedLight: Int, packedOverlay: Int, partialTicks: Float)
     {
-        RenderWire.renderBreakingOverlay(texture, this, ccrs)
+        val ccrs = CCRenderState.instance()
+        ccrs.reset()
+        ccrs.brightness = packedLight
+        ccrs.overlay = packedOverlay
+        ccrs.bind(new TransformingVertexBuilder(buffers.getBuffer(RenderType.getSolid), mStack), DefaultVertexFormats.BLOCK)
+        RenderWire.render(this, ccrs)
     }
-    @SideOnly(Side.CLIENT)
-    override def doFastTessellation(pos:Vector3, frame:Float, pass:Int, ccrs:CCRenderState)
+    @OnlyIn(Dist.CLIENT)
+    override def doStaticTessellation(layer:RenderType, ccrs:CCRenderState)
     {
-        RenderWire.render(this, pos, ccrs)
-    }
-    @SideOnly(Side.CLIENT)
-    override def doStaticTessellation(pos:Vector3, layer:BlockRenderLayer, ccrs:CCRenderState)
-    {
-        RenderWire.render(this, pos, ccrs)
+        RenderWire.render(this, ccrs)
     }
 }
 
-abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterConnectable with TCenterPropagation with ISidedHollowConnect
+abstract class FramedWirePart(wireType:WireType) extends TMultiPart with TWireCommons with TCenterConnectable with TCenterPropagation with ISidedHollowConnect
 {
-    var hasMaterial = false
-    var material = 0
+    var material:MicroMaterial = null
 
-    override def save(tag:NBTTagCompound)
+    override final def getWireType = wireType
+
+    override final def getType = getWireType.getPartType
+
+    override def save(tag:CompoundNBT)
     {
-        tag.setInteger("connMap", connMap)
-        tag.setString("mat", MicroMaterialRegistry.materialName(material))
-        tag.setBoolean("hasmat", hasMaterial)
+        tag.putInt("connMap", connMap)
+        if (material != null) {
+            tag.putString("mat", material.getRegistryName.toString)
+        }
     }
 
-    override def load(tag:NBTTagCompound)
+    override def load(tag:CompoundNBT)
     {
-        connMap = tag.getInteger("connMap")
-        hasMaterial = tag.getBoolean("hasmat")
-        material = MicroMaterialRegistry.materialID(tag.getString("mat"))
+        connMap = tag.getInt("connMap")
+        if (tag.contains("mat")) {
+            material = MicroMaterialRegistry.getMaterial(tag.getString("mat"))
+        }
     }
 
     override def writeDesc(packet:MCDataOutput)
     {
         packet.writeByte(clientConnMap)
-        packet.writeBoolean(hasMaterial)
-        if (hasMaterial)
-            MicroMaterialRegistry.writeMaterialID(packet, material)
+        packet.writeBoolean(material != null)
+        if (material != null) {
+            packet.writeRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS, material)
+        }
     }
 
     override def readDesc(packet:MCDataInput)
     {
         connMap = packet.readUByte()
-        hasMaterial = packet.readBoolean()
-        if (hasMaterial)
-            material = MicroMaterialRegistry.readMaterialID(packet)
+        if (packet.readBoolean()) {
+            material = packet.readRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS)
+        }
     }
 
     override def read(packet:MCDataInput, key:Int) = key match
@@ -305,12 +320,10 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
             connMap = packet.readUByte()
             if (useStaticRenderer) tile.markRender()
         case 2 =>
-            hasMaterial = true
-            material = MicroMaterialRegistry.readMaterialID(packet)
+            material = packet.readRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS)
             if (useStaticRenderer) tile.markRender()
         case 3 =>
-            hasMaterial = false
-            material = 0
+            material = null
             if (useStaticRenderer) tile.markRender()
         case _ =>
     }
@@ -319,13 +332,14 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
 
     override def sendConnUpdate()
     {
-        getWriteStreamOf(1).writeByte(clientConnMap)
+        sendUpdate(1, _.writeByte(clientConnMap))
     }
 
     def sendMatUpdate()
     {
-        if (hasMaterial) MicroMaterialRegistry.writeMaterialID(getWriteStreamOf(2), material)
-        else getWriteStreamOf(3)
+        if (material != null) {
+            sendUpdate(2, _.writeRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS, material))
+        } else sendUpdate(3)
     }
 
     override def discoverOpen(s:Int) = getInternal(s) match
@@ -339,118 +353,118 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
             fits
     }
 
-    override def getType = getWireType.framedType
-
     override def canStay = true
 
-    override def getStrength(player:EntityPlayer, hit:CuboidRayTraceResult) =
+    override def getStrength(player:PlayerEntity, hit:PartRayTraceResult) =
     {
-        if (hasMaterial) Math.min(1.25f/30f, MicroMaterialRegistry.getMaterial(material).getStrength(player))
+        if (material != null) Math.min(1.25f/30f, material.getStrength(player))
         else 1.25f/30f
     }
 
-    override def getItem = getWireType.makeFramedStack
+    override def getItem = getWireType.makeStack
 
     override def getDrops =
     {
-        if (hasMaterial) super.getDrops :+ ItemMicroPart.create(1, material)
+        if (material != null) (super.getDrops.asScala.toSeq :+ ItemMicroBlock.create(0, 1, material)).asJava
         else super.getDrops
     }
 
-    override def getSubParts = getCollisionBoxes.map(that => new IndexedCuboid6(0, that))
+    override def getOutlineShape = new IndexedVoxelShape(getCollisionShape, 0)
 
-    override def getOcclusionBoxes =
+    override def getOcclusionShape =
     {
         import mrtjp.projectred.transmission.WireBoxes._
-        if (expandBounds >= 0) Seq(fOBounds(expandBounds))
-        else Seq(fOBounds(6))
+        if (expandBounds >= 0) fOShapes(expandBounds)
+        else fOShapes(6)
     }
 
-    override def getCollisionBoxes =
+    override def getCollisionShape =
     {
         import mrtjp.projectred.transmission.WireBoxes._
-        var b = Seq.newBuilder[Cuboid6].+=(fOBounds(6))
-        for (s <- 0 until 6) if (maskConnects(s)) b += fOBounds(s)
-        b.result()
+        var m = 0
+        for (s <- 0 until 6) if (maskConnects(s)) m |= 1 << s
+        fOShapeStates(m)
     }
 
     override def getHollowSize(side:Int) = 8
 
-    override def activate(player:EntityPlayer, hit:CuboidRayTraceResult, held:ItemStack, hand:EnumHand):Boolean =
+    override def activate(player:PlayerEntity, hit:PartRayTraceResult, held:ItemStack, hand:Hand): ActionResultType =
     {
         def dropMaterial()
         {
-            if (hasMaterial && !player.capabilities.isCreativeMode)
-                PRLib.dropTowardsPlayer(world, pos, ItemMicroPart.create(1, material), player)
+            if (material != null && !player.abilities.isCreativeMode)
+                PRLib.dropTowardsPlayer(world, pos, ItemMicroBlock.create(0, 1, material), player)
         }
 
-        if (super.activate(player, hit, held, hand)) return true
+        if (super.activate(player, hit, held, hand).isSuccess) return ActionResultType.SUCCESS
 
-        if (held.isEmpty && player.isSneaking && hasMaterial) {
+        if (held.isEmpty && player.isSneaking && material != null) {
             if (!world.isRemote) {
                 dropMaterial()
-                hasMaterial = false
-                material = 0
+                material = null
                 sendMatUpdate()
             }
-            return true
+            return ActionResultType.SUCCESS
         }
 
-        if (!held.isEmpty && held.getItem == MicroblockProxy.itemMicro && held.getItemDamage == 1) {
-            val newmatid = ItemMicroPart.getMaterialID(held)
-            if (!hasMaterial || newmatid != material) {
+        if (!held.isEmpty && held.getItem == MicroblockModContent.itemMicroBlock && MicroMaterialRegistry.microFactory(held) == 0 && MicroMaterialRegistry.microSize(held) == 1) {
+            val newMat = ItemMicroBlock.getMaterialFromStack(held)
+            if (material == null || newMat != material) {
                 if(!world.isRemote) {
-                    val newmat = MicroMaterialRegistry.getMaterial(newmatid)
-                    if (newmat == null || newmat.isTransparent) return false
+                    if (newMat == null || newMat.isTransparent) return ActionResultType.PASS
                     else {
                         dropMaterial()
-                        hasMaterial = true
-                        material = newmatid
-                        world.playSound(null, pos, newmat.getSound.getPlaceSound,
-                            SoundCategory.BLOCKS, newmat.getSound.getVolume+1.0F/2.0F,
-                            newmat.getSound.getPitch*0.8F)
+                        material = newMat
+                        world.playSound(null, pos, newMat.getSound.getPlaceSound,
+                            SoundCategory.BLOCKS, newMat.getSound.getVolume+1.0F/2.0F,
+                            newMat.getSound.getPitch*0.8F)
                         sendMatUpdate()
-                        if (!player.capabilities.isCreativeMode) held.shrink(1)
+                        if (!player.abilities.isCreativeMode) held.shrink(1)
                     }
                 }
-                return true
+                return ActionResultType.SUCCESS
             }
         }
 
-        false
+        ActionResultType.PASS
     }
 
-    @SideOnly(Side.CLIENT)
-    override def getRenderLayer = BlockRenderLayer.CUTOUT
+    @OnlyIn(Dist.CLIENT)
+    override def getRenderLayer = RenderType.getCutout
 
-    @SideOnly(Side.CLIENT)
-    override def doBreakTessellation(pos:Vector3, texture:TextureAtlasSprite, ccrs:CCRenderState)
+    @OnlyIn(Dist.CLIENT)
+    override def doFastTessellation(mStack: MatrixStack, buffers: IRenderTypeBuffer, packedLight: Int, packedOverlay: Int, partialTicks: Float)
     {
-        RenderFramedWire.renderBreakingOverlay(texture, this, ccrs)
+        val ccrs = CCRenderState.instance()
+        ccrs.reset()
+        ccrs.brightness = packedLight
+        ccrs.overlay = packedOverlay
+        ccrs.bind(new TransformingVertexBuilder(buffers.getBuffer(RenderType.getSolid), mStack), DefaultVertexFormats.BLOCK)
+        RenderFramedWire.render(this, ccrs)
     }
-    @SideOnly(Side.CLIENT)
-    override def doFastTessellation(pos:Vector3, frame:Float, pass:Int, ccrs:CCRenderState)
+
+    @OnlyIn(Dist.CLIENT)
+    override def doStaticTessellation(layer:RenderType, ccrs:CCRenderState)
     {
-        RenderFramedWire.render(this, pos, ccrs)
-    }
-    @SideOnly(Side.CLIENT)
-    override def doStaticTessellation(pos:Vector3, layer:BlockRenderLayer, ccrs:CCRenderState)
-    {
-        RenderFramedWire.render(this, pos, ccrs)
+        RenderFramedWire.render(this, ccrs)
     }
 }
 
 object WireBoxes
 {
     var sBounds = Array.ofDim[Cuboid6](3, 6)
+    var sShapes = Array.ofDim[VoxelShape](3, 6)
     var oBounds = Array.ofDim[Cuboid6](3, 6)
+    var oShapes = Array.ofDim[VoxelShape](3, 6)
 
     for (t <- 0 until 3) {
         val selection = new Cuboid6(0, 0, 0, 1, (t+2)/16D, 1).expand(-0.005)
         val occlusion = new Cuboid6(2/8D, 0, 2/8D, 6/8D, (t+2)/16D, 6/8D)
         for (s <- 0 until 6) {
-            sBounds(t)(s) = selection.copy.apply(Rotation.sideRotations(s).at(Vector3.center))
-            oBounds(t)(s) = occlusion.copy.apply(Rotation.sideRotations(s).at(Vector3.center))
+            sBounds(t)(s) = selection.copy.apply(Rotation.sideRotations(s).at(Vector3.CENTER))
+            sShapes(t)(s) = VoxelShapeCache.getShape(sBounds(t)(s))
+            oBounds(t)(s) = occlusion.copy.apply(Rotation.sideRotations(s).at(Vector3.CENTER))
+            oShapes(t)(s) = VoxelShapeCache.getShape(oBounds(t)(s))
         }
     }
 
@@ -459,8 +473,20 @@ object WireBoxes
         val w = 2/8D
         boxes(6) = new Cuboid6(0.5-w, 0.5-w, 0.5-w, 0.5+w, 0.5+w, 0.5+w)
         for (s <- 0 until 6)
-            boxes(s) = new Cuboid6(0.5-w, 0, 0.5-w, 0.5+w, 0.5-w, 0.5+w).apply(Rotation.sideRotations(s).at(Vector3.center))
+            boxes(s) = new Cuboid6(0.5-w, 0, 0.5-w, 0.5+w, 0.5-w, 0.5+w).apply(Rotation.sideRotations(s).at(Vector3.CENTER))
         boxes
+    }
+    var fOShapes = fOBounds.map(VoxelShapeCache.getShape)
+    var fOShapeStates = {
+        val shapes = new Array[VoxelShape](0x3f)
+        for (m <- 0 until 0x3f) {
+            var builder = Seq.newBuilder[VoxelShape].+=(VoxelShapeCache.getShape(fOBounds(6)))
+            for (s <- 0 until 6) {
+                if ((m & (1 << s)) != 0) builder += VoxelShapeCache.getShape(fOBounds(s))
+            }
+            shapes(m) = VoxelShapeCache.merge(ImmutableSet.copyOf(builder.result().asJava))
+        }
+        shapes
     }
     var expandBounds = -1
 }

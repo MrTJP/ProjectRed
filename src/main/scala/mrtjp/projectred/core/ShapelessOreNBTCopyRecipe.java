@@ -1,3 +1,4 @@
+/*
 package mrtjp.projectred.core;
 
 import com.google.gson.JsonElement;
@@ -65,3 +66,4 @@ public class ShapelessOreNBTCopyRecipe extends ShapelessOreRecipe {
         }
     }
 }
+*/
