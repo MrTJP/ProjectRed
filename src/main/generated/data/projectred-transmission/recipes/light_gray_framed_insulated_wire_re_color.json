@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "item": "projectred-transmission:light_gray_framed_insulated_wire"
+  },
+  "ingredients": [
+    {
+      "tag": "projectred-transmission:framed_insulated_wire"
+    },
+    {
+      "tag": "forge:dyes/light_gray"
+    }
+  ]
+}

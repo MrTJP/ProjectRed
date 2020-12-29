@@ -1,3 +1,4 @@
+/*
 package mrtjp.projectred
 
 import mrtjp.core.data.{ModConfig, SpecialConfigGui, TModGuiFactory}
@@ -119,3 +120,4 @@ object RelocationConfig extends ModConfig("projectred-relocation")
           |    '<modID>:<blockname>#<property>=<value>[,<property>=<value>[,…]]' - to assign block from mod with only the given properties matching.
         """.stripMargin
 }
+*/

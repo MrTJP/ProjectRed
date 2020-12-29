@@ -1,15 +1,12 @@
+/*
 package mrtjp.projectred.core
 
 import codechicken.lib.data.MCDataInput
+import codechicken.lib.util.ClientUtils.getWorld
 import codechicken.lib.vec.Rotation
-import codechicken.multipart.{BlockMultipart, PartMap}
-import mrtjp.core.block.{MTBlockTile, TTileOrient}
-import mrtjp.core.world.WorldLib
+import codechicken.multipart.BlockMultipart
 import mrtjp.projectred.api.IConnectable
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumFacing
 import net.minecraft.world.World
 
 trait TTileAcquisitions extends MTBlockTile
@@ -310,3 +307,4 @@ trait TPowerTile extends MTBlockTile with TConnectableInstTile with TCachedPower
     override def connWorld: World = getWorld
 }
 
+*/

@@ -1,10 +1,15 @@
 package mrtjp.projectred.core
 
-trait IProxy
-{
-    def preinit()
+import net.minecraftforge.fml.event.lifecycle.{FMLClientSetupEvent, FMLCommonSetupEvent, FMLDedicatedServerSetupEvent, FMLLoadCompleteEvent}
 
-    def init()
+trait IProxy {
+    def construct() {}
 
-    def postinit()
+    def commonSetup(event: FMLCommonSetupEvent) {}
+
+    def clientSetup(event: FMLClientSetupEvent) {}
+
+    def serverSetup(event: FMLDedicatedServerSetupEvent) {}
+
+    def loadComplete(event: FMLLoadCompleteEvent) {}
 }

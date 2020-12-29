@@ -1,3 +1,4 @@
+/*
 package mrtjp.projectred
 
 import mrtjp.projectred.illumination._
@@ -41,3 +42,4 @@ object ProjectRedIllumination
         IlluminationProxy.postinit()
     }
 }
+*/

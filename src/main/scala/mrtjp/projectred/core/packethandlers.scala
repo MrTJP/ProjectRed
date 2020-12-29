@@ -1,3 +1,4 @@
+/*
 package mrtjp.projectred.core
 
 import codechicken.lib.packet.PacketCustom
@@ -34,3 +35,4 @@ object CoreSPH extends CorePH with IServerPacketHandler
         }
     }
 }
+*/
