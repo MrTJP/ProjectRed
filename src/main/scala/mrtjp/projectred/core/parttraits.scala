@@ -2,11 +2,13 @@ package mrtjp.projectred.core
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec.{Rotation, Vector3}
-import codechicken.multipart.{TFacePart, TMultiPart, TSlottedPart}
+import codechicken.multipart.api.part.{TFacePart, TMultiPart, TSlottedPart}
+
+import java.util.function.Consumer
 
 trait TSwitchPacket extends TMultiPart
 {
-    override final def read(packet:MCDataInput)
+    override final def readUpdate(packet:MCDataInput)
     {
         read(packet, packet.readUByte())
     }
@@ -17,9 +19,15 @@ trait TSwitchPacket extends TMultiPart
         case _ =>
     }
 
-    def getWriteStreamOf(key:Int):MCDataOutput = getWriteStream.writeByte(key)
+    override final def sendUpdate(func: Consumer[MCDataOutput]) {
+        sendUpdate(0, func.accept)
+    }
 
-    override def sendDescUpdate() = writeDesc(getWriteStreamOf(0))
+    def sendUpdate(key:Int, func: MCDataOutput => Unit = _ => {}) =
+        super.sendUpdate(p => {
+            p.writeByte(key)
+            func(p)
+        })
 }
 
 trait TFaceOrient extends TMultiPart with TFacePart
@@ -44,7 +52,7 @@ trait TFaceOrient extends TMultiPart with TFacePart
         if (oldOrient != orientation) onOrientationChanged(oldOrient)
     }
 
-    def rotationT = Rotation.sideOrientation(side, rotation).at(Vector3.center)
+    def rotationT = Rotation.sideOrientation(side, rotation).at(Vector3.CENTER)
 
     def onOrientationChanged(oldOrient:Int) {}
 

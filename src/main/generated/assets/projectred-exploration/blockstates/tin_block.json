@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "projectred-exploration:block/tin_block"
+    }
+  }
+}

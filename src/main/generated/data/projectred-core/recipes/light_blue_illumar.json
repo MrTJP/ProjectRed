@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "item": "projectred-core:light_blue_illumar"
+  },
+  "ingredients": [
+    {
+      "tag": "forge:dusts/glowstone"
+    },
+    {
+      "tag": "forge:dusts/glowstone"
+    },
+    {
+      "tag": "forge:dyes/light_blue"
+    },
+    {
+      "tag": "forge:dyes/light_blue"
+    }
+  ]
+}

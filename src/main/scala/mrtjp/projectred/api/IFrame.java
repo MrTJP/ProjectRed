@@ -5,7 +5,7 @@
  */
 package mrtjp.projectred.api;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -34,7 +34,7 @@ public interface IFrame
      * @param side The side of this block.
      * @return True if the side can grab another block.
      */
-    boolean stickOut(World w, BlockPos pos, EnumFacing side);
+    boolean stickOut(World w, BlockPos pos, Direction side);
 
     /**
      * Used to check if this frame block can be grabbed on the
@@ -48,7 +48,7 @@ public interface IFrame
      * @param side The side of this block.
      * @return True if the side can be grabbed by a frame block.
      */
-    boolean stickIn(World w, BlockPos pos, EnumFacing side);
+    boolean stickIn(World w, BlockPos pos, Direction side);
 
     /**
      * Optional method used to declare additional blocks that need to move along

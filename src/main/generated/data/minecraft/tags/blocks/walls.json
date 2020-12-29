@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    "projectred-exploration:marble_wall",
+    "projectred-exploration:marble_brick_wall",
+    "projectred-exploration:basalt_wall",
+    "projectred-exploration:basalt_cobble_wall",
+    "projectred-exploration:basalt_brick_wall",
+    "projectred-exploration:ruby_block_wall",
+    "projectred-exploration:sapphire_block_wall",
+    "projectred-exploration:peridot_block_wall",
+    "projectred-exploration:copper_block_wall",
+    "projectred-exploration:tin_block_wall",
+    "projectred-exploration:silver_block_wall",
+    "projectred-exploration:electrotine_block_wall"
+  ]
+}

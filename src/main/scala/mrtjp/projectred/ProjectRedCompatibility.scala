@@ -1,3 +1,4 @@
+/*
 package mrtjp.projectred
 
 import mrtjp.projectred.compatibility.CompatibilityProxy
@@ -25,3 +26,4 @@ object ProjectRedCompatibility
         CompatibilityProxy.postinit()
     }
 }
+*/

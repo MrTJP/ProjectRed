@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-exploration:peridot_saw",
+    "nbt": "{Damage:0}"
+  },
+  "pattern": [
+    "SRR",
+    "SMM"
+  ],
+  "key": {
+    "M": {
+      "tag": "forge:gems/peridot"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    },
+    "R": {
+      "tag": "forge:rods/stone"
+    }
+  }
+}

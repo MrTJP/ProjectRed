@@ -1,47 +1,37 @@
 package mrtjp.projectred
 
 import mrtjp.projectred.core._
-import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.item.ItemStack
-import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStartingEvent}
-import org.apache.logging.log4j.LogManager
+import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.event.lifecycle.{FMLClientSetupEvent, FMLCommonSetupEvent, FMLDedicatedServerSetupEvent, FMLLoadCompleteEvent}
+import net.minecraftforge.scorge.lang.ScorgeModLoadingContext
 
-@Mod(modid = "projectred-core", useMetadata = true, modLanguage = "scala", guiFactory = "mrtjp.projectred.core.GuiConfigFactory")
-object ProjectRedCore
-{
-    val log = LogManager.getFormatterLogger("ProjectRed")
+object ProjectRedCore {
+    final val MOD_ID = "projectred-core"
+}
 
-    /** Items **/
-    var itemPart:ItemPart = _
-    var itemDrawPlate:ItemDrawPlate = _
-    var itemScrewdriver:ItemScrewdriver = _
-    var itemMultimeter:ItemMultimeter = _
+class ProjectRedCore {
 
-    val tabCore = new CreativeTabs("projectred.core")
-    {
-        override def getTabIconItem = new ItemStack(itemScrewdriver)
+    Configurator.loadConfig()
+    ScorgeModLoadingContext.get.getModEventBus.register(this)
+    CoreContent.register(ScorgeModLoadingContext.get.getModEventBus)
+
+    @SubscribeEvent
+    def onCommonSetup(event: FMLCommonSetupEvent) {
+        CoreProxy.commonSetup(event)
     }
 
-    @Mod.EventHandler
-    def preInit(event:FMLPreInitializationEvent)
-    {
-        Configurator.loadConfig()
-        CoreProxy.preinit()
+    @SubscribeEvent
+    def onClientSetup(event: FMLClientSetupEvent) {
+        CoreProxy.clientSetup(event)
     }
 
-    @Mod.EventHandler
-    def init(event:FMLInitializationEvent)
-    {
-        CoreProxy.init()
+    @SubscribeEvent
+    def onServerSetup(event: FMLDedicatedServerSetupEvent) {
+        CoreProxy.serverSetup(event)
     }
 
-    @Mod.EventHandler
-    def postInit(event:FMLPostInitializationEvent)
-    {
-        CoreProxy.postinit()
+    @SubscribeEvent
+    def onLoadComplete(event: FMLLoadCompleteEvent) {
+        CoreProxy.loadComplete(event)
     }
-
-    @Mod.EventHandler
-    def onServerStarting(event:FMLServerStartingEvent){}
 }

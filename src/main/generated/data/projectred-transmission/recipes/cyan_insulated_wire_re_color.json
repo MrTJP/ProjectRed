@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "item": "projectred-transmission:cyan_insulated_wire"
+  },
+  "ingredients": [
+    {
+      "tag": "projectred-transmission:insulated_wire"
+    },
+    {
+      "tag": "forge:dyes/cyan"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-core:conductive_plate"
+  },
+  "pattern": [
+    "R",
+    "P"
+  ],
+  "key": {
+    "P": {
+      "item": "projectred-core:plate"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    }
+  }
+}

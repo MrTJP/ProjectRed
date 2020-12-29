@@ -5,7 +5,7 @@
  */
 package mrtjp.projectred.core
 
-import codechicken.multipart.TMultiPart
+import codechicken.multipart.api.part.TMultiPart
 
 import scala.ref.WeakReference
 

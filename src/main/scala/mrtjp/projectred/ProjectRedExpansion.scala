@@ -1,3 +1,4 @@
+/*
 package mrtjp.projectred
 
 import codechicken.lib.model.bakery.sub.SubBlockBakery
@@ -54,3 +55,4 @@ object ProjectRedExpansion
         ExpansionProxy.postinit()
     }
 }
+*/
