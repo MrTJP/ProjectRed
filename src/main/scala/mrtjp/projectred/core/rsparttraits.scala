@@ -1,10 +1,10 @@
 package mrtjp.projectred.core
 
-import codechicken.multipart.{IFaceRedstonePart, IRedstonePart, RedstoneInteractions, TMultiPart}
+import codechicken.multipart.api.part.{RedstoneInteractions, TMultiPart}
+import codechicken.multipart.api.part.redstone.{IFaceRedstonePart, IRedstonePart}
 import mrtjp.projectred.core.IWirePart._
-import net.minecraft.block.BlockRedstoneWire
-import net.minecraft.init.Blocks
-import net.minecraft.util.EnumFacing
+import net.minecraft.block.{Blocks, RedstoneWireBlock}
+import net.minecraft.util.Direction
 import net.minecraft.util.math.BlockPos
 
 trait TRSAcquisitionsCommons extends TAcquisitionsCommons with IRedstonePart
@@ -31,8 +31,8 @@ trait TFaceRSAcquisitions extends TRSAcquisitionsCommons with TFaceAcquisitions 
     def calcWeakSignal(r:Int) =
     {
         val pos = posOfStraight(r)
-        if (world.isBlockNormalCube(pos, false))
-            world.isBlockIndirectlyGettingPowered(pos)*17
+        if (world.getBlockState(pos).isNormalCube(world, pos))
+            world.getRedstonePowerFromNeighbors(pos)*17
         else 0
     }
 
@@ -47,7 +47,7 @@ trait TFaceRSAcquisitions extends TRSAcquisitionsCommons with TFaceAcquisitions 
 
     def calcUndersideSignal =
     {
-        val face = EnumFacing.getFront(side)
+        val face = Direction.byIndex(side)
         world.getRedstonePower(pos.offset(face), face)*17
     }
 
@@ -56,7 +56,7 @@ trait TFaceRSAcquisitions extends TRSAcquisitionsCommons with TFaceAcquisitions 
         val pos = posOfStraight(r)
         val b = world.getBlockState(pos)
         if (b.getBlock == Blocks.REDSTONE_WIRE)
-            Math.max(b.getValue(BlockRedstoneWire.POWER)-1, 0)
+            Math.max(b.get(RedstoneWireBlock.POWER)-1, 0)
         else -1
     }
 
@@ -73,9 +73,9 @@ trait TCenterRSAcquisitions extends TRSAcquisitionsCommons with TCenterAcquisiti
 
     def calcWeakSignal(s:Int) =
     {
-        val pos = this.pos.offset(EnumFacing.getFront(s))
-        if (world.isBlockNormalCube(pos, false))
-            world.isBlockIndirectlyGettingPowered(pos)*17
+        val pos = this.pos.offset(Direction.byIndex(s))
+        if (world.getBlockState(pos).isNormalCube(world, pos))
+            world.getRedstonePowerFromNeighbors(pos)*17
         else 0
     }
 }

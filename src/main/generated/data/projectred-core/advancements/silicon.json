@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "projectred-core:silicon"
+    ]
+  },
+  "criteria": {
+    "has_saw": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "cb_microblock:diamond_saw"
+          }
+        ]
+      }
+    },
+    "has_silicon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "projectred-core:boule"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "projectred-core:silicon"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_saw",
+      "has_silicon",
+      "has_the_recipe"
+    ]
+  ]
+}

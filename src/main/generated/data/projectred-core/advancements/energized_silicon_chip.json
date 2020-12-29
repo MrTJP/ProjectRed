@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "projectred-core:energized_silicon_chip"
+    ]
+  },
+  "criteria": {
+    "has_silicon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "projectred-core:energized_silicon"
+          }
+        ]
+      }
+    },
+    "has_plate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "projectred-core:plate"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "projectred-core:energized_silicon_chip"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_silicon",
+      "has_plate",
+      "has_the_recipe"
+    ]
+  ]
+}

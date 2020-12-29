@@ -1,3 +1,4 @@
+/*
 package mrtjp.projectred.core
 
 import codechicken.microblock._
@@ -96,4 +97,4 @@ class MicroIn(factoryID:Int, size:Int, material:String) extends RecipeInput
 
     override def matches(that:ItemKeyStack) = that.key == sample.key
     override def matchingInputs = ins
-}
+}*/

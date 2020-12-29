@@ -1,0 +1,54 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "projectred-core:pointer"
+    ]
+  },
+  "criteria": {
+    "has_stone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:stone"
+          }
+        ]
+      }
+    },
+    "has_redstone_torch": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:redstone_torch"
+          }
+        ]
+      }
+    },
+    "has_plate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "projectred-core:plate"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "projectred-core:pointer"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_stone",
+      "has_redstone_torch",
+      "has_plate",
+      "has_the_recipe"
+    ]
+  ]
+}

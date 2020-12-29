@@ -1,27 +1,26 @@
 package mrtjp.projectred.transmission
 
-import java.text.DecimalFormat
-
 import codechicken.lib.vec.Rotation
-import codechicken.multipart.TMultiPart
+import codechicken.multipart.api.part.{ITickablePart, TMultiPart}
 import mrtjp.core.world.Messenger
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.ITickable
+import net.minecraft.entity.player.{PlayerEntity, ServerPlayerEntity}
+import net.minecraft.nbt.CompoundNBT
 
-trait TPowerWireCommons extends TWireCommons with TPowerPartCommons with ITickable
+import java.text.DecimalFormat
+
+trait TPowerWireCommons extends TWireCommons with TPowerPartCommons with ITickablePart
 {
     val cond:PowerConductor
 
-    override def save(tag: NBTTagCompound)
+    override def save(tag: CompoundNBT)
     {
         super.save(tag)
         cond.save(tag)
     }
 
-    override def load(tag: NBTTagCompound)
+    override def load(tag: CompoundNBT)
     {
         super.load(tag)
         cond.load(tag)
@@ -33,15 +32,14 @@ trait TPowerWireCommons extends TWireCommons with TPowerPartCommons with ITickab
 
     override def updateAndPropagate(prev:TMultiPart, mode:Int) {}
 
-    override def update()
+    override def tick()
     {
-        //super.update()
         if (!world.isRemote) cond.update()
     }
 
-    override def test(player:EntityPlayer):Boolean =
+    override def test(player:PlayerEntity):Boolean =
     {
-        if (world.isRemote) return true
+        if (world.isRemote && !player.isInstanceOf[ServerPlayerEntity]) return true
 
         val p = Messenger.createPacket
         p.writeDouble(pos.getX).writeDouble(pos.getY).writeDouble(pos.getZ)
@@ -51,7 +49,7 @@ trait TPowerWireCommons extends TWireCommons with TPowerPartCommons with ITickab
         s = s.replace("#I", d.format(cond.current))
         s = s.replace("#P", d.format(cond.power))
         p.writeString(s)
-        p.sendToPlayer(player)
+        p.sendToPlayer(player.asInstanceOf[ServerPlayerEntity])
 
         true
     }
@@ -99,10 +97,8 @@ trait TLowLoadPowerLineCommons extends TPowerWireCommons with ILowLoadPowerLine
         override def scaleOfParallelFlow = 0.5D
     }
 
-    def getWireType = WireDef.POWER_LOWLOAD
-
     override def connWorld = world
 }
 
-class LowLoadPowerLine extends PowerWire with TLowLoadPowerLineCommons
-class FramedLowLoadPowerLine extends FramedPowerWire with TLowLoadPowerLineCommons
+class LowLoadPowerLine(wireType:WireType) extends WirePart(wireType) with PowerWire with TLowLoadPowerLineCommons
+class FramedLowLoadPowerLine(wireType:WireType) extends FramedWirePart(wireType) with FramedPowerWire with TLowLoadPowerLineCommons

@@ -1,7 +1,7 @@
 package mrtjp.projectred.core
 
 import mrtjp.projectred.api.IConnectable
-import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.CompoundNBT
 import net.minecraft.world.World
 
 import scala.collection.mutable.{Set => MSet}
@@ -74,7 +74,7 @@ class PowerConductor(val parent:IPowerConnectable, ids:Seq[Int])
      */
     def voltage() =
     {
-        val tick = parent.connWorld.getTotalWorldTime
+        val tick = parent.connWorld.getGameTime
         if ((tick & 0xFFFF) != time) {
             time = (tick & 0xFFFF).asInstanceOf[Int]
             //calculate voltage
@@ -159,28 +159,28 @@ class PowerConductor(val parent:IPowerConnectable, ids:Seq[Int])
         applyCurrent(Iin)
     }
 
-    def save(tag:NBTTagCompound)
+    def save(tag:CompoundNBT)
     {
-        for (i <- 0 until flows.length)
-            tag.setDouble("flow"+i, flows(i))
+        for (i <- flows.indices)
+            tag.putDouble("flow"+i, flows(i))
 
-        tag.setDouble("vl", Vloc)
-        tag.setDouble("il", Iloc)
-        tag.setDouble("vf", Vflow)
-        tag.setDouble("if", Iflow)
-        tag.setInteger("tm", time)
+        tag.putDouble("vl", Vloc)
+        tag.putDouble("il", Iloc)
+        tag.putDouble("vf", Vflow)
+        tag.putDouble("if", Iflow)
+        tag.putInt("tm", time)
     }
 
-    def load(tag:NBTTagCompound)
+    def load(tag:CompoundNBT)
     {
-        for (i <- 0 until flows.length)
+        for (i <- flows.indices)
             flows(i) = tag.getDouble("flow"+i)
 
         Vloc = tag.getDouble("vl")
         Iloc = tag.getDouble("il")
         Vflow = tag.getDouble("vf")
         Iflow = tag.getDouble("if")
-        time = tag.getInteger("tm")
+        time = tag.getInt("tm")
     }
 }
 
@@ -204,18 +204,18 @@ trait TPowerDrawPoint extends PowerConductor
         if (canWork) flow |= 1
     }
 
-    abstract override def save(tag:NBTTagCompound)
+    abstract override def save(tag:CompoundNBT)
     {
         super.save(tag)
-        tag.setInteger("chg", charge)
-        tag.setInteger("flow", flow)
+        tag.putInt("chg", charge)
+        tag.putInt("flow", flow)
     }
 
-    abstract override def load(tag:NBTTagCompound)
+    abstract override def load(tag:CompoundNBT)
     {
         super.load(tag)
-        charge = tag.getInteger("chg")
-        flow = tag.getInteger("flow")
+        charge = tag.getInt("chg")
+        flow = tag.getInt("flow")
     }
 }
 

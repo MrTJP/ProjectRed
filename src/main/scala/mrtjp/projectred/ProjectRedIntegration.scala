@@ -1,3 +1,4 @@
+/*
 package mrtjp.projectred
 
 import mrtjp.projectred.integration.{GateDefinition, IntegrationProxy, ItemPartGate}
@@ -34,3 +35,4 @@ object ProjectRedIntegration
         IntegrationProxy.postinit()
     }
 }
+*/

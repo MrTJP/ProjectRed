@@ -1,47 +1,51 @@
 package mrtjp.projectred
 
 import mrtjp.projectred.api.ProjectRedAPI
-import mrtjp.projectred.core.WirePropagator
 import mrtjp.projectred.transmission._
-import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.item.ItemStack
-import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerAboutToStartEvent}
+import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.DistExecutor
+import net.minecraftforge.fml.event.lifecycle.{FMLClientSetupEvent, FMLCommonSetupEvent, FMLDedicatedServerSetupEvent, FMLLoadCompleteEvent}
+import net.minecraftforge.scorge.lang.ScorgeModLoadingContext
+import mrtjp.projectred.ProjectRedTransmission._
+import mrtjp.projectred.core.WirePropagator
+import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent
 
-@Mod(modid = "projectred-transmission", useMetadata = true, modLanguage = "scala")
-object ProjectRedTransmission
+object ProjectRedTransmission {
+    final var MOD_ID = "projectred-transmission"
+    final var proxy:TransmissionProxy = DistExecutor.safeRunForDist(
+        () => () => new TransmissionProxyClient().asInstanceOf[TransmissionProxy],
+        () => () => new TransmissionProxy())
+}
+class ProjectRedTransmission
 {
     ProjectRedAPI.transmissionAPI = new APIImpl_Transmission
+    proxy.construct()
+    ScorgeModLoadingContext.get.getModEventBus.register(this)
+    TransmissionContent.register(ScorgeModLoadingContext.get.getModEventBus)
+    MinecraftForge.EVENT_BUS.addListener(serverStarting)
 
-    /** Multipart items **/
-    var itemPartWire:ItemPartWire = _
-    var itemPartFramedWire:ItemPartFramedWire = _
-
-    val tabTransmission = new CreativeTabs("projectred.transmission")
-    {
-        override def getTabIconItem = new ItemStack(ProjectRedTransmission.itemPartWire)
+    @SubscribeEvent
+    def onCommonSetup(event: FMLCommonSetupEvent) {
+        proxy.commonSetup(event)
     }
 
-    @Mod.EventHandler
-    def preInit(event:FMLPreInitializationEvent)
-    {
-        TransmissionProxy.preinit()
+    @SubscribeEvent
+    def onClientSetup(event: FMLClientSetupEvent) {
+        proxy.clientSetup(event)
     }
 
-    @Mod.EventHandler
-    def init(event:FMLInitializationEvent)
-    {
-        TransmissionProxy.init()
+    @SubscribeEvent
+    def onServerSetup(event: FMLDedicatedServerSetupEvent) {
+        proxy.serverSetup(event)
     }
 
-    @Mod.EventHandler
-    def postInit(event:FMLPostInitializationEvent)
-    {
-        TransmissionProxy.postinit()
+    @SubscribeEvent
+    def onLoadComplete(event: FMLLoadCompleteEvent) {
+        proxy.loadComplete(event)
     }
 
-    @Mod.EventHandler
-    def serverStopping(event:FMLServerAboutToStartEvent)
+    def serverStarting(event:FMLServerAboutToStartEvent)
     {
         WirePropagator.reset()
     }

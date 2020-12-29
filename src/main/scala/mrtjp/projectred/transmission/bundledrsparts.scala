@@ -1,7 +1,7 @@
 package mrtjp.projectred.transmission
 
 import mrtjp.projectred.core.{TAcquisitionsCommons, TCenterAcquisitions, TFaceAcquisitions}
-import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.CompoundNBT
 
 trait TBundledAquisitionsCommons extends TAcquisitionsCommons
 {
@@ -79,14 +79,14 @@ object BundledCommons
 
     def copySignal(signal:Array[Byte]) = if (signal == null) null else signal.clone()
 
-    def saveSignal(tag:NBTTagCompound, key:String, signal:Array[Byte])
+    def saveSignal(tag:CompoundNBT, key:String, signal:Array[Byte])
     {
-        if (signal != null) tag.setByteArray(key, signal)
+        if (signal != null) tag.putByteArray(key, signal)
     }
 
-    def loadSignal(tag:NBTTagCompound, key:String) =
+    def loadSignal(tag:CompoundNBT, key:String) =
     {
-        if (tag.hasKey(key)) tag.getByteArray(key) else null
+        if (tag.contains(key)) tag.getByteArray(key).clone() else null
     }
 
     def packDigital(signal:Array[Byte]):Int =

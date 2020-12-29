@@ -1,4 +1,5 @@
 /*
+/*
  * Copyright (c) 2015.
  * Created by MrTJP.
  * All rights reserved.
@@ -47,3 +48,4 @@ object ProjectRedFabrication
         FabricationProxy.postinit()
     }
 }
+*/

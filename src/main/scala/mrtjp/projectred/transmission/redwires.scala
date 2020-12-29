@@ -2,28 +2,30 @@ package mrtjp.projectred.transmission
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec.Rotation
-import codechicken.multipart._
-import codechicken.multipart.scalatraits.TRedstoneTile
+import codechicken.multipart.`trait`.TRedstoneTile
+import codechicken.multipart.`trait`.extern.IRedstoneTile
+import codechicken.multipart.api.part.{RedstoneInteractions, TMultiPart}
+import codechicken.multipart.api.part.redstone.{IFaceRedstonePart, IMaskedRedstonePart, IRedstonePart}
 import mrtjp.core.world.Messenger
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.text.TextComponentString
-import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import net.minecraft.entity.player.{PlayerEntity, ServerPlayerEntity}
+import net.minecraft.nbt.CompoundNBT
+import net.minecraft.util.{ActionResultType, Direction}
+import net.minecraft.util.text.StringTextComponent
+import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
 trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with TRSPropagationCommons with IRedwirePart
 {
     var signal:Byte = 0
 
-    override def save(tag:NBTTagCompound)
+    override def save(tag:CompoundNBT)
     {
         super.save(tag)
-        tag.setByte("signal", signal)
+        tag.putByte("signal", signal)
     }
 
-    override def load(tag:NBTTagCompound)
+    override def load(tag:CompoundNBT)
     {
         super.load(tag)
         signal = tag.getByte("signal")
@@ -67,32 +69,32 @@ trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with TRSP
     override def onSignalUpdate()
     {
         super.onSignalUpdate()
-        getWriteStreamOf(10).writeByte(signal)
+        sendUpdate(10, _.writeByte(signal))
     }
 
-    override def debug(player:EntityPlayer) =
+    override def debug(player:PlayerEntity) =
     {
-        player.sendMessage(new TextComponentString(
+        player.sendMessage(new StringTextComponent(
             (if (world.isRemote) "Client" else "Server")+" signal strength: "+getSignal))
         true
     }
 
-    override def test(player:EntityPlayer) =
+    override def test(player:PlayerEntity) =
     {
         if (world.isRemote) Messenger.addMessage(pos.getX, pos.getY+0.5, pos.getZ, "/#f/#c[c] = "+getSignal)
-        else {
+        else if (player.isInstanceOf[ServerPlayerEntity]) {
             val packet = Messenger.createPacket
             packet.writeDouble(pos.getX+0.0D)
             packet.writeDouble(pos.getY+0.5D)
             packet.writeDouble(pos.getZ+0.0D)
             packet.writeString("/#c[s] = "+getSignal)
-            packet.sendToPlayer(player)
+            packet.sendToPlayer(player.asInstanceOf[ServerPlayerEntity])
         }
         true
     }
 }
 
-abstract class RedwirePart extends WirePart with TRedwireCommons with TFaceRSAcquisitions with TFaceRSPropagation
+abstract class RedwirePart(wireType:WireType) extends WirePart(wireType) with TRedwireCommons with TFaceRSAcquisitions with TFaceRSPropagation
 {
     override def weakPowerLevel(side:Int) =
     {
@@ -105,7 +107,7 @@ abstract class RedwirePart extends WirePart with TRedwireCommons with TFaceRSAcq
     override def discoverOpen(r:Int) =
     {
         val absDir = absoluteDir(r)
-        (tile.asInstanceOf[TRedstoneTile].openConnections(absDir)&1<<Rotation.rotationTo(absDir&6, side)) != 0
+        (tile.asInstanceOf[IRedstoneTile].openConnections(absDir)&1<<Rotation.rotationTo(absDir&6, side)) != 0
     }
 
     override def canConnectPart(wire:IConnectable, r:Int) =
@@ -168,7 +170,7 @@ abstract class RedwirePart extends WirePart with TRedwireCommons with TFaceRSAcq
     }
 }
 
-abstract class FramedRedwirePart extends FramedWirePart with TRedwireCommons with TCenterRSAcquisitions with TCenterRSPropagation with IMaskedRedstonePart
+abstract class FramedRedwirePart(wireType:WireType) extends FramedWirePart(wireType) with TRedwireCommons with TCenterRSAcquisitions with TCenterRSPropagation with IMaskedRedstonePart
 {
     override def weakPowerLevel(side:Int) = rsLevel
 
@@ -196,7 +198,7 @@ abstract class FramedRedwirePart extends FramedWirePart with TRedwireCommons wit
     override def propagateOther(mode:Int)
     {
         for (s <- 0 until 6) if (!maskConnects(s))
-            WirePropagator.addNeighborChange(pos.offset(EnumFacing.getFront(s)))
+            WirePropagator.addNeighborChange(pos.offset(Direction.byIndex(s)))
     }
 
     def calculateSignal =
@@ -245,12 +247,10 @@ abstract class FramedRedwirePart extends FramedWirePart with TRedwireCommons wit
 
 trait TRedAlloyCommons extends TRedwireCommons
 {
-    override def getWireType = WireDef.RED_ALLOY
-
     override def renderHue = (signal&0xFF)/2+60<<24|0xFF
 }
 
-class RedAlloyWirePart extends RedwirePart with TRedAlloyCommons
+class RedAlloyWirePart(wireType:WireType) extends RedwirePart(wireType) with TRedAlloyCommons
 {
     override def strongPowerLevel(side:Int) = if (side == this.side) rsLevel else 0
 
@@ -264,39 +264,31 @@ class RedAlloyWirePart extends RedwirePart with TRedAlloyCommons
 
     override def propagateOther(mode:Int)
     {
-        WirePropagator.addNeighborChange(pos.offset(EnumFacing.getFront(side)))
-        WirePropagator.addNeighborChange(pos.offset(EnumFacing.getFront(side^1)))
+        WirePropagator.addNeighborChange(pos.offset(Direction.byIndex(side)))
+        WirePropagator.addNeighborChange(pos.offset(Direction.byIndex(side^1)))
 
         for (r <- 0 until 4) if (!maskConnects(r))
-            WirePropagator.addNeighborChange(pos.offset(EnumFacing.getFront(Rotation.rotateSide(side, r))))
+            WirePropagator.addNeighborChange(pos.offset(Direction.byIndex(Rotation.rotateSide(side, r))))
 
         for (s <- 0 until 6) if (s != (side^1))
             WirePropagator.addNeighborChange(pos
-                    .offset(EnumFacing.getFront(side)).offset(EnumFacing.getFront(s)))
+                    .offset(Direction.byIndex(side)).offset(Direction.byIndex(s)))
     }
 }
 
-class FramedRedAlloyWirePart extends FramedRedwirePart with TRedAlloyCommons
+class FramedRedAlloyWirePart(wireType:WireType) extends FramedRedwirePart(wireType) with TRedAlloyCommons
 
 trait TInsulatedCommons extends TRedwireCommons with IInsulatedRedwirePart
 {
-    var colour:Byte = 0
+    var colour = getWireType.getColourIdx.toByte
 
-    def getWireType = WireDef.INSULATED_WIRES(colour)
-
-    override def preparePlacement(side:Int, meta:Int)
-    {
-        super.preparePlacement(side, meta)
-        colour = (meta-WireDef.INSULATED_0.meta).toByte
-    }
-
-    override def save(tag:NBTTagCompound)
+    override def save(tag:CompoundNBT)
     {
         super.save(tag)
-        tag.setByte("colour", colour)
+        tag.putByte("colour", colour)
     }
 
-    override def load(tag:NBTTagCompound)
+    override def load(tag:CompoundNBT)
     {
         super.load(tag)
         colour = tag.getByte("colour")
@@ -327,13 +319,13 @@ trait TInsulatedCommons extends TRedwireCommons with IInsulatedRedwirePart
         case _ => super.canConnectPart(part, r)
     }
 
-    @SideOnly(Side.CLIENT)
-    override def getIcon = getWireType.wireSprites(if (signal != 0) 1 else 0)
+    @OnlyIn(Dist.CLIENT)
+    override def getIcon = getWireType.getTextures.get(if (signal != 0) 1 else 0)
 
     override def getInsulatedColour = colour
 }
 
-class InsulatedRedAlloyPart extends RedwirePart with TInsulatedCommons
+class InsulatedRedAlloyPart(wireType:WireType) extends RedwirePart(wireType) with TInsulatedCommons
 {
     override def weakPowerLevel(side:Int) =
     {
@@ -344,7 +336,7 @@ class InsulatedRedAlloyPart extends RedwirePart with TInsulatedCommons
     override def calcUndersideSignal = 0
 }
 
-class FramedInsulatedRedAlloyPart extends FramedRedwirePart with TInsulatedCommons
+class FramedInsulatedRedAlloyPart(wireType:WireType) extends FramedRedwirePart(wireType) with TInsulatedCommons
 {
     override def weakPowerLevel(side:Int) =
     {

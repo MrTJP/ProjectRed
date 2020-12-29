@@ -1,0 +1,76 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "projectred-core:multimeter"
+    ]
+  },
+  "criteria": {
+    "has_red_alloy": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:ingots/red_alloy"
+          }
+        ]
+      }
+    },
+    "has_black_dye": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:dyes/black"
+          }
+        ]
+      }
+    },
+    "has_green_dye": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:dyes/green"
+          }
+        ]
+      }
+    },
+    "has_red_dye": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:dyes/red"
+          }
+        ]
+      }
+    },
+    "has_glowstone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:dusts/glowstone"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "projectred-core:multimeter"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_red_alloy",
+      "has_black_dye",
+      "has_green_dye",
+      "has_red_dye",
+      "has_glowstone",
+      "has_the_recipe"
+    ]
+  ]
+}

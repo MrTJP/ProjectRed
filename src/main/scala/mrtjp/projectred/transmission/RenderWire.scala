@@ -1,18 +1,15 @@
 package mrtjp.projectred.transmission
 
 import java.util
-
-import codechicken.lib.lighting.LightModel
 import codechicken.lib.math.MathHelper
 import codechicken.lib.render._
+import codechicken.lib.render.lighting.LightModel
 import codechicken.lib.render.pipeline.{ColourMultiplier, IVertexOperation}
-import codechicken.lib.texture.TextureUtils.IIconRegister
 import codechicken.lib.vec._
 import codechicken.lib.vec.uv._
-import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
-import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
 
-object RenderWire extends IIconRegister
+object RenderWire
 {
     /**
      * Array of all built models. Generated on demand.
@@ -67,10 +64,10 @@ object RenderWire extends IIconRegister
         m
     }
 
-    def render(w:WirePart, pos:Vector3, ccrs:CCRenderState)
+    def render(w:WirePart, ccrs:CCRenderState)
     {
         getOrGenerateModel(modelKey(w)).render(ccrs,
-            pos.translation(), new IconTransformation(w.getIcon),
+            new IconTransformation(w.getIcon),
             ColourMultiplier.instance(w.renderHue))
     }
 
@@ -90,7 +87,7 @@ object RenderWire extends IIconRegister
         val connCount = WireModelGen.countConnections(connMask)
 
         val boxes = Vector.newBuilder[Cuboid6]
-        boxes += new Cuboid6(0.5-w, 0, 0.5-w, 0.5+w, h, 0.5+w).apply(Rotation.sideRotations(side).at(Vector3.center)) //center
+        boxes += new Cuboid6(0.5-w, 0, 0.5-w, 0.5+w, h, 0.5+w).apply(Rotation.sideRotations(side).at(Vector3.CENTER)) //center
 
         for (r <- 0 until 4)
         {
@@ -111,18 +108,12 @@ object RenderWire extends IIconRegister
             if (length > 0)
             {
                 val l = length/16D
-                boxes += new Cuboid6(0.5-w, 0, 0.5+w, 0.5+w, h, 0.5+l).apply(Rotation.sideOrientation(side, r).at(Vector3.center))
+                boxes += new Cuboid6(0.5-w, 0, 0.5+w, 0.5+w, h, 0.5+l).apply(Rotation.sideOrientation(side, r).at(Vector3.CENTER))
             }
         }
 
         ccrs.setPipeline(new Translation(wire.pos), new IconTransformation(icon))
         for (box <- boxes.result()) BlockRenderer.renderCuboid(ccrs, box, 0)
-    }
-
-    @SideOnly(Side.CLIENT)
-    override def registerIcons(map:TextureMap)
-    {
-        for (w <- WireDef.values) w.loadTextures(map)
     }
 }
 
@@ -211,7 +202,7 @@ class WireModelGen
 
         generateCenter()
         for (r <- 0 until 4) generateSide(r)
-        model.apply(Rotation.sideOrientation(side, 0).at(Vector3.center))
+        model.apply(Rotation.sideOrientation(side, 0).at(Vector3.CENTER))
 
         finishModel()
         model
@@ -263,7 +254,7 @@ class WireModelGen
             case _ => generateSideFromType(stype, r)
         }
 
-        val t = Rotation.quarterRotations(r).at(Vector3.center)
+        val t = Rotation.quarterRotations(r).at(Vector3.CENTER)
         for (vert <- verts) vert.apply(t)
         i = addVerts(model, verts, i)
     }
@@ -399,7 +390,7 @@ class WireModelGen
      */
     private def addVerts(m:CCModel, verts:Array[Vertex5], k:Int) =
     {
-        for (i <- 0 until verts.length) m.verts(k+i) = verts(i)
+        for (i <- verts.indices) m.verts(k+i) = verts(i)
         k+verts.length
     }
 

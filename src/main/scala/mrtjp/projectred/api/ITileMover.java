@@ -5,7 +5,7 @@
  */
 package mrtjp.projectred.api;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -42,7 +42,7 @@ public interface ITileMover {
      * @param pos The position of the block to move.
      * @param dir The ForgeDirection the structure is moving in.
      */
-    void move(World w, BlockPos pos, EnumFacing dir);
+    void move(World w, BlockPos pos, Direction dir);
 
     /**
      * Called after all blocks in the group have moved to their

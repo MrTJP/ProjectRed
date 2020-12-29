@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "projectred-core:electrotine_silicon_comp"
+    ]
+  },
+  "criteria": {
+    "has_electrotine": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:dusts/electrotine"
+          }
+        ]
+      }
+    },
+    "has_iron": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:ingots/iron"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "projectred-core:electrotine_silicon_comp"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_electrotine",
+      "has_iron",
+      "has_the_recipe"
+    ]
+  ]
+}

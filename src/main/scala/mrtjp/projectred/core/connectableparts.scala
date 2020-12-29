@@ -2,9 +2,11 @@ package mrtjp.projectred.core
 
 import codechicken.lib.vec.Rotation
 import codechicken.multipart._
-import codechicken.multipart.handler.MultipartProxy
+import codechicken.multipart.api.part.TMultiPart
+import codechicken.multipart.init.ModContent
+import codechicken.multipart.util.PartMap
 import mrtjp.projectred.api.IConnectable
-import net.minecraft.util.EnumFacing
+import net.minecraft.util.Direction
 import net.minecraft.util.math.BlockPos
 
 trait TAcquisitionsCommons extends TMultiPart
@@ -18,7 +20,7 @@ trait TAcquisitionsCommons extends TMultiPart
     def notifyStraight(dir:Int)
     {
         val pos = posOfStraight(dir)
-        world.neighborChanged(pos, MultipartProxy.block, pos)
+        world.neighborChanged(pos, ModContent.blockMultipart, pos)
     }
 
     def notifyInternal(dir:Int)
@@ -32,14 +34,14 @@ trait TFaceAcquisitions extends TAcquisitionsCommons with TFaceOrient
     def getCorner(r:Int) =
     {
         val absDir = absoluteDir(r)
-        val pos = this.pos.offset(EnumFacing.getFront(absDir)).offset(EnumFacing.getFront(side))
+        val pos = this.pos.offset(Direction.byIndex(absDir)).offset(Direction.byIndex(side))
 
         BlockMultipart.getPart(world, pos, absDir^1)
     }
 
     override def getStraight(r:Int) =
     {
-        val pos = this.pos.offset(EnumFacing.getFront(absoluteDir(r)))
+        val pos = this.pos.offset(Direction.byIndex(absoluteDir(r)))
         BlockMultipart.getPart(world, pos, side)
     }
 
@@ -47,9 +49,9 @@ trait TFaceAcquisitions extends TAcquisitionsCommons with TFaceOrient
 
     def getCenter = tile.partMap(6)
 
-    def posOfCorner(r:Int) = pos.offset(EnumFacing.getFront(absoluteDir(r))).offset(EnumFacing.getFront(side))
+    def posOfCorner(r:Int) = pos.offset(Direction.byIndex(absoluteDir(r))).offset(Direction.byIndex(side))
 
-    override def posOfStraight(r:Int) = pos.offset(EnumFacing.getFront(absoluteDir(r)))
+    override def posOfStraight(r:Int) = pos.offset(Direction.byIndex(absoluteDir(r)))
 
     def rotFromCorner(r:Int) = Rotation.rotationTo(absoluteDir(r)^1, side^1)
     def rotFromStraight(r:Int) = (r+2)%4
@@ -59,7 +61,7 @@ trait TFaceAcquisitions extends TAcquisitionsCommons with TFaceOrient
     {
         val pos = posOfCorner(r)
 
-        world.neighborChanged(pos, MultipartProxy.block, pos)
+        world.neighborChanged(pos, ModContent.blockMultipart, pos)
     }
 }
 
@@ -67,13 +69,13 @@ trait TCenterAcquisitions extends TAcquisitionsCommons with TCenterOrient
 {
     override def getStraight(s:Int) =
     {
-        val pos = posOfInternal.offset(EnumFacing.getFront(s))
+        val pos = posOfInternal.offset(Direction.byIndex(s))
         BlockMultipart.getPart(world, pos, 6)
     }
 
     override def getInternal(s:Int) = tile.partMap(s)
 
-    override def posOfStraight(s:Int) = pos.offset(EnumFacing.getFront(s))
+    override def posOfStraight(s:Int) = pos.offset(Direction.byIndex(s))
 }
 
 trait TConnectableCommons extends TMultiPart with IConnectable
@@ -243,12 +245,12 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
     def outsideCornerEdgeOpen(r:Int) =
     {
         val absDir = absoluteDir(r)
-        val pos = this.pos.offset(EnumFacing.getFront(absDir))
+        val pos = this.pos.offset(Direction.byIndex(absDir))
         if (world.isAirBlock(pos)) true
         else {
             val side1 = absDir^1
             val side2 = side
-            val t = BlockMultipart.getTile(world, pos)//PRLib.getMultipartTile(world, pos)
+            val t = BlockMultipart.getTile(world, pos)
             if (t != null)
                 t.partMap(side1) == null && t.partMap(side2) == null &&
                         t.partMap(PartMap.edgeBetween(side1, side2)) == null
