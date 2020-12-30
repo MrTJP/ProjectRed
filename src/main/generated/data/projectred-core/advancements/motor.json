@@ -6,7 +6,7 @@
     ]
   },
   "criteria": {
-    "has_iron_ingot": {
+    "has_ingredient_0": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -16,7 +16,7 @@
         ]
       }
     },
-    "has_stone": {
+    "has_ingredient_1": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -26,7 +26,7 @@
         ]
       }
     },
-    "has_copper_coil": {
+    "has_ingredient_2": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -36,7 +36,7 @@
         ]
       }
     },
-    "has_redstone": {
+    "has_ingredient_3": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -55,10 +55,10 @@
   },
   "requirements": [
     [
-      "has_iron_ingot",
-      "has_stone",
-      "has_copper_coil",
-      "has_redstone",
+      "has_ingredient_0",
+      "has_ingredient_1",
+      "has_ingredient_2",
+      "has_ingredient_3",
       "has_the_recipe"
     ]
   ]

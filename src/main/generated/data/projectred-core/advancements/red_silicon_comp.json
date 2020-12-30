@@ -6,7 +6,7 @@
     ]
   },
   "criteria": {
-    "has_redstone": {
+    "has_ingredient_0": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -16,12 +16,12 @@
         ]
       }
     },
-    "has_iron": {
+    "has_ingredient_1": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "tag": "forge:ingots/iron"
+            "item": "projectred-core:silicon"
           }
         ]
       }
@@ -35,8 +35,8 @@
   },
   "requirements": [
     [
-      "has_redstone",
-      "has_iron",
+      "has_ingredient_0",
+      "has_ingredient_1",
       "has_the_recipe"
     ]
   ]

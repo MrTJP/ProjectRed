@@ -6,7 +6,7 @@
     ]
   },
   "criteria": {
-    "has_red_alloy": {
+    "has_ingredient_0": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -16,7 +16,7 @@
         ]
       }
     },
-    "has_black_dye": {
+    "has_ingredient_1": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -26,7 +26,7 @@
         ]
       }
     },
-    "has_green_dye": {
+    "has_ingredient_2": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -36,7 +36,7 @@
         ]
       }
     },
-    "has_red_dye": {
+    "has_ingredient_3": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -46,7 +46,7 @@
         ]
       }
     },
-    "has_glowstone": {
+    "has_ingredient_4": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -65,11 +65,11 @@
   },
   "requirements": [
     [
-      "has_red_alloy",
-      "has_black_dye",
-      "has_green_dye",
-      "has_red_dye",
-      "has_glowstone",
+      "has_ingredient_0",
+      "has_ingredient_1",
+      "has_ingredient_2",
+      "has_ingredient_3",
+      "has_ingredient_4",
       "has_the_recipe"
     ]
   ]

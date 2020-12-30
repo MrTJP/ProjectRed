@@ -717,44 +717,45 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     override protected def registerRecipes() {
         smelting(itemBasalt, 1)
+            .autoCriteria()
             .ingredient(Ingredient.fromItems(itemBasaltCobble))
             .experience(0.1F)
-            .addCriterion("has_ingredient", hasItem(itemBasaltCobble))
 
         smelting(itemRuby, 1)
+            .autoCriteria()
             .ingredient(Ingredient.fromTag(tagItemRubyOre))
             .experience(1F)
-            .addCriterion("has_ingredient", hasItem(tagItemRubyOre))
 
         smelting(itemSapphire, 1)
+            .autoCriteria()
             .ingredient(Ingredient.fromTag(tagItemSapphireOre))
             .experience(1F)
-            .addCriterion("has_ingredient", hasItem(tagItemSapphireOre))
 
         smelting(itemPeridot, 1)
+            .autoCriteria()
             .ingredient(Ingredient.fromTag(tagItemPeridotOre))
             .experience(1F)
-            .addCriterion("has_ingredient", hasItem(tagItemPeridotOre))
 
         smelting(itemCopperIngot, 1)
+            .autoCriteria()
             .ingredient(Ingredient.fromTag(tagItemCopperOre))
             .experience(0.7F)
-            .addCriterion("has_ingredient", hasItem(tagItemCopperOre))
 
         smelting(itemTinIngot, 1)
+            .autoCriteria()
             .ingredient(Ingredient.fromTag(tagItemTinOre))
             .experience(0.7F)
-            .addCriterion("has_ingredient", hasItem(tagItemTinOre))
 
         smelting(itemSilverIngot, 1)
+            .autoCriteria()
             .ingredient(Ingredient.fromTag(tagItemSilverOre))
             .experience(0.8F)
-            .addCriterion("has_ingredient", hasItem(tagItemSilverOre))
 
         smelting(itemElectrotineDust, 1)
+            .autoCriteria()
             .ingredient(Ingredient.fromTag(tagItemElectrotineOre))
             .experience(0.7F)
-            .addCriterion("has_ingredient", hasItem(tagItemElectrotineOre))
+
 
     }
 

@@ -6,7 +6,7 @@
     ]
   },
   "criteria": {
-    "has_silicon": {
+    "has_ingredient_0": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -16,7 +16,7 @@
         ]
       }
     },
-    "has_plate": {
+    "has_ingredient_1": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -35,8 +35,8 @@
   },
   "requirements": [
     [
-      "has_silicon",
-      "has_plate",
+      "has_ingredient_0",
+      "has_ingredient_1",
       "has_the_recipe"
     ]
   ]
