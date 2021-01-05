@@ -64,7 +64,7 @@ public enum WireType implements SimpleMultiPartType.SimpleMultiPartTypeFactory<T
 
     POWER_LOWLOAD(TransmissionContent::itemPowerLowLoadWire, TransmissionContent::partPowerLowLoadWire, LowLoadPowerLine::new, 1, "power/lowload"),
 
-    FRAMED_RED_ALLOY(TransmissionContent::itemFramedRedAlloyWire, TransmissionContent::partFramedRedAlloyWire, FramedRedAlloyWirePart::new, 0, "redalloy"),
+    FRAMED_RED_ALLOY(TransmissionContent::itemFramedRedAlloyWire, TransmissionContent::partFramedRedAlloyWire, FramedRedAlloyWirePart::new, 0, 0xC80000, "redalloy"),
 
     FRAMED_INSULATED_WHITE     (TransmissionContent::itemFramedInsulatedWhiteWire,     TransmissionContent::partFramedInsulatedWhiteWire,     FramedInsulatedRedAlloyPart::new, EnumColour.WHITE,      1, "insulated/whiteoff",     "insulated/whiteon"),
     FRAMED_INSULATED_ORANGE    (TransmissionContent::itemFramedInsulatedOrangeWire,    TransmissionContent::partFramedInsulatedOrangeWire,    FramedInsulatedRedAlloyPart::new, EnumColour.ORANGE,     1, "insulated/orangeoff",    "insulated/orangeon"),
@@ -85,10 +85,10 @@ public enum WireType implements SimpleMultiPartType.SimpleMultiPartTypeFactory<T
 
     FRAMED_BUNDLED_NEUTRAL(TransmissionContent::itemFramedBundledNeutralWire, TransmissionContent::partFramedBundledNeutralWire, FramedBundledCablePart::new, 2, "bundled/neutral"),
 
-    FRAMED_POWER_LOWLOAD(TransmissionContent::itemFramedPowerLowLoadWire, TransmissionContent::partFramedPowerLowLoadWire, FramedLowLoadPowerLine::new, 1, "redalloy");
+    FRAMED_POWER_LOWLOAD(TransmissionContent::itemFramedPowerLowLoadWire, TransmissionContent::partFramedPowerLowLoadWire, FramedLowLoadPowerLine::new, 1, "power/lowload");
     //@formatter:on
 
-    private final Supplier<Supplier<Item>> itemSupplier;
+    private final Supplier<Supplier<? extends ItemPartWire>> itemSupplier;
     private final Supplier<Supplier<MultiPartType<?>>> partSupplier;
     private final Function<WireType, TWireCommons> partFactory;
     private final EnumColour colour;
@@ -98,22 +98,22 @@ public enum WireType implements SimpleMultiPartType.SimpleMultiPartTypeFactory<T
 
     @OnlyIn (Dist.CLIENT)
     private List<TextureAtlasSprite> textures;
-    private Item item;
+    private ItemPartWire item;
     private MultiPartType<?> partType;
 
-    WireType(Supplier<Supplier<Item>> itemSupplier, Supplier<Supplier<MultiPartType<?>>> partSupplier, Function<WireType, TWireCommons> partFactory, int thickness, String... textures) {
+    WireType(Supplier<Supplier<? extends ItemPartWire>> itemSupplier, Supplier<Supplier<MultiPartType<?>>> partSupplier, Function<WireType, TWireCommons> partFactory, int thickness, String... textures) {
         this(itemSupplier, partSupplier, partFactory, null, thickness, textures);
     }
 
-    WireType(Supplier<Supplier<Item>> itemSupplier, Supplier<Supplier<MultiPartType<?>>> partSupplier, Function<WireType, TWireCommons> partFactory, EnumColour colour, int thickness, String... textures) {
+    WireType(Supplier<Supplier<? extends ItemPartWire>> itemSupplier, Supplier<Supplier<MultiPartType<?>>> partSupplier, Function<WireType, TWireCommons> partFactory, EnumColour colour, int thickness, String... textures) {
         this(itemSupplier, partSupplier, partFactory, colour, thickness, 0xFFFFFF, textures);
     }
 
-    WireType(Supplier<Supplier<Item>> itemSupplier, Supplier<Supplier<MultiPartType<?>>> partSupplier, Function<WireType, TWireCommons> partFactory, int thickness, int itemColour, String... textures) {
+    WireType(Supplier<Supplier<? extends ItemPartWire>> itemSupplier, Supplier<Supplier<MultiPartType<?>>> partSupplier, Function<WireType, TWireCommons> partFactory, int thickness, int itemColour, String... textures) {
         this(itemSupplier, partSupplier, partFactory, null, thickness, itemColour, textures);
     }
 
-    WireType(Supplier<Supplier<Item>> itemSupplier, Supplier<Supplier<MultiPartType<?>>> partSupplier, Function<WireType, TWireCommons> partFactory, EnumColour colour, int thickness, int itemColour, String... textures) {
+    WireType(Supplier<Supplier<? extends ItemPartWire>> itemSupplier, Supplier<Supplier<MultiPartType<?>>> partSupplier, Function<WireType, TWireCommons> partFactory, EnumColour colour, int thickness, int itemColour, String... textures) {
         this.itemSupplier = itemSupplier;
         this.partSupplier = partSupplier;
         this.partFactory = partFactory;
@@ -123,7 +123,7 @@ public enum WireType implements SimpleMultiPartType.SimpleMultiPartTypeFactory<T
         this.textureNames = ImmutableList.copyOf(textures);
     }
 
-    public Item getItem() {
+    public ItemPartWire getItem() {
         if (item == null) {
             item = itemSupplier.get().get();
         }

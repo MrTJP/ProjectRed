@@ -1,22 +1,26 @@
 package mrtjp.projectred.transmission
 
 import codechicken.lib.datagen.ItemModelProvider
+import codechicken.lib.datagen.recipe.RecipeProvider
 import codechicken.lib.gui.SimpleItemGroup
-import codechicken.lib.util.CrashLock
+import codechicken.lib.util.{CCLTags, CrashLock}
 import codechicken.multipart.api.part.TMultiPart
 import codechicken.multipart.api.{MultiPartType, SimpleMultiPartType}
 import mrtjp.projectred.ProjectRedTransmission.MOD_ID
+import mrtjp.projectred.core.CoreContent._
 import mrtjp.projectred.transmission.TransmissionContent._
-import net.minecraft.data.DataGenerator
-import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.data.{DataGenerator, ItemTagsProvider}
+import net.minecraft.item.ItemStack
+import net.minecraft.tags.ItemTags.{Wrapper => ItemTag}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.model.generators.ExistingFileHelper
 import net.minecraftforge.eventbus.api.{IEventBus, SubscribeEvent}
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent
 import net.minecraftforge.registries.{DeferredRegister, ForgeRegistries}
+import net.minecraftforge.common.Tags.{Blocks => ForgeBlockTags, Items => ForgeItemTags}
+import net.minecraft.tags.{Tag, BlockTags => MCBlockTags, ItemTags => VanillaItemTags}
 
 import java.util.function.Supplier
-
 
 object TransmissionContent {
 
@@ -26,6 +30,7 @@ object TransmissionContent {
 
     val transmissionItemGroup = new SimpleItemGroup(MOD_ID, () => new ItemStack(itemRedAlloyWire.get()))
 
+    /** Items */
     val itemRedAlloyWire = ITEMS.register("red_alloy_wire", itemPartWire(WireType.RED_ALLOY))
 
     val itemInsulatedWhiteWire = ITEMS.register("white_insulated_wire", itemPartWire(WireType.INSULATED_WHITE))
@@ -88,6 +93,65 @@ object TransmissionContent {
 
     val itemFramedPowerLowLoadWire = ITEMS.register("low_load_framed_power_wire", itemPartFramedWire(WireType.FRAMED_POWER_LOWLOAD))
 
+    /** Item Groups */
+    lazy val insulatedWires = List(
+        itemInsulatedWhiteWire.get,
+        itemInsulatedOrangeWire.get,
+        itemInsulatedMagentaWire.get,
+        itemInsulatedLightBlueWire.get,
+        itemInsulatedYellowWire.get,
+        itemInsulatedLimeWire.get,
+        itemInsulatedPinkWire.get,
+        itemInsulatedGrayWire.get,
+        itemInsulatedLightGrayWire.get,
+        itemInsulatedCyanWire.get,
+        itemInsulatedPurpleWire.get,
+        itemInsulatedBlueWire.get,
+        itemInsulatedBrownWire.get,
+        itemInsulatedGreenWire.get,
+        itemInsulatedRedWire.get,
+        itemInsulatedBlackWire.get
+    )
+
+    lazy val bundledWires = List(
+        itemBundledWhiteWire.get,
+        itemBundledOrangeWire.get,
+        itemBundledMagentaWire.get,
+        itemBundledLightBlueWire.get,
+        itemBundledYellowWire.get,
+        itemBundledLimeWire.get,
+        itemBundledPinkWire.get,
+        itemBundledGrayWire.get,
+        itemBundledLightGrayWire.get,
+        itemBundledCyanWire.get,
+        itemBundledPurpleWire.get,
+        itemBundledBlueWire.get,
+        itemBundledBrownWire.get,
+        itemBundledGreenWire.get,
+        itemBundledRedWire.get,
+        itemBundledBlackWire.get
+    )
+
+    lazy val framedInsulatedWires = List(
+        itemFramedInsulatedWhiteWire.get,
+        itemFramedInsulatedOrangeWire.get,
+        itemFramedInsulatedMagentaWire.get,
+        itemFramedInsulatedLightBlueWire.get,
+        itemFramedInsulatedYellowWire.get,
+        itemFramedInsulatedLimeWire.get,
+        itemFramedInsulatedPinkWire.get,
+        itemFramedInsulatedGrayWire.get,
+        itemFramedInsulatedLightGrayWire.get,
+        itemFramedInsulatedCyanWire.get,
+        itemFramedInsulatedPurpleWire.get,
+        itemFramedInsulatedBlueWire.get,
+        itemFramedInsulatedBrownWire.get,
+        itemFramedInsulatedGreenWire.get,
+        itemFramedInsulatedRedWire.get,
+        itemFramedInsulatedBlackWire.get
+    )
+
+    /** Parts */
     val partRedAlloyWire = PARTS.register("red_alloy_wire", wirePart(WireType.RED_ALLOY))
 
     val partInsulatedWhiteWire = PARTS.register("white_insulated_wire", wirePart(WireType.INSULATED_WHITE))
@@ -150,8 +214,14 @@ object TransmissionContent {
 
     val partFramedPowerLowLoadWire = PARTS.register("low_load_framed_power_wire", wirePart(WireType.FRAMED_POWER_LOWLOAD))
 
-    private def itemPartWire(wireType: WireType): Supplier[Item] = () => new ItemPartWire(wireType)
-    private def itemPartFramedWire(wireType: WireType): Supplier[Item] = () => new ItemPartFramedWire(wireType)
+    /** Item Tags */
+    val tagItemInsulatedWire = new ItemTag(new ResourceLocation(MOD_ID, "insulated_wire"))
+    val tagItemBundledWire = new ItemTag(new ResourceLocation(MOD_ID, "bundled_wire"))
+    val tagItemInsulatedFramedWire = new ItemTag(new ResourceLocation(MOD_ID, "framed_insulated_wire"))
+
+    private def itemPartWire(wireType: WireType): Supplier[ItemPartWire] = () => new ItemPartWire(wireType)
+
+    private def itemPartFramedWire(wireType: WireType): Supplier[ItemPartFramedWire] = () => new ItemPartFramedWire(wireType)
 
     private def wirePart(wireType: WireType): Supplier[MultiPartType[_]] = () => new SimpleMultiPartType[TMultiPart](wireType)
 
@@ -159,7 +229,6 @@ object TransmissionContent {
         LOCK.lock()
         ITEMS.register(bus)
         PARTS.register(bus)
-        //        BLOCKS.register(bus)
         bus.register(DataGen)
     }
 
@@ -174,12 +243,18 @@ private object DataGen {
         if (event.includeClient()) {
             gen.addProvider(new ItemModels(gen, helper))
         }
+        if (event.includeClient()) {
+            gen.addProvider(new ItemTags(gen))
+            gen.addProvider(new Recipes(gen))
+        }
         //        gen.addProvider(new BlockTags(gen))
         //        gen.addProvider(new BlockLootTables(gen))
     }
 }
 
 private class ItemModels(gen: DataGenerator, fileHelper: ExistingFileHelper) extends ItemModelProvider(gen, MOD_ID, fileHelper) {
+
+    override def getName = "ProjectRed-Transmission Item Models."
 
     override protected def registerModels() {
         val wire = getExistingFile(new ResourceLocation(MOD_ID, "item/wire"))
@@ -241,6 +316,164 @@ private class ItemModels(gen: DataGenerator, fileHelper: ExistingFileHelper) ext
         getSimple(itemFramedBundledNeutralWire).texture(null).parent(framedWire)
         getSimple(itemFramedPowerLowLoadWire).texture(null).parent(framedWire)
     }
+}
 
-    override def getName = "ProjectRed-Transmission Item Models. "
+private class ItemTags(gen: DataGenerator) extends ItemTagsProvider(gen) {
+    override def getName = "ProjectRed-Transmission Item Tags."
+
+    override protected def registerTags() {
+        getBuilder(tagItemInsulatedWire)
+            .add(itemInsulatedWhiteWire)
+            .add(itemInsulatedOrangeWire)
+            .add(itemInsulatedMagentaWire)
+            .add(itemInsulatedLightBlueWire)
+            .add(itemInsulatedYellowWire)
+            .add(itemInsulatedLimeWire)
+            .add(itemInsulatedPinkWire)
+            .add(itemInsulatedGrayWire)
+            .add(itemInsulatedLightGrayWire)
+            .add(itemInsulatedCyanWire)
+            .add(itemInsulatedPurpleWire)
+            .add(itemInsulatedBlueWire)
+            .add(itemInsulatedBrownWire)
+            .add(itemInsulatedGreenWire)
+            .add(itemInsulatedRedWire)
+            .add(itemInsulatedBlackWire)
+
+        getBuilder(tagItemBundledWire)
+            .add(itemBundledWhiteWire)
+            .add(itemBundledOrangeWire)
+            .add(itemBundledMagentaWire)
+            .add(itemBundledLightBlueWire)
+            .add(itemBundledYellowWire)
+            .add(itemBundledLimeWire)
+            .add(itemBundledPinkWire)
+            .add(itemBundledGrayWire)
+            .add(itemBundledLightGrayWire)
+            .add(itemBundledCyanWire)
+            .add(itemBundledPurpleWire)
+            .add(itemBundledBlueWire)
+            .add(itemBundledBrownWire)
+            .add(itemBundledGreenWire)
+            .add(itemBundledRedWire)
+            .add(itemBundledBlackWire)
+
+        getBuilder(tagItemInsulatedFramedWire)
+            .add(itemFramedInsulatedWhiteWire)
+            .add(itemFramedInsulatedOrangeWire)
+            .add(itemFramedInsulatedMagentaWire)
+            .add(itemFramedInsulatedLightBlueWire)
+            .add(itemFramedInsulatedYellowWire)
+            .add(itemFramedInsulatedLimeWire)
+            .add(itemFramedInsulatedPinkWire)
+            .add(itemFramedInsulatedGrayWire)
+            .add(itemFramedInsulatedLightGrayWire)
+            .add(itemFramedInsulatedCyanWire)
+            .add(itemFramedInsulatedPurpleWire)
+            .add(itemFramedInsulatedBlueWire)
+            .add(itemFramedInsulatedBrownWire)
+            .add(itemFramedInsulatedGreenWire)
+            .add(itemFramedInsulatedRedWire)
+            .add(itemFramedInsulatedBlackWire)
+    }
+}
+
+private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
+
+    override def getName = "ProjectRed-Transmission Recipes."
+
+    override protected def registerRecipes() {
+
+        shapedRecipe(itemRedAlloyWire, 12)
+            .key('R', itemRedIngot)
+            .patternLine(" R ")
+            .patternLine(" R ")
+            .patternLine(" R ")
+
+        //Insulated wires.
+        for (w <- insulatedWires) {
+            shapedRecipe(w, 12)
+                .key('W', new ItemTag(w.wireType.getColour.getWoolTagName))
+                .key('R', itemRedIngot)
+                .patternLine("WRW")
+                .patternLine("WRW")
+                .patternLine("WRW")
+
+            shapelessRecipe(w, 1, new ResourceLocation(w.getRegistryName + "_re_color"))
+                .addIngredient(tagItemInsulatedWire)
+                .addIngredient(new ItemTag(w.wireType.getColour.getDyeTagName))
+        }
+
+        //Bundled wires
+        shapedRecipe(itemBundledNeutralWire)
+            .key('S', ForgeItemTags.STRING)
+            .key('W', tagItemInsulatedWire)
+            .patternLine("SWS")
+            .patternLine("WWW")
+            .patternLine("SWS")
+
+        for (w <- bundledWires) {
+            shapelessRecipe(w, 1, new ResourceLocation(w.getRegistryName + "_re_color"))
+                .addIngredient(tagItemBundledWire)
+                .addIngredient(new ItemTag(w.wireType.getColour.getDyeTagName))
+        }
+
+        //Framed wires
+        shapedRecipe(itemFramedRedAlloyWire)
+            .key('S', ForgeItemTags.RODS_WOODEN)
+            .key('I', itemRedAlloyWire)
+            .patternLine("SSS")
+            .patternLine("SIS")
+            .patternLine("SSS")
+
+        shapedRecipe(itemFramedBundledNeutralWire)
+            .key('S', ForgeItemTags.RODS_WOODEN)
+            .key('I', itemBundledNeutralWire)
+            .patternLine("SSS")
+            .patternLine("SIS")
+            .patternLine("SSS")
+
+        shapedRecipe(itemFramedPowerLowLoadWire)
+            .key('S', ForgeItemTags.RODS_WOODEN)
+            .key('I', itemPowerLowLoadWire)
+            .patternLine("SSS")
+            .patternLine("SIS")
+            .patternLine("SSS")
+
+        for (i <- insulatedWires.indices) {
+            val w = framedInsulatedWires(i);
+            shapedRecipe(w)
+                .key('S', ForgeItemTags.RODS_WOODEN)
+                .key('I', insulatedWires(i))
+                .patternLine("SSS")
+                .patternLine("SIS")
+                .patternLine("SSS")
+
+            shapelessRecipe(w, 1, new ResourceLocation(w.getRegistryName + "_re_color"))
+                .addIngredient(tagItemInsulatedFramedWire)
+                .addIngredient(new ItemTag(w.wireType.getColour.getDyeTagName))
+        }
+
+        shapedRecipe(itemPowerLowLoadWire, 12)
+            .key('I', itemElectrotineIngot)
+            .key('B', CCLTags.Items.WOOL_BLUE)
+            .key('Y', CCLTags.Items.WOOL_YELLOW)
+            .patternLine("BIB")
+            .patternLine("YIY")
+            .patternLine("BIB")
+
+        shapedRecipe(itemWiredPlate, 1, new ResourceLocation(MOD_ID, itemWiredPlate.getRegistryName.getPath))
+            .key('R', itemRedAlloyWire)
+            .key('P', itemPlate)
+            .patternLine("R")
+            .patternLine("P")
+
+        shapedRecipe(itemBundledPlate, 1, new ResourceLocation(MOD_ID, itemBundledPlate.getRegistryName.getPath))
+            .key('R', itemBundledNeutralWire)
+            .key('P', itemPlate)
+            .patternLine("R")
+            .patternLine("P")
+    }
+
+
 }

@@ -22,13 +22,13 @@ import java.util.Collections
 import java.util.function.{Function => JFunc}
 
 trait TWireItemRenderCommon extends IItemRenderer {
-    override def isAmbientOcclusion = true
+    override def isAmbientOcclusion = false
 
     override def isGui3d = true
 
     override def getTransforms = TransformUtils.DEFAULT_BLOCK
 
-    override def func_230044_c_(): Boolean = false
+    override def func_230044_c_ = true
 
     override def renderItem(stack: ItemStack, transformType: TransformType, mStack: MatrixStack, getter: IRenderTypeBuffer, packedLight: Int, packedOverlay: Int) = {
         stack.getItem match {

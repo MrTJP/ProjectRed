@@ -38,7 +38,7 @@ object ExplorationContent {
     private val BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID)
     private val CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MOD_ID)
 
-    val explorationItemGroup = new SimpleItemGroup(MOD_ID, () => new ItemStack(Blocks.GRASS))
+    val explorationItemGroup = new SimpleItemGroup(MOD_ID, () => new ItemStack(Blocks.GRASS_BLOCK))
 
     /** Materials */
     val athameItemTier = SimpleItemTier.builder(ItemTier.DIAMOND)
@@ -244,23 +244,23 @@ object ExplorationContent {
 
     /** Groups */
     lazy val backpacks = List(
-        itemWhiteBackpack,
-        itemOrangeBackpack,
-        itemMagentaBackpack,
-        itemLightBlueBackpack,
-        itemYellowBackpack,
-        itemLimeBackpack,
-        itemPinkBackpack,
-        itemGrayBackpack,
-        itemLightGrayBackpack,
-        itemCyanBackpack,
-        itemPurpleBackpack,
-        itemBlueBackpack,
-        itemBrownBackpack,
-        itemGreenBackpack,
-        itemRedBackpack,
-        itemBlackBackpack
-    ).map(_.get)
+        itemWhiteBackpack.get,
+        itemOrangeBackpack.get,
+        itemMagentaBackpack.get,
+        itemLightBlueBackpack.get,
+        itemYellowBackpack.get,
+        itemLimeBackpack.get,
+        itemPinkBackpack.get,
+        itemGrayBackpack.get,
+        itemLightGrayBackpack.get,
+        itemCyanBackpack.get,
+        itemPurpleBackpack.get,
+        itemBlueBackpack.get,
+        itemBrownBackpack.get,
+        itemGreenBackpack.get,
+        itemRedBackpack.get,
+        itemBlackBackpack.get
+    )
 
     /** Containers */
     val containerBackpack = CONTAINERS.register("container_type", () => ICCLContainerType.create((id, inv, _) => new ContainerBackpack(id, inv)))
