@@ -28,6 +28,7 @@ object CoreContent {
 
     private val LOCK = new CrashLock("Already Initialized.")
     private val ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID)
+    private val RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MOD_ID)
 
     val itemGroupCore = new SimpleItemGroup(MOD_ID, () => new ItemStack(itemScrewdriver.get()))
 
@@ -132,6 +133,8 @@ object CoreContent {
     val itemMultimeter = ITEMS.register("multimeter", () => new ItemMultimeter)
     //endregion
 
+    val shapelessNBTCopyRecipeSerializer = RECIPE_SERIALIZERS.register("backpack_nbt_copy", () => new ShapelessNBTCopyRecipeSerializer())
+
 
     //region Tags
     val tagIngotsCopper = new ItemTag("forge:ingots/copper")
@@ -145,7 +148,7 @@ object CoreContent {
     val tagGemsSapphire = new ItemTag("forge:gems/sapphire")
     val tagGemsPeridot = new ItemTag("forge:gems/peridot")
 
-    val tagDustElectrotine = new ItemTag("forge:dusts/electrotine")
+    val tagDustsElectrotine = new ItemTag("forge:dusts/electrotine")
 
     val tagIllumars = new ItemTag(new ResourceLocation(MOD_ID, "illumars"))
     val tagIllumarsWhite = new ItemTag(new ResourceLocation(MOD_ID, "illumars/white"))
@@ -171,6 +174,7 @@ object CoreContent {
     def register(bus: IEventBus) {
         LOCK.lock()
         ITEMS.register(bus)
+        RECIPE_SERIALIZERS.register(bus)
         bus.register(DataGen)
     }
 
@@ -286,7 +290,7 @@ private class ItemTags(gen: DataGenerator) extends ItemTagsProvider(gen) {
             .add(tagGemsSapphire)
             .add(tagGemsPeridot)
         getBuilder(Tags.Items.DUSTS)
-            .add(tagDustElectrotine)
+            .add(tagDustsElectrotine)
 
         getBuilder(tagIngotsCopper).add(itemCopperIngot)
         getBuilder(tagIngotsTin).add(itemTinIngot)
@@ -299,7 +303,7 @@ private class ItemTags(gen: DataGenerator) extends ItemTagsProvider(gen) {
         getBuilder(tagGemsSapphire).add(itemSapphire)
         getBuilder(tagGemsPeridot).add(itemPeridot)
 
-        getBuilder(tagDustElectrotine).add(itemElectrotineDust)
+        getBuilder(tagDustsElectrotine).add(itemElectrotineDust)
 
         getBuilder(tagIllumars)
             .add(tagIllumarsWhite)
@@ -442,7 +446,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
         shapedRecipe(itemElectrotineIronCompound)
             .autoCriteria()
-            .key('B', tagDustElectrotine)
+            .key('B', tagDustsElectrotine)
             .key('I', INGOTS_IRON)
             .patternLine("BBB")
             .patternLine("BIB")
@@ -473,7 +477,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
         shapedRecipe(itemElectrotineSiliconCompound)
             .autoCriteria()
-            .key('E', tagDustElectrotine)
+            .key('E', tagDustsElectrotine)
             .key('S', itemSilicon)
             .patternLine("EEE")
             .patternLine("ESE")

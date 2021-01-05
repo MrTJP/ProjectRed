@@ -1,13 +1,16 @@
 package mrtjp.projectred.exploration
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.datagen.recipe.RecipeProvider
 import codechicken.lib.datagen.{ItemModelProvider, LootTableProvider}
 import codechicken.lib.gui.SimpleItemGroup
 import codechicken.lib.inventory.container.ICCLContainerType
 import codechicken.lib.item.{SimpleArmorMaterial, SimpleItemTier}
 import codechicken.lib.util.CrashLock
+import codechicken.microblock.handler.MicroblockModContent
 import mrtjp.projectred.ProjectRedExploration.MOD_ID
 import mrtjp.projectred.core.CoreContent._
+import mrtjp.projectred.core.ShapelessNBTCopyRecipeBuilder
 import mrtjp.projectred.exploration.ExplorationContent._
 import net.minecraft.block.material.Material
 import net.minecraft.block.{Block, Blocks, WallBlock}
@@ -17,7 +20,7 @@ import net.minecraft.item._
 import net.minecraft.item.crafting.Ingredient
 import net.minecraft.tags.BlockTags.{Wrapper => BlockTag}
 import net.minecraft.tags.ItemTags.{Wrapper => ItemTag}
-import net.minecraft.tags.{BlockTags => MCBlockTags}
+import net.minecraft.tags.{Tag, BlockTags => MCBlockTags, ItemTags => VanillaItemTags}
 import net.minecraft.util.{ResourceLocation, SoundEvents}
 import net.minecraftforge.client.model.generators.{BlockStateProvider, ExistingFileHelper}
 import net.minecraftforge.common.Tags.{Blocks => ForgeBlockTags, Items => ForgeItemTags}
@@ -257,7 +260,7 @@ object ExplorationContent {
         itemGreenBackpack,
         itemRedBackpack,
         itemBlackBackpack
-    ).map(_.get())
+    ).map(_.asItem())
 
     /** Containers */
     val containerBackpack = CONTAINERS.register("container_type", () => ICCLContainerType.create((id, inv, _) => new ContainerBackpack(id, inv)))
@@ -273,13 +276,13 @@ object ExplorationContent {
 
     val tagBlockMarble = new BlockTag("forge:stone/marble")
     val tagBlockBasalt = new BlockTag("forge:stone/basalt")
-    val tagBlockRuby = new BlockTag("forge:storage_blocks/ruby")
-    val tagBlockSapphire = new BlockTag("forge:storage_blocks/sapphire")
-    val tagBlockPeridot = new BlockTag("forge:storage_blocks/peridot")
-    val tagBlockCopper = new BlockTag("forge:storage_blocks/copper")
-    val tagBlockTin = new BlockTag("forge:storage_blocks/tin")
-    val tagBlockSilver = new BlockTag("forge:storage_blocks/silver")
-    val tagBlockElectrotine = new BlockTag("forge:storage_blocks/electrotine")
+    val tagBlockRubyBlock = new BlockTag("forge:storage_blocks/ruby")
+    val tagBlockSapphireBlock = new BlockTag("forge:storage_blocks/sapphire")
+    val tagBlockPeridotBlock = new BlockTag("forge:storage_blocks/peridot")
+    val tagBlockCopperBlock = new BlockTag("forge:storage_blocks/copper")
+    val tagBlockTinBlock = new BlockTag("forge:storage_blocks/tin")
+    val tagBlockSilverBlock = new BlockTag("forge:storage_blocks/silver")
+    val tagBlockElectrotineBlock = new BlockTag("forge:storage_blocks/electrotine")
 
     /** Item Tags */
     val tagItemRubyOre = new ItemTag("forge:ores/ruby")
@@ -292,13 +295,13 @@ object ExplorationContent {
 
     val tagItemMarble = new ItemTag("forge:stone/marble")
     val tagItemBasalt = new ItemTag("forge:stone/basalt")
-    val tagItemRuby = new ItemTag("forge:storage_blocks/ruby")
-    val tagItemSapphire = new ItemTag("forge:storage_blocks/sapphire")
-    val tagItemPeridot = new ItemTag("forge:storage_blocks/peridot")
-    val tagItemCopper = new ItemTag("forge:storage_blocks/copper")
-    val tagItemTin = new ItemTag("forge:storage_blocks/tin")
-    val tagItemSilver = new ItemTag("forge:storage_blocks/silver")
-    val tagItemElectrotine = new ItemTag("forge:storage_blocks/electrotine")
+    val tagItemRubyBlock = new ItemTag("forge:storage_blocks/ruby")
+    val tagItemSapphireBlock = new ItemTag("forge:storage_blocks/sapphire")
+    val tagItemPeridotBlock = new ItemTag("forge:storage_blocks/peridot")
+    val tagItemCopperBlock = new ItemTag("forge:storage_blocks/copper")
+    val tagItemTinBlock = new ItemTag("forge:storage_blocks/tin")
+    val tagItemSilverBlock = new ItemTag("forge:storage_blocks/silver")
+    val tagItemElectrotineBlock = new ItemTag("forge:storage_blocks/electrotine")
 
     val tagBackpacks = new ItemTag(new ResourceLocation(MOD_ID, "backpacks"))
     val tagBackpacksWhite = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/white"))
@@ -371,6 +374,7 @@ private object DataGen {
             gen.addProvider(new BlockTags(gen))
             gen.addProvider(new ItemTags(gen))
             gen.addProvider(new BlockLootTables(gen))
+            gen.addProvider(new Recipes(gen))
         }
     }
 }
@@ -585,22 +589,22 @@ private class BlockTags(gen: DataGenerator) extends BlockTagsProvider(gen) {
         getBuilder(ForgeBlockTags.STORAGE_BLOCKS)
             .add(tagBlockMarble)
             .add(tagBlockBasalt)
-            .add(tagBlockRuby)
-            .add(tagBlockSapphire)
-            .add(tagBlockPeridot)
-            .add(tagBlockCopper)
-            .add(tagBlockTin)
-            .add(tagBlockSilver)
-            .add(tagBlockElectrotine)
+            .add(tagBlockRubyBlock)
+            .add(tagBlockSapphireBlock)
+            .add(tagBlockPeridotBlock)
+            .add(tagBlockCopperBlock)
+            .add(tagBlockTinBlock)
+            .add(tagBlockSilverBlock)
+            .add(tagBlockElectrotineBlock)
         getBuilder(tagBlockMarble).add(blockMarble)
         getBuilder(tagBlockBasalt).add(blockBasalt)
-        getBuilder(tagBlockRuby).add(blockRubyBlock)
-        getBuilder(tagBlockSapphire).add(blockSapphireBlock)
-        getBuilder(tagBlockPeridot).add(blockPeridotBlock)
-        getBuilder(tagBlockCopper).add(blockCopperBlock)
-        getBuilder(tagBlockTin).add(blockTinBlock)
-        getBuilder(tagBlockSilver).add(blockSilverBlock)
-        getBuilder(tagBlockElectrotine).add(blockElectrotineBlock)
+        getBuilder(tagBlockRubyBlock).add(blockRubyBlock)
+        getBuilder(tagBlockSapphireBlock).add(blockSapphireBlock)
+        getBuilder(tagBlockPeridotBlock).add(blockPeridotBlock)
+        getBuilder(tagBlockCopperBlock).add(blockCopperBlock)
+        getBuilder(tagBlockTinBlock).add(blockTinBlock)
+        getBuilder(tagBlockSilverBlock).add(blockSilverBlock)
+        getBuilder(tagBlockElectrotineBlock).add(blockElectrotineBlock)
 
     }
 }
@@ -629,22 +633,22 @@ private class ItemTags(gen: DataGenerator) extends ItemTagsProvider(gen) {
         getBuilder(ForgeItemTags.STORAGE_BLOCKS)
             .add(tagItemMarble)
             .add(tagItemBasalt)
-            .add(tagItemRuby)
-            .add(tagItemSapphire)
-            .add(tagItemPeridot)
-            .add(tagItemCopper)
-            .add(tagItemTin)
-            .add(tagItemSilver)
-            .add(tagItemElectrotine)
+            .add(tagItemRubyBlock)
+            .add(tagItemSapphireBlock)
+            .add(tagItemPeridotBlock)
+            .add(tagItemCopperBlock)
+            .add(tagItemTinBlock)
+            .add(tagItemSilverBlock)
+            .add(tagItemElectrotineBlock)
         copy(tagBlockMarble, tagItemMarble)
         copy(tagBlockBasalt, tagItemBasalt)
-        copy(tagBlockRuby, tagItemRuby)
-        copy(tagBlockSapphire, tagItemSapphire)
-        copy(tagBlockPeridot, tagItemPeridot)
-        copy(tagBlockCopper, tagItemCopper)
-        copy(tagBlockTin, tagItemTin)
-        copy(tagBlockSilver, tagItemSilver)
-        copy(tagBlockElectrotine, tagItemElectrotine)
+        copy(tagBlockRubyBlock, tagItemRubyBlock)
+        copy(tagBlockSapphireBlock, tagItemSapphireBlock)
+        copy(tagBlockPeridotBlock, tagItemPeridotBlock)
+        copy(tagBlockCopperBlock, tagItemCopperBlock)
+        copy(tagBlockTinBlock, tagItemTinBlock)
+        copy(tagBlockSilverBlock, tagItemSilverBlock)
+        copy(tagBlockElectrotineBlock, tagItemElectrotineBlock)
 
         getBuilder(tagBackpacks)
             .add(tagBackpacksWhite)
@@ -718,45 +722,409 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
     override protected def registerRecipes() {
         smelting(itemBasalt, 1)
             .autoCriteria()
-            .ingredient(Ingredient.fromItems(itemBasaltCobble))
+            .ingredient(itemBasaltCobble)
             .experience(0.1F)
 
-        smelting(itemRuby, 1)
+        smelting(itemRuby, 1, new ResourceLocation(MOD_ID, "ruby_from_ore"))
             .autoCriteria()
-            .ingredient(Ingredient.fromTag(tagItemRubyOre))
+            .ingredient(tagItemRubyOre)
             .experience(1F)
 
-        smelting(itemSapphire, 1)
+        smelting(itemSapphire, 1, new ResourceLocation(MOD_ID, "sapphire_from_ore"))
             .autoCriteria()
-            .ingredient(Ingredient.fromTag(tagItemSapphireOre))
+            .ingredient(tagItemSapphireOre)
             .experience(1F)
 
-        smelting(itemPeridot, 1)
+        smelting(itemPeridot, 1, new ResourceLocation(MOD_ID, "peridot_from_ore"))
             .autoCriteria()
-            .ingredient(Ingredient.fromTag(tagItemPeridotOre))
+            .ingredient(tagItemPeridotOre)
             .experience(1F)
 
-        smelting(itemCopperIngot, 1)
+        smelting(itemCopperIngot, 1, new ResourceLocation(MOD_ID, "copper_from_ore"))
             .autoCriteria()
-            .ingredient(Ingredient.fromTag(tagItemCopperOre))
+            .ingredient(tagItemCopperOre)
             .experience(0.7F)
 
-        smelting(itemTinIngot, 1)
+        smelting(itemTinIngot, 1, new ResourceLocation(MOD_ID, "tin_from_ore"))
             .autoCriteria()
-            .ingredient(Ingredient.fromTag(tagItemTinOre))
+            .ingredient(tagItemTinOre)
             .experience(0.7F)
 
-        smelting(itemSilverIngot, 1)
+        smelting(itemSilverIngot, 1, new ResourceLocation(MOD_ID, "silver_from_ore"))
             .autoCriteria()
-            .ingredient(Ingredient.fromTag(tagItemSilverOre))
+            .ingredient(tagItemSilverOre)
             .experience(0.8F)
 
-        smelting(itemElectrotineDust, 1)
+        smelting(itemElectrotineDust, 1, new ResourceLocation(MOD_ID, "electrotine_from_ore"))
             .autoCriteria()
-            .ingredient(Ingredient.fromTag(tagItemElectrotineOre))
+            .ingredient(tagItemElectrotineOre)
             .experience(0.7F)
 
+        shapedRecipe(blockMarbleBrick, 4)
+            .autoCriteria()
+            .key('B', tagItemMarble)
+            .patternLine("BB")
+            .patternLine("BB")
 
+        shapedRecipe(blockBasaltBrick, 4)
+            .autoCriteria()
+            .key('B', tagItemBasalt)
+            .patternLine("BB")
+            .patternLine("BB")
+
+        shapedRecipe(blockRubyBlock)
+            .autoCriteria()
+            .key('S', tagGemsRuby)
+            .patternLine("SSS")
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapelessRecipe(itemRuby, 9, new ResourceLocation(MOD_ID, "ruby_from_block"))
+            .autoCriteria()
+            .addIngredient(tagItemRubyBlock)
+
+        shapedRecipe(blockSapphireBlock)
+            .autoCriteria()
+            .key('S', tagGemsSapphire)
+            .patternLine("SSS")
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapelessRecipe(itemSapphire, 9, new ResourceLocation(MOD_ID, "sapphire_from_block"))
+            .autoCriteria()
+            .addIngredient(tagItemSapphireBlock)
+
+        shapedRecipe(blockPeridotBlock)
+            .autoCriteria()
+            .key('S', tagGemsPeridot)
+            .patternLine("SSS")
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapelessRecipe(itemPeridot, 9, new ResourceLocation(MOD_ID, "peridot_from_block"))
+            .autoCriteria()
+            .addIngredient(tagItemPeridotBlock)
+
+        shapedRecipe(blockCopperBlock)
+            .autoCriteria()
+            .key('S', tagIngotsCopper)
+            .patternLine("SSS")
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapelessRecipe(itemCopperIngot, 9, new ResourceLocation(MOD_ID, "copper_from_block"))
+            .autoCriteria()
+            .addIngredient(tagItemCopperBlock)
+
+        shapedRecipe(blockTinBlock)
+            .autoCriteria()
+            .key('S', tagIngotsTin)
+            .patternLine("SSS")
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapelessRecipe(itemTinIngot, 9, new ResourceLocation(MOD_ID, "tin_from_block"))
+            .autoCriteria()
+            .addIngredient(tagItemTinBlock)
+
+        shapedRecipe(blockSilverBlock)
+            .autoCriteria()
+            .key('S', tagIngotsSilver)
+            .patternLine("SSS")
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapelessRecipe(itemSilverIngot, 9, new ResourceLocation(MOD_ID, "silver_from_block"))
+            .autoCriteria()
+            .addIngredient(tagItemSilverBlock)
+
+        shapedRecipe(blockElectrotineBlock)
+            .autoCriteria()
+            .key('S', tagDustsElectrotine)
+            .patternLine("SSS")
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapelessRecipe(itemElectrotineDust, 9, new ResourceLocation(MOD_ID, "electrotine_from_block"))
+            .autoCriteria()
+            .addIngredient(tagItemElectrotineBlock)
+
+        shapedRecipe(blockMarbleWall, 6)
+            .autoCriteria()
+            .key('S', tagItemMarble)
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapedRecipe(blockMarbleBrickWall, 6)
+            .autoCriteria()
+            .key('S', blockMarbleBrick)
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapedRecipe(blockBasaltWall, 6)
+            .autoCriteria()
+            .key('S', blockBasalt)
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapedRecipe(blockBasaltCobbleWall, 6)
+            .autoCriteria()
+            .key('S', blockBasaltCobble)
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapedRecipe(blockBasaltBrickWall, 6)
+            .autoCriteria()
+            .key('S', blockBasaltBrick)
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapedRecipe(blockRubyBlockWall, 6)
+            .autoCriteria()
+            .key('S', blockRubyBlock)
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapedRecipe(blockSapphireBlockWall, 6)
+            .autoCriteria()
+            .key('S', blockSapphireBlock)
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapedRecipe(blockPeridotBlockWall, 6)
+            .autoCriteria()
+            .key('S', blockPeridotBlock)
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapedRecipe(blockCopperBlockWall, 6)
+            .autoCriteria()
+            .key('S', blockCopperBlock)
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapedRecipe(blockTinBlockWall, 6)
+            .autoCriteria()
+            .key('S', blockTinBlock)
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapedRecipe(blockSilverBlockWall, 6)
+            .autoCriteria()
+            .key('S', blockSilverBlock)
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapedRecipe(blockElectrotineBlockWall, 6)
+            .autoCriteria()
+            .key('S', blockElectrotineBlock)
+            .patternLine("SSS")
+            .patternLine("SSS")
+
+        shapedRecipe(itemWoolGin)
+            .autoCriteria()
+            .key('S', ForgeItemTags.RODS_WOODEN)
+            .key('I', itemIronCoil)
+            .patternLine("SIS")
+            .patternLine("SSS")
+            .patternLine(" S ")
+
+        shapedRecipe(Items.STRING, 4, new ResourceLocation(MOD_ID, "string_from_wool"))
+            .autoCriteria()
+            .key('W', VanillaItemTags.WOOL)
+            .key('G', itemWoolGin)
+            .patternLine("GW")
+
+        shapedRecipe(itemAthame)
+            .autoCriteria()
+            .key('W', ForgeItemTags.RODS_WOODEN)
+            .key('S', tagIngotsSilver)
+            .patternLine("S")
+            .patternLine("W")
+
+        EnumColour.values().foreach(addBackpackRecipe)
+
+        addAxeRecipe(itemRubyAxe, tagGemsRuby)
+        addAxeRecipe(itemSapphireAxe, tagGemsSapphire)
+        addAxeRecipe(itemPeridotAxe, tagGemsPeridot)
+
+        addHoeRecipe(itemRubyHoe, tagGemsRuby)
+        addHoeRecipe(itemSapphireHoe, tagGemsSapphire)
+        addHoeRecipe(itemPeridotHoe, tagGemsPeridot)
+
+        addPickaxeRecipe(itemRubyPickaxe, tagGemsRuby)
+        addPickaxeRecipe(itemSapphirePickaxe, tagGemsSapphire)
+        addPickaxeRecipe(itemPeridotPickaxe, tagGemsPeridot)
+
+        addShovelRecipe(itemRubyShovel, tagGemsRuby)
+        addShovelRecipe(itemSapphireShovel, tagGemsSapphire)
+        addShovelRecipe(itemPeridotShovel, tagGemsPeridot)
+
+        addSwordRecipe(itemRubySword, tagGemsRuby)
+        addSwordRecipe(itemSapphireSword, tagGemsSapphire)
+        addSwordRecipe(itemPeridotSword, tagGemsPeridot)
+
+        addSawRecipe(itemGoldSaw, ForgeItemTags.INGOTS_GOLD)
+        addSawRecipe(itemRubySaw, tagGemsRuby)
+        addSawRecipe(itemSapphireSaw, tagGemsSapphire)
+        addSawRecipe(itemPeridotSaw, tagGemsPeridot)
+
+        addSickleRecipe(itemWoodSickle, VanillaItemTags.PLANKS)
+        addSickleRecipe(itemStoneSickle, Items.FLINT)
+        addSickleRecipe(itemIronSickle, ForgeItemTags.INGOTS_IRON)
+        addSickleRecipe(itemGoldSickle, ForgeItemTags.INGOTS_GOLD)
+        addSickleRecipe(itemRubySickle, tagGemsRuby)
+        addSickleRecipe(itemSapphireSickle, tagGemsSapphire)
+        addSickleRecipe(itemPeridotSickle, tagGemsPeridot)
+        addSickleRecipe(itemDiamondSickle, ForgeItemTags.GEMS_DIAMOND)
+
+        addHelmetRecipe(itemRubyHelmet, tagGemsRuby)
+        addHelmetRecipe(itemSapphireHelmet, tagGemsSapphire)
+        addHelmetRecipe(itemPeridotHelmet, tagGemsPeridot)
+
+        addChestplateRecipe(itemRubyChestplate, tagGemsRuby)
+        addChestplateRecipe(itemSapphireChestplate, tagGemsSapphire)
+        addChestplateRecipe(itemPeridotChestplate, tagGemsPeridot)
+
+        addLeggingsRecipe(itemRubyLeggings, tagGemsRuby)
+        addLeggingsRecipe(itemSapphireLeggings, tagGemsSapphire)
+        addLeggingsRecipe(itemPeridotLeggings, tagGemsPeridot)
+
+        addBootsRecipe(itemRubyBoots, tagGemsRuby)
+        addBootsRecipe(itemSapphireBoots, tagGemsSapphire)
+        addBootsRecipe(itemPeridotBoots, tagGemsPeridot)
     }
 
+    def addBackpackRecipe(colour: EnumColour) {
+        val b = shapedRecipe(backpacks(colour.ordinal))
+            .autoCriteria()
+            .key('C', itemWovenCloth)
+            .patternLine("CCC")
+        if (colour != EnumColour.WHITE) {
+            b.key('D', new ItemTag(colour.getDyeTagName))
+            b.patternLine("CDC")
+        } else {
+            b.patternLine("C C")
+        }
+        b.patternLine("CCC")
+
+        builder(ShapelessNBTCopyRecipeBuilder(backpacks(colour.ordinal), 1, new ResourceLocation(MOD_ID, colour.getName + "_backpack_recolor")))
+            .autoCriteria()
+            .addIngredient(tagBackpacks)
+            .addIngredient(new ItemTag(colour.getDyeTagName))
+    }
+
+    def addAxeRecipe(result: Item, material: Tag[Item]) {
+        shapedRecipe(result)
+            .autoCriteria()
+            .key('M', material)
+            .key('S', ForgeItemTags.RODS_WOODEN)
+            .patternLine("MM ")
+            .patternLine("MS ")
+            .patternLine(" S ")
+    }
+
+    def addHoeRecipe(result: Item, material: Tag[Item]) {
+        shapedRecipe(result)
+            .autoCriteria()
+            .key('M', material)
+            .key('S', ForgeItemTags.RODS_WOODEN)
+            .patternLine("MM ")
+            .patternLine(" S ")
+            .patternLine(" S ")
+    }
+
+    def addPickaxeRecipe(result: Item, material: Tag[Item]) {
+        shapedRecipe(result)
+            .autoCriteria()
+            .key('M', material)
+            .key('S', ForgeItemTags.RODS_WOODEN)
+            .patternLine("MMM")
+            .patternLine(" S ")
+            .patternLine(" S ")
+    }
+
+    def addShovelRecipe(result: Item, material: Tag[Item]) {
+        shapedRecipe(result)
+            .autoCriteria()
+            .key('M', material)
+            .key('S', ForgeItemTags.RODS_WOODEN)
+            .patternLine(" M ")
+            .patternLine(" S ")
+            .patternLine(" S ")
+    }
+
+    def addSwordRecipe(result: Item, material: Tag[Item]) {
+        shapedRecipe(result)
+            .autoCriteria()
+            .key('M', material)
+            .key('S', ForgeItemTags.RODS_WOODEN)
+            .patternLine(" M ")
+            .patternLine(" M ")
+            .patternLine(" S ")
+    }
+
+    def addSawRecipe(result: Item, material: Tag[Item]) {
+        shapedRecipe(result)
+            .autoCriteria()
+            .key('M', material)
+            .key('S', ForgeItemTags.RODS_WOODEN)
+            .key('R', MicroblockModContent.stoneRodTag)
+            .patternLine("SRR")
+            .patternLine("SMM")
+    }
+
+    def addSickleRecipe(result: Item, material: Tag[Item]) {
+        shapedRecipe(result)
+            .autoCriteria()
+            .key('M', material)
+            .key('S', ForgeItemTags.RODS_WOODEN)
+            .patternLine(" M ")
+            .patternLine("  M")
+            .patternLine("SM ")
+    }
+
+    def addSickleRecipe(result: Item, material: Item) {
+        shapedRecipe(result)
+            .autoCriteria()
+            .key('M', material)
+            .key('S', ForgeItemTags.RODS_WOODEN)
+            .patternLine(" M ")
+            .patternLine("  M")
+            .patternLine("SM ")
+    }
+
+    def addHelmetRecipe(result: Item, material: Tag[Item]) {
+        shapedRecipe(result)
+            .autoCriteria()
+            .key('M', material)
+            .patternLine("MMM")
+            .patternLine("M M")
+    }
+
+    def addChestplateRecipe(result: Item, material: Tag[Item]) {
+        shapedRecipe(result)
+            .autoCriteria()
+            .key('M', material)
+            .patternLine("M M")
+            .patternLine("MMM")
+            .patternLine("MMM")
+    }
+
+    def addLeggingsRecipe(result: Item, material: Tag[Item]) {
+        shapedRecipe(result)
+            .autoCriteria()
+            .key('M', material)
+            .patternLine("MMM")
+            .patternLine("M M")
+            .patternLine("M M")
+    }
+
+    def addBootsRecipe(result: Item, material: Tag[Item]) {
+        shapedRecipe(result)
+            .autoCriteria()
+            .key('M', material)
+            .patternLine("M M")
+            .patternLine("M M")
+    }
 }

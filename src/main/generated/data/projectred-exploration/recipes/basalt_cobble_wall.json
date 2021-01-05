@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-exploration:basalt_cobble_wall",
+    "count": 6
+  },
+  "pattern": [
+    "SSS",
+    "SSS"
+  ],
+  "key": {
+    "S": {
+      "item": "projectred-exploration:basalt_cobble"
+    }
+  }
+}

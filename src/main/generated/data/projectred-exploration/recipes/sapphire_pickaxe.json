@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-exploration:sapphire_pickaxe",
+    "nbt": "{Damage:0}"
+  },
+  "pattern": [
+    "MMM",
+    " S ",
+    " S "
+  ],
+  "key": {
+    "M": {
+      "tag": "forge:gems/sapphire"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    }
+  }
+}
