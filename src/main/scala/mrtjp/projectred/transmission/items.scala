@@ -1,21 +1,17 @@
 package mrtjp.projectred.transmission
 
-import codechicken.lib.vec._
-import codechicken.multipart.TItemMultiPart
-import mrtjp.core.item.ItemCore
+import codechicken.multipart.api.ItemMultiPart
 import mrtjp.projectred.core.PRLib
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.item.{Item, ItemStack}
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.Direction
-import net.minecraft.world.World
+import net.minecraft.item.{Item, ItemUseContext}
 
-class ItemPartWire(val wireType: WireType) extends Item(new Item.Properties().group(TransmissionContent.transmissionItemGroup)) with TItemMultiPart {
+class ItemPartWire(val wireType: WireType) extends ItemMultiPart(new Item.Properties().group(TransmissionContent.transmissionItemGroup)) {
 
-    def newPart(item:ItemStack, player:PlayerEntity, world:World, pos:BlockPos, side:Int, vhit:Vector3) = {
-        val onPos = pos.offset(Direction.byIndex(side^1))
-        if (!PRLib.canPlaceWireOnSide(world, onPos, side)) null
-        else {
+    override def newPart(context: ItemUseContext) = {
+        val side = context.getFace
+        val onPos = context.getPos.offset(side.getOpposite)
+        if (!PRLib.canPlaceWireOnSide(context.getWorld, onPos, side)) {
+            null
+        } else {
             val w = wireType.newPart()
             w.preparePlacement(side)
             w
@@ -25,7 +21,8 @@ class ItemPartWire(val wireType: WireType) extends Item(new Item.Properties().gr
 
 class ItemPartFramedWire(wireType: WireType) extends ItemPartWire(wireType) {
 
-    override def newPart(item:ItemStack, player:PlayerEntity, world:World, pos:BlockPos, side:Int, vhit:Vector3) = {
+    override def newPart(context: ItemUseContext) = {
+        val side = context.getFace
         val w = wireType.newPart()
         w.preparePlacement(side)
         w

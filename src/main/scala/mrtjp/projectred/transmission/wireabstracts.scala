@@ -13,6 +13,7 @@ import IWirePart._
 import codechicken.lib.render.buffer.TransformingVertexBuilder
 import codechicken.microblock.api.{ISidedHollowConnect, MicroMaterial}
 import codechicken.multipart.api.part.{TMultiPart, TNormalOcclusionPart}
+import codechicken.multipart.block.TileMultiPart
 import codechicken.multipart.util.{PartMap, PartRayTraceResult}
 import com.google.common.collect.ImmutableSet
 import com.mojang.blaze3d.matrix.MatrixStack
@@ -22,22 +23,22 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.inventory.EquipmentSlotType
-import net.minecraft.item.ItemStack
+import net.minecraft.item.{ItemStack, ItemUseContext}
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.shapes.{VoxelShape, VoxelShapes}
 import net.minecraft.util.{ActionResultType, Direction, Hand, SoundCategory}
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
-import java.lang.{Iterable => JIterable}
+import java.util.{Collection => JCollection}
 import java.util.Collections
 import scala.jdk.CollectionConverters._
 
 trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagationCommons with TSwitchPacket with TNormalOcclusionPart
 {
-    def preparePlacement(side:Int){}
+    def preparePlacement(side:Direction){}
 
-    override def getPlacementSound(stack: ItemStack, player: PlayerEntity) = SoundType.GLASS
+    override def getPlacementSound(context: ItemUseContext) = SoundType.GLASS
 
     override def onPartChanged(part:TMultiPart)
     {
@@ -100,7 +101,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
 
     def drop()
     {
-        TileMultipart.dropItem(getItem, world, Vector3.fromTileCenter(tile))
+        TileMultiPart.dropItem(getItem, world, Vector3.fromTileCenter(tile))
         tile.remPart(this)
     }
 
@@ -110,7 +111,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
 
     def getThickness = getWireType.getThickness
 
-    override def getDrops:JIterable[ItemStack] = Collections.singleton(getItem)
+    override def getDrops:JCollection[ItemStack] = Collections.singleton(getItem)
 
     override def pickItem(hit:PartRayTraceResult) = getItem
 
@@ -145,7 +146,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     @OnlyIn(Dist.CLIENT)
     override def renderStatic(layer:RenderType, ccrs:CCRenderState) =
     {
-        if (layer == getRenderLayer && useStaticRenderer) {
+        if (layer == null || (layer == getRenderLayer && useStaticRenderer)) {
             ccrs.setBrightness(world, this.pos)
             doStaticTessellation(layer, ccrs)
             true
@@ -160,13 +161,6 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     }
 
     @OnlyIn(Dist.CLIENT)
-    override def renderBreaking(texture:TextureAtlasSprite, ccrs:CCRenderState)
-    {
-        ccrs.reset()
-        doBreakTessellation(texture, ccrs)
-    }
-
-    @OnlyIn(Dist.CLIENT)
     def getRenderLayer = RenderType.getSolid
 
     @OnlyIn(Dist.CLIENT)
@@ -174,9 +168,6 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
 
     @OnlyIn(Dist.CLIENT)
     def doFastTessellation(mStack: MatrixStack, buffers: IRenderTypeBuffer, packedLight: Int, packedOverlay: Int, partialTicks: Float)
-
-    @OnlyIn(Dist.CLIENT)
-    def doBreakTessellation(texture:TextureAtlasSprite, ccrs:CCRenderState)
 
     def useStaticRenderer = Configurator.staticWires
 }
@@ -187,9 +178,9 @@ abstract class WirePart(wireType:WireType) extends TMultiPart with TWireCommons 
 
     override final def getType = getWireType.getPartType
 
-    override def preparePlacement(side:Int)
+    override def preparePlacement(side: Direction)
     {
-        setSide(side^1)
+        setSide(side.ordinal() ^ 1)
     }
 
     override def save(tag:CompoundNBT)
@@ -232,7 +223,7 @@ abstract class WirePart(wireType:WireType) extends TMultiPart with TWireCommons 
     override def canConnectCorner(r:Int) = true
 
     override def canStay = PRLib.canPlaceWireOnSide(world,
-        pos.offset(Direction.byIndex(side)), side^1)
+        pos.offset(Direction.byIndex(side)), Direction.byIndex(side^1))
 
     override def getItem = getWireType.makeStack
 
@@ -245,7 +236,7 @@ abstract class WirePart(wireType:WireType) extends TMultiPart with TWireCommons 
 
     override def discoverOpen(r:Int) =
     {
-        if (tile.partMap(PartMap.edgeBetween(side, absoluteDir(r))) != null) false
+        if (tile.getSlottedPart(PartMap.edgeBetween(side, absoluteDir(r))) != null) false
         else getInternal(r) match {
             case w:WirePart => canConnectPart(w, r)
             case t:TMultiPart => false
@@ -265,11 +256,6 @@ abstract class WirePart(wireType:WireType) extends TMultiPart with TWireCommons 
 
     override def solid(side:Int) = false
 
-    @OnlyIn(Dist.CLIENT)
-    override def doBreakTessellation(texture:TextureAtlasSprite, ccrs:CCRenderState)
-    {
-        RenderWire.renderBreakingOverlay(texture, this, ccrs)
-    }
     @OnlyIn(Dist.CLIENT)
     override def doFastTessellation(mStack: MatrixStack, buffers: IRenderTypeBuffer, packedLight: Int, packedOverlay: Int, partialTicks: Float)
     {
@@ -445,12 +431,6 @@ abstract class FramedWirePart(wireType:WireType) extends TMultiPart with TWireCo
 
     @OnlyIn(Dist.CLIENT)
     override def getRenderLayer = RenderType.getCutout
-
-    @OnlyIn(Dist.CLIENT)
-    override def doBreakTessellation(texture:TextureAtlasSprite, ccrs:CCRenderState)
-    {
-        RenderFramedWire.renderBreakingOverlay(texture, this, ccrs)
-    }
 
     @OnlyIn(Dist.CLIENT)
     override def doFastTessellation(mStack: MatrixStack, buffers: IRenderTypeBuffer, packedLight: Int, packedOverlay: Int, partialTicks: Float)

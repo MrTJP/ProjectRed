@@ -1,6 +1,7 @@
 package mrtjp.projectred.core
 
-import codechicken.multipart.api.part.{RedstoneInteractions, TMultiPart}
+import codechicken.multipart.api.RedstoneInteractions
+import codechicken.multipart.api.part.TMultiPart
 import codechicken.multipart.api.part.redstone.{IFaceRedstonePart, IRedstonePart}
 import mrtjp.projectred.core.IWirePart._
 import net.minecraft.block.{Blocks, RedstoneWireBlock}

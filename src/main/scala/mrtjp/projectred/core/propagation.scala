@@ -1,8 +1,8 @@
 package mrtjp.projectred.core
 
 import java.util.{Stack => JStack}
-import codechicken.multipart.TileMultipart
 import codechicken.multipart.api.part.TMultiPart
+import codechicken.multipart.block.TileMultiPart
 import codechicken.multipart.init.ModContent
 import com.google.common.collect.HashMultimap
 import net.minecraft.block.{Blocks, RedstoneWireBlock}
@@ -85,7 +85,7 @@ class PropagationRun
     var count = 0
     var recalcs = 0
 
-    var partChanges = HashMultimap.create[TileMultipart, TMultiPart]
+    var partChanges = HashMultimap.create[TileMultiPart, TMultiPart]
     var neighborChanges = HashSet.newBuilder[BlockPos]
     var propagationList = Seq.newBuilder[Propagation]
     var analogDrops = Seq.newBuilder[Propagation]
@@ -171,7 +171,7 @@ class PropagationRun
         finish()
     }
 
-    def add(part:IWirePart, from:TMultiPart, mode:Int)
+    def add(part:IWirePart, from: TMultiPart, mode:Int)
     {
         if (from != lastCaller) {
             lastCaller = from
@@ -188,7 +188,7 @@ class PropagationRun
     }
 }
 
-class Propagation(part:IWirePart, from:TMultiPart, mode:Int)
+class Propagation(part:IWirePart, from: TMultiPart, mode:Int)
 {
     def go()
     {
@@ -235,7 +235,7 @@ trait IWirePart
      *             may be null.
      * @param mode One of RISING, DROPPING, FORCE and FORCED specified above
      */
-    def updateAndPropagate(prev:TMultiPart, mode:Int)
+    def updateAndPropagate(prev: TMultiPart, mode:Int)
 
     /**
      * Called at the end of a propogation run for partChanged events. Marks the

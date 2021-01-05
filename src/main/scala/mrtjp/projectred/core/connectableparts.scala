@@ -3,6 +3,7 @@ package mrtjp.projectred.core
 import codechicken.lib.vec.Rotation
 import codechicken.multipart._
 import codechicken.multipart.api.part.TMultiPart
+import codechicken.multipart.block.BlockMultiPart
 import codechicken.multipart.init.ModContent
 import codechicken.multipart.util.PartMap
 import mrtjp.projectred.api.IConnectable
@@ -36,18 +37,18 @@ trait TFaceAcquisitions extends TAcquisitionsCommons with TFaceOrient
         val absDir = absoluteDir(r)
         val pos = this.pos.offset(Direction.byIndex(absDir)).offset(Direction.byIndex(side))
 
-        BlockMultipart.getPart(world, pos, absDir^1)
+        BlockMultiPart.getPart(world, pos, absDir^1)
     }
 
     override def getStraight(r:Int) =
     {
         val pos = this.pos.offset(Direction.byIndex(absoluteDir(r)))
-        BlockMultipart.getPart(world, pos, side)
+        BlockMultiPart.getPart(world, pos, side)
     }
 
-    override def getInternal(r:Int) = tile.partMap(absoluteDir(r))
+    override def getInternal(r:Int) = tile.getSlottedPart(absoluteDir(r))
 
-    def getCenter = tile.partMap(6)
+    def getCenter = tile.getSlottedPart(6)
 
     def posOfCorner(r:Int) = pos.offset(Direction.byIndex(absoluteDir(r))).offset(Direction.byIndex(side))
 
@@ -70,10 +71,10 @@ trait TCenterAcquisitions extends TAcquisitionsCommons with TCenterOrient
     override def getStraight(s:Int) =
     {
         val pos = posOfInternal.offset(Direction.byIndex(s))
-        BlockMultipart.getPart(world, pos, 6)
+        BlockMultiPart.getPart(world, pos, 6)
     }
 
-    override def getInternal(s:Int) = tile.partMap(s)
+    override def getInternal(s:Int) = tile.getSlottedPart(s)
 
     override def posOfStraight(s:Int) = pos.offset(Direction.byIndex(s))
 }
@@ -250,10 +251,10 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
         else {
             val side1 = absDir^1
             val side2 = side
-            val t = BlockMultipart.getTile(world, pos)
+            val t = BlockMultiPart.getTile(world, pos)
             if (t != null)
-                t.partMap(side1) == null && t.partMap(side2) == null &&
-                        t.partMap(PartMap.edgeBetween(side1, side2)) == null
+                t.getSlottedPart(side1) == null && t.getSlottedPart(side2) == null &&
+                        t.getSlottedPart(PartMap.edgeBetween(side1, side2)) == null
             else false
         }
     }
@@ -280,7 +281,7 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
 
     def discoverInternal(r:Int) =
     {
-        if (tile.partMap(PartMap.edgeBetween(absoluteDir(r), side)) == null)
+        if (tile.getSlottedPart(PartMap.edgeBetween(absoluteDir(r), side)) == null)
             getInternal(r) match {
                 case c:IConnectable => canConnectPart(c, r) && c.connectInternal(this, rotFromInternal(r))
                 case p => discoverInternalOverride(p, r)

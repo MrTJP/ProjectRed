@@ -75,46 +75,6 @@ object RenderWire
     {
         getOrGenerateInvModel(thickness).render(ccrs, ops :+ ColourMultiplier.instance(hue):_*)
     }
-
-    def renderBreakingOverlay(icon:TextureAtlasSprite, wire:WirePart, ccrs:CCRenderState)
-    {
-        val key = modelKey(wire)
-        val side = (key>>8)%6
-        val w = ((key>>8)/6+1)/16D
-        val h = w+1/16D
-        val mask = key&0xFF
-        val connMask = (mask&0xF0)>>4|mask&0xF
-        val connCount = WireModelGen.countConnections(connMask)
-
-        val boxes = Vector.newBuilder[Cuboid6]
-        boxes += new Cuboid6(0.5-w, 0, 0.5-w, 0.5+w, h, 0.5+w).apply(Rotation.sideRotations(side).at(Vector3.CENTER)) //center
-
-        for (r <- 0 until 4)
-        {
-            val length =
-                if (connCount == 0)
-                {
-                    if (r%2 == 1) 4
-                    else 0
-                }
-                else if (connCount == 1)
-                {
-                    if (connMask == (1<<(r+2)%4)) 4 //this side is opposite the one with a connection
-                    else if (connMask == (1<<r)) 8
-                    else 0
-                }
-                else if ((connMask&1<<r) != 0) 8 else 0
-
-            if (length > 0)
-            {
-                val l = length/16D
-                boxes += new Cuboid6(0.5-w, 0, 0.5+w, 0.5+w, h, 0.5+l).apply(Rotation.sideOrientation(side, r).at(Vector3.CENTER))
-            }
-        }
-
-        ccrs.setPipeline(new Translation(wire.pos), new IconTransformation(icon))
-        for (box <- boxes.result()) BlockRenderer.renderCuboid(ccrs, box, 0)
-    }
 }
 
 class UVT(t:Transformation) extends UVTransformation

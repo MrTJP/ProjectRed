@@ -30,15 +30,15 @@ object PRLib
     }
 
     private val wireWhitelist = Seq(Blocks.GLOWSTONE, Blocks.PISTON, Blocks.STICKY_PISTON, Blocks.PISTON_HEAD)
-    def canPlaceWireOnSide(w:World, pos:BlockPos, side:Int):Boolean =
+    def canPlaceWireOnSide(w:World, pos:BlockPos, side:Direction):Boolean =
     {
         val state = w.getBlockState(pos)
         if (wireWhitelist.contains(state.getBlock)) return true
-        Block.hasSolidSide(state, w, pos, Direction.byIndex(side))
+        Block.hasSolidSide(state, w, pos, side)
     }
 
     private val gateWhiteList = Seq(Blocks.GLASS)
-    def canPlaceGateOnSide(w:World, pos:BlockPos, side:Int):Boolean =
+    def canPlaceGateOnSide(w:World, pos:BlockPos, side:Direction):Boolean =
     {
         if (canPlaceWireOnSide(w, pos, side)) return true
 
@@ -49,10 +49,10 @@ object PRLib
     }
 
 
-    def canPlaceLight(w:World, pos:BlockPos, side:Int):Boolean =
+    def canPlaceLight(w:World, pos:BlockPos, side:Direction):Boolean =
     {
         if (canPlaceWireOnSide(w, pos, side)) return true
-        if (side == 1) {
+        if (side == Direction.UP) {
             return Block.hasEnoughSolidSide(w, pos, Direction.UP)
         }
         false

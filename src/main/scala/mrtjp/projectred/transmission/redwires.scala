@@ -2,9 +2,9 @@ package mrtjp.projectred.transmission
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec.Rotation
-import codechicken.multipart.`trait`.TRedstoneTile
 import codechicken.multipart.`trait`.extern.IRedstoneTile
-import codechicken.multipart.api.part.{RedstoneInteractions, TMultiPart}
+import codechicken.multipart.api.RedstoneInteractions
+import codechicken.multipart.api.part.TMultiPart
 import codechicken.multipart.api.part.redstone.{IFaceRedstonePart, IMaskedRedstonePart, IRedstonePart}
 import mrtjp.core.world.Messenger
 import mrtjp.projectred.api.IConnectable

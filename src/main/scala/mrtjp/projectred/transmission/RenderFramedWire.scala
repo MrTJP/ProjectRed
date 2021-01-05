@@ -9,8 +9,8 @@ import codechicken.lib.vec._
 import codechicken.lib.vec.uv.{IconTransformation, UVScale, UVTranslation}
 import codechicken.microblock.api.MicroMaterial
 import codechicken.microblock.{CommonMicroFactory, IMicroHighlightRenderer, MicroMaterialRegistry, MicroblockRender}
+import codechicken.multipart.block.BlockMultiPart
 import codechicken.multipart.util.PartRayTraceResult
-import codechicken.multipart.BlockMultipart
 import com.mojang.blaze3d.matrix.MatrixStack
 import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
@@ -70,12 +70,6 @@ object RenderFramedWire extends IMicroHighlightRenderer
         for (s <- 0 until 6) if ((key&1<<s) != 0) frameModels(s).render(ccrs, ops:_*)
     }
 
-    def renderBreakingOverlay(icon:TextureAtlasSprite, wire:FramedWirePart, ccrs: CCRenderState)
-    {
-//        ccrs.setPipeline(new Translation(wire.pos), new IconTransformation(icon))
-//        for (box <- wire.getCollisionBoxes) BlockRenderer.renderCuboid(ccrs, box, 0)
-    }
-
     def renderInv(thickness:Int, hue:Int, ccrs:CCRenderState, ops:IVertexOperation*)
     {
         getOrGenerateWireModel(modelKey(thickness, 0x3F)).render(ccrs, ops :+ ColourMultiplier.instance(hue):_*)
@@ -98,11 +92,11 @@ object RenderFramedWire extends IMicroHighlightRenderer
 
     override def renderHighlight(player: PlayerEntity, hand: Hand, hit: BlockRayTraceResult, mcrFactory: CommonMicroFactory, size: Int, material: MicroMaterial, mStack: MatrixStack, getter: IRenderTypeBuffer, partialTicks: Float) =
     {
-        val tile = BlockMultipart.getTile(player.world, hit.getPos)
+        val tile = BlockMultiPart.getTile(player.world, hit.getPos)
         if (tile == null || mcrFactory.getFactoryID != 0 || size != 1 || player.isSneaking ||
             material.isTransparent) false
         else hit match {
-            case prt:PartRayTraceResult => tile.partList(prt.partIndex) match {
+            case prt:PartRayTraceResult => prt.part match {
                 case fpart:FramedWirePart if fpart.material != null || fpart.material != material =>
                     RenderFramedWire.renderCoverHighlight(fpart, material, CCRenderState.instance(), mStack, getter)
                     true
