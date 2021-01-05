@@ -260,7 +260,7 @@ object ExplorationContent {
         itemGreenBackpack,
         itemRedBackpack,
         itemBlackBackpack
-    ).map(_.asItem())
+    ).map(_.get)
 
     /** Containers */
     val containerBackpack = CONTAINERS.register("container_type", () => ICCLContainerType.create((id, inv, _) => new ContainerBackpack(id, inv)))
@@ -721,208 +721,171 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     override protected def registerRecipes() {
         smelting(itemBasalt, 1)
-            .autoCriteria()
             .ingredient(itemBasaltCobble)
             .experience(0.1F)
 
         smelting(itemRuby, 1, new ResourceLocation(MOD_ID, "ruby_from_ore"))
-            .autoCriteria()
             .ingredient(tagItemRubyOre)
             .experience(1F)
 
         smelting(itemSapphire, 1, new ResourceLocation(MOD_ID, "sapphire_from_ore"))
-            .autoCriteria()
             .ingredient(tagItemSapphireOre)
             .experience(1F)
 
         smelting(itemPeridot, 1, new ResourceLocation(MOD_ID, "peridot_from_ore"))
-            .autoCriteria()
             .ingredient(tagItemPeridotOre)
             .experience(1F)
 
         smelting(itemCopperIngot, 1, new ResourceLocation(MOD_ID, "copper_from_ore"))
-            .autoCriteria()
             .ingredient(tagItemCopperOre)
             .experience(0.7F)
 
         smelting(itemTinIngot, 1, new ResourceLocation(MOD_ID, "tin_from_ore"))
-            .autoCriteria()
             .ingredient(tagItemTinOre)
             .experience(0.7F)
 
         smelting(itemSilverIngot, 1, new ResourceLocation(MOD_ID, "silver_from_ore"))
-            .autoCriteria()
             .ingredient(tagItemSilverOre)
             .experience(0.8F)
 
         smelting(itemElectrotineDust, 1, new ResourceLocation(MOD_ID, "electrotine_from_ore"))
-            .autoCriteria()
             .ingredient(tagItemElectrotineOre)
             .experience(0.7F)
 
         shapedRecipe(blockMarbleBrick, 4)
-            .autoCriteria()
             .key('B', tagItemMarble)
             .patternLine("BB")
             .patternLine("BB")
 
         shapedRecipe(blockBasaltBrick, 4)
-            .autoCriteria()
             .key('B', tagItemBasalt)
             .patternLine("BB")
             .patternLine("BB")
 
         shapedRecipe(blockRubyBlock)
-            .autoCriteria()
             .key('S', tagGemsRuby)
             .patternLine("SSS")
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapelessRecipe(itemRuby, 9, new ResourceLocation(MOD_ID, "ruby_from_block"))
-            .autoCriteria()
             .addIngredient(tagItemRubyBlock)
 
         shapedRecipe(blockSapphireBlock)
-            .autoCriteria()
             .key('S', tagGemsSapphire)
             .patternLine("SSS")
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapelessRecipe(itemSapphire, 9, new ResourceLocation(MOD_ID, "sapphire_from_block"))
-            .autoCriteria()
             .addIngredient(tagItemSapphireBlock)
 
         shapedRecipe(blockPeridotBlock)
-            .autoCriteria()
             .key('S', tagGemsPeridot)
             .patternLine("SSS")
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapelessRecipe(itemPeridot, 9, new ResourceLocation(MOD_ID, "peridot_from_block"))
-            .autoCriteria()
             .addIngredient(tagItemPeridotBlock)
 
         shapedRecipe(blockCopperBlock)
-            .autoCriteria()
             .key('S', tagIngotsCopper)
             .patternLine("SSS")
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapelessRecipe(itemCopperIngot, 9, new ResourceLocation(MOD_ID, "copper_from_block"))
-            .autoCriteria()
             .addIngredient(tagItemCopperBlock)
 
         shapedRecipe(blockTinBlock)
-            .autoCriteria()
             .key('S', tagIngotsTin)
             .patternLine("SSS")
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapelessRecipe(itemTinIngot, 9, new ResourceLocation(MOD_ID, "tin_from_block"))
-            .autoCriteria()
             .addIngredient(tagItemTinBlock)
 
         shapedRecipe(blockSilverBlock)
-            .autoCriteria()
             .key('S', tagIngotsSilver)
             .patternLine("SSS")
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapelessRecipe(itemSilverIngot, 9, new ResourceLocation(MOD_ID, "silver_from_block"))
-            .autoCriteria()
             .addIngredient(tagItemSilverBlock)
 
         shapedRecipe(blockElectrotineBlock)
-            .autoCriteria()
             .key('S', tagDustsElectrotine)
             .patternLine("SSS")
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapelessRecipe(itemElectrotineDust, 9, new ResourceLocation(MOD_ID, "electrotine_from_block"))
-            .autoCriteria()
             .addIngredient(tagItemElectrotineBlock)
 
         shapedRecipe(blockMarbleWall, 6)
-            .autoCriteria()
             .key('S', tagItemMarble)
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapedRecipe(blockMarbleBrickWall, 6)
-            .autoCriteria()
             .key('S', blockMarbleBrick)
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapedRecipe(blockBasaltWall, 6)
-            .autoCriteria()
             .key('S', blockBasalt)
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapedRecipe(blockBasaltCobbleWall, 6)
-            .autoCriteria()
             .key('S', blockBasaltCobble)
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapedRecipe(blockBasaltBrickWall, 6)
-            .autoCriteria()
             .key('S', blockBasaltBrick)
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapedRecipe(blockRubyBlockWall, 6)
-            .autoCriteria()
             .key('S', blockRubyBlock)
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapedRecipe(blockSapphireBlockWall, 6)
-            .autoCriteria()
             .key('S', blockSapphireBlock)
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapedRecipe(blockPeridotBlockWall, 6)
-            .autoCriteria()
             .key('S', blockPeridotBlock)
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapedRecipe(blockCopperBlockWall, 6)
-            .autoCriteria()
             .key('S', blockCopperBlock)
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapedRecipe(blockTinBlockWall, 6)
-            .autoCriteria()
             .key('S', blockTinBlock)
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapedRecipe(blockSilverBlockWall, 6)
-            .autoCriteria()
             .key('S', blockSilverBlock)
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapedRecipe(blockElectrotineBlockWall, 6)
-            .autoCriteria()
             .key('S', blockElectrotineBlock)
             .patternLine("SSS")
             .patternLine("SSS")
 
         shapedRecipe(itemWoolGin)
-            .autoCriteria()
             .key('S', ForgeItemTags.RODS_WOODEN)
             .key('I', itemIronCoil)
             .patternLine("SIS")
@@ -930,13 +893,11 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine(" S ")
 
         shapedRecipe(Items.STRING, 4, new ResourceLocation(MOD_ID, "string_from_wool"))
-            .autoCriteria()
             .key('W', VanillaItemTags.WOOL)
             .key('G', itemWoolGin)
             .patternLine("GW")
 
         shapedRecipe(itemAthame)
-            .autoCriteria()
             .key('W', ForgeItemTags.RODS_WOODEN)
             .key('S', tagIngotsSilver)
             .patternLine("S")
@@ -997,7 +958,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     def addBackpackRecipe(colour: EnumColour) {
         val b = shapedRecipe(backpacks(colour.ordinal))
-            .autoCriteria()
             .key('C', itemWovenCloth)
             .patternLine("CCC")
         if (colour != EnumColour.WHITE) {
@@ -1009,14 +969,12 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
         b.patternLine("CCC")
 
         builder(ShapelessNBTCopyRecipeBuilder(backpacks(colour.ordinal), 1, new ResourceLocation(MOD_ID, colour.getName + "_backpack_recolor")))
-            .autoCriteria()
             .addIngredient(tagBackpacks)
             .addIngredient(new ItemTag(colour.getDyeTagName))
     }
 
     def addAxeRecipe(result: Item, material: Tag[Item]) {
         shapedRecipe(result)
-            .autoCriteria()
             .key('M', material)
             .key('S', ForgeItemTags.RODS_WOODEN)
             .patternLine("MM ")
@@ -1026,7 +984,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     def addHoeRecipe(result: Item, material: Tag[Item]) {
         shapedRecipe(result)
-            .autoCriteria()
             .key('M', material)
             .key('S', ForgeItemTags.RODS_WOODEN)
             .patternLine("MM ")
@@ -1036,7 +993,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     def addPickaxeRecipe(result: Item, material: Tag[Item]) {
         shapedRecipe(result)
-            .autoCriteria()
             .key('M', material)
             .key('S', ForgeItemTags.RODS_WOODEN)
             .patternLine("MMM")
@@ -1046,7 +1002,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     def addShovelRecipe(result: Item, material: Tag[Item]) {
         shapedRecipe(result)
-            .autoCriteria()
             .key('M', material)
             .key('S', ForgeItemTags.RODS_WOODEN)
             .patternLine(" M ")
@@ -1056,7 +1011,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     def addSwordRecipe(result: Item, material: Tag[Item]) {
         shapedRecipe(result)
-            .autoCriteria()
             .key('M', material)
             .key('S', ForgeItemTags.RODS_WOODEN)
             .patternLine(" M ")
@@ -1066,7 +1020,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     def addSawRecipe(result: Item, material: Tag[Item]) {
         shapedRecipe(result)
-            .autoCriteria()
             .key('M', material)
             .key('S', ForgeItemTags.RODS_WOODEN)
             .key('R', MicroblockModContent.stoneRodTag)
@@ -1076,7 +1029,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     def addSickleRecipe(result: Item, material: Tag[Item]) {
         shapedRecipe(result)
-            .autoCriteria()
             .key('M', material)
             .key('S', ForgeItemTags.RODS_WOODEN)
             .patternLine(" M ")
@@ -1086,7 +1038,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     def addSickleRecipe(result: Item, material: Item) {
         shapedRecipe(result)
-            .autoCriteria()
             .key('M', material)
             .key('S', ForgeItemTags.RODS_WOODEN)
             .patternLine(" M ")
@@ -1096,7 +1047,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     def addHelmetRecipe(result: Item, material: Tag[Item]) {
         shapedRecipe(result)
-            .autoCriteria()
             .key('M', material)
             .patternLine("MMM")
             .patternLine("M M")
@@ -1104,7 +1054,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     def addChestplateRecipe(result: Item, material: Tag[Item]) {
         shapedRecipe(result)
-            .autoCriteria()
             .key('M', material)
             .patternLine("M M")
             .patternLine("MMM")
@@ -1113,7 +1062,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     def addLeggingsRecipe(result: Item, material: Tag[Item]) {
         shapedRecipe(result)
-            .autoCriteria()
             .key('M', material)
             .patternLine("MMM")
             .patternLine("M M")
@@ -1122,7 +1070,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     def addBootsRecipe(result: Item, material: Tag[Item]) {
         shapedRecipe(result)
-            .autoCriteria()
             .key('M', material)
             .patternLine("M M")
             .patternLine("M M")

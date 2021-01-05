@@ -347,42 +347,33 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     override protected def registerRecipes() {
         smelting(itemPlate, 2)
-            .autoCriteria()
             .ingredient(STONE)
 
         smelting(itemSiliconBoule)
-            .autoCriteria()
             .ingredient(itemSandCoalCompound)
 
         smelting(itemInfusedSilicon)
-            .autoCriteria()
             .ingredient(itemRedSiliconCompound)
 
         smelting(itemEnergizedSilicon)
-            .autoCriteria()
             .ingredient(itemGlowingSiliconCompound)
 
         smelting(itemRedIngot)
-            .autoCriteria()
             .ingredient(itemRedIronCompound)
 
         smelting(itemElectrotineIngot)
-            .autoCriteria()
             .ingredient(itemElectrotineIronCompound)
 
         smelting(itemElectrotineSilicon)
-            .autoCriteria()
             .ingredient(itemElectrotineSiliconCompound)
 
         shapedRecipe(itemConductivePlate)
-            .autoCriteria()
             .key('R', DUSTS_REDSTONE)
             .key('P', itemPlate)
             .patternLine("R")
             .patternLine("P")
 
         shapedRecipe(itemPlatformedPlate)
-            .autoCriteria()
             .key('R', itemConductivePlate)
             .key('S', RODS_WOODEN)
             .key('P', itemPlate)
@@ -391,7 +382,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("PRP")
 
         shapedRecipe(itemAnode, 3)
-            .autoCriteria()
             .key('R', DUSTS_REDSTONE)
             .key('P', itemPlate)
             .patternLine(" R ")
@@ -399,14 +389,12 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("PPP")
 
         shapedRecipe(itemCathode)
-            .autoCriteria()
             .key('T', Items.REDSTONE_TORCH)
             .key('P', itemPlate)
             .patternLine("T")
             .patternLine("P")
 
         shapedRecipe(itemPointer)
-            .autoCriteria()
             .key('S', STONE)
             .key('T', Items.REDSTONE_TORCH)
             .key('P', itemPlate)
@@ -415,21 +403,18 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("P")
 
         shapedRecipe(itemSiliconChip)
-            .autoCriteria()
             .key('S', itemInfusedSilicon)
             .key('P', itemPlate)
             .patternLine(" S ")
             .patternLine("PPP")
 
         shapedRecipe(itemEnergizedSiliconChip)
-            .autoCriteria()
             .key('E', itemEnergizedSilicon)
             .key('P', itemPlate)
             .patternLine(" E ")
             .patternLine("PPP")
 
         shapedRecipe(itemSandCoalCompound)
-            .autoCriteria()
             .key('S', SAND)
             .key('C', STORAGE_BLOCKS_COAL)
             .patternLine("SSS")
@@ -437,7 +422,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("SSS")
 
         shapedRecipe(itemRedIronCompound)
-            .autoCriteria()
             .key('R', DUSTS_REDSTONE)
             .key('I', INGOTS_IRON)
             .patternLine("RRR")
@@ -445,7 +429,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("RRR")
 
         shapedRecipe(itemElectrotineIronCompound)
-            .autoCriteria()
             .key('B', tagDustsElectrotine)
             .key('I', INGOTS_IRON)
             .patternLine("BBB")
@@ -453,14 +436,12 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("BBB")
 
         shapedRecipe(itemSilicon, 8)
-            .autoCriteria()
             .key('S', MicroblockModContent.itemDiamondSaw)
             .key('B', itemSiliconBoule)
             .patternLine("S")
             .patternLine("B")
 
         shapedRecipe(itemRedSiliconCompound)
-            .autoCriteria()
             .key('R', DUSTS_REDSTONE)
             .key('S', itemSilicon)
             .patternLine("RRR")
@@ -468,7 +449,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("RRR")
 
         shapedRecipe(itemGlowingSiliconCompound)
-            .autoCriteria()
             .key('G', DUSTS_GLOWSTONE)
             .key('S', itemSilicon)
             .patternLine("GGG")
@@ -476,7 +456,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("GGG")
 
         shapedRecipe(itemElectrotineSiliconCompound)
-            .autoCriteria()
             .key('E', tagDustsElectrotine)
             .key('S', itemSilicon)
             .patternLine("EEE")
@@ -484,25 +463,21 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("EEE")
 
         shapedRecipe(itemCopperCoil)
-            .autoCriteria()
             .key('C', tagIngotsCopper)
             .key('D', itemDrawPlate)
             .patternLine("CD")
 
         shapedRecipe(itemIronCoil)
-            .autoCriteria()
             .key('I', INGOTS_IRON)
             .key('D', itemDrawPlate)
             .patternLine("ID")
 
         shapedRecipe(itemGoldCoil)
-            .autoCriteria()
             .key('G', INGOTS_GOLD)
             .key('D', itemDrawPlate)
             .patternLine("GD")
 
         shapedRecipe(itemMotor)
-            .autoCriteria()
             .key('I', INGOTS_IRON)
             .key('S', STONE)
             .key('C', itemCopperCoil)
@@ -512,7 +487,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("RCR")
 
         shapedRecipe(itemWovenCloth)
-            .autoCriteria()
             .key('S', STRING)
             .key('W', RODS_WOODEN)
             .patternLine("SSS")
@@ -520,7 +494,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("SSS")
 
         shapedRecipe(itemSail)
-            .autoCriteria()
             .key('S', itemWovenCloth)
             .patternLine("SS")
             .patternLine("SS")
@@ -534,11 +507,8 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine(" I ")
             .patternLine("IDI")
             .patternLine(" I ")
-            .addCriterion("has_iron_block", hasItem(STORAGE_BLOCKS_IRON))
-            .addCriterion("has_diamond_block", hasItem(STORAGE_BLOCKS_DIAMOND))
 
         shapedRecipe(itemScrewdriver)
-            .autoCriteria()
             .key('I', INGOTS_IRON)
             .key('B', DYES_BLUE)
             .patternLine("I  ")
@@ -546,7 +516,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine(" BI")
 
         shapedRecipe(itemMultimeter)
-            .autoCriteria()
             .key('A', tagIngotsRedAlloy)
             .key('B', DYES_BLACK)
             .key('E', DYES_GREEN)
@@ -560,7 +529,6 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     private def addLumarRecipe(colour: EnumColour) {
         shapelessRecipe(illumars(colour.ordinal))
-            .autoCriteria()
             .addIngredient(DUSTS_GLOWSTONE, 2)
             .addIngredient(new ItemTag(colour.getDyeTagName), 2)
     }
