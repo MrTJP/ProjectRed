@@ -26,7 +26,7 @@ class ChipItemResponder extends RoutingChip with TChipFilter with TChipPriority
         null
     }
 
-    def filterAllows(item:ItemKey) = !enableFilter || applyFilter(InvWrapper.wrap(filter)).hasItem(item) != filterExclude
+    def filterAllows(item:ItemKey) = applyFilter(InvWrapper.wrap(filter)).hasItem(item) != filterExclude
 
     override def infoCollection(list:ListBuffer[String])
     {

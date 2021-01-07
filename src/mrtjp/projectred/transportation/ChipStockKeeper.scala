@@ -52,12 +52,12 @@ class ChipStockKeeper extends RoutingChip with TChipStock with TChipMatchMatrix
 
             val stockToKeep = if (requestMode == 2) Int.MaxValue else filt.getItemCount(keyStack.key)
             val inInventory = inv.getItemCount(keyStack.key)+getEnroute(eq, keyStack.key)
-            val spaceInInventory = router.getActiveFreeSpace(keyStack.key)
+            val spaceInInventory = routeLayer.getRequester.getActiveFreeSpace(keyStack.key)
             var toRequest = math.min(stockToKeep-inInventory, spaceInInventory)
             toRequest = math.min(toRequest, maxRequestSize)
             if (toRequest <= 0 || (requestMode == 1 && inInventory > 0)) break()
 
-            val req = new RequestConsole(RequestFlags.full).setDestination(router).setEquality(eq)
+            val req = new RequestConsole(RequestFlags.full).setDestination(routeLayer.getRequester).setEquality(eq)
             val request = ItemKeyStack.get(keyStack.key, toRequest)
             req.makeRequest(request)
 
@@ -65,14 +65,14 @@ class ChipStockKeeper extends RoutingChip with TChipStock with TChipMatchMatrix
             if (req.requested > 0) requestedSomething = true
         }
 
-        if (requestAttempted) RouteFX2.spawnType1(RouteFX2.color_request, router.getPipe)
+        if (requestAttempted) RouteFX2.spawnType1(RouteFX2.color_request, routeLayer.getWorldRouter.getContainer)
         if (requestAttempted && requestedSomething) operationsWithoutRequest = 0
         else operationsWithoutRequest += 1
 
         remainingDelay = operationDelay+throttleDelay
     }
 
-    def getEnroute(eq:ItemEquality, item:ItemKey) = router.getPipe
+    def getEnroute(eq:ItemEquality, item:ItemKey) = routeLayer.getWorldRouter.getContainer
             .transitQueue.count(eq.matches(item, _))
 
     override def weakTileChanges = true
