@@ -6,7 +6,7 @@ import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 
 import scala.collection.mutable.ListBuffer
 
-case class BroadcastObject(stack:ItemKeyStack, requester:IRouterContainer)
+case class BroadcastObject(stack:ItemKeyStack, requester:IWorldRequester)
 {
     var priority:Priorities.Priority = null
 }
@@ -15,7 +15,7 @@ trait TActiveBroadcastStack extends RoutingChip
 {
     private var orders = Seq[BroadcastObject]()
 
-    def addOrder(stack:ItemKeyStack, requester:IRouterContainer, priority:Priorities.Priority)
+    def addOrder(stack:ItemKeyStack, requester:IWorldRequester, priority:Priorities.Priority)
     {
         orders.find(p => p.stack.key == stack.key && p.requester == requester) match
         {
@@ -94,14 +94,14 @@ trait TActiveBroadcastStack extends RoutingChip
                 if (real == null)
                 {
                     popAll()
-                    req.postNetworkEvent(TrackedPayloadCancelledEvent(stack.key, stack.stackSize, router))
+                    req.itemLost(stack)
                     cont.break()
                 }
 
-                if (!router.getRouter.canRouteTo(req.getRouter.getIPAddress, stack.key, bObj.priority))
+                if (!routeLayer.getRouter.canRouteTo(req.getRouter.getIPAddress, stack.key, bObj.priority))
                 {
                     popAll()
-                    req.postNetworkEvent(TrackedPayloadCancelledEvent(stack.key, stack.stackSize, router))
+                    req.itemLost(stack)
                     cont.break()
                 }
 
@@ -124,14 +124,18 @@ trait TActiveBroadcastStack extends RoutingChip
                 }
 
                 val removed = extractItem(stack.key, toExtract)
-                if (removed <= 0 && timeOutOnFailedExtract) {
+                if (removed <= 0 && timeOutOnFailedExtract)
+                {
                     popAll()
-                    req.postNetworkEvent(TrackedPayloadCancelledEvent(stack.key, stack.stackSize, router))
+                    req.itemLost(stack)
                     cont.break()
                 }
 
                 if (removed > 0)
-                    router.queueStackToSend(stack.key, removed, bObj.priority, req.getRouter.getIPAddress)
+                {
+                    val toSend = stack.key.makeStack(removed)
+                    routeLayer.queueStackToSend(toSend, invProvider.getInterfacedSide, bObj.priority, req.getRouter.getIPAddress)
+                }
 
                 if (!pop(removed) && restack) restackOrders()
 
@@ -188,15 +192,15 @@ class ChipBroadcaster extends RoutingChip with TChipFilter with TChipOrientation
 
         for ((key, amount) <- inv.getAllItemStacks.filter{p => requested.matches(p._1) && filt.hasItem(p._1) != filterExclude})
         {
-            val available = amount-request.root.getExistingPromisesFor(router, key)
+            val available = amount-request.root.getExistingPromisesFor(routeLayer.getBroadcaster, key)
             val toAdd = math.min(request.getMissingCount, available)
             if (toAdd > 0) request.addPromise(
-                new DeliveryPromise(key, toAdd, router)
+                new DeliveryPromise(key, toAdd, routeLayer.getBroadcaster)
             )
         }
     }
 
-    override def deliverPromise(promise:DeliveryPromise, requester:IRouterContainer)
+    override def deliverPromise(promise:DeliveryPromise, requester:IWorldRequester)
     {
         addOrder(ItemKeyStack.get(promise.item, promise.size), requester, Priorities.ACTIVEB)
     }
@@ -224,7 +228,7 @@ class ChipBroadcaster extends RoutingChip with TChipFilter with TChipOrientation
         while (hasOrders)
         {
             val BroadcastObject(s, r) = popAll()
-            r.postNetworkEvent(TrackedPayloadCancelledEvent(s.key, s.stackSize, router))
+            r.itemLost(s)
         }
     }
 

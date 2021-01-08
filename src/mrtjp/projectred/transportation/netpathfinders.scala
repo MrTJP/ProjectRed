@@ -14,7 +14,7 @@ import scala.collection.mutable.{Builder => MBuilder}
 
 object LSPathFinder
 {
-    var start:IRouterContainer = _
+    var start:IWorldRouter = null
 
     private var registeredLSTypes = List[ISpecialLinkState]()
 
@@ -37,9 +37,8 @@ object LSPathFinder
 
     def result() =
     {
-        val pipe = start.getPipe
-        val bc = pipe.posOfInternal
-
+        val pipe = start.getContainer
+        val bc = start.getCoords
         val q = Queue.newBuilder[Node]
         for (s <- 0 until 6 if pipe.maskConnects(s)) q += Node(bc, s)
         iterate(q.result()).sorted
@@ -54,7 +53,7 @@ object LSPathFinder
         case Seq() => coll.result()
         case Seq(next, rest@_*) => getPipe(next.bc) match
         {
-            case iwr:IRouterContainer with TNetworkPipe if {val r = iwr.getRouter; r != null && r.isLoaded} =>
+            case iwr:IWorldRouter with TNetworkPipe if {val r = iwr.getRouter; r != null && r.isLoaded} =>
                 iterate(rest, closed+next, coll += new StartEndPath(start.getRouter,
                     iwr.getRouter, next.hop, next.dist, next.filters+iwr.pathFilter, iwr.networkFilter))
             case p:TNetworkSubsystem =>
@@ -129,7 +128,7 @@ object LSPathFinder
 
 object CollectionPathFinder
 {
-    var start:IRouterContainer = null
+    var start:IWorldRequester = null
     var collectBroadcasts:Boolean = false
     var collectCrafts:Boolean = false
 
@@ -148,16 +147,16 @@ object CollectionPathFinder
         for (p <- start.getRouter.getRoutesByCost)
         {
             builder.clear()
-            val parent = p.end.getContainer
+            val parent = p.end.getParent
 
-            if (collectCrafts && p.flagRouteFrom && p.allowCrafting)
+            if (parent.isInstanceOf[IWorldCrafter] && collectCrafts && p.flagRouteFrom && p.allowCrafting)
             {
-                val list = parent.getCraftedItems
+                val list = parent.asInstanceOf[IWorldCrafter].getCraftedItems
                 if (list != null) for (stack <- list) builder += stack.key -> 0
             }
 
-            if (collectBroadcasts && p.flagRouteFrom && p.allowBroadcast)
-                parent.getBroadcasts(builder)
+            if (parent.isInstanceOf[IWorldBroadcaster] && collectBroadcasts && p.flagRouteFrom && p.allowBroadcast)
+                parent.asInstanceOf[IWorldBroadcaster].getBroadcasts(builder)
 
             pool ++= builder.result.filter(i => p.allowItem(i._1))
         }
@@ -190,18 +189,20 @@ object LogisticPathFinder
         var bestIP = -1
         import scala.util.control.Breaks._
 
-        for (l <- start.getFilteredRoutesByCost(p => p.flagRouteTo && p.allowRouting && p.allowItem(payload))) breakable {
+        for (l <- start.getFilteredRoutesByCost(p => p.flagRouteTo && p.allowRouting && p.allowItem(payload))) breakable
+        {
             val r = l.end
             if (excludeSource && r.getIPAddress == start.getIPAddress) break()
-            if (excludeSource && LogisticPathFinder.sharesInventory(start.getContainer.getPipe, r.getContainer.getPipe)) break()
+            if (excludeSource && LogisticPathFinder.sharesInventory(start.getParent.getContainer, r.getParent.getContainer)) break()
             if (exclusions(r.getIPAddress) || visited(r.getIPAddress)) break()
 
             visited += r.getIPAddress
-            val parent = r.getContainer
+            val parent = r.getParent
             if (parent == null) break()
 
             val sync = parent.getSyncResponse(payload, bestResponse)
-            if (sync != null) if (sync.isPreferredOver(bestResponse)) {
+            if (sync != null) if (sync.isPreferredOver(bestResponse))
+            {
                 bestResponse = sync
                 bestIP = r.getIPAddress
             }

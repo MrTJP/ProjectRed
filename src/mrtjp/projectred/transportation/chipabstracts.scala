@@ -16,19 +16,19 @@ import scala.collection.mutable.ListBuffer
 
 abstract class RoutingChip
 {
-    private var routerContainer:IRouterContainer = null
     private var invProv:IInventoryProvider = null
+    private var rl:TRouteLayer = null
     private var s = -1
 
-    def setEnvironment(inventoryProvider:IInventoryProvider, irc:IRouterContainer, slot:Int)
+    def setEnvironment(inventoryProvider:IInventoryProvider, routeLayer:TRouteLayer, slot:Int)
     {
         invProv = inventoryProvider
-        routerContainer = irc
+        rl = routeLayer
         s = slot
     }
 
     def invProvider = invProv
-    def router = routerContainer
+    def routeLayer = rl
     def slot = s
 
     def update(){}
@@ -40,7 +40,7 @@ abstract class RoutingChip
 
     /** Broadcasting **/
     def requestPromise(request:RequestBranchNode, existingPromises:Int){}
-    def deliverPromise(promise:DeliveryPromise, requester:IRouterContainer){}
+    def deliverPromise(promise:DeliveryPromise, requester:IWorldRequester){}
     def getBroadcasts(col:ItemQueue){}
 
     def getBroadcastPriority = Integer.MAX_VALUE
@@ -73,6 +73,36 @@ abstract class RoutingChip
     }
 
     def createContainer(player:EntityPlayer) = new ContainerChipConfig(player, this)
+}
+
+abstract class NetworkEvent
+{
+    private var canceled = false
+
+    def isCanceled = canceled
+
+    def setCanceled()
+    {
+        if (!isCancelable) throw new Exception(s"Network event ${this.getClass.getSimpleName} cannot be canceled")
+        if (canceled) throw new Exception(s"Network event ${this.getClass.getSimpleName} is already canceled")
+        canceled = true
+    }
+
+    def isCancelable:Boolean
+}
+
+class ItemLostEvent(val item:ItemKey, val amount:Int) extends NetworkEvent
+{
+    var remaining = amount
+
+    override def isCancelable = true
+}
+
+class ItemReceivedEvent(val item:ItemKey, val amount:Int) extends NetworkEvent
+{
+    var remaining = amount
+
+    override def isCancelable = true
 }
 
 trait TChipFilter extends RoutingChip
