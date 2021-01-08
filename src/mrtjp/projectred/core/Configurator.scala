@@ -159,6 +159,7 @@ object Configurator extends ModConfig("ProjRed|Core")
         compat_CCBundledCalbe = compat.put("ComputerCraft: Bundled Cables", compat_CCBundledCalbe, "This allows computers to connect to bundled cables with the RS API")
         compat_ColoredLights = compat.put("ColoredLights Compat", compat_ColoredLights, "This makes things emit colored light. CLC is in beta state and may cause minor rendering glitches.")
         compat_MFRDeepStorage = compat.put("MFR: Deep Storage", compat_MFRDeepStorage, "This allows pipes to recoginze MFR Deep storage units correctly.")
+        compat_StorageDrawers = compat.put("Storage Drawers", compat_StorageDrawers, "This allows pipes to recognize storage drawers correctly.")
     }
 }
 

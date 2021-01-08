@@ -14,7 +14,7 @@ import net.minecraft.inventory.IInventory
 
 object PluginStorageDrawers extends IPRPlugin
 {
-  override def getModIDs = Array("ProjRed|Transportation")
+  override def getModIDs = Array("StorageDrawers")
 
   override def isEnabled = Configurator.compat_StorageDrawers
 
