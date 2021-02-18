@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-integration:randomizer_gate"
+  },
+  "pattern": [
+    "PEP",
+    "WWW",
+    "EWE"
+  ],
+  "key": {
+    "E": {
+      "item": "projectred-core:energized_silicon_chip"
+    },
+    "P": {
+      "item": "projectred-core:plate"
+    },
+    "W": {
+      "item": "projectred-core:conductive_plate"
+    }
+  }
+}

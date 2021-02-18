@@ -15,7 +15,8 @@ object WirePropagator
 {
     def setDustProvidePower(b:Boolean)
     {
-        Blocks.REDSTONE_WIRE.asInstanceOf[RedstoneWireBlock].canProvidePower = b
+        //TODO
+//        Blocks.REDSTONE_WIRE.asInstanceOf[RedstoneWireBlock].canProvidePower = b
     }
 
     private val rwConnectable = ThreadLocal.withInitial[Boolean](() => true)

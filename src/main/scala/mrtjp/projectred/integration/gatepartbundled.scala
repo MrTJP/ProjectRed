@@ -5,22 +5,26 @@
  */
 package mrtjp.projectred.integration
 
-import java.util.Random
-
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.raytracer.{CuboidRayTraceResult, IndexedCuboid6}
+import codechicken.lib.raytracer.{IndexedVoxelShape, MultiIndexedVoxelShape, VoxelShapeCache}
 import codechicken.lib.vec.{Cuboid6, Vector3}
+import codechicken.microblock.FaceMicroFactory
+import codechicken.multipart.util.PartRayTraceResult
+import com.google.common.collect.ImmutableSet
 import mrtjp.core.vec.VecLib
 import mrtjp.projectred.api.{IBundledEmitter, IBundledTile, IConnectable, IScrewdriver}
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.core.TFaceOrient._
 import mrtjp.projectred.transmission.BundledCommons._
 import mrtjp.projectred.transmission.{APIImpl_Transmission, TFaceBundledAquisitions}
-import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumFacing
+import net.minecraft.nbt.CompoundNBT
+import net.minecraft.util.Direction
+
+import java.util.Random
+import scala.jdk.CollectionConverters._
 
 trait TBundledGatePart extends GatePart with TFaceBundledAquisitions with IBundledEmitter
 {
@@ -31,7 +35,7 @@ trait TBundledGatePart extends GatePart with TFaceBundledAquisitions with IBundl
         val pos = posOfStraight(absDir)
         world.getTileEntity(pos) match {
             case t:IBundledTile => t.canConnectBundled(absDir^1)
-            case _ if APIImpl_Transmission.canConnectBundled(world, pos, EnumFacing.values()(absDir^1)) => true
+            case _ if APIImpl_Transmission.canConnectBundled(world, pos, Direction.byIndex(absDir^1)) => true
             case _ => super.discoverStraightOverride(absDir)
         }
     }
@@ -77,7 +81,7 @@ trait TBundledGateLogic[T <: TBundledGatePart] extends GateLogic[T]
     def getBundledOutput(gate:T, r:Int):Array[Byte] = null
 }
 
-class BundledGatePart extends RedstoneGatePart with TBundledGatePart with TComplexGatePart
+class BundledGatePart(gateType:GateType) extends RedstoneGatePart(gateType) with TBundledGatePart with TComplexGatePart
 {
     private var logic:BundledGateLogic = null
 
@@ -85,23 +89,23 @@ class BundledGatePart extends RedstoneGatePart with TBundledGatePart with TCompl
 
     override def assertLogic()
     {
-        if (logic == null) logic = BundledGateLogic.create(this, subID)
+        if (logic == null) logic = BundledGateLogic.create(this, getGateType)
     }
 
-    override def getType = GateDefinition.typeBundledGate
+//    override def getType = GateDefinition.typeBundledGate
 }
 
 object BundledGateLogic
 {
-    import mrtjp.projectred.integration.GateDefinition._
-    def create(gate:BundledGatePart, subID:Int) = subID match
+    import mrtjp.projectred.integration.GateType._
+    def create(gate:BundledGatePart, gateType:GateType) = gateType match
     {
-        case BusTransceiver.ordinal => new BusTransceiver(gate)
-        case BusRandomizer.ordinal => new BusRandomizer(gate)
-        case BusConverter.ordinal => new BusConverter(gate)
-        case GateDefinition.BusInputPanel.ordinal => new BusInputPanel(gate)
-        case SegmentDisplay.ordinal => new SegmentDisplay(gate)
-        case _ => throw new IllegalArgumentException("Invalid gate subID: "+subID)
+        case BUS_TRANSCEIVER => new BusTransceiver(gate)
+        case BUS_RANDOMIZER => new BusRandomizer(gate)
+        case BUS_CONVERTER => new BusConverter(gate)
+        case BUS_INPUT_PANEL => new BusInputPanel(gate)
+        case SEGMENT_DISPLAY => new SegmentDisplay(gate)
+        case _ => throw new IllegalArgumentException("Invalid gateType: "+gateType)
     }
 }
 
@@ -116,7 +120,7 @@ class BusTransceiver(gate:BundledGatePart) extends BundledGateLogic(gate)
     override def outputMask(shape:Int) = 0
     override def inputMask(shape:Int) = 10
 
-    override def save(tag:NBTTagCompound)
+    override def save(tag:CompoundNBT)
     {
         saveSignal(tag, "in0", input0)
         saveSignal(tag, "out0", output0)
@@ -124,7 +128,7 @@ class BusTransceiver(gate:BundledGatePart) extends BundledGateLogic(gate)
         saveSignal(tag, "out2", output2)
     }
 
-    override def load(tag:NBTTagCompound)
+    override def load(tag:CompoundNBT)
     {
         input0 = loadSignal(tag, "in0")
         input2 = loadSignal(tag, "in2")
@@ -150,7 +154,7 @@ class BusTransceiver(gate:BundledGatePart) extends BundledGateLogic(gate)
 
     def sendClientUpdate()
     {
-        gate.getWriteStreamOf(11).writeInt(packClientData)
+        gate.sendUpdate(11, _.writeInt(packClientData))
     }
 
     def packClientData = packDigital(output0)|packDigital(output2)<<16
@@ -235,13 +239,13 @@ class BusRandomizer(gate:BundledGatePart) extends BundledGateLogic(gate)
     override def inputMask(shape:Int) = 10
     override def outputMask(shape:Int) = 0
 
-    override def save(tag:NBTTagCompound)
+    override def save(tag:CompoundNBT)
     {
-        tag.setShort("in", (mask&0xFFFF).asInstanceOf[Short])
-        tag.setShort("out", (output&0xFFFF).asInstanceOf[Short])
+        tag.putShort("in", (mask&0xFFFF).asInstanceOf[Short])
+        tag.putShort("out", (output&0xFFFF).asInstanceOf[Short])
     }
 
-    override def load(tag:NBTTagCompound)
+    override def load(tag:CompoundNBT)
     {
         mask = tag.getShort("in")
         output = tag.getShort("out")
@@ -269,12 +273,12 @@ class BusRandomizer(gate:BundledGatePart) extends BundledGateLogic(gate)
 
     def sendOutUpdate()
     {
-        gate.getWriteStreamOf(11).writeShort(output)
+        gate.sendUpdate(11, _.writeShort(output))
     }
 
     def sendMaskUpdate()
     {
-        gate.getWriteStreamOf(12).writeShort(mask)
+        gate.sendUpdate(12, _.writeShort(mask))
     }
 
     override def onChange(gate:BundledGatePart)
@@ -359,15 +363,15 @@ class BusConverter(gate:BundledGatePart) extends BundledGateLogic(gate)
         bOutUnpacked = unpackDigital(bOutUnpacked, bOut)
     }
 
-    override def save(tag:NBTTagCompound)
+    override def save(tag:CompoundNBT)
     {
-        tag.setByte("in", rsIn.toByte)
-        tag.setByte("out", rsOut.toByte)
-        tag.setByte("in0", bIn.toByte)
-        tag.setByte("out0", bOut.toByte)
+        tag.putByte("in", rsIn.toByte)
+        tag.putByte("out", rsOut.toByte)
+        tag.putByte("in0", bIn.toByte)
+        tag.putByte("out0", bOut.toByte)
     }
 
-    override def load(tag:NBTTagCompound)
+    override def load(tag:CompoundNBT)
     {
         rsIn = tag.getByte("in")
         rsOut = tag.getByte("out")
@@ -393,7 +397,7 @@ class BusConverter(gate:BundledGatePart) extends BundledGateLogic(gate)
 
     def sendClientUpdate()
     {
-        gate.getWriteStreamOf(11).writeShort(packClientData)
+        gate.sendUpdate(11, _.writeShort(packClientData))
     }
 
     def packClientData = rsIn|rsOut<<4|mostSignificantBit(bIn)<<8|mostSignificantBit(bOut)<<12
@@ -477,6 +481,30 @@ object BusInputPanel
 {
     val unpressed = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 3, 13), new Vector3(-0.25, 0, -0.25))
     val pressed = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25))
+
+    val sBoxes = Array.ofDim[Cuboid6](6*4, 65536)
+    val sShapes = Array.ofDim[MultiIndexedVoxelShape](6*4, 65536)
+
+    def getOrCreateOutline(orient:Int, pressMask:Int):MultiIndexedVoxelShape = {
+        var shape = sShapes(orient)(pressMask)
+        if (shape == null) {
+            val t = VecLib.orientT(orient)
+            val shapeBuilder = Set.newBuilder[IndexedVoxelShape]
+
+            //Base platform box
+            val baseBounds = FaceMicroFactory.aBounds(0x10|0).copy.apply(t)
+            val baseShape = VoxelShapeCache.getShape(baseBounds)
+            shapeBuilder += new IndexedVoxelShape(baseShape, -1)
+            for (i <- 0 until 16) {
+                val bounds = (if ((pressMask&1<<i) != 0) pressed else unpressed)(i).copy.apply(t)
+                shapeBuilder += new IndexedVoxelShape(VoxelShapeCache.getShape(bounds), i)
+            }
+
+            shape = new MultiIndexedVoxelShape(ImmutableSet.copyOf(shapeBuilder.result().asJava))
+            sShapes(orient)(pressMask) = shape
+        }
+        shape
+    }
 }
 
 class BusInputPanel(gate:BundledGatePart) extends BundledGateLogic(gate)
@@ -498,13 +526,13 @@ class BusInputPanel(gate:BundledGatePart) extends BundledGateLogic(gate)
         bOutUnpack = unpackDigital(bOutUnpack, bOut)
     }
 
-    override def save(tag:NBTTagCompound)
+    override def save(tag:CompoundNBT)
     {
-        tag.setShort("press", pressMask.toShort)
-        tag.setShort("mask", bOut.toShort)
+        tag.putShort("press", pressMask.toShort)
+        tag.putShort("mask", bOut.toShort)
     }
 
-    override def load(tag:NBTTagCompound)
+    override def load(tag:CompoundNBT)
     {
         pressMask = tag.getShort("press")
         setBOut(tag.getShort("mask")&0xFFFF)
@@ -528,7 +556,7 @@ class BusInputPanel(gate:BundledGatePart) extends BundledGateLogic(gate)
 
     def sendClientUpdate()
     {
-        gate.getWriteStreamOf(11).writeShort(pressMask)
+        gate.sendUpdate(11, _.writeShort(pressMask))
     }
 
     override def getOutput(gate:BundledGatePart, r:Int) = if ((gate.state&0x10<<r) != 0) 15 else 0
@@ -574,18 +602,17 @@ class BusInputPanel(gate:BundledGatePart) extends BundledGateLogic(gate)
         onChange(gate)
     }
 
-    import mrtjp.projectred.integration.BusInputPanel._
-    override def getSubParts(gate:BundledGatePart) = (0 until 16).map(i => new IndexedCuboid6(i,
-        (if ((pressMask&1<<i) != 0) pressed else unpressed)(i).copy.apply(VecLib.orientT(gate.orientation))))
 
-    override def activate(part:BundledGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult):Boolean =
+    override def getOutlineShape(gate:BundledGatePart) =
+        BusInputPanel.getOrCreateOutline(gate.orientation&0xFF, pressMask&0xFFFF)
+
+    override def activate(part:BundledGatePart, player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult):Boolean =
     {
         if (!held.isEmpty && held.getItem.isInstanceOf[IScrewdriver]) return false
 
-        val hitdata = hit.cuboid6.data.asInstanceOf[Int]
-        if (hitdata != -1) {
+        if (hit.subHit > -1) {
             if (!part.world.isRemote) {
-                pressMask ^= (1<<hitdata)
+                pressMask ^= (1<<hit.subHit)
                 onChange(part)
             }
             return true
@@ -601,13 +628,13 @@ class SegmentDisplay(gate:BundledGatePart) extends BundledGateLogic(gate)
 
     override def bundledInputMask(shape:Int) = 1
 
-    override def save(tag:NBTTagCompound)
+    override def save(tag:CompoundNBT)
     {
-        tag.setByte("in", bInH.toByte)
-        tag.setByte("col", colour)
+        tag.putByte("in", bInH.toByte)
+        tag.putByte("col", colour)
     }
 
-    override def load(tag:NBTTagCompound)
+    override def load(tag:CompoundNBT)
     {
         bInH = tag.getByte("in")
         colour = tag.getByte("col")
@@ -636,12 +663,12 @@ class SegmentDisplay(gate:BundledGatePart) extends BundledGateLogic(gate)
 
     def sendClientUpdate()
     {
-        gate.getWriteStreamOf(11).writeByte(bInH)
+        gate.sendUpdate(11, _.writeByte(bInH))
     }
 
     def sendColourUpdate()
     {
-        gate.getWriteStreamOf(12).writeByte(colour)
+        gate.sendUpdate(12, _.writeByte(colour))
     }
 
     override def cycleShape(gate:BundledGatePart) =
@@ -667,7 +694,7 @@ class SegmentDisplay(gate:BundledGatePart) extends BundledGateLogic(gate)
         onChange(gate)
     }
 
-    override def activate(gate:BundledGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult):Boolean =
+    override def activate(gate:BundledGatePart, player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult):Boolean =
     {
         if (!held.isEmpty) {
             val c = EnumColour.fromDyeStack(held)
