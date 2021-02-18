@@ -6,16 +6,18 @@
 package mrtjp.projectred.integration
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.raytracer.VoxelShapeCache
 import codechicken.lib.vec._
-import codechicken.multipart.{BlockMultipart, TMultiPart}
+import codechicken.multipart.api.part.TMultiPart
+import codechicken.multipart.block.BlockMultiPart
+import com.google.common.collect.ImmutableSet
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
-import mrtjp.projectred.transmission._
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumFacing
+import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.nbt.CompoundNBT
+import net.minecraft.util.Direction
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.BlockPos.MutableBlockPos
+import net.minecraft.util.math.shapes.VoxelShape
 
 trait TArrayGatePart extends RedstoneGatePart with IRedwirePart with TFaceRSPropagation
 {
@@ -53,11 +55,11 @@ trait TArrayGatePart extends RedstoneGatePart with IRedwirePart with TFaceRSProp
         if (!p.isInstanceOf[TFaceOrient] || p.tile == null) return 0xF
         val part = p.asInstanceOf[TFaceOrient]
         val here = pos
-        val there = new MutableBlockPos(part.pos)
+        val there = new BlockPos.Mutable(part.pos)
 
         if (here == there && (side&6) != (part.side&6)) return 1<<Rotation.rotationTo(side, part.side)
 
-        if (side != part.side) there.move(EnumFacing.getFront(side^1)) //bring corner up to same plane
+        if (side != part.side) there.move(Direction.byIndex(side^1)) //bring corner up to same plane
 
         import codechicken.lib.vec.Rotation._
         (here.getX-there.getX, here.getY-there.getY, here.getZ-there.getZ) match
@@ -152,13 +154,13 @@ trait TArrayGatePart extends RedstoneGatePart with IRedwirePart with TFaceRSProp
         if (b) super.rotate()
     }
 
-    abstract override def preparePlacement(player:EntityPlayer, pos:BlockPos, side:Int, meta:Int)
+    abstract override def preparePlacement(player:PlayerEntity, pos:BlockPos, side:Int)
     {
-        super.preparePlacement(player, pos, side, meta)
+        super.preparePlacement(player, pos, side)
         if (getLogicArray.canCross) {
-            val npart = BlockMultipart.getPart(player.world, pos, this.side^1)
+            val npart = BlockMultiPart.getPart(player.world, pos, this.side^1)
             npart match {
-                case apart:TArrayGatePart => if (apart.subID == subID && (apart.rotation&1) == (rotation&1))
+                case apart:TArrayGatePart => if (apart.getGateType == getGateType && (apart.rotation&1) == (rotation&1))
                     setRotation((rotation+1)%4)
                 case _ =>
             }
@@ -168,7 +170,7 @@ trait TArrayGatePart extends RedstoneGatePart with IRedwirePart with TFaceRSProp
     abstract override def occlusionTest(npart:TMultiPart) = npart match
     {
         case apart:TArrayGatePart if apart.getLogicArray.canCross =>
-            if (apart.subID == subID && apart.side == (side^1) && (apart.rotation&1) != (rotation&1)) true
+            if (apart.getGateType == getGateType && apart.side == (side^1) && (apart.rotation&1) != (rotation&1)) true
             else super.occlusionTest(npart)
         case _ => super.occlusionTest(npart)
     }
@@ -229,7 +231,7 @@ trait TArrayGateLogic[T <: TArrayGatePart] extends RedstoneGateLogic[T]
     def onSignalUpdate()
 }
 
-class ArrayGatePart extends RedstoneGatePart with TComplexGatePart with TArrayGatePart
+class ArrayGatePart(gateType:GateType) extends RedstoneGatePart(gateType) with TComplexGatePart with TArrayGatePart
 {
     private var logic:ArrayGateLogic = null
 
@@ -237,40 +239,45 @@ class ArrayGatePart extends RedstoneGatePart with TComplexGatePart with TArrayGa
 
     override def assertLogic()
     {
-        if (logic == null) logic = ArrayGateLogic.create(this, subID)
+        if (logic == null) logic = ArrayGateLogic.create(this, getGateType)
     }
 
-    override def getType = GateDefinition.typeArrayGate
+//    override def getType = GateDefinition.typeArrayGate
 }
 
 object ArrayGatePart
 {
     val oBoxes = Array.ofDim[Cuboid6](6, 2)
     val cBoxes = new Array[Cuboid6](6)
+    val oShapes = new Array[VoxelShape](6)
+    val cShapes = new Array[VoxelShape](6)
 
-    oBoxes(0)(0) = new Cuboid6(1/8D, 0, 0, 7/8D, 6/8D, 1)
-    oBoxes(0)(1) = new Cuboid6(0, 0, 1/8D, 1, 6/8D, 7/8D)
-    cBoxes(0) = new Cuboid6(0, 0, 0, 1, 6/8D, 1)
-    for (s <- 1 until 6)
-    {
-        val t = Rotation.sideRotations(s).at(Vector3.center)
-        oBoxes(s)(0) = oBoxes(0)(0).copy.apply(t)
-        oBoxes(s)(1) = oBoxes(0)(1).copy.apply(t)
-        cBoxes(s) = cBoxes(0).copy.apply(t)
+    for (s <- 0 until 6) {
+        val occlusion1 = new Cuboid6(1/8D, 0, 0, 7/8D, 6/8D, 1)
+        val occlusion2 = new Cuboid6(0, 0, 1/8D, 1, 6/8D, 7/8D)
+        val collision = new Cuboid6(0, 0, 0, 1, 6/8D, 1)
+
+        val t = Rotation.sideRotations(s).at(Vector3.CENTER)
+        oBoxes(s)(0) = occlusion1.apply(t)
+        oBoxes(s)(1) = occlusion2.apply(t)
+        cBoxes(s) = collision.apply(t)
+
+        oShapes(s) = VoxelShapeCache.merge(ImmutableSet.copyOf(oBoxes(s).map(VoxelShapeCache.getShape)))
+        cShapes(s) = VoxelShapeCache.getShape(cBoxes(s))
     }
 }
 
 object ArrayGateLogic
 {
-    import mrtjp.projectred.integration.GateDefinition._
-    def create(gate:ArrayGatePart, subID:Int) = subID match
+    import mrtjp.projectred.integration.GateType._
+    def create(gate:ArrayGatePart, gateType:GateType) = gateType match
     {
-        case NullCell.ordinal => new NullCell(gate)
-        case InvertCell.ordinal => new InvertCell(gate)
-        case BufferCell.ordinal => new BufferCell(gate)
-        case ANDCell.ordinal => new ANDCell(gate)
-        case StackingLatch.ordinal => new StackingLatch(gate)
-        case _ => throw new IllegalArgumentException("Invalid gate subID: "+subID)
+        case NULL_CELL => new NullCell(gate)
+        case INVERT_CELL => new InvertCell(gate)
+        case BUFFER_CELL => new BufferCell(gate)
+        case AND_CELL => new ANDCell(gate)
+        case STACKING_LATCH => new StackingLatch(gate)
+        case _ => throw new IllegalArgumentException("Invalid gateType: "+gateType)
     }
 }
 
@@ -295,14 +302,14 @@ abstract class ArrayGateLogicCrossing(gate:ArrayGatePart) extends ArrayGateLogic
         if (mask == 0x5) signal1 = signal.toByte else signal2 = signal.toByte
     }
 
-    override def save(tag:NBTTagCompound)
+    override def save(tag:CompoundNBT)
     {
         super.save(tag)
-        tag.setByte("s1", signal1)
-        tag.setByte("s2", signal2)
+        tag.putByte("s1", signal1)
+        tag.putByte("s2", signal2)
     }
 
-    override def load(tag:NBTTagCompound)
+    override def load(tag:CompoundNBT)
     {
         super.load(tag)
         signal1 = tag.getByte("s1")
@@ -332,7 +339,7 @@ abstract class ArrayGateLogicCrossing(gate:ArrayGatePart) extends ArrayGateLogic
         case _ =>
     }
 
-    def sendSignalUpdate(){ gate.getWriteStreamOf(11).writeByte(signal1).writeByte(signal2) }
+    def sendSignalUpdate(){ gate.sendUpdate(11, _.writeByte(signal1).writeByte(signal2)) }
 
     override def onChange(gate:ArrayGatePart)
     {
@@ -361,8 +368,9 @@ abstract class ArrayGateLogicCrossing(gate:ArrayGatePart) extends ArrayGateLogic
         }
     }
 
-    override def getOcclusions(gate:ArrayGatePart) = ArrayGatePart.oBoxes(gate.side)
-    override def getBounds(gate:ArrayGatePart) = ArrayGatePart.cBoxes(gate.side)
+    override def getOutlineShape(gate:ArrayGatePart):VoxelShape =  ArrayGatePart.cShapes(gate.side)
+    override def getCollisionShape(gate:ArrayGatePart):VoxelShape = ArrayGatePart.cShapes(gate.side)
+    override def getOcclusionShape(gate:ArrayGatePart):VoxelShape = ArrayGatePart.oShapes(gate.side)
 
     override def onSignalUpdate(){ sendSignalUpdate() }
 
@@ -402,13 +410,13 @@ trait TArrayCellTopOnly extends ArrayGateLogic
     override def getSignal(mask:Int) = if (mask == 0xA) signal&0xFF else 0
     override def setSignal(mask:Int, sig:Int){ if (mask == 0xA) signal = sig.toByte }
 
-    override def save(tag:NBTTagCompound)
+    override def save(tag:CompoundNBT)
     {
         super.save(tag)
-        tag.setByte("signal", signal)
+        tag.putByte("signal", signal)
     }
 
-    override def load(tag:NBTTagCompound)
+    override def load(tag:CompoundNBT)
     {
         super.load(tag)
         signal = tag.getByte("signal")
@@ -434,7 +442,7 @@ trait TArrayCellTopOnly extends ArrayGateLogic
         case _ =>
     }
 
-    def sendSignalUpdate(){ gate.getWriteStreamOf(11).writeByte(signal) }
+    def sendSignalUpdate(){ gate.sendUpdate(11, _.writeByte(signal)) }
 
     override def onSignalUpdate(){ sendSignalUpdate() }
 }
@@ -449,8 +457,9 @@ class ANDCell(gate:ArrayGatePart) extends ArrayGateLogic(gate) with TArrayCellTo
 
     override def calcOutput(gate:ArrayGatePart, input:Int) = if (input == 4 && signal != 0) 1 else 0
 
-    override def getOcclusions(gate:ArrayGatePart) = ArrayGatePart.oBoxes(gate.side)
-    override def getBounds(gate:ArrayGatePart) = ArrayGatePart.cBoxes(gate.side)
+    override def getOutlineShape(gate:ArrayGatePart):VoxelShape =  ArrayGatePart.cShapes(gate.side)
+    override def getCollisionShape(gate:ArrayGatePart):VoxelShape = ArrayGatePart.cShapes(gate.side)
+    override def getOcclusionShape(gate:ArrayGatePart):VoxelShape = ArrayGatePart.oShapes(gate.side)
 }
 
 class StackingLatch(gate:ArrayGatePart) extends ArrayGateLogic(gate) with TArrayCellTopOnly with TSimpleRSGateLogic[ArrayGatePart]

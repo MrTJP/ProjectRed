@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-integration:repeater_gate"
+  },
+  "pattern": [
+    "PCA",
+    "ACP",
+    "PWP"
+  ],
+  "key": {
+    "C": {
+      "item": "projectred-core:cathode"
+    },
+    "A": {
+      "item": "projectred-core:anode"
+    },
+    "P": {
+      "item": "projectred-core:plate"
+    },
+    "W": {
+      "item": "projectred-core:conductive_plate"
+    }
+  }
+}
