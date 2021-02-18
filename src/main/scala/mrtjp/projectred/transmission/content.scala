@@ -14,11 +14,10 @@ import net.minecraft.item.ItemStack
 import net.minecraft.tags.ItemTags.{Wrapper => ItemTag}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.model.generators.ExistingFileHelper
+import net.minecraftforge.common.Tags.{Items => ForgeItemTags}
 import net.minecraftforge.eventbus.api.{IEventBus, SubscribeEvent}
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent
 import net.minecraftforge.registries.{DeferredRegister, ForgeRegistries}
-import net.minecraftforge.common.Tags.{Blocks => ForgeBlockTags, Items => ForgeItemTags}
-import net.minecraft.tags.{Tag, BlockTags => MCBlockTags, ItemTags => VanillaItemTags}
 
 import java.util.function.Supplier
 
@@ -243,7 +242,7 @@ private object DataGen {
         if (event.includeClient()) {
             gen.addProvider(new ItemModels(gen, helper))
         }
-        if (event.includeClient()) {
+        if (event.includeServer()) {
             gen.addProvider(new ItemTags(gen))
             gen.addProvider(new Recipes(gen))
         }
