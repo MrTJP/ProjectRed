@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-integration:rain_sensor_gate"
+  },
+  "pattern": [
+    "PPP",
+    "SSS",
+    "PWP"
+  ],
+  "key": {
+    "S": {
+      "tag": "forge:slimeballs"
+    },
+    "P": {
+      "item": "projectred-core:plate"
+    },
+    "W": {
+      "item": "projectred-core:conductive_plate"
+    }
+  }
+}

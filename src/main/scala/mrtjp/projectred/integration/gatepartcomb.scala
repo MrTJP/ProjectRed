@@ -5,52 +5,50 @@
  */
 package mrtjp.projectred.integration
 
-import java.util.Random
-
-import codechicken.lib.raytracer.CuboidRayTraceResult
+import codechicken.multipart.util.PartRayTraceResult
 import mrtjp.projectred.api.IScrewdriver
 import mrtjp.projectred.core.TFaceOrient
-import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
-import net.minecraft.world.EnumSkyBlock
+import net.minecraft.world.LightType
 
-class ComboGatePart extends RedstoneGatePart
+import java.util.Random
+
+class ComboGatePart(gateType:GateType) extends RedstoneGatePart(gateType)
 {
-    override def getLogic[T] = ComboGateLogic.instances(subID).asInstanceOf[T]
+    override def getLogic[T] = ComboGateLogic.instances(gateType.ordinal()).asInstanceOf[T]
     def getLogicCombo = getLogic[ComboGateLogic]
 
-    override def getType = GateDefinition.typeSimpleGate
+//    override def getType = GateDefinition.typeSimpleGate
 }
 
 object ComboGateLogic
 {
     val advanceDead = Seq(1, 2, 4, 0, 5, 6, 3)
 
-    val instances = new Array[ComboGateLogic](GateDefinition.values.length)
+    val instances = new Array[ComboGateLogic](GateType.values().length)
     initialize()
 
     def initialize()
     {
-        import mrtjp.projectred.integration.{GateDefinition => defs}
+        instances(GateType.OR.ordinal) = OR
+        instances(GateType.NOR.ordinal) = NOR
+        instances(GateType.NOT.ordinal) = NOT
+        instances(GateType.AND.ordinal) = AND
+        instances(GateType.NAND.ordinal) = NAND
+        instances(GateType.XOR.ordinal) = XOR
+        instances(GateType.XNOR.ordinal) = XNOR
+        instances(GateType.BUFFER.ordinal) = Buffer
+        instances(GateType.MULTIPLEXER.ordinal) = Multiplexer
+        instances(GateType.PULSE.ordinal) = Pulse
+        instances(GateType.REPEATER.ordinal) = Repeater
+        instances(GateType.RANDOMIZER.ordinal) = Randomizer
 
-        instances(defs.OR.ordinal) = OR
-        instances(defs.NOR.ordinal) = NOR
-        instances(defs.NOT.ordinal) = NOT
-        instances(defs.AND.ordinal) = AND
-        instances(defs.NAND.ordinal) = NAND
-        instances(defs.XOR.ordinal) = XOR
-        instances(defs.XNOR.ordinal) = XNOR
-        instances(defs.Buffer.ordinal) = Buffer
-        instances(defs.Multiplexer.ordinal) = Multiplexer
-        instances(defs.Pulse.ordinal) = Pulse
-        instances(defs.Repeater.ordinal) = Repeater
-        instances(defs.Randomizer.ordinal) = Randomizer
+        instances(GateType.TRANSPARENT_LATCH.ordinal) = TransparentLatch
+        instances(GateType.LIGHT_SENSOR.ordinal) = LightSensor
+        instances(GateType.RAIN_SENSOR.ordinal) = RainSensor
 
-        instances(defs.TransparentLatch.ordinal) = TransparentLatch
-        instances(defs.LightSensor.ordinal) = LightSensor
-        instances(defs.RainSensor.ordinal) = RainSensor
-
-        instances(defs.DecRandomizer.ordinal) = DecodingRand
+        instances(GateType.DEC_RANDOMIZER.ordinal) = DecodingRand
     }
 }
 
@@ -274,7 +272,7 @@ object Repeater extends ComboGateLogic
 
     override def onChange(gate:ComboGatePart){ if (gate.schedTime < 0) super.onChange(gate) }
 
-    override def activate(gate:ComboGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult)=
+    override def activate(gate:ComboGatePart, player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult)=
     {
         if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver])
         {
@@ -338,8 +336,8 @@ object LightSensor extends ComboGateLogic
     {
         if (gate.world.isRemote) return
 
-        def sky = gate.world.getLightFor(EnumSkyBlock.SKY, gate.pos)-gate.world.getSkylightSubtracted
-        def block = gate.world.getLightFor(EnumSkyBlock.BLOCK, gate.pos)
+        def sky = gate.world.getLightFor(LightType.SKY, gate.pos)-gate.world.getSkylightSubtracted
+        def block = gate.world.getLightFor(LightType.BLOCK, gate.pos)
 
         val shape = gate.shape
         val newOutput = shape match

@@ -5,18 +5,17 @@
  */
 package mrtjp.projectred.integration
 
+import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.multipart.api.part.AnimateTickPart
+import codechicken.multipart.init
+import mrtjp.projectred.api.IConnectable
+import mrtjp.projectred.core.{Configurator, IRedwireEmitter, TFaceRSAcquisitions}
+import net.minecraft.nbt.CompoundNBT
+import net.minecraft.util.Direction
+
 import java.util.Random
 
-import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.multipart.IRandomDisplayTickPart
-import codechicken.multipart.handler.MultipartProxy
-import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core.{Configurator, TFaceRSAcquisitions}
-import mrtjp.projectred.core.IRedwireEmitter
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumFacing
-
-abstract class RedstoneGatePart extends GatePart with TFaceRSAcquisitions with IRandomDisplayTickPart
+abstract class RedstoneGatePart(gateType:GateType) extends GatePart(gateType) with TFaceRSAcquisitions with AnimateTickPart
 {
     /**
      * Mapped inputs and outputs of the gate.
@@ -31,13 +30,13 @@ abstract class RedstoneGatePart extends GatePart with TFaceRSAcquisitions with I
 
     def getLogicRS = getLogic[RedstoneGateLogic[RedstoneGatePart]]
 
-    override def save(tag:NBTTagCompound)
+    override def save(tag:CompoundNBT)
     {
         super.save(tag)
-        tag.setByte("state", gateState)
+        tag.putByte("state", gateState)
     }
 
-    override def load(tag:NBTTagCompound)
+    override def load(tag:CompoundNBT)
     {
         super.load(tag)
         gateState = tag.getByte("state")
@@ -65,7 +64,7 @@ abstract class RedstoneGatePart extends GatePart with TFaceRSAcquisitions with I
 
     def sendStateUpdate()
     {
-        getWriteStreamOf(5).writeByte(gateState)
+        sendUpdate(5, _.writeByte(gateState))
     }
 
     def onInputChange()
@@ -103,11 +102,11 @@ abstract class RedstoneGatePart extends GatePart with TFaceRSAcquisitions with I
 
         for (r <- 0 until 4) if ((mask&1<<r) != 0) {
             val absSide = absoluteDir(r)
-            val pos = this.pos.offset(EnumFacing.values()(absSide))
+            val pos = this.pos.offset(Direction.byIndex(absSide))
 
-            world.neighborChanged(pos, MultipartProxy.block, pos)
+            world.neighborChanged(pos, init.ModContent.blockMultipart, pos)
             for (s <- 0 until 6) if (s != (absSide^1) && (smask&1<<s) == 0)
-                world.neighborChanged(pos.offset(EnumFacing.values()(s)), MultipartProxy.block, pos)
+                world.neighborChanged(pos.offset(Direction.byIndex(s)), init.ModContent.blockMultipart, pos)
 
             smask |= 1<<absSide
         }
@@ -128,9 +127,9 @@ abstract class RedstoneGatePart extends GatePart with TFaceRSAcquisitions with I
         case _ => 0
     }
 
-    override def randomDisplayTick(rand:Random)
-    {
-        RenderGate.spawnParticles(this, rand)
+
+    override def animateTick(random:Random):Unit = {
+        RenderGate.spawnParticles(this, random)
     }
 }
 
