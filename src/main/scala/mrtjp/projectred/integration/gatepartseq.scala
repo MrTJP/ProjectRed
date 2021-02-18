@@ -5,66 +5,65 @@
  */
 package mrtjp.projectred.integration
 
-import java.util
-import java.util.List
-
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.raytracer.CuboidRayTraceResult
 import codechicken.lib.vec.Rotation
-import codechicken.multipart.INeighborTileChangePart
+import codechicken.multipart.api.part.INeighborTileChangePart
+import codechicken.multipart.util.PartRayTraceResult
 import com.google.common.base.Predicate
 import mrtjp.projectred.api.IScrewdriver
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.core.TFaceOrient._
 import net.minecraft.block.material.Material
 import net.minecraft.entity.Entity
-import net.minecraft.entity.item.EntityItemFrame
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.init.SoundEvents
+import net.minecraft.entity.item.ItemFrameEntity
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
-import net.minecraft.util.{EnumFacing, SoundCategory}
+import net.minecraft.util.{Direction, SoundCategory, SoundEvents}
 import net.minecraft.world.World
 
-class SequentialGatePart extends RedstoneGatePart with TComplexGatePart
+import java.util
+
+class SequentialGatePart(gateType:GateType) extends RedstoneGatePart(gateType) with TComplexGatePart
 {
     private var logic:SequentialGateLogic = null
 
-    override def getType = GateDefinition.typeComplexGate
+//    override def getType = GateDefinition.typeComplexGate
 
     override def getLogic[T]:T = logic.asInstanceOf[T]
     def getLogicSequential = getLogic[SequentialGateLogic]
 
     override def assertLogic()
     {
-        if (logic == null) logic = SequentialGateLogic.create(this, subID)
+        if (logic == null) logic = SequentialGateLogic.create(this, getGateType)
     }
 }
 
-class SequentialGatePartT extends SequentialGatePart with INeighborTileChangePart
+class SequentialGatePartT(gateType:GateType) extends SequentialGatePart(gateType) with INeighborTileChangePart
 {
-    override def getType = GateDefinition.typeNeighborGate
+//    override def getType = GateDefinition.typeNeighborGate
 
     override def weakTileChanges() = getLogic[INeighborTileChangePart].weakTileChanges()
 
-    override def onNeighborTileChanged(side:Int, weak:Boolean) =
+
+    override def onNeighborTileChanged(side:Direction, weak:Boolean) =
         getLogic[INeighborTileChangePart].onNeighborTileChanged(side, weak)
 }
 
 object SequentialGateLogic
 {
-    import mrtjp.projectred.integration.GateDefinition._
-    def create(gate:SequentialGatePart, subID:Int) = subID match {
-        case SRLatch.ordinal => new SRLatch(gate)
-        case ToggleLatch.ordinal => new ToggleLatch(gate)
-        case Timer.ordinal => new Timer(gate)
-        case Sequencer.ordinal => new Sequencer(gate)
-        case Counter.ordinal => new Counter(gate)
-        case StateCell.ordinal => new StateCell(gate)
-        case Synchronizer.ordinal => new Synchronizer(gate)
-        case Comparator.ordinal => new Comparator(gate)
-        case _ => throw new IllegalArgumentException("Invalid gate subID: "+subID)
+    import mrtjp.projectred.integration.GateType._
+    def create(gate:SequentialGatePart, gateType:GateType) = gateType match {
+        case SR_LATCH => new SRLatch(gate)
+        case TOGGLE_LATCH => new ToggleLatch(gate)
+        case TIMER => new Timer(gate)
+        case SEQUENCER => new Sequencer(gate)
+        case COUNTER => new Counter(gate)
+        case STATE_CELL => new StateCell(gate)
+        case SYNCHRONIZER => new Synchronizer(gate)
+        case COMPARATOR => new Comparator(gate)
+        case _ => throw new IllegalArgumentException("Invalid gateType: "+gateType)
     }
 }
 
@@ -86,13 +85,13 @@ trait TExtraStateLogic extends SequentialGateLogic
 
     def clientState2 = false
 
-    abstract override def save(tag:NBTTagCompound)
+    abstract override def save(tag:CompoundNBT)
     {
         super.save(tag)
-        tag.setByte("state2", lState2)
+        tag.putByte("state2", lState2)
     }
 
-    abstract override def load(tag:NBTTagCompound)
+    abstract override def load(tag:CompoundNBT)
     {
         super.load(tag)
         lState2 = tag.getByte("state2")
@@ -116,7 +115,7 @@ trait TExtraStateLogic extends SequentialGateLogic
         case _ => super.read(packet, key)
     }
 
-    def sendState2Update(){ gate.getWriteStreamOf(11).writeByte(lState2) }
+    def sendState2Update(){ gate.sendUpdate(11, _.writeByte(lState2)) }
 }
 
 class SRLatch(gate:SequentialGatePart) extends SequentialGateLogic(gate) with TExtraStateLogic
@@ -249,7 +248,7 @@ class ToggleLatch(gate:SequentialGatePart) extends SequentialGateLogic(gate) wit
         onChange(gate)
     }
 
-    override def activate(gate:SequentialGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult) =
+    override def activate(gate:SequentialGatePart, player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult) =
     {
         if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver])
         {
@@ -293,17 +292,17 @@ trait TTimerGateLogic extends SequentialGateLogic with ITimerGuiLogic
     var pointer_max = 38
     var pointer_start = -1L
 
-    abstract override def save(tag:NBTTagCompound)
+    abstract override def save(tag:CompoundNBT)
     {
         super.save(tag)
-        tag.setInteger("pmax", pointer_max)
-        tag.setLong("pelapsed", if (pointer_start < 0) pointer_start else gate.world.getTotalWorldTime-pointer_start)
+        tag.putInt("pmax", pointer_max)
+        tag.putLong("pelapsed", if (pointer_start < 0) pointer_start else gate.world.getGameTime-pointer_start)
     }
 
-    abstract override def load(tag:NBTTagCompound)
+    abstract override def load(tag:CompoundNBT)
     {
         super.load(tag)
-        pointer_max = tag.getInteger("pmax")
+        pointer_max = tag.getInt("pmax")
         pointer_start = tag.getLong("pelapsed")
     }
 
@@ -326,21 +325,21 @@ trait TTimerGateLogic extends SequentialGateLogic with ITimerGuiLogic
         case 12 => pointer_max = packet.readInt()
         case 13 =>
             pointer_start = packet.readInt()
-            if (pointer_start >= 0) pointer_start = gate.world.getTotalWorldTime-pointer_start
+            if (pointer_start >= 0) pointer_start = gate.world.getGameTime-pointer_start
         case _ => super.read(packet, key)
     }
 
     abstract override def onWorldLoad(gate: SequentialGatePart)
     {
-        if (pointer_start >= 0) pointer_start = gate.world.getTotalWorldTime-pointer_start
+        if (pointer_start >= 0) pointer_start = gate.world.getGameTime-pointer_start
     }
 
     def pointerValue =
         if (pointer_start < 0) 0
-        else (gate.world.getTotalWorldTime-pointer_start).toInt
+        else (gate.world.getGameTime-pointer_start).toInt
 
-    def sendPointerMaxUpdate(){ gate.getWriteStreamOf(12).writeInt(pointer_max) }
-    def sendPointerUpdate(){ gate.getWriteStreamOf(13).writeInt(if (pointer_start < 0) -1 else pointerValue)}
+    def sendPointerMaxUpdate(){ gate.sendUpdate(12, _.writeInt(pointer_max)) }
+    def sendPointerUpdate(){ gate.sendUpdate(13, _.writeInt(if (pointer_start < 0) -1 else pointerValue)) }
 
     override def getTimerMax = pointer_max+2
     override def setTimerMax(gate:GatePart, time:Int)
@@ -358,9 +357,9 @@ trait TTimerGateLogic extends SequentialGateLogic with ITimerGuiLogic
     override def onTick(gate:SequentialGatePart)
     {
         if (pointer_start >= 0)
-            if (gate.world.getTotalWorldTime >= pointer_start+pointer_max) pointerTick()
-            else if (pointer_start > gate.world.getTotalWorldTime)
-                pointer_start = gate.world.getTotalWorldTime
+            if (gate.world.getGameTime >= pointer_start+pointer_max) pointerTick()
+            else if (pointer_start > gate.world.getGameTime)
+                pointer_start = gate.world.getGameTime
     }
 
     def pointerTick()
@@ -379,7 +378,7 @@ trait TTimerGateLogic extends SequentialGateLogic with ITimerGuiLogic
     {
         if (pointer_start < 0)
         {
-            pointer_start = gate.world.getTotalWorldTime
+            pointer_start = gate.world.getGameTime
             gate.tile.markDirty()
             if (!gate.world.isRemote) sendPointerUpdate()
         }
@@ -387,7 +386,7 @@ trait TTimerGateLogic extends SequentialGateLogic with ITimerGuiLogic
 
     def interpPointer(f:Float) = if (pointer_start < 0) 0f else (pointerValue+f)/pointer_max
 
-    override def activate(gate:SequentialGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult) =
+    override def activate(gate:SequentialGatePart, player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult) =
     {
         if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver])
         {
@@ -462,8 +461,8 @@ class Sequencer(gate:SequentialGatePart) extends SequentialGateLogic(gate) with 
         }
     }
 
-    override def save(tag:NBTTagCompound){ tag.setInteger("pmax", pointer_max) }
-    override def load(tag:NBTTagCompound){ pointer_max = tag.getInteger("pmax") }
+    override def save(tag:CompoundNBT){ tag.putInt("pmax", pointer_max) }
+    override def load(tag:CompoundNBT){ pointer_max = tag.getInt("pmax") }
 
     override def writeDesc(packet:MCDataOutput){ packet.writeInt(pointer_max) }
     override def readDesc(packet:MCDataInput){ pointer_max = packet.readInt() }
@@ -474,14 +473,14 @@ class Sequencer(gate:SequentialGatePart) extends SequentialGateLogic(gate) with 
         case _ =>
     }
 
-    def sendPointerMaxUpdate(){ gate.getWriteStreamOf(12).writeInt(pointer_max) }
+    def sendPointerMaxUpdate(){ gate.sendUpdate(12, _.writeInt(pointer_max)) }
 
     override def onTick(gate:SequentialGatePart)
     {
         if (!gate.world.isRemote)
         {
             val oldOut = gate.state>>4
-            var out = 1<<gate.world.getWorldTime%(pointer_max*4)/pointer_max
+            var out = 1<<gate.world.getDayTime%(pointer_max*4)/pointer_max
             if (gate.shape == 1) out = flipMaskZ(out)
             if (oldOut != out)
             {
@@ -498,7 +497,7 @@ class Sequencer(gate:SequentialGatePart) extends SequentialGateLogic(gate) with 
         true
     }
 
-    override def activate(gate:SequentialGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult) =
+    override def activate(gate:SequentialGatePart, player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult) =
     {
         if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver])
         {
@@ -519,20 +518,20 @@ class Counter(gate:SequentialGatePart) extends SequentialGateLogic(gate) with IC
     override def outputMask(shape:Int) = 5
     override def inputMask(shape:Int) = 10
 
-    override def save(tag:NBTTagCompound)
+    override def save(tag:CompoundNBT)
     {
-        tag.setInteger("val", value)
-        tag.setInteger("max", max)
-        tag.setInteger("inc", incr)
-        tag.setInteger("dec", decr)
+        tag.putInt("val", value)
+        tag.putInt("max", max)
+        tag.putInt("inc", incr)
+        tag.putInt("dec", decr)
     }
 
-    override def load(tag:NBTTagCompound)
+    override def load(tag:CompoundNBT)
     {
-        value = tag.getInteger("val")
-        max = tag.getInteger("max")
-        incr = tag.getInteger("inc")
-        decr = tag.getInteger("dec")
+        value = tag.getInt("val")
+        max = tag.getInt("max")
+        incr = tag.getInt("inc")
+        decr = tag.getInt("dec")
     }
 
     override def writeDesc(packet:MCDataOutput)
@@ -557,10 +556,10 @@ class Counter(gate:SequentialGatePart) extends SequentialGateLogic(gate) with IC
         case _ =>
     }
 
-    def sendValueUpdate(){ gate.getWriteStreamOf(11).writeInt(value) }
-    def sendMaxUpdate(){ gate.getWriteStreamOf(12).writeInt(max) }
-    def sendIncrUpdate(){ gate.getWriteStreamOf(13).writeInt(incr) }
-    def sendDecrUpdate(){ gate.getWriteStreamOf(14).writeInt(decr) }
+    def sendValueUpdate(){ gate.sendUpdate(11, _.writeInt(value)) }
+    def sendMaxUpdate(){ gate.sendUpdate(12, _.writeInt(max)) }
+    def sendIncrUpdate(){ gate.sendUpdate(13, _.writeInt(incr)) }
+    def sendDecrUpdate(){ gate.sendUpdate(14, _.writeInt(decr)) }
 
     override def getCounterValue = value
     override def getCounterMax = max
@@ -651,7 +650,7 @@ class Counter(gate:SequentialGatePart) extends SequentialGateLogic(gate) with IC
         if (newOutput != oldOutput) gate.onOutputChange(5)
     }
 
-    override def activate(gate:SequentialGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult) =
+    override def activate(gate:SequentialGatePart, player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult) =
     {
         if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver])
         {
@@ -793,8 +792,8 @@ class Comparator(gate:SequentialGatePart) extends SequentialGateLogic(gate) with
     override def outputMask(shape:Int) = 1
     override def inputMask(shape:Int) = 0xE
 
-    override def save(tag:NBTTagCompound){ tag.setShort("state2", lState2) }
-    override def load(tag:NBTTagCompound){ lState2 = tag.getShort("state2") }
+    override def save(tag:CompoundNBT){ tag.putShort("state2", lState2) }
+    override def load(tag:CompoundNBT){ lState2 = tag.getShort("state2") }
 
     override def cycleShape(gate:SequentialGatePart) =
     {
@@ -816,7 +815,7 @@ class Comparator(gate:SequentialGatePart) extends SequentialGateLogic(gate) with
     {
         //TODO comparator calculations may not be accurate anymore
 
-        val absDir = EnumFacing.getFront(Rotation.rotateSide(gate.side, gate.toAbsolute(2)))
+        val absDir = Direction.byIndex(Rotation.rotateSide(gate.side, gate.toAbsolute(2)))
         var pos = gate.tile.getPos.offset(absDir)
         var state = gate.world.getBlockState(pos)
 
@@ -825,7 +824,7 @@ class Comparator(gate:SequentialGatePart) extends SequentialGateLogic(gate) with
 
         val i = getAnalogInput(2)
 
-        if (i < 15 && state.isNormalCube) {
+        if (i < 15 && state.isNormalCube(gate.world, pos)) {
             pos = pos.offset(absDir)
             state = gate.world.getBlockState(pos)
 
@@ -845,9 +844,9 @@ class Comparator(gate:SequentialGatePart) extends SequentialGateLogic(gate) with
     /**
       * Copied from BlockRedstoneComparator#findItemFrame(World, EnumFacing, BlockPos)
       */
-    private def findItemFrame(world:World, facing: EnumFacing, pos:BlockPos) =
+    private def findItemFrame(world:World, facing:Direction, pos:BlockPos) =
     {
-        val list:util.List[EntityItemFrame] = world.getEntitiesWithinAABB[EntityItemFrame](classOf[EntityItemFrame], new AxisAlignedBB(pos.getX.toDouble, pos.getY.toDouble, pos.getZ.toDouble,
+        val list:util.List[ItemFrameEntity] = world.getEntitiesWithinAABB[ItemFrameEntity](classOf[ItemFrameEntity], new AxisAlignedBB(pos.getX.toDouble, pos.getY.toDouble, pos.getZ.toDouble,
             (pos.getX + 1).toDouble, (pos.getY + 1).toDouble, (pos.getZ + 1).toDouble), new Predicate[Entity] {
                 override def apply(input:Entity) = input != null && (input.getHorizontalFacing == facing)
             }
@@ -896,9 +895,10 @@ class Comparator(gate:SequentialGatePart) extends SequentialGateLogic(gate) with
         }
     }
 
-    override def onNeighborTileChanged(side:Int, weak:Boolean)
+    override def onNeighborTileChanged(side:Direction, weak:Boolean) =
     {
-        if (side == Rotation.rotateSide(gate.side, gate.toAbsolute(2))) gate.onChange()
+        if (side.ordinal == Rotation.rotateSide(gate.side, gate.toAbsolute(2)))
+            gate.onChange()
     }
 
     override def weakTileChanges() = true

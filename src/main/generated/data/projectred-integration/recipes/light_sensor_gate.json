@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-integration:light_sensor_gate"
+  },
+  "pattern": [
+    "PPP",
+    "BBB",
+    "PWP"
+  ],
+  "key": {
+    "B": {
+      "tag": "forge:dyes/blue"
+    },
+    "P": {
+      "item": "projectred-core:plate"
+    },
+    "W": {
+      "item": "projectred-core:conductive_plate"
+    }
+  }
+}
