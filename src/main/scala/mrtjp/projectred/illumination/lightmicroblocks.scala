@@ -1,55 +1,43 @@
 package mrtjp.projectred.illumination
 
-import java.util
-
+import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Rotation._
 import codechicken.lib.vec.Vector3._
-import codechicken.lib.vec.uv.{IconTransformation, MultiIconTransformation}
-import codechicken.lib.vec.{Cuboid6, Vector3}
+import codechicken.lib.vec.{Cuboid6, RedundantTransformation}
 import codechicken.microblock._
-import codechicken.multipart.TDynamicRenderPart
-import mrtjp.projectred.ProjectRedIllumination
+import codechicken.microblock.api.{BlockMicroMaterial, MicroBlockTrait}
+import codechicken.mixin.api.MixinFactory
+import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.projectred.core.RenderHalo
-import net.minecraft.item.ItemStack
-import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import net.minecraft.block.Block
+import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
-class LightMicroMaterial(val colour:Int, val key:String) extends BlockMicroMaterial(ProjectRedIllumination.blockLamp.getDefaultState, key) with IGeneratedMaterial
+import java.util.function.Supplier
+import scala.jdk.CollectionConverters._
+
+trait ILightMicroblockMixinMarker {}
+
+class LightMicroMaterial(val block:Supplier[Block]) extends BlockMicroMaterial(block.get().getDefaultState) with ILightMicroblockMixinMarker
 {
-    override def addTraits(traits:util.BitSet, mcrFactory:MicroblockFactory, client:Boolean)
-    {
-        traits.set(LightMicroMaterial.traitID)
-    }
-
-    override def getItem = new ItemStack(ProjectRedIllumination.blockLamp, 1, colour)
-
-    @SideOnly(Side.CLIENT)
-    override def loadIcons()
-    {
-        icont = new MultiIconTransformation(LampRenderer.iconsOn(colour))
-        pIconT = new IconTransformation(LampRenderer.iconsOn(colour))
-    }
+    def getLightColor:Int = state.getBlock.asInstanceOf[IllumarLampBlock].colour
 }
 
 object LightMicroMaterial
 {
-    var traitID:Int = _
+    var traitKey:MixinFactory.TraitKey = _
 
-    def register()
-    {
-        traitID = MicroblockGenerator.registerTrait(classOf[LightMicroblock])
-
-        for (i <- 0 until 16) {
-            val key = BlockMicroMaterial.materialKey(ProjectRedIllumination.blockLamp.getDefaultState)+"[colour:"+i+"]"
-            MicroMaterialRegistry.registerMaterial(new LightMicroMaterial(i, key), key)
-        }
+    def register():Unit = {
+        traitKey = MicroBlockGenerator.registerTrait(classOf[LightMicroblock])
     }
 }
 
-trait LightMicroblock extends Microblock with TDynamicRenderPart
+@MicroBlockTrait(value = classOf[ILightMicroblockMixinMarker])
+trait LightMicroblock extends MicroblockClient
 {
-    @SideOnly(Side.CLIENT)
-    override def renderDynamic(vec:Vector3, pass:Int, frame:Float)
-    {
+    @OnlyIn(Dist.CLIENT)
+    override def renderDynamic(mStack:MatrixStack, buffers:IRenderTypeBuffer, packedLight:Int, packedOverlay:Int, partialTicks:Float):Unit = {
+
         val boxes = this match {
             case h: HollowMicroblock =>
                 val size = h.getHollowSize
@@ -58,7 +46,7 @@ trait LightMicroblock extends Microblock with TDynamicRenderPart
                 val t = (shape >> 4) / 8D
                 val ex = 0.025
 
-                val tr = sideRotations(shape & 0xF).at(center)
+                val tr = sideRotations(shape & 0xF).at(CENTER)
 
                 Seq(new Cuboid6(0 - ex, 0 - ex, 0 - ex, 1 + ex, t + ex, d1 + ex),
                     new Cuboid6(0 - ex, 0 - ex, d2 - ex, 1 + ex, t + ex, 1 + ex),
@@ -66,22 +54,20 @@ trait LightMicroblock extends Microblock with TDynamicRenderPart
                     new Cuboid6(d2 - ex, 0 - ex, d1 + ex, 1 + ex, t + ex, d2 - ex))
                     .map(c => c.apply(tr))
             case _ =>
-                val it = getCollisionBoxes.iterator()
-                val bb = Seq.newBuilder[Cuboid6]
-                while (it.hasNext) bb += it.next()
-                bb.result().map(_.copy.expand(0.025))
+                Seq(getBounds.copy.expand(0.025))
         }
 
-        val colour = getIMaterial.asInstanceOf[LightMicroMaterial].colour
+        val colour = getMaterial.asInstanceOf[LightMicroMaterial].getLightColor
 
-        for (box <- boxes) RenderHalo.addLight(pos, colour, box)
+        val ccrs = CCRenderState.instance
+        RenderHalo.prepareRenderState(ccrs, mStack, buffers)
+
+        for (box <- boxes)
+            RenderHalo.renderToCCRS(ccrs, box, colour, new RedundantTransformation)
     }
 
-    override def canRenderDynamic(pass: Int) = pass == 0
-
-    override def getLightValue =
-    {
-        val lightVolume = tile.partList.collect { case p:LightMicroblock => p }.map { light =>
+    override def getLightValue:Int = {
+        val lightVolume = tile.getPartList.asScala.collect { case p:LightMicroblock => p }.map { light =>
             val b = light.getBounds
             math.abs(b.max.x-b.min.x)*math.abs(b.max.y-b.min.y)*math.abs(b.max.z-b.min.z)
         }.sum
