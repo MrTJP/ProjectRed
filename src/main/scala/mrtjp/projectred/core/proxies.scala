@@ -4,7 +4,7 @@ import codechicken.lib.packet.PacketCustom
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
+import net.minecraftforge.fml.event.lifecycle.{FMLClientSetupEvent, FMLCommonSetupEvent}
 
 class CoreProxy_server extends IProxy {
     override def commonSetup(event: FMLCommonSetupEvent) {
@@ -24,6 +24,7 @@ class CoreProxy_client extends CoreProxy_server {
 //        //RecipeDumper.load()
 //    }
 
+
 //    @OnlyIn(Dist.CLIENT)
 //    override def init() {
 //        super.init()
@@ -35,6 +36,12 @@ class CoreProxy_client extends CoreProxy_server {
 //        super.postinit()
 //        MinecraftForge.EVENT_BUS.register(RenderHalo)
 //    }
+
+    @OnlyIn(Dist.CLIENT)
+    override def clientSetup(event:FMLClientSetupEvent):Unit = {
+        super.clientSetup(event)
+        MinecraftForge.EVENT_BUS.register(RenderHalo)
+    }
 }
 
 object CoreProxy extends CoreProxy_client

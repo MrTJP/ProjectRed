@@ -1,201 +1,212 @@
 package mrtjp.projectred.illumination
 
+import codechicken.lib.raytracer.VoxelShapeCache
 import codechicken.lib.render.CCModel
+import codechicken.lib.texture.AtlasRegistrar
 import codechicken.lib.vec._
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
-import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
-import net.minecraft.util.{BlockRenderLayer, ResourceLocation}
-import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import codechicken.multipart.api.part.TMultiPart
+import mrtjp.projectred.ProjectRedIllumination
+import mrtjp.projectred.illumination.LightPartDefinition._
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
+import net.minecraft.item.Item
+import net.minecraft.util.ResourceLocation
+import net.minecraft.util.math.shapes.VoxelShape
 
-import scala.collection.JavaConversions._
+import scala.jdk.CollectionConverters._
 
-object LightFactoryFixture extends LightFactory
-{
-    val bounds = bakedBoxes(new Cuboid6(3.5/16D, 0, 3.5/16D, 12.5/16D, 6.5/16D, 12.5/16D))
-    val lBounds = bakedBoxes(new Cuboid6(4/16D, 1.5/16, 4/16D, 12/16D, 6.5/16D, 12/16D))
+object FixtureLightDefinition extends LightPartDefinition {
+    private val bounds = sidedBoxes(new Cuboid6(3.5/16D, 0, 3.5/16D, 12.5/16D, 6.5/16D, 12.5/16D))
+    private val glowBounds = sidedBoxes(new Cuboid6(4/16D, 1.5/16, 4/16D, 12/16D, 6.5/16D, 12/16D))
 
-    var icon:TextureAtlasSprite = _
+    private val shapes = bounds.map(VoxelShapeCache.getShape)
 
-    val bulbModels = new Array[CCModel](6)
-    val chassiModels = new Array[CCModel](6)
+    private val bulbModels = new Array[CCModel](6)
+    private val chassiModels = new Array[CCModel](6)
+    private var icon:TextureAtlasSprite = _
 
-    override def getUnlocalizedName(inv:Boolean) = if (inv) "fixtureLightInverted" else "fixtureLight"
-    override def getItemRegistryName(inv:Boolean) = if (inv) "inverted_fixture_light" else "fixture_light"
-    override def getType = new ResourceLocation("projectred-illumination:fixture_light")
+    override protected def typeName:String = "fixture_light"
 
-    override def getBounds(side:Int) = bounds(side)
-    override def getLBounds(side:Int) = lBounds(side)
+    override protected def itemFactory(colour:Int, inverted:Boolean):Item =
+        new ItemBaseLight(this, colour, inverted)
 
-    override def getModelBulb(side:Int) = bulbModels(side)
-    override def getModelChassi(side:Int) = chassiModels(side)
+    override protected def partFactory(colour:Int, inverted:Boolean):TMultiPart =
+        new BaseLightFacePart(this, colour, inverted)
 
-    override def getIcon = icon
+    override def getItemModelPath:String = "item/fixture_light"
+    override def getItemModelLoaderPath:String = "fixture_light"
 
-    @SideOnly(Side.CLIENT)
-    override def registerTextures(map:TextureMap)
-    {
-        icon = map.registerSprite(new ResourceLocation("projectred:blocks/lighting/fixture"))
+    override def registerIcons(registrar:AtlasRegistrar):Unit = {
+        registrar.registerSprite(new ResourceLocation(ProjectRedIllumination.MOD_ID, "block/fixture"), icon = _)
     }
 
-    override def loadModels()
-    {
-        val models = parseModel("fixture")
-        val chassi = models.get("chassi")
-        val bulb = models.get("bulb")
+    override def loadModels():Unit = {
+        val models = parseCorrectedModel("fixture")
+        val chassi = models("chassi")
+        val bulb = models("bulb")
 
         for (s <- 0 until 6) {
             bulbModels(s) = bakeCopy(s, bulb)
             chassiModels(s) = bakeCopy(s, chassi)
         }
     }
+
+    override def getShape(side:Int):VoxelShape = shapes(side)
+    override def getGlowBounds(side:Int):Cuboid6 = glowBounds(side)
+
+    override def getIcon(colour:Int):TextureAtlasSprite = icon
+
+    override def getModelBulb(side:Int):CCModel = bulbModels(side)
+    override def getModelChassi(side:Int):CCModel = chassiModels(side)
 }
 
-object LightFactoryFallout extends LightFactory
-{
-    val bounds = bakedBoxes(new Cuboid6(2/16D, 0, 2/16D, 14/16D, 11/16D, 14/16D))
-    val lBounds = bakedBoxes(new Cuboid6(4/16D, 1.5/16, 4/16D, 12/16D, 10/16D, 12/16D).expand(-0.002))
+object FalloutLightDefinition extends LightPartDefinition {
+    private val bounds = sidedBoxes(new Cuboid6(2/16D, 0, 2/16D, 14/16D, 11/16D, 14/16D))
+    private val glowBounds = sidedBoxes(new Cuboid6(4/16D, 1.5/16, 4/16D, 12/16D, 10/16D, 12/16D).expand(-0.002))
 
-    var icon:TextureAtlasSprite = _
+    private val shapes = bounds.map(VoxelShapeCache.getShape)
 
-    val bulbModels = new Array[CCModel](6)
-    val chassiModels = new Array[CCModel](6)
+    private val bulbModels = new Array[CCModel](6)
+    private val chassiModels = new Array[CCModel](6)
+    private var icon:TextureAtlasSprite = _
 
+    override protected def typeName:String = "fallout_light"
 
-    override def getUnlocalizedName(inv:Boolean) = if (inv) "falloutLampInverted" else "falloutLamp"
-    override def getItemRegistryName(inv:Boolean) = if (inv) "inverted_fallout_lamp" else "fallout_lamp"
-    override def getType = new ResourceLocation("projectred-illumination:fallout_lamp")
+    override protected def itemFactory(colour:Int, inverted:Boolean):Item =
+        new ItemBaseLight(this, colour, inverted)
 
-    override def getBounds(side:Int) = bounds(side)
-    override def getLBounds(side:Int) = lBounds(side)
+    override protected def partFactory(colour:Int, inverted:Boolean):TMultiPart =
+        new BaseLightFacePart(this, colour, inverted)
 
-    override def getModelBulb(side:Int) = bulbModels(side)
-    override def getModelChassi(side:Int) = chassiModels(side)
+    override def getItemModelPath:String = "item/fallout_light"
+    override def getItemModelLoaderPath:String = "fallout_light"
 
-    override def getIcon = icon
-    @SideOnly(Side.CLIENT)
-    override def registerTextures(map:TextureMap)
-    {
-        icon = map.registerSprite(new ResourceLocation("projectred:blocks/lighting/fallout"))
+    override def registerIcons(registrar:AtlasRegistrar):Unit = {
+        registrar.registerSprite(new ResourceLocation(ProjectRedIllumination.MOD_ID, "block/fallout"), icon = _)
     }
 
-    override def loadModels()
-    {
-        val models = parseModel("fallout")
-        val chassi = models.get("chassi")
-        val bulb = models.get("bulb")
+    override def loadModels():Unit = {
+        val models = parseCorrectedModel("fallout")
+        val chassi = models("chassi")
+        val bulb = models("bulb")
 
         for (s <- 0 until 6) {
             bulbModels(s) = bakeCopy(s, bulb)
             chassiModels(s) = bakeCopy(s, chassi)
         }
     }
+
+    override def getShape(side:Int):VoxelShape = shapes(side)
+    override def getGlowBounds(side:Int):Cuboid6 = glowBounds(side)
+
+    override def getIcon(colour:Int):TextureAtlasSprite = icon
+
+    override def getModelBulb(side:Int):CCModel = bulbModels(side)
+    override def getModelChassi(side:Int):CCModel = chassiModels(side)
 }
 
-object LightFactoryCage extends LightFactory
-{
-    val bounds = bakedBoxes(new Cuboid6(3.5/16D, 0, 3.5/16D, 12.5/16D, 12/16D, 12.5/16D))
-    val lBounds = bakedBoxes(new Cuboid6(4.5/16D, 1.5/16, 4.5/16D, 11.5/16D, 11.5/16D, 11.5/16D))
+object CageLightDefinition extends LightPartDefinition {
+    private val bounds = sidedBoxes(new Cuboid6(3.5/16D, 0, 3.5/16D, 12.5/16D, 12/16D, 12.5/16D))
+    private val glowBounds = sidedBoxes(new Cuboid6(4.5/16D, 1.5/16, 4.5/16D, 11.5/16D, 11.5/16D, 11.5/16D))
 
-    var icon:TextureAtlasSprite = _
+    private val shapes = bounds.map(VoxelShapeCache.getShape)
 
-    val bulbModels = new Array[CCModel](6)
-    val chassiModels = new Array[CCModel](6)
+    private val bulbModels = new Array[CCModel](6)
+    private val chassiModels = new Array[CCModel](6)
+    private var icon:TextureAtlasSprite = _
 
+    override protected def typeName:String = "cage_light"
 
-    override def getUnlocalizedName(inv:Boolean) = if (inv) "cageLampInverted" else "cageLamp"
-    override def getItemRegistryName(inv:Boolean) = if (inv) "inverted_cage_lamp" else "cage_lamp"
-    override def getType = new ResourceLocation("projectred-illumination:cage_lamp")
+    override protected def itemFactory(colour:Int, inverted:Boolean):Item =
+        new ItemBaseLight(this, colour, inverted)
 
-    override def getBounds(side:Int) = bounds(side)
-    override def getLBounds(side:Int) = lBounds(side)
+    override protected def partFactory(colour:Int, inverted:Boolean):TMultiPart =
+        new BaseLightFacePart(this, colour, inverted)
 
-    override def getModelBulb(side:Int) = bulbModels(side)
-    override def getModelChassi(side:Int) = chassiModels(side)
+    override def getItemModelPath:String = "item/cage_light"
+    override def getItemModelLoaderPath:String = "cage_light"
 
-    @SideOnly(Side.CLIENT)
-    override def getRenderLayer = BlockRenderLayer.CUTOUT
-
-    override def getIcon = icon
-    @SideOnly(Side.CLIENT)
-    override def registerTextures(map:TextureMap)
-    {
-        icon = map.registerSprite(new ResourceLocation("projectred:blocks/lighting/cage_lamp"))
+    override def registerIcons(registrar:AtlasRegistrar):Unit = {
+        registrar.registerSprite(new ResourceLocation(ProjectRedIllumination.MOD_ID, "block/cage_lamp"), icon = _)
     }
 
-    override def loadModels()
-    {
-        val models = parseModel("cagelamp")
-        val chassi = models.get("chassi")
-        val bulb = models.get("bulb")
+    override def loadModels():Unit = {
+        val models = parseCorrectedModel("cagelamp")
+        val chassi = models("chassi")
+        val bulb = models("bulb")
 
         for (s <- 0 until 6) {
             bulbModels(s) = bakeCopy(s, bulb)
             chassiModels(s) = bakeCopy(s, chassi)
         }
     }
+
+    override def getShape(side:Int):VoxelShape = shapes(side)
+    override def getGlowBounds(side:Int):Cuboid6 = glowBounds(side)
+
+    override def getIcon(colour:Int):TextureAtlasSprite = icon
+
+    override def getModelBulb(side:Int):CCModel = bulbModels(side)
+    override def getModelChassi(side:Int):CCModel = chassiModels(side)
 }
 
-object LightFactoryLantern extends LightFactory
-{
+object LanternLightDefinition extends LightPartDefinition {
     private val bounds = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D)
-    private val lBounds = bounds.copy.expand(-1/64D)
+    private val shape = VoxelShapeCache.getShape(bounds)
+    private val glowBounds = bounds.copy.expand(-1/64D)
 
     var icon:TextureAtlasSprite = _
-
     var bulbModel:CCModel = _
     val chassiModels = new Array[CCModel](7)
 
-    override def getUnlocalizedName(inv:Boolean) = if (inv) "lanternInverted" else "lantern"
-    override def getItemRegistryName(inv:Boolean) = if (inv) "inverted_lantern" else "lantern"
-    override def getType = new ResourceLocation("projectred-illumination:lantern")
+    override protected def typeName:String = "lantern"
 
-    override def getBounds(side:Int) = bounds
-    override def getLBounds(side:Int) = lBounds
+    override protected def itemFactory(colour:Int, inverted:Boolean):Item =
+        new ItemBaseLight(this, colour, inverted)
 
-    override def createPart = new BaseLightPart(this)
+    override protected def partFactory(colour:Int, inverted:Boolean):TMultiPart =
+        new BaseLightPart(this, colour, inverted)
 
-    override def getModelBulb(side:Int) = bulbModel
-    override def getModelChassi(side:Int) = chassiModels(side)
-    override def getInvModelChassi = chassiModels(6)
+    override def getItemModelPath:String = "item/lantern"
+    override def getItemModelLoaderPath:String = "lantern"
 
-    override def getIcon = icon
-    @SideOnly(Side.CLIENT)
-    override def registerTextures(map:TextureMap)
-    {
-        icon = map.registerSprite(new ResourceLocation("projectred:blocks/lighting/lantern"))
+    override def registerIcons(registrar:AtlasRegistrar):Unit = {
+        registrar.registerSprite(new ResourceLocation(ProjectRedIllumination.MOD_ID, "block/lantern"), icon = _)
     }
 
-    override def getItemRenderTransform(t:TransformType) = t match {
-        case TransformType.GUI =>
-            val (_, rot, _) = super.getItemRenderTransform(t)
-            (new Vector3(0, -1/16D, 0), rot, 1.25)
-        case _ => super.getItemRenderTransform(t)
-    }
+    override def loadModels():Unit = {
+        import LightPartDefinition._
 
-    override def loadModels()
-    {
-        val models = parseModel("lantern")
+        val models = parseCorrectedModel("lantern")
 
-        val bulb = models.get("bulb")
-        val body = models.get("body")
-        val top = models.get("standtop")
-        val topRing = models.get("goldringtop")
-        val bottom = models.get("standbottom")
-        val bottomRing = models.get("goldringbottom")
-        val side = models.get("standside")
+        val bulb = models("bulb")
+        val body = models("body")
+        val top = models("standtop")
+        val topRing = models("goldringtop")
+        val bottom = models("standbottom")
+        val bottomRing = models("goldringbottom")
+        val side = models("standside")
 
         bulbModel = bulb
-        chassiModels(0) = CCModel.combine(Seq(body, bottom, bottomRing))
-        chassiModels(1) = CCModel.combine(Seq(body, top, topRing))
-        chassiModels(6) = CCModel.combine(Seq(body, topRing)) //Inv model
+        chassiModels(0) = CCModel.combine(Seq(body, bottom, bottomRing).asJava)
+        chassiModels(1) = CCModel.combine(Seq(body, top, topRing).asJava)
+        chassiModels(6) = CCModel.combine(Seq(body, topRing).asJava) //Inv model
 
         for (s <- 2 until 6) {
-            val mSide = side.copy.apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, s)).at(Vector3.center))
-            val mRing = topRing.copy.apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, s)).at(Vector3.center))
-            chassiModels(s) = CCModel.combine(Seq(body, mSide, mRing))
+            val mSide = side.copy.apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, s)).at(Vector3.CENTER))
+            val mRing = topRing.copy.apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, s)).at(Vector3.CENTER))
+            chassiModels(s) = CCModel.combine(Seq(body, mSide, mRing).asJava)
         }
 
         chassiModels.foreach(finishModel)
         finishModel(bulbModel)
     }
+
+    override def getShape(side:Int):VoxelShape = shape
+    override def getGlowBounds(side:Int):Cuboid6 = glowBounds
+
+    override def getIcon(colour:Int):TextureAtlasSprite = icon
+
+    override def getModelBulb(side:Int):CCModel = bulbModel
+    override def getModelChassi(side:Int):CCModel = chassiModels(side)
+
 }
