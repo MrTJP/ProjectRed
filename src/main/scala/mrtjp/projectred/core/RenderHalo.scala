@@ -2,17 +2,28 @@ package mrtjp.projectred.core
 
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.render.{BlockRenderer, CCRenderState}
+import codechicken.lib.util.SneakyUtils
 import codechicken.lib.vec._
+import com.mojang.blaze3d.matrix.MatrixStack
+import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.util.math.BlockPos
-import net.minecraft.world.World
+import net.minecraft.client.renderer.{IRenderTypeBuffer, Matrix4f, RenderState, RenderType}
+import net.minecraft.util.math.{BlockPos, Vec3d}
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import org.lwjgl.opengl.GL11._
 
 object RenderHalo
 {
+    val RenderTypeLamp:RenderType = RenderType.makeType("pr:lamp",
+        DefaultVertexFormats.POSITION_COLOR, 7, 8192, false, true,
+        RenderType.State.getBuilder.transparency(RenderState.LIGHTNING_TRANSPARENCY)
+                .texture(RenderState.NO_TEXTURE)
+                .texturing(new RenderState.TexturingState("disable_lighting", () => RenderSystem.disableLighting(), SneakyUtils.none))
+                .cull(RenderState.CULL_DISABLED)
+//                .writeMask(RenderState.DEPTH_WRITE)
+                .build(false))
+
     private var renderList = Vector[LightCache]()
     private val renderEntityPos = new Vector3
     private val vec = new Vector3
@@ -37,81 +48,52 @@ object RenderHalo
     }
 
     @SubscribeEvent
-    def onRenderWorldLast(event:RenderWorldLastEvent)
-    {
-//        if (renderList.isEmpty) return
-//        val w = Minecraft.getMinecraft.world
-//        val entity = Minecraft.getMinecraft.getRenderViewEntity
-//        renderEntityPos.set(entity.posX, entity.posY+entity.getEyeHeight, entity.posZ)
-//
-//        renderList = renderList.sorted
-//
-//        pushMatrix()
-//        // Adjust translation for camera movement between frames (using camra coordinates for numeric stability).
-//        translate(
-//             entity.posX-(entity.posX-entity.lastTickPosX)*event.getPartialTicks-entity.lastTickPosX,
-//             entity.posY-(entity.posY-entity.lastTickPosY)*event.getPartialTicks-entity.lastTickPosY,
-//             entity.posZ-(entity.posZ-entity.lastTickPosZ)*event.getPartialTicks-entity.lastTickPosZ
-//        )
-//        prepareRenderState()
-//
-//        val it = renderList.iterator
-//        val max = if (Configurator.lightHaloMax < 0) renderList.size else Configurator.lightHaloMax
-//
-//        var i = 0
-//        while (i < max && it.hasNext) {
-//            val cc = it.next()
-//            renderHalo(w, cc)
-//            i += 1
-//        }
-//        renderList = Vector()
-//
-//        restoreRenderState()
-//        popMatrix()
+    def onRenderWorldLast(event:RenderWorldLastEvent):Unit = {
+        if (renderList.nonEmpty) {
+            val w = Minecraft.getInstance.world
+            val mStack = event.getMatrixStack
+            val buffers = Minecraft.getInstance.getRenderTypeBuffers.getBufferSource
+            val projectedView = Minecraft.getInstance.gameRenderer.getActiveRenderInfo.getProjectedView
+
+            renderAndFlushLights(mStack, buffers, projectedView, event.getProjectionMatrix)
+        }
     }
 
-//    def prepareRenderState()
-//    {
-//        enableBlend()
-//        blendFunc(GL_SRC_ALPHA, GL_ONE)
-//        disableTexture2D()
-//        disableLighting()
-//        disableCull()
-//        depthMask(false)
-//
-//        val rs = CCRenderState.instance()
-//        rs.reset()
-//        rs.startDrawing(GL_QUADS, DefaultVertexFormats.ITEM)
-//    }
-//
-//    def restoreRenderState()
-//    {
-//        CCRenderState.instance().draw()
-//        depthMask(true)
-//        color(1, 1, 1, 1)
-//        enableCull()
-//        enableLighting()
-//        enableTexture2D()
-//        blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-//        disableBlend()
-//    }
-//
-//    private def renderHalo(world:World, cc:LightCache)
-//    {
-//        CCRenderState.instance().setBrightness(world, cc.pos)
-//        // Make sure to use camera coordinates for the halo transformation.
-//        val entity = Minecraft.getMinecraft.getRenderViewEntity
-//        renderHalo(cc.cube, cc.color,
-//            new Translation(cc.pos.getX-entity.posX, cc.pos.getY-entity.posY, cc.pos.getZ-entity.posZ))
-//    }
+    def renderAndFlushLights(mStack:MatrixStack, buffers:IRenderTypeBuffer, projectedView:Vec3d, viewMat:Matrix4f):Unit = {
+        mStack.push()
+        mStack.translate(-projectedView.getX, -projectedView.getY, -projectedView.getZ)
 
-    def renderHalo(cuboid:Cuboid6, colour:Int, t:Transformation)
-    {
-        val rs = CCRenderState.instance()
-        rs.reset()
-        rs.setPipeline(t)
-        rs.baseColour = EnumColour.values()(colour).rgba
-        rs.alphaOverride = 128
-        BlockRenderer.renderCuboid(rs, cuboid, 0)
+        val ccrs = CCRenderState.instance()
+        prepareRenderState(ccrs, mStack, buffers)
+
+        val it = renderList.iterator
+        val max = if (Configurator.lightHaloMax < 0) renderList.size else Configurator.lightHaloMax
+
+        var i = 0
+        while (i < max && it.hasNext) {
+            val cc = it.next()
+            renderToCCRS(ccrs, cc.cube, cc.color, new Translation(cc.pos.getX, cc.pos.getY, cc.pos.getZ))
+            i += 1
+        }
+        renderList = Vector()
+        mStack.pop()
+    }
+
+
+    def prepareRenderState(ccrs:CCRenderState, mStack:MatrixStack, buffers:IRenderTypeBuffer):Unit = {
+        ccrs.reset()
+        ccrs.bind(RenderTypeLamp, buffers, mStack)
+    }
+
+    def renderToCCRS(ccrs:CCRenderState, cuboid:Cuboid6, colour:Int, t:Transformation):Unit = {
+        ccrs.setPipeline(t)
+        ccrs.baseColour = EnumColour.values()(colour).rgba
+        ccrs.alphaOverride = 160
+        BlockRenderer.renderCuboid(ccrs, cuboid, 0)
+    }
+
+    def renderHalo(ccrs:CCRenderState, mStack:MatrixStack, buffers:IRenderTypeBuffer, cuboid:Cuboid6, colour:Int, pos:Vector3):Unit = {
+        prepareRenderState(ccrs, mStack, buffers)
+        renderToCCRS(ccrs, cuboid, colour, pos.translation())
     }
 }

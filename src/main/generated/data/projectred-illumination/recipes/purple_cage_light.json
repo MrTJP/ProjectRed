@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-illumination:purple_cage_light"
+  },
+  "pattern": [
+    " C ",
+    "CIC",
+    "NPN"
+  ],
+  "key": {
+    "N": {
+      "item": "projectred-core:plate"
+    },
+    "I": {
+      "item": "projectred-core:purple_illumar"
+    },
+    "C": {
+      "item": "minecraft:iron_bars"
+    },
+    "P": {
+      "item": "projectred-core:conductive_plate"
+    }
+  }
+}

@@ -1,85 +1,37 @@
 package mrtjp.projectred.illumination
 
-import java.util.{List => JList}
+import codechicken.multipart.api.{ItemMultiPart, MultiPartType}
+import codechicken.multipart.api.part.TMultiPart
+import net.minecraft.item.{BlockItemUseContext, Item, ItemUseContext}
 
-import codechicken.lib.vec.Vector3
-import codechicken.multipart.{TItemMultiPart, TMultiPart}
-import mrtjp.core.item.ItemCore
-import mrtjp.projectred.ProjectRedIllumination
-import net.minecraft.block.SoundType
-import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.init.Blocks
-import net.minecraft.item.{Item, ItemStack}
-import net.minecraft.util.{EnumFacing, NonNullList}
-import net.minecraft.util.math.BlockPos
-import net.minecraft.world.World
+import java.util.function.Supplier
 
-class ItemBaseLight(factory:LightFactory, val inverted:Boolean) extends ItemCore with TItemMultiPart
+class ItemBaseLight(val definition:LightPartDefinition, val colour:Int, val inverted:Boolean) extends ItemMultiPart(new Item.Properties().group(IlluminationContent.illuminationItemGroup))
 {
-    setHasSubtypes(true)
-    setCreativeTab(ProjectRedIllumination.tabLighting)
+    override def newPart(context:ItemUseContext):TMultiPart = {
+        val side = context.getFace
+        val onPos = context.getPos.offset(side.getOpposite)
 
-    override def newPart(stack:ItemStack, player:EntityPlayer, w:World, pos:BlockPos, side:Int, vhit:Vector3):TMultiPart =
-    {
-        val bc = pos.offset(EnumFacing.values()(side^1))
-        if (!factory.canFloat && !BaseLightPart.canPlaceLight(w, bc, side)) return null
-
-        val light = factory.createPart
-
-        if (light != null)
-            light.preparePlacement(side^1, stack.getItemDamage, inverted)
-
-        light
-    }
-
-    override def getPlacementSound(item:ItemStack) = SoundType.GLASS
-
-    override def getSubItems(tab:CreativeTabs, list:NonNullList[ItemStack])
-    {
-        if (isInCreativeTab(tab))
-            for (i <- 0 until 16) list.add(new ItemStack(this, 1, i))
+        if (definition.canFloat || BaseLightPart.canPlaceLight(context.getWorld, onPos, side)) {
+            val part = definition.multiPartType(colour, inverted).createPartServer(null).asInstanceOf[BaseLightPart]
+            part.preparePlacement(side.getOpposite.getIndex)
+            part
+        } else
+            null
     }
 }
 
-abstract class ItemPartButtonCommons extends ItemCore with TItemMultiPart
+class ItemPartButton(partType:Supplier[MultiPartType[_]]) extends ItemMultiPart(new Item.Properties().group(IlluminationContent.illuminationItemGroup))
 {
-    setHasSubtypes(true)
-    setCreativeTab(ProjectRedIllumination.tabLighting)
+    override def newPart(context:ItemUseContext):TMultiPart = {
+        val side = context.getFace
+        val onPos = context.getPos.offset(side.getOpposite)
 
-    /**
-      * Create a new part based on the placement information parameters.
-      */
-    override def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockPos, side:Int, vhit:Vector3):TMultiPart =
-    {
-        val pos2 = pos.offset(EnumFacing.values()(side^1))
-        if (!world.isSideSolid(pos2, EnumFacing.values()(side))) return null
-
-
-        val b = getNewInst
-        if (b != null)
-            b.setStateOnPlacement(world, pos, EnumFacing.values()(side), vhit.vec3(), player, item)
-        b
+        if (context.getWorld.getBlockState(onPos).isSolidSide(context.getWorld, onPos, side)) {
+            val button = partType.get().createPartServer(null).asInstanceOf[LightButtonPart]
+            button.setStateOnPlacement(new BlockItemUseContext(context))
+            button
+        } else
+            null
     }
-
-    def getNewInst:LightButtonPart
-
-    override def getSubItems(tab:CreativeTabs, subItems:NonNullList[ItemStack]) =
-    {
-        if (isInCreativeTab(tab))
-            for (i <- 0 until 16) subItems.add(new ItemStack(this, 1, i))
-    }
-
-    override def getPlacementSound(item:ItemStack):SoundType = SoundType.GLASS
-
-}
-
-class ItemPartButton extends ItemPartButtonCommons
-{
-    override def getNewInst = new LightButtonPart
-}
-
-class ItemPartFButton extends ItemPartButtonCommons
-{
-    override def getNewInst = new FLightButtonPart
 }
