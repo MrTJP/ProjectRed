@@ -1,389 +1,246 @@
 package mrtjp.projectred.illumination
 
-import java.lang.{Boolean => JBool, Integer => JInt}
-import java.util.{Random, List => JList}
-
-import codechicken.lib.block.property.unlisted.{UnlistedBooleanProperty, UnlistedIntegerProperty}
-import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.model.bakery.generation.IBakery
-import codechicken.lib.model.bakery.{IBakeryProvider, ModelBakery, SimpleBlockRenderer}
+import codechicken.lib.model.bakedmodels.WrappedItemModel
 import codechicken.lib.render.CCRenderState
 import codechicken.lib.render.item.IItemRenderer
 import codechicken.lib.util.TransformUtils
-import codechicken.lib.vec.uv.IconTransformation
-import codechicken.lib.vec.{Cuboid6, RedundantTransformation}
-import codechicken.multipart.{BlockMultipart, IRedstoneConnectorBlock}
-import mrtjp.core.block._
-import mrtjp.projectred.ProjectRedIllumination
+import codechicken.lib.vec.{Cuboid6, Vector3}
+import codechicken.multipart.api.IRedstoneConnectorBlock
+import com.google.common.collect.ImmutableMap
+import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.projectred.core.RenderHalo
 import net.minecraft.block.material.Material
-import net.minecraft.block.state.{BlockStateContainer, IBlockState}
-import net.minecraft.client.renderer.block.model.BakedQuad
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
-import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.entity.EntityLiving.SpawnPlacementType
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.tileentity.TileEntity
-import net.minecraft.util._
+import net.minecraft.block.{Block, BlockState}
+import net.minecraft.client.renderer.model.{IBakedModel, ItemCameraTransforms}
+import net.minecraft.client.renderer.tileentity.{TileEntityRenderer, TileEntityRendererDispatcher}
+import net.minecraft.client.renderer.{IRenderTypeBuffer, TransformationMatrix}
+import net.minecraft.entity.EntityType
+import net.minecraft.item.{BlockItem, BlockItemUseContext, ItemStack}
+import net.minecraft.state.StateContainer
+import net.minecraft.state.properties.BlockStateProperties
+import net.minecraft.tileentity.{TileEntity, TileEntityType}
+import net.minecraft.util.Direction
 import net.minecraft.util.math.BlockPos
-import net.minecraft.world.{IBlockAccess, World}
-import net.minecraftforge.common.property.IExtendedBlockState
-import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import org.apache.commons.lang3.tuple.Triple
-import org.lwjgl.opengl.GL11
+import net.minecraft.world.server.ServerWorld
+import net.minecraft.world.{IBlockReader, IWorldReader, World}
 
-class BlockLamp extends MultiTileBlock(Material.REDSTONE_LIGHT) with IRedstoneConnectorBlock with IBakeryProvider
+import java.util.Random
+import java.util.function.Supplier
+
+class IllumarLampBlock(tileSupplier:Supplier[TileEntityType[IllumarLampTile]], val colour:Int, val inverted:Boolean) extends Block(
+    Block.Properties.create(Material.REDSTONE_LIGHT)
+            .hardnessAndResistance(0.5F)
+            .lightValue(15)) with IRedstoneConnectorBlock
 {
-    setHardness(0.5F)
-    setCreativeTab(ProjectRedIllumination.tabLighting)
+    setDefaultState(getDefaultState.`with`(BlockStateProperties.LIT, Boolean.box(inverted)))
 
-    override def isBlockNormalCube(state:IBlockState) = true
+    override def getLightValue(state:BlockState):Int =
+        if (state.get(BlockStateProperties.LIT)) super.getLightValue(state)
+        else 0
 
-    override def isOpaqueCube(state:IBlockState) = true
+    override def getStateForPlacement(context:BlockItemUseContext):BlockState =
+        this.getDefaultState.`with`(BlockStateProperties.LIT,
+            Boolean.box(context.getWorld.isBlockPowered(context.getPos) != inverted))
 
-    override def isFullCube(state:IBlockState) = true
+    override def neighborChanged(state:BlockState, worldIn:World, pos:BlockPos, blockIn:Block, fromPos:BlockPos, isMoving:Boolean) {
+        if (!worldIn.isRemote) {
+            val isLit = state.get(BlockStateProperties.LIT)
+            val shouldBeLit = worldIn.isBlockPowered(pos) != inverted
 
-    override def isFullBlock(state:IBlockState) = true
-
-    @SideOnly(Side.CLIENT)
-    override def getSubBlocks(tab:CreativeTabs, list:NonNullList[ItemStack])
-    {
-        for (i <- 0 until 32)
-            list.add(new ItemStack(ProjectRedIllumination.blockLamp, 1, i))
+            if (isLit != shouldBeLit)
+                if (!worldIn.getPendingBlockTicks.isTickScheduled(pos, this))
+                    worldIn.getPendingBlockTicks.scheduleTick(pos, this, 2)
+        }
     }
 
-    override def canCreatureSpawn(state:IBlockState, world:IBlockAccess, pos:BlockPos, t:SpawnPlacementType) = false
+    override def tick(state:BlockState, worldIn:ServerWorld, pos:BlockPos, rand:Random) {
+        val isLit = state.get(BlockStateProperties.LIT)
+        val shouldBeLit = worldIn.isBlockPowered(pos) != inverted
 
-    override def canConnectRedstone(state:IBlockState, world:IBlockAccess, pos:BlockPos, side:EnumFacing) = true
+        if (isLit != shouldBeLit)
+            worldIn.setBlockState(pos, state.`with`(BlockStateProperties.LIT, Boolean.box(shouldBeLit)))
+    }
 
-    override def canProvidePower(state:IBlockState) = false
+    override protected def fillStateContainer(builder:StateContainer.Builder[Block, BlockState]) {
+        builder.add(BlockStateProperties.LIT)
+    }
 
-    override def getConnectionMask(world:IBlockAccess, pos:BlockPos, side:Int) = 0x1F
+    override def canEntitySpawn(state:BlockState, worldIn:IBlockReader, pos:BlockPos, `type`:EntityType[_]) = true
 
-    override def weakPowerLevel(world:IBlockAccess, pos:BlockPos, side:Int, mask:Int) = 0
+    override def getConnectionMask(world:IWorldReader, pos:BlockPos, side:Int) = 0x1F
 
-    override def createBlockState(): BlockStateContainer = new BlockStateContainer.Builder(this).add(MultiTileBlock.TILE_INDEX)
-        .add(BlockProperties.UNLISTED_ON_PROPERTY)
-        .add(BlockProperties.UNLISTED_COLOUR_PROPERTY)
-        .build()
+    override def weakPowerLevel(world:IWorldReader, pos:BlockPos, side:Int, mask:Int) = 0
 
-    override def getExtendedState(state: IBlockState, world: IBlockAccess, pos: BlockPos): IBlockState = ModelBakery.handleExtendedState(state.asInstanceOf[IExtendedBlockState], world, pos)
+    override def canConnectRedstone(state:BlockState, world:IBlockReader, pos:BlockPos, side:Direction):Boolean = true
 
-    @SideOnly(Side.CLIENT)
-    override def getBakery: IBakery = LampBakery
+    override def hasTileEntity(state:BlockState):Boolean = true
+
+    override def createTileEntity(state:BlockState, world:IBlockReader):TileEntity = tileSupplier.get().create()
 }
 
-object BlockProperties {
-    val UNLISTED_ON_PROPERTY = new UnlistedBooleanProperty("on")
-    val UNLISTED_COLOUR_PROPERTY = new UnlistedIntegerProperty("colour")
-}
-
-class ItemBlockLamp extends ItemBlockCore(ProjectRedIllumination.blockLamp)
+class IllumarLampTile(tileType:TileEntityType[IllumarLampTile], val colour:Int, val inverted:Boolean) extends TileEntity(tileType)
 {
-    override def getMetadata(meta:Int) = 0 //we want everything on meta 0, since tiles store the colour
+    def isOn:Boolean = world.getBlockState(pos).get(BlockStateProperties.LIT)
 }
 
-object LampBakery extends SimpleBlockRenderer
-{
-    override def handleState(state: IExtendedBlockState, world:IBlockAccess, pos:BlockPos): IExtendedBlockState = world.getTileEntity(pos) match {
-        case t:TileLamp => state.withProperty(BlockProperties.UNLISTED_ON_PROPERTY, t.isOn.asInstanceOf[JBool])
-                .withProperty(BlockProperties.UNLISTED_COLOUR_PROPERTY, t.getColor.asInstanceOf[JInt])
-        case _ => state
-    }
-
-
-    override def getWorldTransforms(state: IExtendedBlockState) = {
-        val isOn = state.getValue(BlockProperties.UNLISTED_ON_PROPERTY)
-        val colour = state.getValue(BlockProperties.UNLISTED_COLOUR_PROPERTY)
-        val t = new IconTransformation((if (isOn) LampRenderer.iconsOn else LampRenderer.iconsOff)(colour))
-        Triple.of(0, 0, t)
-    }
-
-    override def getItemTransforms(stack: ItemStack) = Triple.of(0, 0,
-        new IconTransformation(if (stack.getItemDamage > 15) LampRenderer.iconsOn(stack.getItemDamage%16) else LampRenderer.iconsOff(stack.getItemDamage)))
-
-    override def shouldCull(): Boolean = true
-
-    override def registerIcons(textureMap: TextureMap) {
-        for (i <- 0 until 16) {
-            LampRenderer.iconsOn(i) = textureMap.registerSprite(new ResourceLocation("projectred:blocks/lighting/lampon/"+i))
-            LampRenderer.iconsOff(i) = textureMap.registerSprite(new ResourceLocation("projectred:blocks/lighting/lampoff/"+i))
-        }
-    }
-}
-
-object LampRenderer extends TileEntitySpecialRenderer[TileLamp] with IItemRenderer
-{//TODO, This can be optimized in 1.12. CCL has model wrapping.
-    val iconsOn = new Array[TextureAtlasSprite](16)
-    val iconsOff = new Array[TextureAtlasSprite](16)
-
-    override def isAmbientOcclusion = true
-    override def isGui3d = true
-    override def getTransforms = TransformUtils.DEFAULT_BLOCK
-
-    override def renderItem(item:ItemStack, transformType: TransformType)
-    {
-        import scala.collection.JavaConversions._
-        val meta = item.getItemDamage
-        val icon = new IconTransformation(if (meta > 15) LampRenderer.iconsOn(meta%16) else LampRenderer.iconsOff(meta))
-
-        //This here is basically a hack as the item model is bound to this IIR.
-        val ccrs = CCRenderState.instance()
-
-        ccrs.reset()
-        ccrs.pullLightmap()
-        ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
-
-        val model = ModelBakery.getCachedItemModel(item)
-
-        renderQuads(model.getQuads(null, null, 0))
-        for (face <- EnumFacing.VALUES) {
-            renderQuads(model.getQuads(null, face, 0))
-        }
-
-        def renderQuads(quads: JList[BakedQuad]) = {
-            for (quad:BakedQuad <- quads ) {
-                ccrs.getBuffer.addVertexData(quad.getVertexData)
-            }
-        }
-
-        ccrs.draw()
-
-        if (meta > 15) {
-            RenderHalo.prepareRenderState()
-            RenderHalo.renderHalo(lBounds, meta%16, new RedundantTransformation)
-            RenderHalo.restoreRenderState()
-        }
-    }
-
-    private val lBounds = Cuboid6.full.copy.expand(0.05D)
-
-    override def render(tile:TileLamp, x:Double, y:Double, z:Double, partialTicks:Float, destroyStage:Int, alpha:Float)
-    {
+class IllumarLampTileRender(dispatcher:TileEntityRendererDispatcher) extends TileEntityRenderer[IllumarLampTile](dispatcher) {
+    override def render(tile:IllumarLampTile, partialTicks:Float, mStack:MatrixStack, buffers:IRenderTypeBuffer, combinedLightIn:Int, combinedOverlayIn:Int):Unit = {
         if (tile.isOn)
-            RenderHalo.addLight(tile.getPos, tile.getColor, lBounds)
+            RenderHalo.renderHalo(CCRenderState.instance(), mStack, buffers, IllumarLampTileRender.glowBounds, tile.colour, Vector3.ZERO)
     }
-
 }
 
-class TileLamp extends MTBlockTile with ILight
-{
-    var powered = false
-    var shape:Byte = 0
+object IllumarLampTileRender {
+    val glowBounds = Cuboid6.full.copy.expand(0.05D)
+}
 
-    def setShape(colour:Int, inverted:Boolean)
-    {
-        shape = (colour&0xF | (if (inverted) 1 else 0) << 4).toByte
-    }
+class IllumarLampItemRenderer(wrappedModel:IBakedModel) extends WrappedItemModel(wrappedModel) with IItemRenderer {
 
-    def getColor = shape&0xF
-    def getInverted = (shape&0x10) != 0
+    override def renderItem(stack:ItemStack, transformType:ItemCameraTransforms.TransformType, mStack:MatrixStack, getter:IRenderTypeBuffer, packedLight:Int, packedOverlay:Int):Unit = {
+        renderWrapped(stack, transformType, mStack, getter, packedLight, packedOverlay)
 
-    override def isOn = getInverted != powered
-
-    override def getBlock = ProjectRedIllumination.blockLamp
-
-    override def getPickBlock = new ItemStack(getBlock, 1, getColor+(if(getInverted) 16 else 0))
-
-    override def onBlockPlaced(side:Int, player:EntityPlayer, stack:ItemStack)
-    {
-        setShape(stack.getItemDamage%16, stack.getItemDamage > 15)
-        //scheduleTick(2)
-        updateState(true)
-    }
-
-    override def getLightValue = if (getInverted != powered)
-        IlluminationProxy.getLightValue(getColor, 15) else 0
-
-    override def onNeighborBlockChange()
-    {
-        if (!world.isRemote) updateState(false)//scheduleTick(2)
-    }
-
-    def checkPower =
-    {
-        world.isBlockIndirectlyGettingPowered(pos) != 0 ||
-            world.getStrongPower(pos) != 0
-    }
-
-    def updateState(forceRender:Boolean)
-    {
-        var updated = false
-        if (!world.isRemote) {
-            val old = powered
-            powered = checkPower
-            if (old != powered) {
-                updated = true
-                updateRender()
-            }
+        stack.getItem match {
+            case il:BlockItem =>
+                il.getBlock match {
+                    case ib:IllumarLampBlock =>
+                        //TODO few open items here:
+                        // 1. Iventory block render already takes up most of the space of the slot. Glow needs to be smaller than in-world
+                        // 2. Wrapped rendering above does not interact properly with rendering below. Halo seems to be completely
+                        //    obscuring block render
+                        RenderHalo.renderHalo(CCRenderState.instance(), mStack, getter, Cuboid6.full.copy.expand(0.02D), ib.colour, Vector3.ZERO)
+                    case _ =>
+                }
+            case _ =>
         }
-        if (forceRender && !updated) updateRender()
     }
 
-    def updateRender()
-    {
-        if (!world.isRemote) markDescUpdate()
-        markLight()
-        markRender()
-    }
-
-    override def onScheduledTick()
-    {
-        updateState(false)
-    }
-
-    override def save(tag:NBTTagCompound)
-    {
-        tag.setByte("sh", shape)
-        tag.setBoolean("pow", powered)
-    }
-
-    override def load(tag:NBTTagCompound)
-    {
-        shape = tag.getByte("sh")
-        powered = tag.getBoolean("pow")
-    }
-
-    override def writeDesc(out:MCDataOutput)
-    {
-        out.writeByte(shape).writeBoolean(powered)
-    }
-
-    override def readDesc(in:MCDataInput)
-    {
-        shape = in.readByte()
-        powered = in.readBoolean()
-        markRender()
-        markLight()
-    }
+    override def getTransforms:ImmutableMap[ItemCameraTransforms.TransformType, TransformationMatrix] = TransformUtils.DEFAULT_BLOCK
+    override def isAmbientOcclusion:Boolean = true
+    override def isGui3d:Boolean = true
+    override def func_230044_c_():Boolean = true
 }
 
-class BlockAirousLight extends BlockCore(Material.AIR)
-{
-    override def getRenderType(state:IBlockState) = EnumBlockRenderType.INVISIBLE
-
-    override def getCollisionBoundingBox(blockState:IBlockState, worldIn:IBlockAccess, pos:BlockPos) = null
-
-    override def isOpaqueCube(state:IBlockState) = false
-
-    override def canCollideCheck(state:IBlockState, hitIfLiquid:Boolean) = false
-
-    override def isReplaceable(worldIn:IBlockAccess, pos:BlockPos) = true
-
-    override def isFullCube(state:IBlockState) = false
-
-    @SideOnly(Side.CLIENT)
-    override def randomDisplayTick(state:IBlockState, world:World, pos:BlockPos, rand:Random)
-    {
-        //TODO get this working
-//        if (rand.nextInt(10) > 0) return
-//        val color = world.getBlockMetadata(x, y, z)%16
+//class BlockAirousLight extends BlockCore(Material.AIR)
+//{
+//    override def getRenderType(state:IBlockState) = EnumBlockRenderType.INVISIBLE
 //
-//        val dist = 3
-//        val dx = x+rand.nextInt(dist)-rand.nextInt(dist)
-//        val dy = y+rand.nextInt(dist)-rand.nextInt(dist)
-//        val dz = z+rand.nextInt(dist)-rand.nextInt(dist)
-//        val ex = dx+rand.nextInt(dist)-rand.nextInt(dist)
-//        val ey = dy+rand.nextInt(dist)-rand.nextInt(dist)
-//        val ez = dz+rand.nextInt(dist)-rand.nextInt(dist)
+//    override def getCollisionBoundingBox(blockState:IBlockState, worldIn:IBlockAccess, pos:BlockPos) = null
 //
-//        val c = ParticleManagement.instance.spawn(world, "ember", dx, dy, dz)
-//        if (c != null)
-//        {
-//            val orbit = new ParticleLogicOrbitPoint(new Vector3(ex, ey, ez))
-//            orbit.setOrbitSpeed(0.5f*rand.nextDouble).setTargetDistance(0.3D)
-//            orbit.setShrinkingOrbit(0.01, 0.01).setPriority(2)
-//            val scale = new ParticleLogicScale
-//            scale.setRate(-0.001F, -0.0001F*rand.nextFloat)
-//            scale.setTerminate(true)
+//    override def isOpaqueCube(state:IBlockState) = false
 //
-//            val iconshift = ParticleLogicIconShift.fluttering
-//            val approach = new ParticleLogicApproachPoint(new Vector3(ex, ey, ez), 0.03f, 0.5f)
-//            approach.setFinal(true)
+//    override def canCollideCheck(state:IBlockState, hitIfLiquid:Boolean) = false
 //
-//            c.setIgnoreMaxAge(true)
-//            c.setScale(0.05f+0.02f*rand.nextFloat)
-//            c.setPRColor(Colors.apply(color))
-//            c += orbit
-//            c += scale
-//            c += iconshift
-//            c += approach
+//    override def isReplaceable(worldIn:IBlockAccess, pos:BlockPos) = true
+//
+//    override def isFullCube(state:IBlockState) = false
+//
+//    @SideOnly(Side.CLIENT)
+//    override def randomDisplayTick(state:IBlockState, world:World, pos:BlockPos, rand:Random)
+//    {
+//        //TODO get this working
+////        if (rand.nextInt(10) > 0) return
+////        val color = world.getBlockMetadata(x, y, z)%16
+////
+////        val dist = 3
+////        val dx = x+rand.nextInt(dist)-rand.nextInt(dist)
+////        val dy = y+rand.nextInt(dist)-rand.nextInt(dist)
+////        val dz = z+rand.nextInt(dist)-rand.nextInt(dist)
+////        val ex = dx+rand.nextInt(dist)-rand.nextInt(dist)
+////        val ey = dy+rand.nextInt(dist)-rand.nextInt(dist)
+////        val ez = dz+rand.nextInt(dist)-rand.nextInt(dist)
+////
+////        val c = ParticleManagement.instance.spawn(world, "ember", dx, dy, dz)
+////        if (c != null)
+////        {
+////            val orbit = new ParticleLogicOrbitPoint(new Vector3(ex, ey, ez))
+////            orbit.setOrbitSpeed(0.5f*rand.nextDouble).setTargetDistance(0.3D)
+////            orbit.setShrinkingOrbit(0.01, 0.01).setPriority(2)
+////            val scale = new ParticleLogicScale
+////            scale.setRate(-0.001F, -0.0001F*rand.nextFloat)
+////            scale.setTerminate(true)
+////
+////            val iconshift = ParticleLogicIconShift.fluttering
+////            val approach = new ParticleLogicApproachPoint(new Vector3(ex, ey, ez), 0.03f, 0.5f)
+////            approach.setFinal(true)
+////
+////            c.setIgnoreMaxAge(true)
+////            c.setScale(0.05f+0.02f*rand.nextFloat)
+////            c.setPRColor(Colors.apply(color))
+////            c += orbit
+////            c += scale
+////            c += iconshift
+////            c += approach
+////        }
+//    }
+//
+//    override def getLightValue(state:IBlockState, world:IBlockAccess, pos:BlockPos) =
+//        world.getTileEntity(pos) match {
+//            case t:TileAirousLight => t.lightVal
+//            case _ => 0
 //        }
-    }
+//}
 
-    override def getLightValue(state:IBlockState, world:IBlockAccess, pos:BlockPos) =
-        world.getTileEntity(pos) match {
-            case t:TileAirousLight => t.lightVal
-            case _ => 0
-        }
-}
-
-class TileAirousLight extends TileEntity with ITickable
-{
-    private var sourcePos = BlockPos.ORIGIN
-    private var sourcePartID = -1
-    private var color = -1
-    private var delay = 100
-
-    override def update()
-    {
-        if (!world.isRemote) {
-            if ({delay -= 1; delay} > 0) return
-            delay = world.rand.nextInt(100)
-
-            val light = getLight
-            if (light == null || !light.isOn || light.getColor != color)
-                world.setBlockToAir(pos)
-        }
-    }
-
-    private def getLight:ILight =
-    {
-        if (sourcePartID > -1) {
-            BlockMultipart.getPart(world, sourcePos, sourcePartID) match {
-                case light:ILight => return light
-                case _ =>
-            }
-        }
-        world.getTileEntity(sourcePos) match {
-            case l:ILight => l
-            case _ => null
-        }
-    }
-
-    def setSource(pos:BlockPos, color:Int, partID:Int) =
-    {
-        sourcePos = pos
-        this.color = color
-        sourcePartID = partID
-    }
-
-    override def readFromNBT(tag:NBTTagCompound)
-    {
-        super.readFromNBT(tag)
-        val x = tag.getInteger("sX")
-        val y = tag.getInteger("sY")
-        val z = tag.getInteger("sZ")
-        sourcePos = new BlockPos(x, y, z)
-        sourcePartID = tag.getByte("spID")
-        color = tag.getByte("col")
-    }
-
-    override def writeToNBT(tag:NBTTagCompound) =
-    {
-        super.writeToNBT(tag)
-        tag.setInteger("sX", sourcePos.getX)
-        tag.setInteger("sY", sourcePos.getY)
-        tag.setInteger("sX", sourcePos.getZ)
-        tag.setByte("spID", sourcePartID.asInstanceOf[Byte])
-        tag.setByte("col", color.asInstanceOf[Byte])
-        tag
-    }
-
-    def lightVal = IlluminationProxy.getLightValue(color, 15)
-}
+//class TileAirousLight extends TileEntity with ITickable
+//{
+//    private var sourcePos = BlockPos.ORIGIN
+//    private var sourcePartID = -1
+//    private var color = -1
+//    private var delay = 100
+//
+//    override def update()
+//    {
+//        if (!world.isRemote) {
+//            if ({delay -= 1; delay} > 0) return
+//            delay = world.rand.nextInt(100)
+//
+//            val light = getLight
+//            if (light == null || !light.isOn || light.getColor != color)
+//                world.setBlockToAir(pos)
+//        }
+//    }
+//
+//    private def getLight:ILight =
+//    {
+//        if (sourcePartID > -1) {
+//            BlockMultipart.getPart(world, sourcePos, sourcePartID) match {
+//                case light:ILight => return light
+//                case _ =>
+//            }
+//        }
+//        world.getTileEntity(sourcePos) match {
+//            case l:ILight => l
+//            case _ => null
+//        }
+//    }
+//
+//    def setSource(pos:BlockPos, color:Int, partID:Int) =
+//    {
+//        sourcePos = pos
+//        this.color = color
+//        sourcePartID = partID
+//    }
+//
+//    override def readFromNBT(tag:NBTTagCompound)
+//    {
+//        super.readFromNBT(tag)
+//        val x = tag.getInteger("sX")
+//        val y = tag.getInteger("sY")
+//        val z = tag.getInteger("sZ")
+//        sourcePos = new BlockPos(x, y, z)
+//        sourcePartID = tag.getByte("spID")
+//        color = tag.getByte("col")
+//    }
+//
+//    override def writeToNBT(tag:NBTTagCompound) =
+//    {
+//        super.writeToNBT(tag)
+//        tag.setInteger("sX", sourcePos.getX)
+//        tag.setInteger("sY", sourcePos.getY)
+//        tag.setInteger("sX", sourcePos.getZ)
+//        tag.setByte("spID", sourcePartID.asInstanceOf[Byte])
+//        tag.setByte("col", color.asInstanceOf[Byte])
+//        tag
+//    }
+//
+//    def lightVal = IlluminationProxy.getLightValue(color, 15)
+//}
