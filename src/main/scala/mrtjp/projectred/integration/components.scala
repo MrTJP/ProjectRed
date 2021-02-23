@@ -13,7 +13,7 @@ import codechicken.lib.render.pipeline.{ColourMultiplier, IVertexOperation}
 import codechicken.lib.texture.{AtlasRegistrar, TextureUtils}
 import codechicken.lib.vec._
 import codechicken.lib.vec.uv._
-import mrtjp.core.vec.{InvertX, VecLib}
+import mrtjp.core.vec.VecLib
 import mrtjp.projectred.core.RenderHalo
 import mrtjp.projectred.transmission.{UVT, WireModelGen}
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
@@ -28,37 +28,35 @@ import scala.util.control.Breaks
 object ComponentStore
 {
     val base = loadBase("base")
-    val lightChip = loadModel("chip")
-    val leverOn = loadModel("leveron")
-    val leverOff = loadModel("leveroff")
-    val solarArray = loadModel("solar")
-    val rainSensor = loadModel("rainsensor")
-    val pointer = loadModel("pointer")
-    val busXcvr = loadModel("array/busxcvr")
-    val lightPanel1 = loadModel("array/lightpanel1")
-    val lightPanel2 = loadModel("array/lightpanel2")
-    val busRand = loadModel("array/busrand")
-    val busConv = loadModel("array/busconv")
-    val signalPanel = loadModel("array/signalpanel")
-    val busInput = loadModel("array/businput")
-    val icBundled = loadModel("array/icbundled")
+    val lightChip = loadCorrectedModel("chip")
+    val leverOn = loadCorrectedModel("leveron")
+    val leverOff = loadCorrectedModel("leveroff")
+    val solarArray = loadCorrectedModel("solar")
+    val rainSensor = loadCorrectedModel("rainsensor")
+    val pointer = loadCorrectedModel("pointer")
+    val busXcvr = loadCorrectedModel("array/busxcvr")
+    val lightPanel1 = loadCorrectedModel("array/lightpanel1")
+    val lightPanel2 = loadCorrectedModel("array/lightpanel2")
+    val busRand = loadCorrectedModel("array/busrand")
+    val busConv = loadCorrectedModel("array/busconv")
+    val signalPanel = loadCorrectedModel("array/signalpanel")
+    val busInput = loadCorrectedModel("array/businput")
+    val icBundled = loadCorrectedModel("array/icbundled")
 
-    val nullCellWireBottom = loadModel("array/nullcellbottomwire").apply(new Translation(0.5, 0, 0.5))
-    val nullCellWireTop = loadModel("array/nullcelltopwire").apply(new Translation(0.5, 0, 0.5))
-    val nullCellBase = loadBase("array/nullcellbase")
-    val extendedCellWireBottom = loadModel("array/extendedcellbottomwire").apply(new Translation(0.5, 0, 0.5))
-    val extendedCellWireTop = loadModel("array/extendedcelltopwire").apply(new Translation(0.5, 0, 0.5))
-    val extendedCellBase = loadBase("array/extendedcellbase")
-    val cellWireSide = loadModel("array/cellsidewire").apply(new Translation(0.5, 0, 0.5))
-    val cellFrame = loadModel("array/cellstand").apply(new Translation(0.5, 0, 0.5))
-    val cellPlate = loadModel("array/cellplate").apply(new Translation(0.5, 0, 0.5))
+    val cellBase = loadBase("array/nullcellbase")
+    val nullCellWireBottom = loadCorrectedModel("array/nullcellbottomwire").apply(new Translation(0.5, 0, 0.5))
+    val nullCellWireTop = loadCorrectedModel("array/nullcelltopwire").apply(new Translation(0.5, 0, 0.5))
+    val extendedCellWireBottom = loadCorrectedModel("array/extendedcellbottomwire").apply(new Translation(0.5, 0, 0.5))
+    val cellWireSide = loadCorrectedModel("array/cellsidewire").apply(new Translation(0.5, 0, 0.5))
+    val cellFrame = loadCorrectedModel("array/cellstand").apply(new Translation(0.5, 0, 0.5))
+    val cellPlate = loadCorrectedModel("array/cellplate").apply(new Translation(0.5, 0, 0.5))
 
-    val stackLatchWireBottom = loadModel("array/stacklatchwire").apply(new Translation(0.5, 0, 0.5))
-    val stackStand = loadModel("array/latchstand")
+    val stackLatchWireBottom = loadCorrectedModel("array/stacklatchwire").apply(new Translation(0.5, 0, 0.5))
+    val stackStand = loadCorrectedModel("array/latchstand")
 
     val sevenSeg = loadCorrectedModels("array/7seg")
     val sixteenSeg = loadCorrectedModels("array/16seg")
-    val segbus = loadModel("array/segbus")
+    val segbus = loadCorrectedModel("array/segbus")
 
     val icChip = loadCorrectedModel("icchip")
     val icGlass = loadCorrectedModel("icglass")
@@ -77,7 +75,9 @@ object ComponentStore
     var rainIcon:TextureAtlasSprite = _
     var pointerIcon:TextureAtlasSprite = _
     var busXcvrIcon:TextureAtlasSprite = _
-    var cellIcon:TextureAtlasSprite = _
+    var nullCellIcon:TextureAtlasSprite = _
+    var logicCellIcon:TextureAtlasSprite = _
+    var stackingLatchIcon:TextureAtlasSprite = _
     var busRandIcon:TextureAtlasSprite = _
     var busConvIcon:TextureAtlasSprite = _
     var busInputIcon:TextureAtlasSprite = _
@@ -89,7 +89,7 @@ object ComponentStore
 
     def registerIcons(map:AtlasRegistrar)
     {
-        val baseTex = "projectred:blocks/integration/"
+        val baseTex = "projectred-integration:block/"
 
         def register(path:String, handler:Consumer[TextureAtlasSprite]):Unit =
             map.registerSprite(new ResourceLocation(baseTex+path), handler)
@@ -127,7 +127,9 @@ object ComponentStore
         register("lever", leverIcon = _)
         register("pointer", pointerIcon = _)
         register("busxcvr", busXcvrIcon = _)
-        register("cells", cellIcon = _)
+        register("null_cell", nullCellIcon = _)
+        register("logic_cell", logicCellIcon = _)
+        register("stacking_latch", stackingLatchIcon = _)
         register("busrand", busRandIcon = _)
         register("busconv", busConvIcon = _)
         register("businput", busInputIcon = _)
@@ -142,7 +144,7 @@ object ComponentStore
     // Normals need to be flipped around because faces are generated on the wrong side (blender pls)
     def loadCorrectedModels(name:String) =
     {
-        val m = OBJParser.parseModels(new ResourceLocation("projectred:textures/obj/integration/"+name+".obj"), GL11.GL_QUADS, null)
+        val m = OBJParser.parseModels(new ResourceLocation("projectred-integration:obj/"+name+".obj"), GL11.GL_QUADS, null)
         val models = m.asScala.map(m => m._1 -> m._2.backfacedCopy())
         models.values.foreach(_.computeNormals.shrinkUVs(0.0005))
         models
@@ -154,29 +156,29 @@ object ComponentStore
     // The older, incorrect way of loading models. Uses an InvertX transform to
     // flip normals around. Works but models had to be created inverted. This was
     // used for models before the flipped normals were discovered.
-    @deprecated
-    def parseModels(name:String) =
-        OBJParser.parseModels(new ResourceLocation("projectred:textures/obj/integration/"+name+".obj"), 7, InvertX).asScala
-    @deprecated("use loadCorrectedModels instead")
-    def loadModels(name:String) =
-    {
-        val models = parseModels(name)
-        models.values.foreach(_.computeNormals.shrinkUVs(0.0005))
-        models
-    }
-    @deprecated("use loadCorrectedModel instead")
-    def loadModel(name:String):CCModel =
-    {
-        val models = parseModels(name)
-        val m = CCModel.combine(models.values.asJavaCollection)
-        m.computeNormals
-        m.shrinkUVs(0.0005)
-        m
-    }
+//    @deprecated
+//    def parseModels(name:String) =
+//        OBJParser.parseModels(new ResourceLocation("projectred:textures/obj/integration/"+name+".obj"), 7, InvertX).asScala
+//    @deprecated("use loadCorrectedModels instead")
+//    def loadModels(name:String) =
+//    {
+//        val models = parseModels(name)
+//        models.values.foreach(_.computeNormals.shrinkUVs(0.0005))
+//        models
+//    }
+//    @deprecated("use loadCorrectedModel instead")
+//    def loadModel(name:String):CCModel =
+//    {
+//        val models = parseModels(name)
+//        val m = CCModel.combine(models.values.asJavaCollection)
+//        m.computeNormals
+//        m.shrinkUVs(0.0005)
+//        m
+//    }
 
     def loadBase(name:String) =
     {
-        val m = loadModel(name)
+        val m = loadCorrectedModel(name)
         m.apply(new Translation(0.5, 0, 0.5))
         //inset each face a little for things like posts that render overtop
         for (i <- 0 until m.verts.length)
@@ -229,7 +231,7 @@ object ComponentStore
     def generateWireModel(name:String) =
     {
         val data = TextureUtils.loadTextureColours(new ResourceLocation(
-            "projectred:textures/blocks/integration/surface/"+name+".png"))
+            "projectred-integration:textures/block/surface/"+name+".png"))
 
 //        if (Configurator.logicwires3D) new WireModel3D(data)
 //        else new WireModel2D(data)
@@ -397,8 +399,7 @@ object WireModel3D
         val wireRectangles = TWireModel.rectangulate(data)
         val model = CCModel.quadModel(wireRectangles.length*40)
         var i = 0
-        for (rect <- wireRectangles)
-        {
+        for (rect <- wireRectangles) {
             generateWireSegment(model, i, rect)
             i += 40
         }
@@ -804,58 +805,86 @@ object CellTopWireModel
     }
 }
 
-class CellTopWireModel(wireTop:CCModel) extends CellWireModel
+abstract class CellTopWireModel(wireTop:CCModel) extends CellWireModel
 {
     val top = new Array[CCModel](24)
     var conn = 0
 
     for (i <- 0 until 24) top(i) = bakeCopy(wireTop, i)
 
+    def getIconT:UVTransformation
+
     override def renderModel(t:Transformation, orient:Int, ccrs:CCRenderState)
     {
-        val icont = new IconTransformation(cellIcon)
-        top(orient).render(ccrs, t, icont, colourMult)
+        top(orient).render(ccrs, t, getIconT, colourMult)
         import mrtjp.projectred.integration.CellTopWireModel._
-        if ((conn&2) == 0) right(orient).render(ccrs, t, icont, colourMult)
-        if ((conn&8) == 0) left(orient).render(ccrs, t, icont, colourMult)
+        if ((conn&2) == 0) right(orient).render(ccrs, t, getIconT, colourMult)
+        if ((conn&8) == 0) left(orient).render(ccrs, t, getIconT, colourMult)
     }
 }
 
-class CellBottomWireModel(wireBottom:CCModel) extends CellWireModel
+abstract class CellBottomWireModel(wireBottom:CCModel) extends CellWireModel
 {
     val bottom = new Array[CCModel](24)
 
     for (i <- 0 until 24) bottom(i) = bakeCopy(wireBottom, i)
 
+    def getUVT:IconTransformation
+
     override def renderModel(t:Transformation, orient:Int, ccrs:CCRenderState)
     {
-        bottom(orient).render(ccrs, t, new IconTransformation(cellIcon), colourMult)
+        bottom(orient).render(ccrs, t, getUVT, colourMult)
     }
 }
 
 class CellFrameModel extends SingleComponentModel(cellFrame)
 {
-    override def getUVT = new IconTransformation(cellIcon)
+    override def getUVT = new IconTransformation(nullCellIcon)
 }
 
 class CellPlateModel extends SingleComponentModel(cellPlate)
 {
-    override def getUVT = new IconTransformation(cellIcon)
+    override def getUVT = new IconTransformation(logicCellIcon)
 }
 
-class NullCellBaseModel extends SingleComponentModel(nullCellBase)
+class NullCellBaseModel extends SingleComponentModel(cellBase)
 {
-    override def getUVT = new IconTransformation(cellIcon)
+    override def getUVT = new IconTransformation(nullCellIcon)
 }
 
-class ExtendedCellBaseModel extends SingleComponentModel(extendedCellBase)
+class NullCellTopWireModel extends CellTopWireModel(nullCellWireTop)
 {
-    override def getUVT = new IconTransformation(cellIcon)
+    override def getIconT:IconTransformation = new IconTransformation(nullCellIcon)
+}
+
+class NullCellBottomWireModel extends CellBottomWireModel(nullCellWireBottom)
+{
+    override def getUVT:IconTransformation = new IconTransformation(nullCellIcon)
+}
+
+class ExtendedCellBottompWireModel extends CellBottomWireModel(extendedCellWireBottom)
+{
+    override def getUVT:IconTransformation = new IconTransformation(logicCellIcon)
+}
+
+class ExtendedCellBaseModel extends SingleComponentModel(cellBase)
+{
+    override def getUVT = new IconTransformation(logicCellIcon)
 }
 
 class StackLatchStandModel(x:Double, z:Double) extends SingleComponentModel(stackStand, new Vector3(x, 2, z))
 {
-    override def getUVT = new IconTransformation(cellIcon)
+    override def getUVT = new IconTransformation(stackingLatchIcon)
+}
+
+class StackLatchWireModel extends CellBottomWireModel(stackLatchWireBottom)
+{
+    override def getUVT:IconTransformation = new IconTransformation(stackingLatchIcon)
+}
+
+class StackLatchBaseModel extends SingleComponentModel(cellBase)
+{
+    override def getUVT = new IconTransformation(stackingLatchIcon)
 }
 
 trait SegModel

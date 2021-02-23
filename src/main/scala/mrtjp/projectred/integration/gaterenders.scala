@@ -9,6 +9,7 @@ import codechicken.lib.colour.EnumColour
 import codechicken.lib.math.MathHelper
 import codechicken.lib.render.CCRenderState
 import codechicken.lib.texture.{AtlasRegistrar, IIconRegister}
+import codechicken.lib.vec.uv.IconTransformation
 import codechicken.lib.vec.{RedundantTransformation, Transformation, Vector3}
 import mrtjp.projectred.core.TFaceOrient.flipMaskZ
 import mrtjp.projectred.integration.ComponentStore._
@@ -1162,8 +1163,8 @@ abstract class RenderArrayCell extends GateRenderer[ArrayGatePart]
 
 class RenderNullCell extends RenderArrayCell
 {
-    override val topWire:CellTopWireModel = new CellTopWireModel(nullCellWireTop)
-    override val bottomWire:CellBottomWireModel = new CellBottomWireModel(nullCellWireBottom)
+    override val topWire:CellTopWireModel = new NullCellTopWireModel
+    override val bottomWire:CellBottomWireModel = new NullCellBottomWireModel
     override val coreModels = Seq(bottomWire, topWire, new CellFrameModel, new NullCellBaseModel)
 }
 
@@ -1172,8 +1173,8 @@ class RenderInvertCell extends RenderArrayCell
     val wires = generateWireModels("invcell", 1)
     val torch = new RedstoneTorchModel(8, 8, 6)
 
-    override val topWire:CellTopWireModel = new CellTopWireModel(extendedCellWireTop)
-    override val bottomWire:CellBottomWireModel = new CellBottomWireModel(extendedCellWireBottom)
+    override val topWire:CellTopWireModel = new NullCellTopWireModel
+    override val bottomWire:CellBottomWireModel = new ExtendedCellBottompWireModel
     override val coreModels = wires++Seq(torch, bottomWire, topWire, new CellFrameModel, new CellPlateModel, new ExtendedCellBaseModel)
 
     override def prepareInv()
@@ -1198,8 +1199,8 @@ class RenderBufferCell extends RenderArrayCell
     val wires = generateWireModels("buffcell", 2)
     val torches = IndexedSeq(new RedstoneTorchModel(11, 13, 6), new RedstoneTorchModel(8, 8, 6))
 
-    override val topWire:CellTopWireModel = new CellTopWireModel(extendedCellWireTop)
-    override val bottomWire:CellBottomWireModel = new CellBottomWireModel(extendedCellWireBottom)
+    override val topWire:CellTopWireModel = new NullCellTopWireModel
+    override val bottomWire:CellBottomWireModel = new ExtendedCellBottompWireModel
     override val coreModels = wires++torches++Seq(topWire, bottomWire, new CellFrameModel, new CellPlateModel, new ExtendedCellBaseModel)
 
     override def prepareInv()
@@ -1226,7 +1227,7 @@ class RenderANDCell extends GateRenderer[ArrayGatePart]
 {
     val wires = generateWireModels("andcell", 2)
     val torches = IndexedSeq(new RedstoneTorchModel(8, 13, 6), new RedstoneTorchModel(8, 2, 8), new FlippedRSTorchModel(8, 8))
-    val topWire = new CellTopWireModel(nullCellWireTop)
+    val topWire = new NullCellTopWireModel
 
     override val coreModels = wires++torches++Seq(topWire, new CellFrameModel, new BaseComponentModel)
 
@@ -1257,12 +1258,12 @@ class RenderANDCell extends GateRenderer[ArrayGatePart]
 class RenderStackingLatch extends GateRenderer[ArrayGatePart]
 {
     var wires = generateWireModels("stacklatch", 5)
-    var clkwire = new CellBottomWireModel(stackLatchWireBottom)
+    var clkwire = new StackLatchWireModel
     var torches = IndexedSeq(new RedstoneTorchModel(12.5, 12, 6), new RedstoneTorchModel(8, 12, 6),
         new RedstoneTorchModel(8, 8, 6), new RedstoneTorchModel(8, 2, 8))
 
     override val coreModels = wires++torches++Seq(clkwire, new StackLatchStandModel(3.5, 5),
-        new StackLatchStandModel(12.5, 5), new BaseComponentModel)
+        new StackLatchStandModel(12.5, 5), new StackLatchBaseModel)
 
     override def prepareInv()
     {
