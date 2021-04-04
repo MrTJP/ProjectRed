@@ -115,7 +115,7 @@ object IntegrationNetwork
     }
 
     def writePartIndex(out:MCDataOutput, part:TMultiPart) = {
-        out.writePos(part.pos).writeByte(part.tile.getPartList.indexOf(part))
+        out.writePos(part.pos).writeByte(part.tile.getPartList.indexOf(part)) //TODO use slotted part index
     }
 
     def readPartIndex(world:World, in:MCDataInput) = {

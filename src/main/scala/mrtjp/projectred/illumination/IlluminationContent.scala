@@ -5,7 +5,6 @@ import codechicken.lib.datagen.ItemModelProvider
 import codechicken.lib.datagen.recipe.RecipeProvider
 import codechicken.lib.gui.SimpleItemGroup
 import codechicken.lib.util.CrashLock
-import codechicken.microblock.MicroMaterialRegistry
 import codechicken.microblock.api.MicroMaterial
 import codechicken.multipart.api.MultiPartType
 import mrtjp.projectred.ProjectRedIllumination

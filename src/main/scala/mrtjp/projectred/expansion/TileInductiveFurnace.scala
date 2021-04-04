@@ -1,100 +1,83 @@
 package mrtjp.projectred.expansion
 
 import codechicken.lib.colour.EnumColour
-import codechicken.lib.data.MCDataInput
-import codechicken.lib.gui.GuiDraw
-import codechicken.lib.model.bakery.SimpleBlockRenderer
+import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.inventory.container.ICCLContainerFactory
 import codechicken.lib.texture.TextureUtils
-import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
+import codechicken.lib.util.ServerUtils
 import mrtjp.core.gui._
-import mrtjp.core.inventory.InvWrapper
-import mrtjp.core.item.ItemKey
 import mrtjp.core.vec.Point
 import mrtjp.projectred.ProjectRedExpansion
-import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.Container
+import net.minecraft.client.gui.ScreenManager
+import net.minecraft.entity.player.{PlayerEntity, PlayerInventory, ServerPlayerEntity}
 import net.minecraft.item.ItemStack
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.{EnumFacing, ResourceLocation}
-import net.minecraft.world.IBlockAccess
-import net.minecraftforge.common.property.IExtendedBlockState
-import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.{Direction, ResourceLocation}
 
-class TileInductiveFurnace extends TileProcessingMachine
+class TileInductiveFurnace extends TileProcessingMachine(ExpansionContent.inductionFurnaceTile.get)
 {
-    override protected val storage = Array.fill(2)(ItemStack.EMPTY)//new Array[ItemStack](2)
+    override protected val storage:Array[ItemStack] = Array.fill(2)(ItemStack.EMPTY)
     override def getInventoryStackLimit = 64
-    override def getName = "furnace"
+    override def nbtSaveName:String = "induction_furnace"
 
-    def getBlock = ProjectRedExpansion.machine1
+    override def createMenu(windowId:Int, playerInv:PlayerInventory, player:PlayerEntity):ContainerInductiveFurnace =
+        new ContainerInductiveFurnace(playerInv, this, windowId)
 
-    override def openGui(player:EntityPlayer)
-    {
-        GuiInductiveFurnace.open(player, createContainer(player), _.writePos(getPos))
-    }
-
-    def createContainer(player:EntityPlayer) =
-        new ContainerFurnace(player, this)
-
-    import net.minecraft.util.EnumFacing._
-    def canExtractItem(slot:Int, itemstack:ItemStack, side:EnumFacing) = true
-    def canInsertItem(slot:Int, itemstack:ItemStack, side:EnumFacing) = side == EnumFacing.UP
-    def getSlotsForFace(s:EnumFacing) = s match
-    {
-        case UP => Array(0) // input
-        case NORTH|SOUTH|WEST|EAST => Array(1) // output
+    def canExtractItem(slot:Int, itemstack:ItemStack, side:Direction):Boolean = true
+    def canInsertItem(slot:Int, itemstack:ItemStack, side:Direction):Boolean = side == Direction.UP
+    def getSlotsForFace(s:Direction):Array[Int] = s match {
+        case Direction.UP => Array(0) // input
+        case Direction.NORTH|Direction.SOUTH|Direction.WEST|Direction.EAST => Array(1) // output
         case _ => Array.emptyIntArray
     }
 
-    override def canStart:Boolean =
-    {
-        val inSlot = getStackInSlot(0)
-        if (inSlot.isEmpty) return false
-
-        val r = InductiveFurnaceRecipeLib.getRecipeFor(inSlot)
-        if (r == null) return false
-
-        val stack = r.createOutput
-        val room = InvWrapper.wrapInternal(this, 1 to 1).getSpaceForItem(ItemKey.get(stack))
-        room >= stack.getCount
+    override def canStart:Boolean = {
+        // TODO furnace recipies
+//        val inSlot = getStackInSlot(0)
+//        if (!inSlot.isEmpty) {
+//            val r = InductiveFurnaceRecipeLib.getRecipeFor(inSlot)
+//            if (r != null) {
+//                val stack = r.createOutput
+//                val room = InvWrapper.wrapInternal(this, 1 to 1).getSpaceForItem(ItemKey.get(stack))
+//                room >= stack.getCount
+//            } else
+//                false
+//        } else
+//            false
+        false
     }
 
-    override def startWork()
-    {
-        val r = InductiveFurnaceRecipeLib.getRecipeFor(getStackInSlot(0))
-        if (r != null)
-        {
-            isWorking = true
-            workMax = r.burnTime
-            workRemaining = workMax
-        }
+    override def startWork():Unit = {
+//        val r = InductiveFurnaceRecipeLib.getRecipeFor(getStackInSlot(0))
+//        if (r != null) {
+//            isWorking = true
+//            workMax = r.burnTime
+//            workRemaining = workMax
+//        }
     }
 
-    override def produceResults()
-    {
-        val in = getStackInSlot(0)
-        val r = InductiveFurnaceRecipeLib.getRecipeFor(in)
-        if (r != null)
-        {
-            val wrap = InvWrapper.wrapInternal(this, 0 to 0)
-            wrap.extractItem(ItemKey.get(in), 1)
-            val out = r.createOutput
-            wrap.setSlotsFromRange(1 to 1).injectItem(ItemKey.get(out), out.getCount)
-        }
+    override def produceResults():Unit = {
+//        val in = getStackInSlot(0)
+//        val r = InductiveFurnaceRecipeLib.getRecipeFor(in)
+//        if (r != null) {
+//            val wrap = InvWrapper.wrapInternal(this, 0 to 0)
+//            wrap.extractItem(ItemKey.get(in), 1)
+//            val out = r.createOutput
+//            wrap.setSlotsFromRange(1 to 1).injectItem(ItemKey.get(out), out.getCount)
+//        }
     }
 }
 
-class ContainerFurnace(p:EntityPlayer, tile:TileInductiveFurnace) extends ContainerProcessingMachine(tile)
+class ContainerInductiveFurnace(playerInv:PlayerInventory, val tile:TileInductiveFurnace, windowId:Int) extends ContainerProcessingMachine(tile, ExpansionContent.inductionFurnaceContainer.get, windowId)
 {
     {
-        addSlotToContainer(new Slot3(tile, 0, 56, 40))
+        addSlot(new Slot3(tile, 0, 56, 40))
 
         val outslot = new Slot3(tile, 1, 115, 40)
         outslot.canPlaceDelegate = {_ => false}
-        addSlotToContainer(outslot)
+        addSlot(outslot)
 
-        addPlayerInv(p, 8, 89)
+        addPlayerInv(playerInv, 8, 89)
     }
 
     override def doMerge(stack:ItemStack, from:Int):Boolean =
@@ -110,102 +93,104 @@ class ContainerFurnace(p:EntityPlayer, tile:TileInductiveFurnace) extends Contai
     }
 }
 
-class GuiInductiveFurnace(tile:TileInductiveFurnace, c:Container) extends NodeGui(c, 176, 171)
+object ContainerInductiveFurnace extends ICCLContainerFactory[ContainerInductiveFurnace] {
+    override def create(windowId:Int, inventory:PlayerInventory, packet:MCDataInput):ContainerInductiveFurnace = {
+        inventory.player.world.getTileEntity(packet.readPos()) match {
+            case t:TileInductiveFurnace => t.createMenu(windowId, inventory, inventory.player)
+        }
+    }
+}
+
+class GuiInductiveFurnace(c:ContainerInductiveFurnace, playerInv:PlayerInventory, title:ITextComponent) extends NodeGui(c, 176, 171, playerInv, title)
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
         TextureUtils.changeTexture(GuiInductiveFurnace.background)
-        GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
+        blit(0, 0, 0, 0, size.width, size.height)
 
-        val s = tile.progressScaled(24)
-        drawTexturedModalRect(80, 40, 176, 0, s+1, 16)
+        val s = c.tile.progressScaled(24)
+        blit(80, 40, 176, 0, s+1, 16)
 
-        if (tile.cond.canWork)
-            GuiDraw.drawTexturedModalRect(16, 16, 177, 18, 7, 9)
-        GuiLib.drawVerticalTank(16, 26, 177, 27, 7, 48, tile.cond.getChargeScaled(48))
+        if (c.tile.cond.canWork)
+            blit(16, 16, 177, 18, 7, 9)
+        GuiLib.drawVerticalTank(this, 16, 26, 177, 27, 7, 48, c.tile.cond.getChargeScaled(48))
 
-        if (tile.cond.flow == -1)
-            GuiDraw.drawTexturedModalRect(27, 16, 185, 18, 7, 9)
-        GuiLib.drawVerticalTank(27, 26, 185, 27, 7, 48, tile.cond.getFlowScaled(48))
+        if (c.tile.cond.flow == -1)
+            blit(27, 16, 185, 18, 7, 9)
+        GuiLib.drawVerticalTank(this, 27, 26, 185, 27, 7, 48, c.tile.cond.getFlowScaled(48))
 
-        GuiDraw.drawString("Inductive Furnace", 8, 6, EnumColour.GRAY.argb, false)
-        GuiDraw.drawString("Inventory", 8, 79, EnumColour.GRAY.argb, false)
+        font.drawString(title.getFormattedText, 8, 6, EnumColour.GRAY.argb)
+        font.drawString(playerInv.getDisplayName.getFormattedText, 8, 79, EnumColour.GRAY.argb)
     }
 }
 
-object GuiInductiveFurnace extends TGuiFactory
+object GuiInductiveFurnace
 {
-    val background = new ResourceLocation("projectred", "textures/gui/furnace.png")
-    override def getID = ExpansionProxy.furnaceGui
+    val background = new ResourceLocation(ProjectRedExpansion.MOD_ID, "textures/gui/induction_furnace.png")
 
-    @SideOnly(Side.CLIENT)
-    override def buildGui(player:EntityPlayer, data:MCDataInput) =
-    {
-        player.world.getTileEntity(data.readPos()) match
-        {
-            case t:TileInductiveFurnace => new GuiInductiveFurnace(t, t.createContainer(player))
-            case _ => null
-        }
+    def register():Unit = {
+        ScreenManager.registerFactory(
+            ExpansionContent.inductionFurnaceContainer.get(),
+            (cont:ContainerInductiveFurnace, inv, text) => new GuiInductiveFurnace(cont, inv, text))
     }
 }
 
-object RenderInductiveFurnace extends SimpleBlockRenderer
-{
-    import java.lang.{Boolean => JBool, Integer => JInt}
-
-    import mrtjp.projectred.expansion.BlockProperties._
-    import org.apache.commons.lang3.tuple.Triple
-
-    var bottom:TextureAtlasSprite = _
-    var top:TextureAtlasSprite = _
-    var side1:TextureAtlasSprite = _
-    var side2a:TextureAtlasSprite = _
-    var side2b:TextureAtlasSprite = _
-    var side2c:TextureAtlasSprite = _
-
-    var iconT1:UVTransformation = _
-    var iconT2:UVTransformation = _
-    var iconT3:UVTransformation = _
-
-    override def handleState(state: IExtendedBlockState, world: IBlockAccess, pos: BlockPos): IExtendedBlockState = {
-
-       world.getTileEntity(pos) match {
-            case t:TileInductiveFurnace =>
-                var s = state
-                s = s.withProperty(UNLISTED_SIDE_PROPERTY, t.side.asInstanceOf[Integer])
-                s = s.withProperty(UNLISTED_ROTATION_PROPERTY, t.rotation.asInstanceOf[JInt])
-                s = s.withProperty(UNLISTED_WORKING_PROPERTY, t.isWorking.asInstanceOf[JBool])
-                s = s.withProperty(UNLISTED_CHARGED_PROPERTY, t.isCharged.asInstanceOf[JBool])
-                s
-            case _ => state
-        }
-    }
-
-    override def getWorldTransforms(state: IExtendedBlockState) = {
-        val side = state.getValue(UNLISTED_SIDE_PROPERTY)
-        val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
-        val isWorking = state.getValue(UNLISTED_WORKING_PROPERTY)
-        val isCharged = state.getValue(UNLISTED_CHARGED_PROPERTY)
-        Triple.of(side, rotation,
-            if (isWorking && isCharged) iconT3
-            else if (isCharged) iconT2
-            else iconT1)
-    }
-
-    override def getItemTransforms(stack: ItemStack) = Triple.of(0, 0, iconT1)
-    override def shouldCull() = true
-
-    override def registerIcons(reg:TextureMap)
-    {
-        bottom = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/bottom"))
-        top = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/top"))
-        side1 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/side1"))
-        side2a = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/side2a"))
-        side2b = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/side2b"))
-        side2c = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/side2c"))
-
-        iconT1 = new MultiIconTransformation(bottom, top, side1, side2a, side1, side1)
-        iconT2 = new MultiIconTransformation(bottom, top, side1, side2b, side1, side1)
-        iconT3 = new MultiIconTransformation(bottom, top, side1, side2c, side1, side1)
-    }
-}
+//object RenderInductiveFurnace extends SimpleBlockRenderer
+//{
+//    import org.apache.commons.lang3.tuple.Triple
+//
+//    import java.lang.{Boolean => JBool, Integer => JInt}
+//
+//    var bottom:TextureAtlasSprite = _
+//    var top:TextureAtlasSprite = _
+//    var side1:TextureAtlasSprite = _
+//    var side2a:TextureAtlasSprite = _
+//    var side2b:TextureAtlasSprite = _
+//    var side2c:TextureAtlasSprite = _
+//
+//    var iconT1:UVTransformation = _
+//    var iconT2:UVTransformation = _
+//    var iconT3:UVTransformation = _
+//
+//    override def handleState(state: IExtendedBlockState, world: IBlockAccess, pos: BlockPos): IExtendedBlockState = {
+//
+//       world.getTileEntity(pos) match {
+//            case t:TileInductiveFurnace =>
+//                var s = state
+//                s = s.withProperty(UNLISTED_SIDE_PROPERTY, t.side.asInstanceOf[Integer])
+//                s = s.withProperty(UNLISTED_ROTATION_PROPERTY, t.rotation.asInstanceOf[JInt])
+//                s = s.withProperty(UNLISTED_WORKING_PROPERTY, t.isWorking.asInstanceOf[JBool])
+//                s = s.withProperty(UNLISTED_CHARGED_PROPERTY, t.isCharged.asInstanceOf[JBool])
+//                s
+//            case _ => state
+//        }
+//    }
+//
+//    override def getWorldTransforms(state: IExtendedBlockState) = {
+//        val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+//        val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
+//        val isWorking = state.getValue(UNLISTED_WORKING_PROPERTY)
+//        val isCharged = state.getValue(UNLISTED_CHARGED_PROPERTY)
+//        Triple.of(side, rotation,
+//            if (isWorking && isCharged) iconT3
+//            else if (isCharged) iconT2
+//            else iconT1)
+//    }
+//
+//    override def getItemTransforms(stack: ItemStack) = Triple.of(0, 0, iconT1)
+//    override def shouldCull() = true
+//
+//    override def registerIcons(reg:TextureMap)
+//    {
+//        bottom = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/bottom"))
+//        top = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/top"))
+//        side1 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/side1"))
+//        side2a = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/side2a"))
+//        side2b = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/side2b"))
+//        side2c = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/side2c"))
+//
+//        iconT1 = new MultiIconTransformation(bottom, top, side1, side2a, side1, side1)
+//        iconT2 = new MultiIconTransformation(bottom, top, side1, side2b, side1, side1)
+//        iconT3 = new MultiIconTransformation(bottom, top, side1, side2c, side1, side1)
+//    }
+//}

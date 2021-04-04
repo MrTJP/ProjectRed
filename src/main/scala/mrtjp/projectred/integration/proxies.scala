@@ -16,67 +16,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.event.lifecycle.{FMLClientSetupEvent, FMLCommonSetupEvent}
 import net.minecraftforge.scorge.lang.ScorgeModLoadingContext
 
-//class IntegrationProxy_server extends IProxy with IPartFactory
-//{
-//    override def preinit()
-//    {
-//        itemPartGate = new ItemPartGate
-//        itemPartGate.setUnlocalizedName("projectred.integration.gate")
-//        ForgeRegistries.ITEMS.register(itemPartGate.setRegistryName("gate"))
-//
-//        import GateDefinition._
-//        MultiPartRegistry.registerParts(this, Array(
-//            typeSimpleGate, typeComplexGate, typeArrayGate,
-//            typeBundledGate, typeNeighborGate
-//        ))
-//    }
-//
-//    override def init()
-//    {
-//        PacketCustom.assignHandler(IntegrationSPH.channel, IntegrationSPH)
-//    }
-//
-//    override def postinit(){}
-//
-//    override def createPart(name:ResourceLocation, client:Boolean) = name match
-//    {
-//        case GateDefinition.typeSimpleGate => new ComboGatePart
-//        case GateDefinition.typeComplexGate => new SequentialGatePart
-//        case GateDefinition.typeArrayGate => new ArrayGatePart
-//        case GateDefinition.typeBundledGate => new BundledGatePart
-//        case GateDefinition.typeNeighborGate => new SequentialGatePartT
-//        case _ => null
-//    }
-//}
-//
-//class IntegrationProxy_client extends IntegrationProxy_server
-//{
-//    val timerGui = 10
-//    val counterGui = 11
-//
-//    @SideOnly(Side.CLIENT)
-//    override def preinit()
-//    {
-//        super.preinit()
-//
-//        ModelRegistryHelper.registerItemRenderer(itemPartGate, GateItemRenderer)
-//        TextureUtils.addIconRegister(RenderGate)
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    override def init()
-//    {
-//        super.init()
-//
-//        PacketCustom.assignHandler(IntegrationCPH.channel, IntegrationCPH)
-//
-//        GuiHandler.register(GuiTimer, timerGui)
-//        GuiHandler.register(GuiCounter, counterGui)
-//    }
-//}
-//
-//object IntegrationProxy extends IntegrationProxy_client
-
 class IntegrationProxy extends IProxy
 {
     override def construct():Unit = {
