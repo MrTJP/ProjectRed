@@ -17,7 +17,7 @@ import net.minecraft.entity.ai.attributes.AttributeModifier
 import net.minecraft.entity.monster.EndermanEntity
 import net.minecraft.entity.player.{PlayerEntity, PlayerInventory, ServerPlayerEntity}
 import net.minecraft.inventory.EquipmentSlotType
-import net.minecraft.inventory.container.SimpleNamedContainerProvider
+import net.minecraft.inventory.container.{SimpleNamedContainerProvider, Slot}
 import net.minecraft.item._
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.tags.BlockTags
@@ -75,12 +75,13 @@ class ContainerBackpack(windowId: Int, inv: BagInventory, playerInv: PlayerInven
 
     {
         for (((x, y), i) <- GuiLib.createSlotGrid(8, 18, 9, 3, 0, 0).zipWithIndex) {
-            val s = new Slot3(inv, i, x, y)
-            addSlot(s)
+            val slot = new Slot(inv, i, x, y) {
+                override def canTakeStack(playerIn:PlayerEntity):Boolean =
+                    i != playerInv.currentItem + 27
+            }
+            addSlot(slot)
         }
         addPlayerInv(playerInv, 8, 86)
-
-        slots(playerInv.currentItem + 27).canRemoveDelegate = { () => false }
     }
 }
 
@@ -91,7 +92,7 @@ class BagInventory(player: PlayerEntity) extends TInventory {
 
     override def getInventoryStackLimit = 64
 
-    override def getName = ""
+    override def nbtSaveName = ""
 
     private def loadInventory() {
         if (closeIfNoBag()) return

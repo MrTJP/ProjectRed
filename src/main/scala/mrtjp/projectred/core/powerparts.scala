@@ -6,29 +6,31 @@
 package mrtjp.projectred.core
 
 import codechicken.multipart.api.part.TMultiPart
+import mrtjp.core.world.Messenger
+import net.minecraft.util.math.BlockPos
 
 import scala.ref.WeakReference
 
-trait TCachedPowerConductor extends IPowerConnectable
-{
+trait TCachedPowerConductor extends IPowerConnectable {
     var needsCache = true
-    var condCache = new Array[WeakReference[PowerConductor]](idRange.max+1)
+    private val condCache = new Array[WeakReference[PowerConductor]](idRange.max+1)
 
     def idRange:Seq[Int]
 
     def getExternalCond(id:Int):PowerConductor
 
-    override def conductorOut(id:Int) =
-    {
+    override def conductorOut(id:Int):PowerConductor = {
         if (needsCache) rebuildCache()
 
         var wr = condCache(id)
 
         wr match {
-            case WeakReference(cond) if cond.isValid =>
+            case WeakReference(cond) =>
+                if (!cond.isValid) {
+                    rebuildCache()
+                    wr = condCache(id)
+                }
             case _ =>
-                rebuildCache()
-                wr = condCache(id)
         }
 
         wr match {
@@ -37,8 +39,7 @@ trait TCachedPowerConductor extends IPowerConnectable
         }
     }
 
-    def rebuildCache()
-    {
+    def rebuildCache():Unit = {
         for (i <- 0 until condCache.length) condCache(i) = new WeakReference(null)
         for (id <- idRange) {
             val c = getExternalCond(id)
@@ -46,13 +47,22 @@ trait TCachedPowerConductor extends IPowerConnectable
         }
         needsCache = false
     }
+
+    def conductorCount:Int =
+        condCache.collect {
+            case WeakReference(cond) if cond.isValid => cond
+        }.length
 }
 
 trait TPowerPartCommons extends TMultiPart with TCachedPowerConductor with TConnectableCommons
 {
-    abstract override def onMaskChanged()
-    {
+    abstract override def onMaskChanged():Unit ={
         super.onMaskChanged()
+        needsCache = true
+    }
+
+    abstract override def onNeighborBlockChanged(from:BlockPos):Unit = {
+        super.onNeighborBlockChanged(from)
         needsCache = true
     }
 }

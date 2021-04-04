@@ -313,7 +313,8 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
     {
         var newConn = 0
         for (r <- 0 until 4) if (maskOpen(r)) {
-            if (discoverStraight(r)) newConn |= 0x10<<r
+            if (discoverStraight(r))
+                newConn |= 0x10<<r
             else {
                 val cnrMode = discoverCorner(r)
                 if (cnrMode != 0) {

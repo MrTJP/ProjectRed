@@ -1,6 +1,21 @@
-/*
 package mrtjp.projectred
 
+import mrtjp.projectred.expansion.{ExpansionProxy, ExpansionProxyClient}
+import net.minecraftforge.fml.DistExecutor
+
+
+object ProjectRedExpansion {
+    final var MOD_ID = "projectred-expansion"
+    final var proxy:ExpansionProxy = DistExecutor.safeRunForDist(
+        () => () => new ExpansionProxyClient().asInstanceOf[ExpansionProxy],
+        () => () => new ExpansionProxy())
+}
+
+class ProjectRedExpansion {
+    ProjectRedExpansion.proxy.construct()
+}
+
+/*
 import codechicken.lib.model.bakery.sub.SubBlockBakery
 import mrtjp.projectred.expansion._
 import net.minecraft.creativetab.CreativeTabs

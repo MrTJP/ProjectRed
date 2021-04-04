@@ -184,8 +184,7 @@ class IlluminationProxyClient extends IlluminationProxy {
 
         for (light <- IlluminationContent.lightDefinitions)
             ModelLoaderRegistry.registerLoader(
-                new ResourceLocation(ProjectRedIllumination.MOD_ID,
-                light.getItemModelLoaderPath),
+                new ResourceLocation(ProjectRedIllumination.MOD_ID, light.getItemModelLoaderPath),
                 new GenericModelLoader(light.getItemRenderer)
             )
     }

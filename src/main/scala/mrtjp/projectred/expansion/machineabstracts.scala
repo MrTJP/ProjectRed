@@ -1,83 +1,98 @@
 package mrtjp.projectred.expansion
 
-import codechicken.lib.block.property.unlisted.{UnlistedBooleanProperty, UnlistedIntegerProperty}
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.model.bakery.generation.{IBakery, IBlockBakery}
-import codechicken.lib.model.bakery.{IBakeryProvider, ModelBakery}
+import codechicken.lib.util.ServerUtils
 import codechicken.lib.vec.Rotation
-import mrtjp.core.block._
 import mrtjp.core.gui.NodeContainer
 import mrtjp.core.inventory.{TInventory, TInventoryCapablilityTile}
-import mrtjp.projectred.ProjectRedExpansion
+import mrtjp.core.world.Messenger
 import mrtjp.projectred.api._
 import mrtjp.projectred.core._
 import net.minecraft.block.material.Material
-import net.minecraft.block.state.BlockStateContainer.Builder
-import net.minecraft.block.state.{BlockStateContainer, IBlockState}
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.{Container, IContainerListener, ISidedInventory}
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.math.BlockPos
-import net.minecraft.world.IBlockAccess
-import net.minecraftforge.common.property.{IExtendedBlockState, IUnlistedProperty}
+import net.minecraft.block.{Block, BlockState}
+import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.player.{PlayerEntity, ServerPlayerEntity}
+import net.minecraft.inventory.ISidedInventory
+import net.minecraft.inventory.container.{ContainerType, INamedContainerProvider}
+import net.minecraft.item.{BlockItemUseContext, ItemStack}
+import net.minecraft.nbt.CompoundNBT
+import net.minecraft.state.{BooleanProperty, IntegerProperty, StateContainer}
+import net.minecraft.tileentity.{TileEntity, TileEntityType}
+import net.minecraft.util.math.{BlockPos, BlockRayTraceResult}
+import net.minecraft.util.text.{ITextComponent, StringTextComponent}
+import net.minecraft.util.{ActionResultType, Hand}
+import net.minecraft.world.{IBlockReader, IWorldReader, World}
 
-class BlockMachine(regName:String, bakery:IBlockBakery) extends MultiTileBlock(Material.ROCK) with IBakeryProvider
-{
-    setHardness(2)
-    setCreativeTab(ProjectRedExpansion.tabExpansion)
+import scala.jdk.CollectionConverters._
+//class BlockMachine(regName:String, bakery:IBlockBakery) extends MultiTileBlock(Material.ROCK) with IBakeryProvider
+//{
+//    setHardness(2)
+//    setCreativeTab(ProjectRedExpansion.tabExpansion)
+//
+//    override def isOpaqueCube(blockState: IBlockState) = true
+//
+//    override def isNormalCube(blockState: IBlockState) = true
+//
+//    override def createBlockState(): BlockStateContainer = new Builder(this).add(MultiTileBlock.TILE_INDEX)
+//        .add(BlockProperties.UNLISTED_ROTATION_PROPERTY)
+//        .add(BlockProperties.UNLISTED_SIDE_PROPERTY)
+//        .add(BlockProperties.UNLISTED_WORKING_PROPERTY)
+//        .add(BlockProperties.UNLISTED_CHARGED_PROPERTY)
+//        .add(BlockProperties.UNLISTED_BURNING_PROPERTY)
+//        .add(BlockProperties.UNLISTED_POWERED_PROPERTY)
+//        .add(BlockProperties.UNLISTED_ACTIVE_PROPERTY)
+//        .add(BlockProperties.UNLISTED_CHARGE_PROPERTY)
+//        .build()
+//
+//    override def getExtendedState(state: IBlockState, world: IBlockAccess, pos: BlockPos) = ModelBakery.handleExtendedState(state.asInstanceOf[IExtendedBlockState], world, pos)
+//
+//    override def getBakery:IBakery = bakery
+//}
+//
+//object BlockProperties
+//{
+//    val UNLISTED_ROTATION_PROPERTY:IUnlistedProperty[Integer] = new UnlistedIntegerProperty("rotation")
+//    val UNLISTED_SIDE_PROPERTY = new UnlistedIntegerProperty("side")
+//    val UNLISTED_WORKING_PROPERTY = new UnlistedBooleanProperty("working")
+//    val UNLISTED_CHARGED_PROPERTY = new UnlistedBooleanProperty("charged")
+//    val UNLISTED_BURNING_PROPERTY = new UnlistedBooleanProperty("burning")
+//    val UNLISTED_POWERED_PROPERTY = new UnlistedBooleanProperty("powered")
+//    val UNLISTED_ACTIVE_PROPERTY = new UnlistedBooleanProperty("active")
+//    val UNLISTED_CHARGE_PROPERTY = new UnlistedIntegerProperty("charge")
+//}
 
-    override def isOpaqueCube(blockState: IBlockState) = true
+class BaseMachineBlock(tileFactory:() => CoreTile) extends Block(Block.Properties.create(Material.ROCK)) {
 
-    override def isNormalCube(blockState: IBlockState) = true
+    override def hasTileEntity(state:BlockState):Boolean = true
 
-    override def createBlockState(): BlockStateContainer = new Builder(this).add(MultiTileBlock.TILE_INDEX)
-        .add(BlockProperties.UNLISTED_ROTATION_PROPERTY)
-        .add(BlockProperties.UNLISTED_SIDE_PROPERTY)
-        .add(BlockProperties.UNLISTED_WORKING_PROPERTY)
-        .add(BlockProperties.UNLISTED_CHARGED_PROPERTY)
-        .add(BlockProperties.UNLISTED_BURNING_PROPERTY)
-        .add(BlockProperties.UNLISTED_POWERED_PROPERTY)
-        .add(BlockProperties.UNLISTED_ACTIVE_PROPERTY)
-        .add(BlockProperties.UNLISTED_CHARGE_PROPERTY)
-        .build()
-
-    override def getExtendedState(state: IBlockState, world: IBlockAccess, pos: BlockPos) = ModelBakery.handleExtendedState(state.asInstanceOf[IExtendedBlockState], world, pos)
-
-    override def getBakery:IBakery = bakery
-}
-
-object BlockProperties
-{
-    val UNLISTED_ROTATION_PROPERTY:IUnlistedProperty[Integer] = new UnlistedIntegerProperty("rotation")
-    val UNLISTED_SIDE_PROPERTY = new UnlistedIntegerProperty("side")
-    val UNLISTED_WORKING_PROPERTY = new UnlistedBooleanProperty("working")
-    val UNLISTED_CHARGED_PROPERTY = new UnlistedBooleanProperty("charged")
-    val UNLISTED_BURNING_PROPERTY = new UnlistedBooleanProperty("burning")
-    val UNLISTED_POWERED_PROPERTY = new UnlistedBooleanProperty("powered")
-    val UNLISTED_ACTIVE_PROPERTY = new UnlistedBooleanProperty("active")
-    val UNLISTED_CHARGE_PROPERTY = new UnlistedIntegerProperty("charge")
-}
-
-abstract class TileMachine extends MTBlockTile with TTileOrient
-{
-    override def onBlockPlaced(side:Int, player:EntityPlayer, stack:ItemStack)
-    {
-        setSide(if (doesOrient) calcFacing(player) else 0)
-        setRotation(if (doesRotate) (Rotation.getSidedRotation(player, side)+2)%4 else 0)
+    override def createTileEntity(state:BlockState, world:IBlockReader):TileEntity = {
+        val tile = tileFactory.apply()
+        tile.loadBlockState(state)
+        tile
     }
 
-    def calcFacing(ent:EntityPlayer):Int =
-    {
+    // Ideally this logic would be handled by the tile to keep this block generic,
+    // but there isn't a good way to get this `context` to the tile
+    override def getStateForPlacement(context:BlockItemUseContext):BlockState = {
+        val placementPos = context.getPos.offset(context.getFace)
+//        val placementSide = context.getFace.getOpposite
+
+        val side = calcFacing(context.getPlayer, placementPos)
+        val rot = Rotation.getSidedRotation(context.getPlayer, side)
+
+        getDefaultState
+                .`with`(BaseMachineBlock.SIDE_PROPERTY, Int.box(side))
+                .`with`(BaseMachineBlock.ROTATION_PROPERTY, Int.box(rot))
+    }
+
+    private def calcFacing(ent:PlayerEntity, blockPos:BlockPos):Int = {
         val yawrx = Math.floor(ent.rotationYaw*4.0F/360.0F+0.5D).toInt&0x3
-        if ((Math.abs(ent.posX-x) < 2.0D) && (Math.abs(ent.posZ-z) < 2.0D))
-        {
-            val p = ent.posY+1.82D-y
+        if ((Math.abs(ent.getPosX-blockPos.getX) < 2.0D) && (Math.abs(ent.getPosZ-blockPos.getZ) < 2.0D)) {
+            val p = ent.getPosY+1.82D-blockPos.getY
             if (p > 2.0D) return 0
             if (p < 0.0D) return 1
         }
-        yawrx match
-        {
+        yawrx match  {
             case 0 => 3
             case 1 => 4
             case 2 => 2
@@ -85,66 +100,149 @@ abstract class TileMachine extends MTBlockTile with TTileOrient
         }
     }
 
-    override def writeDesc(out:MCDataOutput)
-    {
+    override def neighborChanged(state:BlockState, world:World, pos:BlockPos, blockIn:Block, fromPos:BlockPos, isMoving:Boolean):Unit = {
+        val tile = world.getTileEntity(pos)
+        if (tile != null && tile.isInstanceOf[CoreTile]) {
+            tile.asInstanceOf[CoreTile].onNeighborBlockChanged(fromPos)
+        }
+    }
+
+    override def onNeighborChange(state:BlockState, world:IWorldReader, pos:BlockPos, neighbor:BlockPos):Unit = {
+        val tile = world.getTileEntity(pos)
+        if (tile != null && tile.isInstanceOf[CoreTile]) {
+            tile.asInstanceOf[CoreTile].onNeighborTileChange(neighbor)
+        }
+    }
+
+    override def onBlockActivated(state:BlockState, world:World, pos:BlockPos, player:PlayerEntity, handIn:Hand, hit:BlockRayTraceResult):ActionResultType = {
+        val tile = world.getTileEntity(pos)
+        if (tile != null && tile.isInstanceOf[CoreTile]) {
+            tile.asInstanceOf[CoreTile].onBlockActivated(player, handIn, hit)
+        } else
+            ActionResultType.FAIL
+    }
+
+    override def onReplaced(oldState:BlockState, world:World, pos:BlockPos, newState:BlockState, isMoving:Boolean):Unit = {
+        val tile = world.getTileEntity(pos)
+        if (tile != null && tile.isInstanceOf[CoreTile]) {
+            if (oldState.getBlock == newState.getBlock && newState.hasTileEntity) // state change but same block/tile
+                tile.asInstanceOf[CoreTile].onBlockStateReplaced(newState)
+            else // complete block change
+                tile.asInstanceOf[CoreTile].onBlockRemoved()
+        }
+        super.onReplaced(oldState, world, pos, newState, isMoving) // remove tile if this is a different block now
+    }
+
+    override def onBlockPlacedBy(world:World, pos:BlockPos, state:BlockState, player:LivingEntity, stack:ItemStack):Unit = {
+        val tile = world.getTileEntity(pos)
+        if (tile != null && tile.isInstanceOf[CoreTile]) {
+            tile.asInstanceOf[CoreTile].onBlockPlaced(player, stack)
+        }
+    }
+
+    override protected def fillStateContainer(builder:StateContainer.Builder[Block, BlockState]):Unit = {
+        builder.add(BaseMachineBlock.SIDE_PROPERTY)
+        builder.add(BaseMachineBlock.ROTATION_PROPERTY)
+    }
+}
+
+object BaseMachineBlock {
+    val SIDE_PROPERTY:IntegerProperty = IntegerProperty.create("side", 0, 5)
+    val ROTATION_PROPERTY:IntegerProperty = IntegerProperty.create("rotation", 0, 3)
+    val WORKING_PROPERTY:BooleanProperty = BooleanProperty.create("isWorking")
+    val CHARGED_PROPERTY:BooleanProperty = BooleanProperty.create("isCharged")
+    val BURNING_PROPERTY:BooleanProperty = BooleanProperty.create("isBurning")
+    val POWERED_PROPERTY:BooleanProperty = BooleanProperty.create("isPowered")
+    val ACTIVE_PROPERTY:BooleanProperty = BooleanProperty.create("isActive")
+    val CHARGE_LEVEL_PROPERTY:IntegerProperty = IntegerProperty.create("chargeLevel", 0, 15)
+}
+
+
+abstract class TileMachine(tileType:TileEntityType[_]) extends CoreTile(tileType) with TTileOrient
+{
+    override def onBlockPlaced(player:LivingEntity, stack:ItemStack):Unit = {
+
+        //Pull side/rotation from block state
+
+//        setSide(if (doesOrient) calcFacing(player) else 0)
+//        setRotation(if (doesRotate) (Rotation.getSidedRotation(player, side)+2)%4 else 0)
+    }
+
+
+    override def loadBlockState(state:BlockState):Unit = {
+        setSide(state.get(BaseMachineBlock.SIDE_PROPERTY))
+        setRotation(state.get(BaseMachineBlock.ROTATION_PROPERTY))
+    }
+
+    override def covertToBlockState(state:BlockState):BlockState = {
+        super.covertToBlockState(state)
+            .`with`(BaseMachineBlock.SIDE_PROPERTY, Int.box(side))
+            .`with`(BaseMachineBlock.ROTATION_PROPERTY, Int.box(rotation))
+    }
+
+    override def writeDesc(out:MCDataOutput):Unit = {
         super.writeDesc(out)
         out.writeByte(orientation)
     }
 
-    override def readDesc(in:MCDataInput)
-    {
+    override def readDesc(in:MCDataInput):Unit = {
         super.readDesc(in)
         orientation = in.readByte
     }
 
-    override def save(tag:NBTTagCompound)
-    {
-        tag.setByte("rot", orientation)
+    override def save(tag:CompoundNBT):Unit = {
+        tag.putByte("rot", orientation)
     }
 
-    override def load(tag:NBTTagCompound)
-    {
+    override def load(tag:CompoundNBT):Unit = {
         orientation = tag.getByte("rot")
     }
 
-    override def read(in:MCDataInput, key:Int) = key match
-    {
+    override def readUpdate(key:Int, in:MCDataInput):Unit = key match {
         case 1 =>
             orientation = in.readByte()
-            markRender()
-        case _ => super.read(in, key)
+//            markRender()
+        case _ => super.readUpdate(key, in)
     }
 
-    override def onBlockActivated(player:EntityPlayer, actside:Int):Boolean =
-    {
+    override def onBlockActivated(player:PlayerEntity, hand:Hand, hit:BlockRayTraceResult):ActionResultType = {
         val held = player.getHeldItemMainhand
         if ((doesRotate || doesOrient) && !held.isEmpty && held.getItem.isInstanceOf[IScrewdriver]
                 && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held))
         {
-            if (getWorld.isRemote) return true
-            def rotate()
-            {
+            def rotate() {
                 val old = rotation
                 do setRotation((rotation+1)%4) while (old != rotation && !isRotationAllowed(rotation))
-                if (old != rotation) sendOrientUpdate()
-                getWorld.notifyNeighborsRespectDebug(getPos, getBlock, false)
+                if (old != rotation) {
+                    sendOrientUpdate()
+                    pushState()
+                }
+                getWorld.notifyNeighbors(getPos, getBlockState.getBlock)
                 onBlockRotated()
                 held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             }
-            def orient()
-            {
+            def orient() {
                 val old = side
                 do setSide((side+1)%6) while (old != side && !isSideAllowed(side))
-                if (old != side) sendOrientUpdate()
-                getWorld.notifyNeighborsRespectDebug(getPos, getBlock, false)
+                if (old != side) {
+                    sendOrientUpdate()
+                    pushState()
+                }
+                getWorld.notifyNeighbors(getPos, getBlockState.getBlock)
                 onBlockRotated()
                 held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             }
 
-            if (player.isSneaking || !doesOrient) rotate() else orient()
-            return true
-        }
-        false
+            if (!getWorld.isRemote) {
+                if (player.isSneaking || !doesOrient)
+                    rotate()
+                else
+                    orient()
+            }
+            ActionResultType.SUCCESS
+
+        } else
+            ActionResultType.PASS
     }
 
     def isRotationAllowed(rot:Int) = true
@@ -155,136 +253,127 @@ abstract class TileMachine extends MTBlockTile with TTileOrient
 
     def doesOrient = false
 
-    def sendOrientUpdate()
-    {
-        writeStream(1).writeByte(orientation).sendToChunk(this)
+    def sendOrientUpdate():Unit = {
+        sendUpdate(1, _.writeByte(orientation))
     }
 
     def onBlockRotated(){}
 }
 
-trait TGuiMachine extends TileMachine
+trait TGuiMachine extends TileMachine with INamedContainerProvider
 {
-    abstract override def onBlockActivated(player:EntityPlayer, side:Int) =
-    {
-        if (super.onBlockActivated(player, side)) true
-        else if (!player.isSneaking)
-        {
+    abstract override def onBlockActivated(player:PlayerEntity, hand:Hand, hit:BlockRayTraceResult):ActionResultType = {
+        val result = super.onBlockActivated(player, hand, hit)
+
+        if (result != ActionResultType.PASS)
+            result
+        else if (!player.isSneaking) {
             if (!getWorld.isRemote) openGui(player)
-            true
-        }
-        else false
+            ActionResultType.SUCCESS
+        } else ActionResultType.PASS
     }
 
-    def openGui(player:EntityPlayer)
+    def openGui(player:PlayerEntity):Unit = {
+        ServerUtils.openContainer(player.asInstanceOf[ServerPlayerEntity],
+            this, (p:MCDataOutput) => p.writePos(getPos))
+    }
 
-    def createContainer(player:EntityPlayer):Container
+    override def getDisplayName:ITextComponent = new StringTextComponent(getType.getRegistryName.getPath)
 }
 
-trait TPoweredMachine extends TileMachine with TPowerTile with ILowLoadMachine
-{
+trait TPoweredMachine extends TileMachine with TPowerTile with ILowLoadMachine {
     val cond = new PowerConductor(this, idRange) with TPowerDrawPoint
 
-    override def conductor(dir:Int) = cond
+    override def conductor(dir:Int):PowerConductor = cond
 
-    override def canConnectPart(part:IConnectable, s:Int, edgeRot:Int) = part match
-    {
+    override def canConnectPart(part:IConnectable, s:Int, edgeRot:Int):Boolean = part match {
         case t:ILowLoadPowerLine => true
         case t:ILowLoadMachine => true
         case _ => false
     }
 
-    abstract override def updateServer()//TODO, maybe both client and server?
-    {
+    abstract override def updateServer():Unit = {
         super.updateServer()
         cond.update()
     }
 
-    abstract override def save(tag:NBTTagCompound)
-    {
+    abstract override def save(tag:CompoundNBT):Unit = {
         super.save(tag)
         cond.save(tag)
     }
 
-    abstract override def load(tag:NBTTagCompound)
-    {
+    abstract override def load(tag:CompoundNBT):Unit = {
         super.load(tag)
         cond.load(tag)
     }
 
-    abstract override def onBlockRotated()
-    {
+    abstract override def onBlockRotated():Unit = {
         super.onBlockRotated()
         needsCache = true
     }
 }
 
-abstract class TileProcessingMachine extends TileMachine
-with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory with TInventoryCapablilityTile
+abstract class TileProcessingMachine(tileType:TileEntityType[_]) extends TileMachine(tileType)
+        with TPoweredMachine
+        with TGuiMachine
+        with TInventory
+        with ISidedInventory
+        with TInventoryCapablilityTile
 {
     var isCharged = false
     var isWorking = false
     var workRemaining = 0
     var workMax = 0
-    override def getDisplayName = super.getDisplayName
 
-    override def save(tag:NBTTagCompound)
-    {
+    override def save(tag:CompoundNBT):Unit = {
         super.save(tag)
-        tag.setBoolean("ch", isCharged)
-        tag.setBoolean("work", isWorking)
-        tag.setInteger("rem", workRemaining)
-        tag.setInteger("max", workMax)
+        tag.putBoolean("ch", isCharged)
+        tag.putBoolean("work", isWorking)
+        tag.putInt("rem", workRemaining)
+        tag.putInt("max", workMax)
         saveInv(tag)
     }
 
-    override def load(tag:NBTTagCompound)
-    {
+    override def load(tag:CompoundNBT):Unit = {
         super.load(tag)
         isCharged = tag.getBoolean("ch")
         isWorking = tag.getBoolean("work")
-        workRemaining = tag.getInteger("rem")
-        workMax = tag.getInteger("max")
+        workRemaining = tag.getInt("rem")
+        workMax = tag.getInt("max")
         loadInv(tag)
     }
 
-    override def writeDesc(out:MCDataOutput)
-    {
+    override def writeDesc(out:MCDataOutput):Unit = {
         super.writeDesc(out)
         out.writeBoolean(isCharged)
         out.writeBoolean(isWorking)
     }
 
-    override def readDesc(in:MCDataInput)
-    {
+    override def readDesc(in:MCDataInput):Unit = {
         super.readDesc(in)
         isCharged = in.readBoolean()
         isWorking = in.readBoolean()
     }
 
-    override def read(in:MCDataInput, switchkey:Int) = switchkey match
-    {
+    override def readUpdate(key:Int, in:MCDataInput):Unit = key match {
         case 14 =>
             isCharged = in.readBoolean()
             isWorking = in.readBoolean()
-            if (hasLight)
-            {
+            if (hasLight) {
                 markRender()
-                markLight()
+                recalcLight(false, true)
             }
-        case _ => super.read(in, switchkey)
+        case _ => super.readUpdate(key, in)
     }
 
-    def sendWorkUpdate()
-    {
-        writeStream(14).writeBoolean(isCharged).writeBoolean(isWorking).sendToChunk(this)
+    def sendWorkUpdate():Unit = {
+        sendUpdate(14, _.writeBoolean(isCharged).writeBoolean(isWorking))
     }
 
     def canStart = false
 
     def startWork()
-    def endWork()
-    {
+    def endWork():Unit = {
         isWorking = false
         workRemaining = 0
         workMax = 0
@@ -292,87 +381,72 @@ with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory with 
 
     def produceResults()
 
-    def calcDoableWork = if (cond.canWork) 1 else 0
-    def drainPower(work:Int) = cond.drawPower(work*1100.0D)
+    def calcDoableWork:Int = if (cond.canWork) 1 else 0
+    def drainPower(work:Int):Unit = cond.drawPower(work*1100.0D)
 
-    override def updateServer()
-    {
+    override def updateServer():Unit = {
         super.updateServer()
 
-        if (isWorking)
-        {
-            if (workRemaining > 0)
-            {
+        if (isWorking) {
+            if (workRemaining > 0) {
                 val pow = calcDoableWork
                 drainPower(pow)
                 workRemaining -= pow
-            }
-            else
-            {
+            } else {
                 endWork()
                 produceResults()
             }
         }
 
-        if (!isWorking && calcDoableWork > 0 && canStart)
-        {
+        if (!isWorking && calcDoableWork > 0 && canStart) {
             startWork()
         }
 
-        if (getWorld.getTotalWorldTime%10 == 0) updateRendersIfNeeded()
+        if (getWorld.getGameTime%10 == 0) updateRendersIfNeeded()
     }
 
-    override def markDirty()
-    {
+    override def markDirty():Unit = {
         super.markDirty()
         if (isWorking && !canStart) endWork()
     }
 
-    override def onBlockRemoval()
-    {
-        super.onBlockRemoval()
+    override def onBlockRemoved():Unit = {
+        super.onBlockRemoved()
         dropInvContents(getWorld, getPos)
     }
 
-    def progressScaled(scale:Int):Int =
-    {
-        if (!isWorking || workMax <= 0 || workRemaining <= 0) return 0
-        scale*(workMax-workRemaining)/workMax
+    def progressScaled(scale:Int):Int = {
+        if (!isWorking || workMax <= 0 || workRemaining <= 0) 0
+        else scale*(workMax-workRemaining)/workMax
     }
 
     private var oldW = isWorking
     private var oldCh = isCharged
-    def updateRendersIfNeeded()
-    {
+    def updateRendersIfNeeded():Unit = {
         isCharged = cond.canWork
-        if (isWorking != oldW || isCharged != oldCh)
+        if (isWorking != oldW || isCharged != oldCh) {
             sendWorkUpdate()
-
+            pushState()
+        }
         oldW = isWorking
         oldCh = isCharged
     }
 
-    def hasLight = true
-
-    override def getLightValue = if (isWorking && isCharged) 13 else 0
+    def hasLight:Boolean = true
+    override def getLightValue:Int = if (isWorking && isCharged) 13 else 0
 }
 
-class ContainerPoweredMachine(tile:TPoweredMachine) extends NodeContainer
+class ContainerPoweredMachine(tile:TPoweredMachine, containerType:ContainerType[_], windowId:Int) extends NodeContainer(containerType, windowId)
 {
     private var ch = -2
     private var fl = -2
 
-    override def detectAndSendChanges()
-    {
+    override def detectAndSendChanges():Unit = {
         super.detectAndSendChanges()
-        import scala.collection.JavaConversions._
-        for (i <- listeners)
-        {
-            val ic = i.asInstanceOf[IContainerListener]
+        for (ic <- listeners.asScala) {
 
             if (ch != tile.cond.charge) ic.sendWindowProperty(this, 0, tile.cond.charge)
-            if (fl != tile.cond.flow)
-            {
+            if (fl != tile.cond.flow) {
                 ic.sendWindowProperty(this, 1, tile.cond.flow&0xFFFF)
                 ic.sendWindowProperty(this, 2, tile.cond.flow>>16&0xFFFF)
             }
@@ -381,8 +455,7 @@ class ContainerPoweredMachine(tile:TPoweredMachine) extends NodeContainer
         }
     }
 
-    override def updateProgressBar(id:Int, bar:Int) = id match
-    {
+    override def updateProgressBar(id:Int, bar:Int):Unit = id match {
         case 0 => tile.cond.charge = bar
         case 1 => tile.cond.flow = tile.cond.flow&0xFFFF0000|bar&0xFFFF
         case 2 => tile.cond.flow = tile.cond.flow&0xFFFF|(bar&0xFFFF)<<16
@@ -390,28 +463,22 @@ class ContainerPoweredMachine(tile:TPoweredMachine) extends NodeContainer
     }
 }
 
-class ContainerProcessingMachine(tile:TileProcessingMachine) extends ContainerPoweredMachine(tile)
+class ContainerProcessingMachine(tile:TileProcessingMachine, containerType:ContainerType[_], windowId:Int) extends ContainerPoweredMachine(tile, containerType, windowId)
 {
     private var wr = 0
     private var wm = 0
 
-    override def detectAndSendChanges()
-    {
+    override def detectAndSendChanges():Unit = {
         super.detectAndSendChanges()
-        import scala.collection.JavaConversions._
-        for (i <- listeners)
-        {
-            val ic = i.asInstanceOf[IContainerListener]
-
-            if (wr != tile.workRemaining) ic.sendWindowProperty(this, 3, tile.workRemaining)
-            if (wm != tile.workMax) ic.sendWindowProperty(this, 4, tile.workMax)
+        for (i <- listeners.asScala) {
+            if (wr != tile.workRemaining) i.sendWindowProperty(this, 3, tile.workRemaining)
+            if (wm != tile.workMax) i.sendWindowProperty(this, 4, tile.workMax)
         }
         wr = tile.workRemaining
         wm = tile.workMax
     }
 
-    override def updateProgressBar(id:Int, bar:Int) = id match
-    {
+    override def updateProgressBar(id:Int, bar:Int):Unit = id match {
         case 3 => tile.workRemaining = bar
         case 4 => tile.workMax = bar
         case _ => super.updateProgressBar(id, bar)
