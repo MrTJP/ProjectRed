@@ -22,7 +22,7 @@ class ItemPartGate(val gateType:GateType) extends ItemMultiPart(new Item.Propert
     override def newPart(context:ItemUseContext) = {
         val side = context.getFace
         val onPos = context.getPos.offset(side.getOpposite)
-        if (!PRLib.canPlaceWireOnSide(context.getWorld, onPos, side)) {
+        if (!PRLib.canPlaceGateOnSide(context.getWorld, onPos, side)) {
             null
         } else {
             val gatePart = gateType.getPartType.createPartServer(null).asInstanceOf[GatePart]

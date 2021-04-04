@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "projectred-expansion:block/induction_furnace/side1"
+  }
+}
