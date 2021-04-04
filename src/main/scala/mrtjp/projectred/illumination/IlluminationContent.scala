@@ -4,7 +4,6 @@ import codechicken.lib.colour.EnumColour
 import codechicken.lib.datagen.ItemModelProvider
 import codechicken.lib.gui.SimpleItemGroup
 import codechicken.lib.util.CrashLock
-import codechicken.microblock.MicroMaterialRegistry
 import codechicken.microblock.api.MicroMaterial
 import codechicken.multipart.api.part.TMultiPart
 import codechicken.multipart.api.{MultiPartType, SimpleMultiPartType}

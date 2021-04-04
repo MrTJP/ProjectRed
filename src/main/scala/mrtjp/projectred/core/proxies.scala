@@ -4,10 +4,12 @@ import codechicken.lib.packet.PacketCustom
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.event.lifecycle.{FMLClientSetupEvent, FMLCommonSetupEvent}
 
 class CoreProxy_server extends IProxy {
     override def commonSetup(event: FMLCommonSetupEvent) {
+        CoreNetwork.init()
     }
 
     def init() {
