@@ -3,6 +3,7 @@ package mrtjp.projectred.transportation
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.packet.PacketCustom.{IClientPacketHandler, IServerPacketHandler}
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
+import mrtjp.projectred.ProjectRedCore
 import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayerMP
@@ -183,6 +184,14 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
     {
         val slot = packet.readUByte()
         val stack = packet.readItemStack()
+        val stackInSlot = player.inventory.getStackInSlot(slot);
+
+        if (stackInSlot == null || !stackInSlot.getItem.isInstanceOf[ItemRoutingChip] || !stack.getItem.isInstanceOf[ItemRoutingChip]) {
+            player.playerNetServerHandler.kickPlayerFromServer(player.getDisplayName + " tried to cheat with \"RedGive\"-Exploit!")
+            ProjectRedCore.log.error(player.getDisplayName + " tried to cheat with \"RedGive\"-Exploit!")
+            return
+        }
+
         player.inventory.setInventorySlotContents(slot, stack)
         player.inventory.markDirty()
     }
