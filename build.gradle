@@ -1,354 +1,288 @@
 buildscript {
     repositories {
         jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
+        mavenCentral()
+        maven { url = "https://files.minecraftforge.net/maven/" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:4.1.+'
     }
 }
 
+plugins {
+    id 'java'
+    id 'scala'
+    id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id "net.covers1624.signing" version '1.1.3'
+}
 
-apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'scala'
-apply plugin: 'maven'
-//apply plugin: 'curseforge'
+apply plugin: 'net.minecraftforge.gradle'
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 group = "mrtjp"
 archivesBaseName = "ProjectRed"
 
-sourceSets.main.resources.srcDirs += "src/main/generated"
+sourceSets {
+    core
+    expansion
+    exploration
+    illumination
+    integration
+    transmission
+}
 
-ext.configFile = file "build.properties"
-configFile.withReader {
-    // Load config.  It shall from now be referenced as simply config or project.config
+sourceSets.each {
+    it.resources.srcDirs += "src/${it.name}/generated"
+}
+
+file('build.properties').withReader {
     def prop = new Properties()
     prop.load(it)
     project.ext.config = new ConfigSlurper().parse prop
 }
 
+def build_number = project.hasProperty("manualbuildnum") ? project.manualbuildnum : (Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1")).toString()
+config.mod_version = "${config.mod_version}." + build_number
+version = "${config.mc_version}-${config.mod_version}"
+println "Starting build of ${archivesBaseName}, Version: ${config.mod_version}"
+println "Using Forge: ${config.forge_version}, for Minecraft: ${config.mc_version}, with Mappings: ${config.mappings}"
+
+minecraft {
+    mappings channel: 'snapshot', version: config.mappings
+    accessTransformer = file("src/core/resources/META-INF/accesstransformer.cfg")
+    runs {
+        client {
+            workingDirectory file('run')
+            mods {
+                'projectred-core' { source sourceSets.core }
+                'projectred-expansion' { source sourceSets.expansion }
+                'projectred-exploration' { source sourceSets.exploration }
+                'projectred-illumination' { source sourceSets.illumination }
+                'projectred-integration' { source sourceSets.integration }
+                'projectred-transmission' { source sourceSets.transmission }
+            }
+        }
+        server {
+            workingDirectory file('run')
+            mods {
+                'projectred-core' { source sourceSets.core }
+                'projectred-expansion' { source sourceSets.expansion }
+                'projectred-exploration' { source sourceSets.exploration }
+                'projectred-illumination' { source sourceSets.illumination }
+                'projectred-integration' { source sourceSets.integration }
+                'projectred-transmission' { source sourceSets.transmission }
+            }
+        }
+
+        sourceSets.each {
+            "${it.name}Data" {
+                workingDirectory file('run')
+                args '--mod', "projectred-${it.name}".toString(), '--all', '--output', file("src/${it.name}/generated"), '--existing', file("src/${it.name}/resources")
+                mods {
+                    'projectred-core' { source sourceSets.core }
+                    'projectred-expansion' { source sourceSets.expansion }
+                    'projectred-exploration' { source sourceSets.exploration }
+                    'projectred-illumination' { source sourceSets.illumination }
+                    'projectred-integration' { source sourceSets.integration }
+                    'projectred-transmission' { source sourceSets.transmission }
+                }
+            }
+        }
+    }
+}
+
 repositories {
-    maven {
-        name "chickenbones"
-        url "http://chickenbones.net/maven/"
-    }
-
-    maven {
-        name "mvnmrtjp"
-        url "http://files.projectredwiki.com/maven"
-    }
-
-    maven {
-        name "dvs1"
-        url "http://dvs1.progwml6.com/files/maven/"
-    }
+    mavenCentral()
+    mavenLocal()
+    maven { url "http://chickenbones.net/maven/" }
+    maven { url "http://dvs1.progwml6.com/files/maven/" }
 }
 
 configurations {
-    deployerJars
+    coreCompile.extendsFrom compile
+
+    moduleCompile.extendsFrom coreCompile
+
+    expansionCompile.extendsFrom moduleCompile
+    explorationCompile.extendsFrom moduleCompile
+    illuminationCompile.extendsFrom moduleCompile
+    integrationCompile.extendsFrom moduleCompile
+    transmissionCompile.extendsFrom moduleCompile
 }
 
 dependencies {
-    deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
-
-    compile "mrtjp:MrTJPCore:${config.mc_version}-${config.tjpcore_version}:deobf"
-    compile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:deobf"
-    compile "codechicken:CBMultipart:1.15.2-2.7.0.87:deobf"
+    minecraft "net.minecraftforge:forge:${config.mc_version}-${config.forge_version}"
 
     compile "org.scala-lang:scala-compiler:${config.scala_version}"
     compile "org.scala-lang:scala-library:${config.scala_version}"
     compile "org.scala-lang.modules:scala-java8-compat_${config.scala_compat_version}"
     compile "net.minecraftforge:Scorge:${config.scorge_version}"
 
-    // compile against the JEI API
-    deobfCompile "mezz.jei:jei-1.15.2:6.0.3.+"
-    // at runtime, use the full JEI jar
-//     runtime "mezz.jei:jei_${config.mc_version}:${config.jei_version}"
+    // PR Core deps
+    coreCompile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:deobf"
+    coreCompile "codechicken:CBMultipart:${config.mc_version}-${config.cbm_version}:deobf"
+
+    // Common deps for all PR modules
+    moduleCompile sourceSets.core.output
+
+    integrationCompile sourceSets.transmission.output //TODO remove this dep
 }
 
-def build_number = project.hasProperty("manualbuildnum") ? project.manualbuildnum : (Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1")).toString()
-version = "${project.config.mod_version}."+build_number
-println "Starting build for $archivesBaseName $version for MC $config.mc_version-$config.forge_version"
 
-minecraft {
-    version = config.mc_version+"-"+config.forge_version
-    mappings = config.mappings
-    runDir = "run"
-    makeObfSourceJar = false
-    useDepAts = true
+jar.enabled = false //Disable main sourceset
+reobf {
+    jar { enabled = false } //Disable main sourceset
+    coreJar {}
+    expansionJar {}
+    explorationJar {}
+    illuminationJar {}
+    integrationJar {}
+    transmissionJar {}
 }
 
-// sourceSets {
-//     main {
-//         def root = project.projectDir
-//         scala {
-//             srcDir new File(root, "src")
-//         }
-//         resources {
-//             srcDir new File(root, "resources")
-//         }
+task coreJar(type: Jar) {
+    baseName 'ProjectRedCore'
+    dependsOn compileCoreScala, compileCoreJava
+    from sourceSets.core.output
+}
+
+task expansionJar(type: Jar) {
+    baseName 'ProjectRedExpansion'
+    dependsOn compileExpansionScala, compileExpansionJava
+    from sourceSets.expansion.output
+}
+
+task explorationJar(type: Jar) {
+    baseName 'ProjectRedExploration'
+    dependsOn compileExplorationScala, compileExplorationJava
+    from sourceSets.exploration.output
+}
+
+task illuminationJar(type: Jar) {
+    baseName 'ProjectRedIllumination'
+    dependsOn compileIlluminationScala, compileIlluminationJava
+    from sourceSets.illumination.output
+}
+
+task integrationJar(type: Jar) {
+    baseName 'ProjectRedIntegration'
+    dependsOn compileIntegrationScala, compileIntegrationJava
+    from sourceSets.integration.output
+}
+
+task transmissionJar(type: Jar) {
+    baseName 'ProjectRedTransmission'
+    dependsOn compileTransmissionScala, compileTransmissionJava
+    from sourceSets.transmission.output
+}
+
+// processResources {
+//     //redo task if any of these properties change
+//     inputs.property "version", project.version
+//     inputs.property "mc.version", config.mc_version
+//
+//     // Replace properties in all files
+//     from(sourceSets.main.resources.srcDirs) {
+//         include '**.info'
+//         expand  'mod_version': version, 'mc_version': config.mc_version,
+//                 'forge_version': config.forge_version,
+//                 'tjcore_version': config.tjpcore_version.replace(".+", ""),
+//                 'ccl_version': config.ccl_version.replace(".+", ""),
+//                 'cbm_version': config.cbm_version.replace(".+", "")
+//     }
+//     // Copy everything else
+//     from(sourceSets.main.resources.srcDirs) {
+//         include 'assets/**/*.*'
 //     }
 // }
 
-processResources {
-    //redo task if any of these properties change
-    inputs.property "version", project.version
-    inputs.property "mc.version", config.mc_version
 
-    // Replace properties in all files
-    from(sourceSets.main.resources.srcDirs) {
-        include '**.info'
-        expand  'mod_version': version, 'mc_version': config.mc_version,
-                'forge_version': config.forge_version,
-                'tjcore_version': config.tjpcore_version.replace(".+", ""),
-                'ccl_version': config.ccl_version.replace(".+", ""),
-                'fmp_version': config.fmp_version.replace(".+", "")
-    }
-    // Copy everything else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'assets/**/*.*'
-    }
-}
 
-jar {//Because groovy we need to define these first other wise our zipTree call will fail.
-    classifier = 'all'
-    version = "${config.mc_version}-${project.version}"
-}
+// jar {//Because groovy we need to define these first other wise our zipTree call will fail.
+//     classifier = 'all'
+//     version = "${config.mc_version}-${project.version}"
+// }
 
-task srcJar(type: Jar) {
-    from sourceSets.main.allSource
-    classifier = 'sources'
-    version = "${config.mc_version}-${project.version}"
-}
+// task srcJar(type: Jar) {
+//     from sourceSets.main.allSource
+//     classifier = 'sources'
+//     version = "${config.mc_version}-${project.version}"
+// }
 
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    classifier = 'deobf'
-    version = "${config.mc_version}-${project.version}"
-}
+// task deobfJar(type: Jar) {
+//     from sourceSets.main.output
+//     classifier = 'deobf'
+//     version = "${config.mc_version}-${project.version}"
+// }
 
-ext.jarVer = "${config.mc_version}-${project.version}"
-ext.jarFile = zipTree(jar.archivePath)
-ext.baseExcludes = ["**/dan200/**", "**/coloredlightscore/**"]
+// // Enable experimental features for scala compiler
+// tasks.withType(ScalaCompile) {
+//     scalaCompileOptions.additionalParameters = ["-Xexperimental"]
+//     scalaCompileOptions.setDeprecation false
+// }
 
-task integrationJar(type: Jar, dependsOn: reobfJar) {
-    from(project.ext.jarFile) {
-        include "**/ProjectRedIntegration*.class"
-        include "**/ProjectRedTransmission*.class"
-        include "**/mrtjp/projectred/integration/**"
-        include "**/mrtjp/projectred/transmission/**"
+// artifacts {
+//     archives integrationJar
+//     archives fabricationJar
+//     archives lightingJar
+//     archives mechanicalJar
+//     archives worldJar
+//     archives compatJar
+//     archives baseJar
 
-        include "**/assets/projectred/textures/blocks/integration/**"
-        include "**/assets/projectred/textures/obj/integration/**"
-        include "**/assets/projectred-integration/recipes/**"
-        include "**/assets/projectred-transmission/recipes/**"
+//     archives deobfJar
+//     archives srcJar
+// }
 
-        include "integration_mod.info"
-        rename("integration_mod.info", 'mcmod.info')
+// uploadArchives {
+//     repositories {
+//         mavenDeployer {
+//             if (project.hasProperty("local_maven")) {
+//                 repository(url: "file://${local_maven}")
+//                 pom {
+//                     groupId = project.group
+//                     version = "${config.mc_version}-${project.version}"
+//                     artifactId = project.archivesBaseName
+//                     project {
+//                         name project.archivesBaseName
+//                         packaging 'jar'
+//                         description project.archivesBaseName
+//                         url 'https://github.com/MrTJP/'+project.archivesBaseName
 
-        project.ext.baseExcludes.addAll(includes)
-    }
-    version = project.ext.jarVer
-    classifier = 'integration'
-}
+//                         scm {
+//                             url 'https://github.com/MrTJP/'+project.archivesBaseName
+//                             connection 'scm:git:git://github.com/MrTJP/'+project.archivesBaseName+'.git'
+//                             developerConnection 'scm:git:git@github.com:MrTJP/'+project.archivesBaseName+'.git'
+//                         }
 
-task fabricationJar(type: Jar, dependsOn: reobfJar) {
-    from(project.ext.jarFile) {
-        include "**/ProjectRedFabrication*.class"
-        include "**/mrtjp/projectred/fabrication/**"
+//                         issueManagement {
+//                             system 'github'
+//                             url 'https://github.com/MrTJP/'+project.archivesBaseName+'/issues'
+//                         }
 
-        include "**/assets/projectred/cc_blockstates/fabrication/**"
+//                         licenses {
+//                             license {
+//                                 name 'Restricted Public Software License (RPSL) v1.3.1'
+//                                 url 'https://raw.githubusercontent.com/MrTJP/ProjectRed/master/LICENSE.md'
+//                                 distribution 'repo'
+//                             }
+//                         }
 
-        include "**/assets/projectred/textures/blocks/fabrication/**"
-        include "**/assets/projectred/textures/items/fabrication/**"
-        include "**/assets/projectred/textures/obj/fabrication/**"
-        include "**/assets/projectred-fabrication/recipes/**"
-
-        include "fabrication_mod.info"
-        rename("fabrication_mod.info", 'mcmod.info')
-
-        project.ext.baseExcludes.addAll(includes)
-    }
-    version = project.ext.jarVer
-    classifier = 'fabrication'
-}
-
-task lightingJar(type: Jar, dependsOn: reobfJar) {
-    from(project.ext.jarFile) {
-        include "**/ProjectRedIllumination*.class"
-        include "**/mrtjp/projectred/illumination/**"
-
-        include "**/assets/projectred/textures/blocks/lighting/**"
-        include "**/assets/projectred/textures/obj/lighting/**"
-        include "**/assets/projectred-illumination/recipes/**"
-
-        include "lighting_mod.info"
-        rename("lighting_mod.info", 'mcmod.info')
-
-        project.ext.baseExcludes.addAll(includes)
-    }
-    version = project.ext.jarVer
-    classifier = 'lighting'
-}
-
-task mechanicalJar(type: Jar, dependsOn: reobfJar) {
-    from(project.ext.jarFile) {
-        include "**/ProjectRedExpansion*.class"
-        include "**/mrtjp/projectred/expansion/**"
-
-        include "**/ProjectRedTransportation*.class"
-        include "**/mrtjp/projectred/transportation/**"
-
-        include "**/ProjectRedRelocation*.class"
-        include "**/mrtjp/projectred/relocation/**"
-
-        include "**/assets/projectred/cc_blockstates/mechanical/**"
-
-        include "**/assets/projectred/textures/blocks/mechanical/**"
-        include "**/assets/projectred/textures/items/mechanical/**"
-        include "**/assets/projectred/textures/obj/mechanical/**"
-
-        include "**/assets/projectred-expansion/recipes/**"
-        include "**/assets/projectred-transportation/recipes/**"
-        include "**/assets/projectred-relocation/recipes/**"
-
-        include "mechanical_mod.info"
-        rename("mechanical_mod.info", 'mcmod.info')
-
-        include "**/projectred-relocation_at.cfg"
-
-        manifest.attributes('FMLAT': 'projectred-relocation_at.cfg')
-
-        project.ext.baseExcludes.addAll(includes)
-    }
-    version = project.ext.jarVer
-    classifier = 'mechanical'
-}
-
-task worldJar(type: Jar, dependsOn: reobfJar) {
-    from(project.ext.jarFile) {
-        include "**/ProjectRedExploration*.class"
-        include "**/mrtjp/projectred/exploration/**"
-
-        include "**/assets/projectred/cc_blockstates/world/**"
-
-        include "**/assets/projectred/textures/blocks/world/**"
-        include "**/assets/projectred/textures/items/world/**"
-        include "**/assets/projectred-exploration/recipes/**"
-
-        include "world_mod.info"
-        rename("world_mod.info", 'mcmod.info')
-
-        project.ext.baseExcludes.addAll(includes)
-    }
-    version = project.ext.jarVer
-    classifier = 'world'
-}
-
-task compatJar(type: Jar, dependsOn: reobfJar) {
-    from(project.ext.jarFile) {
-        include "**/ProjectRedCompatibility*.class"
-        include "**/mrtjp/projectred/compatibility/**"
-
-        include "**/assets/projectred/textures/blocks/compat/**"
-
-        include "compat_mod.info"
-        rename("compat_mod.info", 'mcmod.info')
-
-        project.ext.baseExcludes.addAll(includes)
-    }
-    version = project.ext.jarVer
-    classifier = 'compat'
-}
-
-task baseJar(type: Jar, dependsOn: reobfJar) {
-    from(project.ext.jarFile) {
-        exclude project.ext.baseExcludes
-
-        rename("base_mod.info", 'mcmod.info')
-    }
-    version = project.ext.jarVer
-    classifier = 'Base'
-}
-
-// Dont include empty folders in jars
-tasks.withType(Jar) {
-    includeEmptyDirs = false
-}
-
-// baseJar pulls all files not in any other jar. Therefore must run last
-baseJar.mustRunAfter { tasks.findAll { task -> (task.name.endsWith('Jar') && task.name != 'baseJar') } }
-
-// Enable experimental features for scala compiler
-tasks.withType(ScalaCompile) {
-    scalaCompileOptions.additionalParameters = ["-Xexperimental"]
-    scalaCompileOptions.setDeprecation false
-}
-
-artifacts {
-    archives integrationJar
-    archives fabricationJar
-    archives lightingJar
-    archives mechanicalJar
-    archives worldJar
-    archives compatJar
-    archives baseJar
-
-    archives deobfJar
-    archives srcJar
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            if (project.hasProperty("local_maven")) {
-                repository(url: "file://${local_maven}")
-                pom {
-                    groupId = project.group
-                    version = "${config.mc_version}-${project.version}"
-                    artifactId = project.archivesBaseName
-                    project {
-                        name project.archivesBaseName
-                        packaging 'jar'
-                        description project.archivesBaseName
-                        url 'https://github.com/MrTJP/'+project.archivesBaseName
-
-                        scm {
-                            url 'https://github.com/MrTJP/'+project.archivesBaseName
-                            connection 'scm:git:git://github.com/MrTJP/'+project.archivesBaseName+'.git'
-                            developerConnection 'scm:git:git@github.com:MrTJP/'+project.archivesBaseName+'.git'
-                        }
-
-                        issueManagement {
-                            system 'github'
-                            url 'https://github.com/MrTJP/'+project.archivesBaseName+'/issues'
-                        }
-
-                        licenses {
-                            license {
-                                name 'Restricted Public Software License (RPSL) v1.3.1'
-                                url 'https://raw.githubusercontent.com/MrTJP/ProjectRed/master/LICENSE.md'
-                                distribution 'repo'
-                            }
-                        }
-
-                        developers {
-                            developer {
-                                id 'mrtjp'
-                                name 'mrtjp'
-                                roles { role 'developer' }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+//                         developers {
+//                             developer {
+//                                 id 'mrtjp'
+//                                 name 'mrtjp'
+//                                 roles { role 'developer' }
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
 
 /*if (project.hasProperty('curseapi')) {
     curse {

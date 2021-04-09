@@ -1,6 +1,0 @@
-{
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "projectred-expansion:block/project_bench/top"
-  }
-}

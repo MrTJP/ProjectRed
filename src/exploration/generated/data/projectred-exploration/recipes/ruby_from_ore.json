@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "result": {
+    "item": "projectred-core:ruby"
+  },
+  "ingredient": {
+    "tag": "forge:ores/ruby"
+  },
+  "experience": 1.0,
+  "cookingtime": 200
+}

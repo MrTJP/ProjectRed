@@ -1,0 +1,46 @@
+modLoader="scorge"
+loaderVersion="[3.1,)"
+issueTrackerURL="https://github.com/MrTJP/ProjectRed"
+
+[[mods]]
+    modId="projectred-transmission"
+    displayName="ProjectRed Transmission"
+    entryClass="mrtjp.projectred.ProjectRedTransmission"
+    version="${version}"
+
+    updateJSONURL="https://version-check.covers1624.net/check/?mod=ProjectRed&mc=${mc_version}"
+    displayURL="https://github.com/MrTJP/ProjectRed"
+    authors="MrTJP, Chicken Bones, covers1624"
+    description='''
+Redstone. The way it was meant to be.
+    '''
+[[dependencies.projectred-transmission]]
+    modId="forge"
+    mandatory=true
+    versionRange="[28,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.projectred-transmission]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.15.2]"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.projectred-transmission]]
+    modId="codechickenlib"
+    mandatory=true
+    versionRange="[${ccl_version},)"
+    ordering="AFTER"
+    side="BOTH"
+[[dependencies.projectred-transmission]]
+    modId="cb_multipart"
+    mandatory=true
+    versionRange="[${cbmp_version},)"
+    ordering="AFTER"
+    side="BOTH"
+[[dependencies.projectred-transmission]]
+    modId="projectred-core"
+    mandatory=true
+    versionRange="[${version},)"
+    ordering="AFTER"
+    side="BOTH"

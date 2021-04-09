@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-integration:segment_display_gate"
+  },
+  "pattern": [
+    "PBP",
+    "QSQ",
+    "PQP"
+  ],
+  "key": {
+    "B": {
+      "item": "projectred-core:bundled_plate"
+    },
+    "S": {
+      "item": "projectred-core:silicon_chip"
+    },
+    "P": {
+      "item": "projectred-core:plate"
+    },
+    "Q": {
+      "tag": "forge:gems/quartz"
+    }
+  }
+}

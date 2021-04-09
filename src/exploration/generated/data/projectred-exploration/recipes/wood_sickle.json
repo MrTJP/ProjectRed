@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-exploration:wood_sickle",
+    "nbt": "{Damage:0}"
+  },
+  "pattern": [
+    " M ",
+    "  M",
+    "SM "
+  ],
+  "key": {
+    "M": {
+      "tag": "minecraft:planks"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    }
+  }
+}

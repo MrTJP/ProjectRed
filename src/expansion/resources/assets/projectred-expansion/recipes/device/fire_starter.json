@@ -1,0 +1,37 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-expansion:machine2",
+		"data": 4,
+		"count": 1
+	},
+	"pattern": [
+		"nfn",
+		"cpc",
+		"crc"
+	],
+	"key": {
+		"n": {
+			"type": "forge:ore_dict",
+			"ore": "netherrack"
+		},
+		"f": {
+			"type": "minecraft:item",
+			"item": "minecraft:flint_and_steel",
+			"data": 0
+		},
+		"p": {
+			"type": "minecraft:item",
+			"item": "projectred-expansion:machine2",
+			"data": 2
+		},
+		"c": {
+			"type": "forge:ore_dict",
+			"ore": "cobblestone"
+		},
+		"r": {
+			"type": "forge:ore_dict",
+			"ore": "dustRedstone"
+		}
+	}
+}
