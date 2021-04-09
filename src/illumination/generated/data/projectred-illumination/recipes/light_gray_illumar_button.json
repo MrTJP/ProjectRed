@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "item": "projectred-illumination:light_gray_illumar_button"
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:stone_button"
+    },
+    {
+      "item": "projectred-core:light_gray_illumar"
+    }
+  ]
+}

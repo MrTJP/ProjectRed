@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "projectred-exploration:item/sapphire_sword"
+  }
+}

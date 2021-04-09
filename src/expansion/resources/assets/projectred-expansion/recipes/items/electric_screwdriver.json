@@ -1,0 +1,28 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-expansion:electric_screwdriver",
+		"data": 0,
+		"count": 1
+	},
+	"pattern": [
+		"i  ",
+		" s ",
+		"  b"
+	],
+	"key": {
+		"i": {
+			"type": "forge:ore_dict",
+			"ore": "ingotIron"
+		},
+		"s": {
+			"type": "forge:ore_dict",
+			"ore": "gemSapphire"
+		},
+		"b": {
+			"type": "minecraft:item",
+			"item": "projectred-expansion:charged_battery",
+			"data": 0
+		}
+	}
+}

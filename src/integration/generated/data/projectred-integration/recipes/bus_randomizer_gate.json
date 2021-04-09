@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-integration:bus_randomizer_gate"
+  },
+  "pattern": [
+    "BBB",
+    "RGR",
+    "BBB"
+  ],
+  "key": {
+    "B": {
+      "item": "projectred-core:bundled_plate"
+    },
+    "G": {
+      "item": "projectred-core:energized_silicon_chip"
+    },
+    "R": {
+      "item": "projectred-core:conductive_plate"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-core:silicon_chip"
+  },
+  "pattern": [
+    " S ",
+    "PPP"
+  ],
+  "key": {
+    "S": {
+      "item": "projectred-core:infused_silicon"
+    },
+    "P": {
+      "item": "projectred-core:plate"
+    }
+  }
+}
