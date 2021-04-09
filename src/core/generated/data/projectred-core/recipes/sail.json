@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-core:sail"
+  },
+  "pattern": [
+    "SS",
+    "SS",
+    "SS"
+  ],
+  "key": {
+    "S": {
+      "item": "projectred-core:woven_cloth"
+    }
+  }
+}

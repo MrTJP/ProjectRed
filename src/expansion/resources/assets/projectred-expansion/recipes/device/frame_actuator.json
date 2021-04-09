@@ -1,0 +1,32 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-expansion:machine2",
+		"data": 9,
+		"count": 1
+	},
+	"pattern": [
+		"wiw",
+		"cic",
+		"cec"
+	],
+	"key": {
+		"w": {
+			"type": "forge:ore_dict",
+			"ore": "plankWood"
+		},
+		"i": {
+			"type": "forge:ore_dict",
+			"ore": "ingotIron"
+		},
+		"c": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 400
+		},
+		"e": {
+			"type": "forge:ore_dict",
+			"ore": "ingotElectrotineAlloy"
+		}
+	}
+}

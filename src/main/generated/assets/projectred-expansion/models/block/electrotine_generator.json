@@ -1,6 +1,0 @@
-{
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "projectred-expansion:block/electrotine_generator/side2a"
-  }
-}

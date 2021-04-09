@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-exploration:stone_sickle",
+    "nbt": "{Damage:0}"
+  },
+  "pattern": [
+    " M ",
+    "  M",
+    "SM "
+  ],
+  "key": {
+    "M": {
+      "item": "minecraft:flint"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    }
+  }
+}

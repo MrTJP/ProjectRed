@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-exploration:green_backpack"
+  },
+  "pattern": [
+    "CCC",
+    "CDC",
+    "CCC"
+  ],
+  "key": {
+    "D": {
+      "tag": "forge:dyes/green"
+    },
+    "C": {
+      "item": "projectred-core:woven_cloth"
+    }
+  }
+}

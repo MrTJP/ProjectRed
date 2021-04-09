@@ -1,6 +1,0 @@
-{
-  "parent": "block/template_wall_side",
-  "textures": {
-    "wall": "projectred-exploration:block/sapphire_block"
-  }
-}

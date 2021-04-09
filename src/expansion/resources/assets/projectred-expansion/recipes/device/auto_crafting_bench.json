@@ -1,0 +1,39 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-expansion:machine2",
+		"data": 11,
+		"count": 1
+	},
+	"pattern": [
+		"sbs",
+		"ici",
+		"wew"
+	],
+	"key": {
+		"e": {
+			"type": "forge:ore_dict",
+			"ore": "ingotElectrotineAlloy"
+		},
+		"s": {
+			"type": "forge:ore_dict",
+			"ore": "stone"
+		},
+		"i": {
+			"type": "forge:ore_dict",
+			"ore": "ingotIron"
+		},
+		"b": {
+			"type": "forge:ore_dict",
+			"ore": "workbench"
+		},
+		"c": {
+			"type": "forge:ore_dict",
+			"ore": "chestWood"
+		},
+		"w": {
+			"type": "forge:ore_dict",
+			"ore": "plankWood"
+		}
+	}
+}
