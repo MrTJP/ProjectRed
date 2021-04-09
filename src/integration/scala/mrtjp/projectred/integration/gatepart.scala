@@ -27,6 +27,7 @@ import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.shapes.VoxelShape
 import net.minecraft.util.{ActionResultType, Direction, Hand}
+import net.minecraft.world.chunk.Chunk
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
 import java.util.{Collections, Collection => JCollection}
