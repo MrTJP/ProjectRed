@@ -1,14 +1,13 @@
 package mrtjp.projectred.core
 
-import java.util.{Stack => JStack}
 import codechicken.multipart.api.part.TMultiPart
 import codechicken.multipart.block.TileMultiPart
-import codechicken.multipart.init.ModContent
+import codechicken.multipart.init.CBMultipartModContent
 import com.google.common.collect.HashMultimap
-import net.minecraft.block.{Blocks, RedstoneWireBlock}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
+import java.util.{Stack => JStack}
 import scala.collection.immutable.HashSet
 
 object WirePropagator
@@ -124,7 +123,7 @@ class PropagationRun
             entry.getKey.multiPartChange(parts)
         }
 
-        res_NeighborChanges.foreach(b => world.neighborChanged(b.toImmutable, ModContent.blockMultipart, b.toImmutable))
+        res_NeighborChanges.foreach(b => world.neighborChanged(b.toImmutable, CBMultipartModContent.blockMultipart, b.toImmutable))
 
         WirePropagator.finishing = parent
 
