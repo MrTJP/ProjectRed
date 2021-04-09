@@ -7,7 +7,7 @@ package mrtjp.projectred.integration
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.multipart.api.part.AnimateTickPart
-import codechicken.multipart.init
+import codechicken.multipart.init.CBMultipartModContent
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core.{Configurator, IRedwireEmitter, TFaceRSAcquisitions}
 import net.minecraft.nbt.CompoundNBT
@@ -104,9 +104,9 @@ abstract class RedstoneGatePart(gateType:GateType) extends GatePart(gateType) wi
             val absSide = absoluteDir(r)
             val pos = this.pos.offset(Direction.byIndex(absSide))
 
-            world.neighborChanged(pos, init.ModContent.blockMultipart, pos)
+            world.neighborChanged(pos, CBMultipartModContent.blockMultipart, pos)
             for (s <- 0 until 6) if (s != (absSide^1) && (smask&1<<s) == 0)
-                world.neighborChanged(pos.offset(Direction.byIndex(s)), init.ModContent.blockMultipart, pos)
+                world.neighborChanged(pos.offset(Direction.byIndex(s)), CBMultipartModContent.blockMultipart, pos)
 
             smask |= 1<<absSide
         }
