@@ -1,0 +1,14 @@
+{
+  "type": "projectred-core:backpack_nbt_copy",
+  "result": {
+    "item": "projectred-exploration:gray_backpack"
+  },
+  "ingredients": [
+    {
+      "tag": "projectred-exploration:backpacks"
+    },
+    {
+      "tag": "forge:dyes/gray"
+    }
+  ]
+}

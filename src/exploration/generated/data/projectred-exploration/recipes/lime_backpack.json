@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-exploration:lime_backpack"
+  },
+  "pattern": [
+    "CCC",
+    "CDC",
+    "CCC"
+  ],
+  "key": {
+    "D": {
+      "tag": "forge:dyes/lime"
+    },
+    "C": {
+      "item": "projectred-core:woven_cloth"
+    }
+  }
+}

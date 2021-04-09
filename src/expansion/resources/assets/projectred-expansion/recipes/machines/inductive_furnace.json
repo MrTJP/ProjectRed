@@ -1,0 +1,28 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-expansion:machine1",
+		"data": 0,
+		"count": 1
+	},
+	"pattern": [
+		"bbb",
+		"b b",
+		"iei"
+	],
+	"key": {
+		"b": {
+			"type": "minecraft:item",
+			"item": "minecraft:brick_block",
+			"data": 0
+		},
+		"i": {
+			"type": "forge:ore_dict",
+			"ore": "ingotIron"
+		},
+		"e": {
+			"type": "forge:ore_dict",
+			"ore": "ingotElectrotineAlloy"
+		}
+	}
+}

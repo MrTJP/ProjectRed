@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-illumination:light_blue_fallout_light"
+  },
+  "pattern": [
+    "CCC",
+    "CIC",
+    "NPN"
+  ],
+  "key": {
+    "N": {
+      "tag": "forge:nuggets/gold"
+    },
+    "I": {
+      "item": "projectred-core:light_blue_illumar"
+    },
+    "C": {
+      "item": "minecraft:iron_bars"
+    },
+    "P": {
+      "item": "projectred-core:conductive_plate"
+    }
+  }
+}

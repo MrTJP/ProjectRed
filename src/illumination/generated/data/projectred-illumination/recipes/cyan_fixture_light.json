@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-illumination:cyan_fixture_light"
+  },
+  "pattern": [
+    "GGG",
+    "GIG",
+    "PCP"
+  ],
+  "key": {
+    "I": {
+      "item": "projectred-core:cyan_illumar"
+    },
+    "C": {
+      "item": "projectred-core:conductive_plate"
+    },
+    "G": {
+      "tag": "forge:glass_panes/colorless"
+    },
+    "P": {
+      "item": "projectred-core:plate"
+    }
+  }
+}

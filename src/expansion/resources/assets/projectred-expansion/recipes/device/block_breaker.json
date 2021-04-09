@@ -1,0 +1,33 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-expansion:machine2",
+		"data": 0,
+		"count": 1
+	},
+	"pattern": [
+		"sas",
+		"sps",
+		"srs"
+	],
+	"key": {
+		"s": {
+			"type": "forge:ore_dict",
+			"ore": "cobblestone"
+		},
+		"a": {
+			"type": "minecraft:item",
+			"item": "minecraft:iron_pickaxe",
+			"data": 0
+		},
+		"p": {
+			"type": "minecraft:item",
+			"item": "minecraft:piston",
+			"data": 0
+		},
+		"r": {
+			"type": "forge:ore_dict",
+			"ore": "dustRedstone"
+		}
+	}
+}

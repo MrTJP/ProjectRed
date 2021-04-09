@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "result": {
+    "item": "projectred-core:electrotine_silicon"
+  },
+  "ingredient": {
+    "item": "projectred-core:electrotine_silicon_comp"
+  },
+  "experience": 0.0,
+  "cookingtime": 200
+}

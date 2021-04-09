@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-transmission:low_load_framed_power_wire"
+  },
+  "pattern": [
+    "SSS",
+    "SIS",
+    "SSS"
+  ],
+  "key": {
+    "I": {
+      "item": "projectred-transmission:low_load_power_wire"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    }
+  }
+}

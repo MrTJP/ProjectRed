@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-illumination:brown_illumar_lamp"
+  },
+  "pattern": [
+    "GIG",
+    "GIG",
+    "GRG"
+  ],
+  "key": {
+    "I": {
+      "item": "projectred-core:brown_illumar"
+    },
+    "G": {
+      "tag": "forge:glass_panes/colorless"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    }
+  }
+}

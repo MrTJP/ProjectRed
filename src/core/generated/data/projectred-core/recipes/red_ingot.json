@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "result": {
+    "item": "projectred-core:red_ingot"
+  },
+  "ingredient": {
+    "item": "projectred-core:red_iron_comp"
+  },
+  "experience": 0.0,
+  "cookingtime": 200
+}

@@ -1,0 +1,19 @@
+{
+	"type": "forge:ore_shapeless",
+	"result": {
+		"item": "projectred-expansion:plan",
+		"data": 0,
+		"count": 1
+	},
+	"ingredients": [
+		{
+			"type": "forge:ore_dict",
+			"ore": "dyeBlue"
+		},
+		{
+			"type": "minecraft:item",
+			"item": "minecraft:paper",
+			"data": 0
+		}
+	]
+}

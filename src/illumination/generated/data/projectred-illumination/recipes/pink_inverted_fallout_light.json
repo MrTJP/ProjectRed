@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-illumination:pink_inverted_fallout_light"
+  },
+  "pattern": [
+    "CCC",
+    "CIC",
+    "NPN"
+  ],
+  "key": {
+    "N": {
+      "tag": "forge:nuggets/gold"
+    },
+    "I": {
+      "item": "projectred-core:pink_illumar"
+    },
+    "C": {
+      "item": "minecraft:iron_bars"
+    },
+    "P": {
+      "item": "projectred-core:cathode"
+    }
+  }
+}

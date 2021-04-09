@@ -1,0 +1,32 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-expansion:solar_panel",
+		"data": 0,
+		"count": 1
+	},
+	"pattern": [
+		"sss",
+		"iwi",
+		"wew"
+	],
+	"key": {
+		"s": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 342
+		},
+		"i": {
+			"type": "forge:ore_dict",
+			"ore": "ingotIron"
+		},
+		"e": {
+			"type": "forge:ore_dict",
+			"ore": "ingotElectrotineAlloy"
+		},
+		"w": {
+			"type": "forge:ore_dict",
+			"ore": "slabWood"
+		}
+	}
+}
