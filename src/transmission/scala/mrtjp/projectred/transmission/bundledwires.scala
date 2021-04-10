@@ -6,11 +6,11 @@ import codechicken.multipart.api.part.TMultiPart
 import mrtjp.core.world.Messenger
 import mrtjp.projectred.api.{IBundledEmitter, IBundledTile, IConnectable, IMaskedBundledTile}
 import mrtjp.projectred.core.IWirePart._
-import mrtjp.projectred.core.{IInsulatedRedwirePart, IWirePart, WirePropagator}
+import mrtjp.projectred.core._
 import net.minecraft.entity.player.{PlayerEntity, ServerPlayerEntity}
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.{ActionResultType, Direction}
+import net.minecraft.util.Direction
 import net.minecraft.util.text.StringTextComponent
 
 trait IBundledCablePart extends IWirePart with IBundledEmitter
@@ -66,7 +66,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
     protected var propagatingMask = 0xFFFF
     override def updateAndPropagate(from:TMultiPart, mode:Int)
     {
-        import mrtjp.projectred.transmission.BundledCommons._
+        import mrtjp.projectred.core.BundledCommons._
         val mask = getUpdateMask(from, mode)
         if (mode == DROPPING && isSignalZero(getBundledSignal, mask)) return
 
@@ -122,7 +122,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
                     tmpSignal(i.getInsulatedColour) = s.toByte
             case b:IBundledEmitter => BundledCommons.raiseSignal(tmpSignal, b.getBundledSignal(r))
             case t:TileEntity => BundledCommons.raiseSignal(tmpSignal,
-                APIImpl_Transmission.getBundledSignal(t.getWorld, t.getPos, Direction.byIndex(r)))
+                BundledSignalsLib.getBundledSignalViaInteraction(t.getWorld, t.getPos, Direction.byIndex(r)))
             case _ =>
         }
         tmpSignal
@@ -211,7 +211,7 @@ class BundledCablePart(wireType: WireType) extends WirePart(wireType) with TFace
     {
         world.getTileEntity(posOfStraight(r)) match {
             case ibe:IBundledEmitter => resolveArray(ibe, absoluteDir(rotFromStraight(r)))
-            case t:TileEntity if APIImpl_Transmission.isValidInteractionFor(world, t.getPos, Direction.byIndex(rotFromStraight(r))) =>
+            case t:TileEntity if BundledSignalsLib.isValidInteractionFor(world, t.getPos, Direction.byIndex(rotFromStraight(r))) =>
                 resolveArray(t, absoluteDir(rotFromStraight(r)))
             case _ => super.calcStraightArray(r)
         }
@@ -224,7 +224,7 @@ class BundledCablePart(wireType: WireType) extends WirePart(wireType) with TFace
             case b:IMaskedBundledTile => b.canConnectBundled(absDir^1) &&
                     (b.getConnectionMask(absDir^1)&1<<Rotation.rotationTo(absDir, side)) != 0
             case b:IBundledTile => b.canConnectBundled(absDir^1)
-            case _ => APIImpl_Transmission.canConnectBundled(world, pos, Direction.byIndex(absDir^1))
+            case _ => BundledSignalsLib.canConnectBundledViaInteraction(world, pos, Direction.byIndex(absDir^1))
         }
     }
 }
@@ -245,7 +245,7 @@ class FramedBundledCablePart(wireType: WireType) extends FramedWirePart(wireType
     {
         world.getTileEntity(posOfStraight(s)) match {
             case ibe:IBundledEmitter => resolveArray(ibe, s^1)
-            case t:TileEntity if APIImpl_Transmission.isValidInteractionFor(world, t.getPos, Direction.byIndex(s^1)) =>
+            case t:TileEntity if BundledSignalsLib.isValidInteractionFor(world, t.getPos, Direction.byIndex(s^1)) =>
                 resolveArray(t, s^1)
             case _ => super.calcStraightArray(s)
         }
@@ -258,7 +258,7 @@ class FramedBundledCablePart(wireType: WireType) extends FramedWirePart(wireType
             case b:IMaskedBundledTile => b.canConnectBundled(absDir^1) &&
                     (b.getConnectionMask(absDir^1)&0x10) != 0
             case b:IBundledTile => b.canConnectBundled(absDir^1)
-            case _ => APIImpl_Transmission.canConnectBundled(world, pos, Direction.byIndex(absDir^1))
+            case _ => BundledSignalsLib.canConnectBundledViaInteraction(world, pos, Direction.byIndex(absDir^1))
         }
     }
 }

@@ -1,6 +1,7 @@
 package mrtjp.projectred.core
 
 import codechicken.lib.vec.Rotation
+import codechicken.multipart._
 import codechicken.multipart.api.part.TMultiPart
 import codechicken.multipart.block.BlockMultiPart
 import codechicken.multipart.init.CBMultipartModContent
