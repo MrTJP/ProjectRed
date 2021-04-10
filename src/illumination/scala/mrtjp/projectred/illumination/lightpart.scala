@@ -20,6 +20,7 @@ import codechicken.multipart.util.PartRayTraceResult
 import com.google.common.collect.ImmutableMap
 import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.core.vec.InvertX
+import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.core.{Configurator, PRLib, RenderHalo}
 import net.minecraft.block.SoundType
 import net.minecraft.client.renderer.model.ItemCameraTransforms
@@ -409,7 +410,7 @@ object LightPartDefinition {
 
     def parseCorrectedModel(name:String) = {
         val models = OBJParser.parseModels(
-            new ResourceLocation("projectred", "textures/obj/lighting/"+name+".obj"), 7, null)
+            new ResourceLocation(ProjectRedIllumination.MOD_ID, "obj/"+name+".obj"), 7, null)
 
         models.asScala.map(m => m._1 -> m._2.backfacedCopy().apply(new Translation(0.5, 0, 0.5)))
     }

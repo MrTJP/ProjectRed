@@ -126,8 +126,6 @@ dependencies {
 
     // Common deps for all PR modules
     moduleCompile sourceSets.core.output
-
-    integrationCompile sourceSets.transmission.output //TODO remove this dep
 }
 
 

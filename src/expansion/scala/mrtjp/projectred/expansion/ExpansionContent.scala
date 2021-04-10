@@ -6,7 +6,7 @@ import codechicken.lib.inventory.container.ICCLContainerType
 import codechicken.lib.util.CrashLock
 import codechicken.multipart.api.part.TMultiPart
 import codechicken.multipart.api.{MultiPartType, SimpleMultiPartType}
-import mrtjp.projectred.{ProjectRedExpansion, ProjectRedIntegration}
+import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.expansion.item.{BatteryItem, ElectricScrewdriverItem, EmptyBatteryItem, PlanItem}
 import net.minecraft.block.{Block, Blocks}
 import net.minecraft.data.DataGenerator

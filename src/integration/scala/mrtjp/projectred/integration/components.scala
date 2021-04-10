@@ -14,8 +14,7 @@ import codechicken.lib.texture.{AtlasRegistrar, TextureUtils}
 import codechicken.lib.vec._
 import codechicken.lib.vec.uv._
 import mrtjp.core.vec.VecLib
-import mrtjp.projectred.core.RenderHalo
-import mrtjp.projectred.transmission.{UVT, WireModelGen}
+import mrtjp.projectred.core.{PRLib, RenderHalo, UVT}
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
@@ -584,7 +583,7 @@ abstract class BundledCableModel(model:CCModel, pos:Vector3, uCenter:Double, vCe
         val side = orient%24>>2
         val r = orient&3
         val reflect = orient >= 24
-        val rotate = (r+WireModelGen.reorientSide(side))%4 >= 2
+        val rotate = (r+PRLib.bundledCableBaseRotationMap(side))%4 >= 2
 
         var t:Transformation = new RedundantTransformation
         if (reflect) t = t.`with`(new Scale(-1, 0, 1))
