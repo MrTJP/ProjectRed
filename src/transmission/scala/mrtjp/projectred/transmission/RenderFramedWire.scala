@@ -12,6 +12,7 @@ import codechicken.microblock.{CommonMicroFactory, IMicroHighlightRenderer, Micr
 import codechicken.multipart.block.BlockMultiPart
 import codechicken.multipart.util.PartRayTraceResult
 import com.mojang.blaze3d.matrix.MatrixStack
+import mrtjp.projectred.core.UVT
 import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats

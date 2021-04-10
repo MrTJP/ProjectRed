@@ -19,7 +19,7 @@ object ProjectRedTransmission {
 }
 class ProjectRedTransmission
 {
-    ProjectRedAPI.transmissionAPI = new APIImpl_Transmission
+    ProjectRedAPI.transmissionAPI = APIImpl_Transmission
     proxy.construct()
     ScorgeModLoadingContext.get.getModEventBus.register(this)
     TransmissionContent.register(ScorgeModLoadingContext.get.getModEventBus)

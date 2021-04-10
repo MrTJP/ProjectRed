@@ -35,12 +35,12 @@ Redstone. The way it was meant to be.
 [[dependencies.projectred-core]]
     modId="cb_multipart"
     mandatory=true
-    versionRange="[${cbmp_version},)"
+    versionRange="[${cbm_version},)"
     ordering="AFTER"
     side="BOTH"
 [[dependencies.projectred-core]]
     modId="cb_microblock"
     mandatory=true
-    versionRange="[${cbmp_version},)"
+    versionRange="[${cbm_version},)"
     ordering="AFTER"
     side="BOTH"

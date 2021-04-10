@@ -1,8 +1,9 @@
+import java.time.Instant
+
 buildscript {
     repositories {
-        jcenter()
-        mavenCentral()
-        maven { url = "https://files.minecraftforge.net/maven/" }
+        mavenLocal()
+        maven { url = "https://proxy-maven.covers1624.net/" }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:4.1.+'
@@ -43,8 +44,7 @@ file('build.properties').withReader {
     project.ext.config = new ConfigSlurper().parse prop
 }
 
-def build_number = project.hasProperty("manualbuildnum") ? project.manualbuildnum : (Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1")).toString()
-config.mod_version = "${config.mod_version}." + build_number
+config.mod_version = System.getenv("AUTO_GENERATED_VERSION") ?: "${config.mod_version}.${Instant.now().getEpochSecond()}"
 version = "${config.mc_version}-${config.mod_version}"
 println "Starting build of ${archivesBaseName}, Version: ${config.mod_version}"
 println "Using Forge: ${config.forge_version}, for Minecraft: ${config.mc_version}, with Mappings: ${config.mappings}"
@@ -94,10 +94,8 @@ minecraft {
 }
 
 repositories {
-    mavenCentral()
     mavenLocal()
-    maven { url "http://chickenbones.net/maven/" }
-    maven { url "http://dvs1.progwml6.com/files/maven/" }
+    maven { url = "https://proxy-maven.covers1624.net/" }
 }
 
 configurations {
@@ -127,8 +125,6 @@ dependencies {
     // Common deps for all PR modules
     moduleCompile sourceSets.core.output
 
-    integrationCompile sourceSets.transmission.output //TODO remove this dep
-
     // compile against the JEI API but do not include it at runtime
     coreCompileOnly fg.deobf("mezz.jei:jei-${config.mc_version}:${config.jei_version}:api")
     // at runtime, use the full JEI jar
@@ -139,46 +135,46 @@ dependencies {
 jar.enabled = false //Disable main sourceset
 reobf {
     jar { enabled = false } //Disable main sourceset
-    coreJar {}
-    expansionJar {}
-    explorationJar {}
-    illuminationJar {}
-    integrationJar {}
-    transmissionJar {}
+    coreJar { classpath += sourceSets.core.compileClasspath }
+    expansionJar { classpath += sourceSets.expansion.compileClasspath }
+    explorationJar { classpath += sourceSets.exploration.compileClasspath }
+    illuminationJar { classpath += sourceSets.illumination.compileClasspath }
+    integrationJar { classpath += sourceSets.integration.compileClasspath }
+    transmissionJar { classpath += sourceSets.transmission.compileClasspath }
 }
 
 task coreJar(type: Jar) {
-    baseName 'ProjectRedCore'
+    classifier "core"
     dependsOn compileCoreScala, compileCoreJava
     from sourceSets.core.output
 }
 
 task expansionJar(type: Jar) {
-    baseName 'ProjectRedExpansion'
+    classifier "expansion"
     dependsOn compileExpansionScala, compileExpansionJava
     from sourceSets.expansion.output
 }
 
 task explorationJar(type: Jar) {
-    baseName 'ProjectRedExploration'
+    classifier "exploration"
     dependsOn compileExplorationScala, compileExplorationJava
     from sourceSets.exploration.output
 }
 
 task illuminationJar(type: Jar) {
-    baseName 'ProjectRedIllumination'
+    classifier "illumination"
     dependsOn compileIlluminationScala, compileIlluminationJava
     from sourceSets.illumination.output
 }
 
 task integrationJar(type: Jar) {
-    baseName 'ProjectRedIntegration'
+    classifier "integration"
     dependsOn compileIntegrationScala, compileIntegrationJava
     from sourceSets.integration.output
 }
 
 task transmissionJar(type: Jar) {
-    baseName 'ProjectRedTransmission'
+    classifier "transmission"
     dependsOn compileTransmissionScala, compileTransmissionJava
     from sourceSets.transmission.output
 }
@@ -312,3 +308,33 @@ publishing {
         relatedProject 'project-red-base': 'requiredLibrary'
     }
 }*/
+
+/**
+ * Polls the 'compile' configuration for a dependency with the given module name
+ * and resolves, and returns its version. E.g: '1.2.+' will resolve to '1.2.3.4'
+ *
+ * @param module The module to search for.
+ * @param chop If the string should be chopped on the last '-' in its string.
+ * @param configuration The name of the configuration to search.
+ * @param errorMissing If an error should be thrown if it can't be found.
+ * @return The version string, '0' if 'errorMissing' is false and nothing was found.
+ */
+def resolve(module, chop = true, configuration = 'coreCompile', errorMissing = true) {
+    //Copy and lenient resolve the configuration, Forge cant be resolved at this time so lenient is required.
+    def filtered = configurations.getByName(configuration).copy().incoming.artifactView({ it.lenient = true }).artifacts
+            .findAll { it.id.componentIdentifier.module == module }
+            .collect { it.id.componentIdentifier.version }
+    if (filtered.size() > 1) {
+        println "WARNING: Found ${filtered.size()} Dependencies with ModuleName '${module}' in configuration '${configuration.name}'"
+    }
+    if (errorMissing && filtered.isEmpty()) {
+        throw new RuntimeException("Failed resolve dependency version for '${module}'")
+    }
+    if (filtered.isEmpty()) return "0"
+    def version = filtered.first() as String
+    if (chop) {
+        def idx = version.lastIndexOf('-')
+        return version.substring(idx + 1)
+    }
+    return version
+}
