@@ -43,8 +43,7 @@ file('build.properties').withReader {
     project.ext.config = new ConfigSlurper().parse prop
 }
 
-def build_number = project.hasProperty("manualbuildnum") ? project.manualbuildnum : (Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1")).toString()
-config.mod_version = "${config.mod_version}." + build_number
+config.mod_version = System.getenv("AUTO_GENERATED_VERSION") ?: "${config.mod_version}"
 version = "${config.mc_version}-${config.mod_version}"
 println "Starting build of ${archivesBaseName}, Version: ${config.mod_version}"
 println "Using Forge: ${config.forge_version}, for Minecraft: ${config.mc_version}, with Mappings: ${config.mappings}"

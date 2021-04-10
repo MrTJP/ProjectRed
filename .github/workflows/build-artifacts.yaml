@@ -1,0 +1,71 @@
+name: Build commits on feature branches
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  build:
+    name: Build commits
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Extract commit info
+        id: commit_info
+        run: |
+          short_sha="$(echo $GITHUB_SHA | cut -c1-8)"
+          branch_name="${GITHUB_REF#refs/*/}"
+          echo "::set-output name=short_sha::$short_sha"
+          echo "::set-output name=branch_name::$branch_name"
+
+      - name: Generate version
+        id: genver
+        uses: paulhatch/semantic-version@v4.0.1
+        with:
+          branch: "HEAD"
+          major_pattern: "!:"
+          minor_pattern: "feat:"
+          format: "${major}.${minor}.${patch}-${{ steps.commit_info.outputs.branch_name }}@${{ steps.commit_info.outputs.short_sha }}+${increment}"
+          short_tags: true
+          bump_each_commit: false
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '8'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build with Gradle
+        run: ./gradlew build
+        env:
+          AUTO_GENERATED_VERSION: ${{ steps.genver.outputs.version }}
+
+      - name: Cleanup Gradle Cache
+        # These files shouldn't be cached according to https://docs.github.com/en/actions/guides/building-and-testing-java-with-gradle
+        run: |
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock
+          rm -f ~/.gradle/caches/modules-2/gc.properties
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: project-red-${{ steps.genver.outputs.version }}
+          path: build/libs
+          if-no-files-found: error
