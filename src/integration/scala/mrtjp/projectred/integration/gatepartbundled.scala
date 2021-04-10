@@ -14,10 +14,9 @@ import codechicken.multipart.util.PartRayTraceResult
 import com.google.common.collect.ImmutableSet
 import mrtjp.core.vec.VecLib
 import mrtjp.projectred.api.{IBundledEmitter, IBundledTile, IConnectable, IScrewdriver}
-import mrtjp.projectred.core.Configurator
+import mrtjp.projectred.core.BundledCommons._
 import mrtjp.projectred.core.TFaceOrient._
-import mrtjp.projectred.transmission.BundledCommons._
-import mrtjp.projectred.transmission.{APIImpl_Transmission, TFaceBundledAquisitions}
+import mrtjp.projectred.core.{BundledSignalsLib, Configurator, TFaceBundledAquisitions}
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
@@ -35,7 +34,7 @@ trait TBundledGatePart extends GatePart with TFaceBundledAquisitions with IBundl
         val pos = posOfStraight(absDir)
         world.getTileEntity(pos) match {
             case t:IBundledTile => t.canConnectBundled(absDir^1)
-            case _ if APIImpl_Transmission.canConnectBundled(world, pos, Direction.byIndex(absDir^1)) => true
+            case _ if BundledSignalsLib.canConnectBundledViaInteraction(world, pos, Direction.byIndex(absDir^1)) => true
             case _ => super.discoverStraightOverride(absDir)
         }
     }

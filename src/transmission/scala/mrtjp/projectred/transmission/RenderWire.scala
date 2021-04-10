@@ -1,13 +1,14 @@
 package mrtjp.projectred.transmission
 
-import java.util
 import codechicken.lib.math.MathHelper
 import codechicken.lib.render._
 import codechicken.lib.render.lighting.LightModel
 import codechicken.lib.render.pipeline.{ColourMultiplier, IVertexOperation}
 import codechicken.lib.vec._
 import codechicken.lib.vec.uv._
-import net.minecraft.client.renderer.texture.TextureAtlasSprite
+import mrtjp.projectred.core.{PRLib, UVT}
+
+import java.util
 
 object RenderWire
 {
@@ -77,25 +78,6 @@ object RenderWire
     }
 }
 
-class UVT(t:Transformation) extends UVTransformation
-{
-    private val vec = new Vector3
-
-    def transform(uv:UV)
-    {
-        vec.set(uv.u, 0, uv.v).apply(t)
-        uv.set(vec.x, vec.z)
-    }
-
-    override def apply(uv:UV) =
-    {
-        vec.set(uv.u, 0, uv.v).apply(t)
-        uv.set(vec.x, vec.z)
-    }
-
-    override def inverse() = new UVT(t.inverse())
-}
-
 /**
  * All generations are done on side 0 so know that for rotation r
  * 0 = side 3 = +Z = SOUTH
@@ -110,8 +92,6 @@ object WireModelGen
     }
 
     def instance = instances.get()
-
-    val reorientSide = Array(0, 3, 3, 0, 0, 3)
 
     def countConnections(mask:Int) =
     {
@@ -185,8 +165,8 @@ class WireModelGen
             new Vertex5(0.5-w, h, 0.5-w, 8-tw, 16-tw)
         )
 
-        if (tex == 0 || tex == 1) tex = (tex+WireModelGen.reorientSide(side))%2
-        var r = WireModelGen.reorientSide(side)
+        if (tex == 0 || tex == 1) tex = (tex+PRLib.bundledCableBaseRotationMap(side))%2
+        var r = PRLib.bundledCableBaseRotationMap(side)
         if (tex == 1) r += 3
         if (r != 0)
         {
@@ -342,7 +322,7 @@ class WireModelGen
     private val sideReflect = new UVT(Rotation.quarterRotations(2).at(new Vector3(8, 0, 16)))
     private def reflectSide(verts:Array[Vertex5], r:Int)
     {
-        if ((r+WireModelGen.reorientSide(side))%4 >= 2) for (vert <- verts) vert.apply(sideReflect)
+        if ((r+PRLib.bundledCableBaseRotationMap(side))%4 >= 2) for (vert <- verts) vert.apply(sideReflect)
     }
 
     /**

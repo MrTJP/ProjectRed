@@ -12,6 +12,10 @@ import net.minecraft.world.{GameRules, World}
 
 object PRLib
 {
+    // Array mapping side to base rotation of a bundled cable.
+    // Indexed by Direction ordinal. Output is a quarter rotation index 0 - 3
+    val bundledCableBaseRotationMap = Array(0, 3, 3, 0, 0, 3)
+
     def dropTowardsPlayer(w:World, pos:BlockPos, stack:ItemStack, p:PlayerEntity)
     {
         if (!w.isRemote && w.getGameRules.getBoolean(GameRules.DO_TILE_DROPS))

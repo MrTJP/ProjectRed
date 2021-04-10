@@ -1,6 +1,5 @@
-package mrtjp.projectred.transmission
+package mrtjp.projectred.core
 
-import mrtjp.projectred.core.{TAcquisitionsCommons, TCenterAcquisitions, TFaceAcquisitions}
 import net.minecraft.nbt.CompoundNBT
 
 trait TBundledAquisitionsCommons extends TAcquisitionsCommons
