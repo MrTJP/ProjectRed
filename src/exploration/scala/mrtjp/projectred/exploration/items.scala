@@ -17,7 +17,7 @@ import net.minecraft.entity.ai.attributes.AttributeModifier
 import net.minecraft.entity.monster.EndermanEntity
 import net.minecraft.entity.player.{PlayerEntity, PlayerInventory, ServerPlayerEntity}
 import net.minecraft.inventory.EquipmentSlotType
-import net.minecraft.inventory.container.{SimpleNamedContainerProvider, Slot}
+import net.minecraft.inventory.container.{ClickType, SimpleNamedContainerProvider, Slot}
 import net.minecraft.item._
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.tags.BlockTags
@@ -75,13 +75,24 @@ class ContainerBackpack(windowId: Int, inv: BagInventory, playerInv: PlayerInven
 
     {
         for (((x, y), i) <- GuiLib.createSlotGrid(8, 18, 9, 3, 0, 0).zipWithIndex) {
-            val slot = new Slot(inv, i, x, y) {
-                override def canTakeStack(playerIn:PlayerEntity):Boolean =
-                    i != playerInv.currentItem + 27
-            }
-            addSlot(slot)
+            addSlot(new Slot(inv, i, x, y))
         }
-        addPlayerInv(playerInv, 8, 86)
+        addPlayerInv(playerInv, 8, 86, (inv, i, x, y) => new Slot(inv, i, x, y) {
+            override def canTakeStack(playerIn:PlayerEntity):Boolean =
+                i != playerInv.currentItem
+        })
+    }
+
+    override def slotClick(id:Int, dragType:Int, clickType:ClickType, player:PlayerEntity):ItemStack = {
+        // Required because vanilla's shyte handling of number hotbar quick swap.
+        // Apparently it only asks the target slot (the one hovered over) if it can accept the item, but it does not ask the
+        // hotbar slot (corresponding to number pressed) if it can take the stack (which would be denied by the custom slot class's canTakeStack implemented above).
+        // Additionally, if the target slot is empty, it calls that empty slot's canTakeStack. This is almost certainly
+        // a bug. canTakeStack should be called on BOTH slots, and isItemValid should be called on BOTH slots with the other slots contents.
+        if (id == player.inventory.currentItem || (clickType == ClickType.SWAP && dragType == player.inventory.currentItem))
+            ItemStack.EMPTY
+        else
+            super.slotClick(id, dragType, clickType, player)
     }
 }
 
