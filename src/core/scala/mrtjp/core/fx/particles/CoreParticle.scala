@@ -56,7 +56,10 @@ class CoreParticle(w: World) extends Particle(w, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0
         if (age > maxAge && !isImmortal) setExpired()
     }
 
-    override def renderParticle(buffer: IVertexBuilder, renderInfo: ActiveRenderInfo, partialTicks: Float): Unit = ???
+    override def renderParticle(buffer: IVertexBuilder, renderInfo: ActiveRenderInfo, partialTicks: Float):Unit = {
+        actions.foreach(_.runOn(this, partialTicks))
+        actions = actions.filterNot(_.isFinished)
+    }
 
 //    override def renderParticle(buffer: BufferBuilder, entity: Entity, frame: Float, cosyaw: Float, cospitch: Float, sinyaw: Float, sinsinpitch: Float, cossinpitch: Float) {
 //        actions.foreach(_.runOn(this, frame))
@@ -70,5 +73,5 @@ class CoreParticle(w: World) extends Particle(w, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0
      * 3 - Bind texture and draw yourself
      */
 //    override def getFXLayer = 0
-    override def getRenderType: IParticleRenderType = ???
+    override def getRenderType: IParticleRenderType = IParticleRenderType.PARTICLE_SHEET_TRANSLUCENT
 }
