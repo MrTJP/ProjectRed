@@ -43,16 +43,19 @@ class NodeContainer(containerType:ContainerType[_], windowId:Int) extends Contai
     @OnlyIn(Dist.CLIENT)
     def addPlayerInv(x:Int, y:Int):Unit = addPlayerInv(Minecraft.getInstance.player.inventory, x, y)
 
-    def addPlayerInv(playerInv:PlayerInventory, x:Int, y:Int)
-    {
+    def addPlayerInv(playerInv:PlayerInventory, x:Int, y:Int):Unit = {
+        addPlayerInv(playerInv, x, y, (inv, i, x, y) => new Slot(inv, i, x, y))
+    }
+
+    def addPlayerInv(playerInv:PlayerInventory, x:Int, y:Int, slotFactory:(PlayerInventory,  Int, Int, Int) => Slot):Unit = {
         var next = 0
         def up() = {next+=1;next-1}
 
         for ((x, y) <- GuiLib.createSlotGrid(x, y+58, 9, 1, 0, 0))
-            addSlot(new Slot3(playerInv, up(), x, y)) //hotbar
+            addSlot(slotFactory(playerInv, up(), x, y)) //hotbar
 
         for ((x, y) <- GuiLib.createSlotGrid(x, y, 9, 3, 0, 0))
-            addSlot(new Slot3(playerInv, up(), x, y)) //slots
+            addSlot(slotFactory(playerInv, up(), x, y)) //slots
     }
 
     override def addListener(listener:IContainerListener)
@@ -115,7 +118,7 @@ class NodeContainer(containerType:ContainerType[_], windowId:Int) extends Contai
     override def slotClick(id:Int, dragType:Int, clickType:ClickType, player:PlayerEntity):ItemStack =
     {
         try { //Ignore exceptions raised from client-side only slots that wont be found here. To be removed.
-            if (inventorySlots.size() > id && (clickType == ClickType.PICKUP || clickType == ClickType.QUICK_MOVE)) {
+            if (player.world.isRemote && inventorySlots.size() > id && (clickType == ClickType.PICKUP || clickType == ClickType.QUICK_MOVE)) {
                 val slot = inventorySlots.get(id)
                 if (!slot.isEnabled)
                     return handleGhostClick(slot, dragType, clickType, player)
@@ -214,7 +217,7 @@ class NodeContainer(containerType:ContainerType[_], windowId:Int) extends Contai
             {
                 slot = inventorySlots.get(k)
                 inslot = slot.getStack
-                if (slot.isEnabled && !inslot.isEmpty && inslot.getItem == stack.getItem &&
+                if (/*slot.isEnabled && */!inslot.isEmpty && inslot.getItem == stack.getItem &&
                         ItemStack.areItemStackTagsEqual(stack, inslot))
                 {
                     val space = math.min(slot.getSlotStackLimit, stack.getMaxStackSize)-inslot.getCount
@@ -248,7 +251,7 @@ class NodeContainer(containerType:ContainerType[_], windowId:Int) extends Contai
                 {
                     slot = inventorySlots.get(k)
                     inslot = slot.getStack
-                    if(!slot.isEnabled && inslot.isEmpty && slot.isItemValid(stack))
+                    if(/*!slot.isEnabled && */inslot.isEmpty && slot.isItemValid(stack))
                     {
                         val space = math.min(slot.getSlotStackLimit, stack.getMaxStackSize)
                         if (space >= stack.getCount)
