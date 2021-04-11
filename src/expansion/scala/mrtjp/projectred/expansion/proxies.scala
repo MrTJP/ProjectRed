@@ -8,7 +8,7 @@ import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.client.event.ModelRegistryEvent
 import net.minecraftforge.client.model.ModelLoaderRegistry
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
+import net.minecraftforge.fml.event.lifecycle.{FMLClientSetupEvent, FMLCommonSetupEvent}
 import net.minecraftforge.scorge.lang.ScorgeModLoadingContext
 
 
@@ -19,6 +19,10 @@ class ExpansionProxy extends IProxy {
         ExpansionContent.register(ScorgeModLoadingContext.get.getModEventBus)
     }
 
+    override def commonSetup(event:FMLCommonSetupEvent):Unit = {
+        super.commonSetup(event)
+        CapabilityTeleposedEnderPearl.registerCapability()
+    }
 }
 
 class ExpansionProxyClient extends ExpansionProxy {
