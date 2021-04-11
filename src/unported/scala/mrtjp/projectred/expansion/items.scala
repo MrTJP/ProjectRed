@@ -227,49 +227,6 @@ object ItemJetpack
     }
 }
 
-class ItemInfusedEnderPearl extends ItemCore
-{
-    setMaxStackSize(1)
-
-    override def addInformation(stack:ItemStack, world:World, list:JList[String], flag:ITooltipFlag)
-    {
-        import ItemInfusedEnderPearl._
-        val slist = list.asInstanceOf[JList[String]]
-        if (hasLocation(stack))
-        {
-            val bc = getLocation(stack)
-            slist.add(TextFormatting.GRAY+s"Tied to [${bc.getX}, ${bc.getY}, ${bc.getZ}]")
-        }
-    }
-}
-
-object ItemInfusedEnderPearl
-{
-    private def assertNBT(stack:ItemStack)
-    {
-        if (!stack.hasTagCompound)
-            stack.setTagCompound(new NBTTagCompound)
-    }
-
-    def setLocation(stack:ItemStack, x:Int, y:Int, z:Int)
-    {
-        assertNBT(stack)
-        val tag = stack.getTagCompound
-        tag.setInteger("locX", x)
-        tag.setInteger("locY", y)
-        tag.setInteger("locZ", z)
-    }
-
-    def getLocation(stack:ItemStack) =
-    {
-        assertNBT(stack)
-        val tag = stack.getTagCompound
-        new BlockPos(tag.getInteger("locX"), tag.getInteger("locY"), tag.getInteger("locZ"))
-    }
-
-    def hasLocation(stack:ItemStack) =
-        stack.hasTagCompound && stack.getTagCompound.hasKey("locX")
-}
 
 object ModelJetpack extends ModelBiped(1.0F, 0, 64, 64)
 {

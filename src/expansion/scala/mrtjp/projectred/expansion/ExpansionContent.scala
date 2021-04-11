@@ -7,7 +7,7 @@ import codechicken.lib.util.CrashLock
 import codechicken.multipart.api.part.TMultiPart
 import codechicken.multipart.api.{MultiPartType, SimpleMultiPartType}
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.expansion.item.{BatteryItem, ElectricScrewdriverItem, EmptyBatteryItem, PlanItem}
+import mrtjp.projectred.expansion.item.{BatteryItem, ElectricScrewdriverItem, EmptyBatteryItem, InfusedEnderPearlItem, PlanItem}
 import net.minecraft.block.{Block, Blocks}
 import net.minecraft.data.DataGenerator
 import net.minecraft.item.{BlockItem, Item, ItemStack}
@@ -59,12 +59,18 @@ object ExpansionContent
     val autoCraftingBenchItem = ITEMS.register("auto_crafting_bench", () => new BlockItem(autoCraftingBenchBlock.get, new Item.Properties().group(expansionItemGroup)))
     val autoCraftingBenchContainer = CONTAINERS.register("auto_crafting_bench", () => ICCLContainerType.create(ContainerAutoCrafter))
 
+    val teleposerBlock = BLOCKS.register("teleposer", () => new BaseMachineBlock(() => new TileTeleposer))
+    val teleposerTile = TILES.register("teleposer", () => TileEntityType.Builder.create(() => new TileTeleposer, teleposerBlock.get).build(null))
+    val teleposerItem = ITEMS.register("teleposer", () => new BlockItem(teleposerBlock.get, new Item.Properties().group(expansionItemGroup)))
+
+
     /** Items **/
     val batteryItem = ITEMS.register("battery", () => new BatteryItem)
     val emptyBatteryItem = ITEMS.register("empty_battery", () => new EmptyBatteryItem)
     val planItem = ITEMS.register("plan", () => new PlanItem)
     val electricScrewdriverItem = ITEMS.register("electric_screwdriver", () => new ElectricScrewdriverItem)
     val solarPanelItem = ITEMS.register("solar_panel", () => new ItemSolarPanel)
+    val infusedEnderPearlItem = ITEMS.register("infused_ender_pearl", () => new InfusedEnderPearlItem)
 
     /** Parts **/
     val solarPanelPart = PARTS.register("solar_panel", () => new SimpleMultiPartType[TMultiPart]((client:Boolean) => new SolarPanelPart))
@@ -109,6 +115,7 @@ private class ItemModels(gen: DataGenerator, fileHelper: ExistingFileHelper) ext
         simpleItemBlock(electrotineGeneratorBlock.get)
         simpleItemBlock(projectBenchBlock.get)
         simpleItemBlock(autoCraftingBenchBlock.get)
+        simpleItemBlock(teleposerBlock.get)
 
 //        val solarModel = getExistingFile(new ResourceLocation(ProjectRedExpansion.MOD_ID, "item/solar_panel"))
 //        getSimple(solarPanelItem).texture(null).parent(solarModel)
@@ -117,6 +124,7 @@ private class ItemModels(gen: DataGenerator, fileHelper: ExistingFileHelper) ext
         generated(batteryItem)
         generated(planItem)
         generated(electricScrewdriverItem)
+        generated(infusedEnderPearlItem)
     }
 }
 
@@ -134,6 +142,7 @@ private class BlockStates(gen:DataGenerator, fileHelper:ExistingFileHelper) exte
         makeTmpModel(inductionFurnaceBlock.get, "induction_furnace/side1")
         makeTmpModel(electrotineGeneratorBlock.get, "electrotine_generator/side2a")
         makeTmpModel(autoCraftingBenchBlock.get, "auto_crafting_bench/top")
+        makeTmpModel(teleposerBlock.get, "teleposer/top1")
     }
 
     private def extend(rl:ResourceLocation, suffix:String) =
