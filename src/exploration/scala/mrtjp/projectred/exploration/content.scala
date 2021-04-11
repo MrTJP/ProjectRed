@@ -713,6 +713,19 @@ private class BlockLootTables(gen: DataGenerator) extends LootTableProvider.Bloc
         register(blockTinBlock, singleItem(blockTinBlock))
         register(blockSilverBlock, singleItem(blockSilverBlock))
         register(blockElectrotineBlock, singleItem(blockElectrotineBlock))
+
+        register(blockMarbleWall, singleItem(blockMarbleWall))
+        register(blockMarbleBrickWall, singleItem(blockMarbleBrickWall))
+        register(blockBasaltWall, singleItem(blockBasaltWall))
+        register(blockBasaltCobbleWall, singleItem(blockBasaltCobbleWall))
+        register(blockBasaltBrickWall, singleItem(blockBasaltBrickWall))
+        register(blockRubyBlockWall, singleItem(blockRubyBlockWall))
+        register(blockSapphireBlockWall, singleItem(blockSapphireBlockWall))
+        register(blockPeridotBlockWall, singleItem(blockPeridotBlockWall))
+        register(blockCopperBlockWall, singleItem(blockCopperBlockWall))
+        register(blockTinBlockWall, singleItem(blockTinBlockWall))
+        register(blockSilverBlockWall, singleItem(blockSilverBlockWall))
+        register(blockElectrotineBlockWall, singleItem(blockElectrotineBlockWall))
     }
 }
 
