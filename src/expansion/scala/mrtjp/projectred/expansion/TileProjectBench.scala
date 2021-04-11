@@ -230,12 +230,13 @@ class CraftingResultTestHelper
                     val ingredientsAvailable = (0 until 9).forall { i =>
                         val prevInput = invCrafting.getStackInSlot(i)
                         prevInput.isEmpty || eatIngredient(0, { input =>
-                            invCrafting.setInventorySlotContents(i, input)
+                            invCrafting.setInventorySlotContents(i, input.copy)
                             //TODO also compare the two inputs. Potential here for invalid matches:
                             //If two recipes exist such that A + B = D and C + B = D,
                             //an input matrix of A + B could consume ingredient C
                             val resultSame = r.matches(invCrafting, w) && ItemStack.areItemStacksEqual(r.getCraftingResult(invCrafting), result)
-                            invCrafting.setInventorySlotContents(i, prevInput)
+                            if (!prevInput.hasContainerItem || !input.hasContainerItem) //For container items, leave a copy behind so it can be damaged
+                                invCrafting.setInventorySlotContents(i, prevInput)
                             resultSame
                         })
                     }
