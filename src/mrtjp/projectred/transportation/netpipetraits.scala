@@ -394,10 +394,11 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
     }
 
     override def passToInventory(r: NetworkPayload) : Boolean = {
+      val savedStack = r.payload.copy
         val passResult = super.passToInventory(r)
         if(passResult){
             r.hasArrived = true
-            itemReceived(r.payload)
+            itemReceived(savedStack)
         }
 
         passResult
