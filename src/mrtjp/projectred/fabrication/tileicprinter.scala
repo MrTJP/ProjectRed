@@ -457,13 +457,13 @@ object TileICPrinter
 
                     case s:ShapedOreRecipe => s.getInput.toSeq.flatMap {
                         case s:ItemStack => Seq(s)
-                        case a:JAList[ItemStack] => a.toSeq
+                        case a:JAList[ItemStack] @unchecked => a.toSeq
                         case _ => Seq.empty
                     }.map(ItemKey.get)
 
                     case s:ShapelessOreRecipe => s.getInput.toSeq.flatMap {
                         case s:ItemStack => Seq(s)
-                        case a:JAList[ItemStack] => a.toSeq
+                        case a:JAList[ItemStack] @unchecked => a.toSeq
                         case _ => Seq.empty
                     }.map(ItemKey.get)
 
