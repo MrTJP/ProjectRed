@@ -4,17 +4,16 @@ import codechicken.lib.colour.EnumColour
 import codechicken.lib.texture.TextureUtils
 import mrtjp.core.gui.NodeGui
 import mrtjp.core.vec.Point
+import mrtjp.projectred.ProjectRedExploration
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.ITextComponent
-import org.lwjgl.opengl.GL11
 
 class GuiBackpack(container: ContainerBackpack, playerInv: PlayerInventory, title: ITextComponent) extends NodeGui(container, 176, 168, playerInv, title)
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
-        TextureUtils.changeTexture(new ResourceLocation("projectred", "textures/gui/backpack.png"))
+        TextureUtils.changeTexture(new ResourceLocation(ProjectRedExploration.MOD_ID, "textures/gui/backpack.png"))
         blit(0, 0, 0, 0, xSize, ySize)
     }
 
