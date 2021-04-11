@@ -1,0 +1,76 @@
+{
+  "variants": {
+    "rotation=0,side=0": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=1,side=0": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=2,side=0": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=3,side=0": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=0,side=1": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=1,side=1": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=2,side=1": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=3,side=1": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=0,side=2": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=1,side=2": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=2,side=2": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=3,side=2": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=0,side=3": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=1,side=3": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=2,side=3": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=3,side=3": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=0,side=4": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=1,side=4": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=2,side=4": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=3,side=4": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=0,side=5": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=1,side=5": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=2,side=5": {
+      "model": "projectred-expansion:block/teleposer"
+    },
+    "rotation=3,side=5": {
+      "model": "projectred-expansion:block/teleposer"
+    }
+  }
+}
