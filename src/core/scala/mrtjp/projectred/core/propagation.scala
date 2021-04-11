@@ -13,10 +13,8 @@ import scala.collection.immutable.HashSet
 
 object WirePropagator
 {
-    def setDustProvidePower(b:Boolean)
-    {
-        //TODO
-//        Blocks.REDSTONE_WIRE.asInstanceOf[RedstoneWireBlock].canProvidePower = b
+    def setDustProvidePower(b:Boolean):Unit = {
+        Blocks.REDSTONE_WIRE.asInstanceOf[RedstoneWireBlock].canProvidePower = b
     }
 
     private val rwConnectable = ThreadLocal.withInitial[Boolean](() => true)
