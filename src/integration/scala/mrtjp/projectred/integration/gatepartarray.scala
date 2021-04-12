@@ -89,7 +89,7 @@ trait TArrayGatePart extends RedstoneGatePart with IRedwirePart with TFaceRSProp
             if (maskConnectsCorner(r)) raise(calcCornerSignal(r))
             else if (maskConnectsStraight(r)) raise(calcStraightSignal(r))
             else if (maskConnectsInside(r)) raise(calcInternalSignal(r))
-            else raise(calcMaxSignal(r, false, true))
+            else raise(calcMaxSignal(r, true, true))
 
         WirePropagator.setDustProvidePower(true)
         WirePropagator.redwiresProvidePower = true
