@@ -118,7 +118,7 @@ abstract class RedstoneGatePart(gateType:GateType) extends GatePart(gateType) wi
         if (maskConnectsCorner(ar)) calcCornerSignal(ar)
         else if (maskConnectsStraight(ar)) calcStraightSignal(ar)
         else if (maskConnectsInside(ar)) calcInternalSignal(ar)
-        else calcMaxSignal(ar, getLogicRS.requireStrongInput(r), false)
+        else calcMaxSignal(ar, true, false)
     }
 
     override def resolveSignal(part:Any, r:Int) = part match
@@ -154,6 +154,4 @@ abstract class RedstoneGateLogic[T <: RedstoneGatePart] extends GateLogic[T]
         for (r <- 0 until 4) if ((mask&1<<r) != 0 && gate.getRedstoneInput(r) > 0) input |= 1<<r
         input
     }
-
-    def requireStrongInput(r:Int) = false
 }
