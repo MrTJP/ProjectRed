@@ -801,8 +801,6 @@ class Comparator(gate:SequentialGatePart) extends SequentialGateLogic(gate) with
         true
     }
 
-    override def requireStrongInput(r:Int) = r%2 == 1
-
     override def canConnect(shape:Int, r:Int) = true
 
     override def getOutput(gate:SequentialGatePart, r:Int) =
