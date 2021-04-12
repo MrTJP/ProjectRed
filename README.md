@@ -40,8 +40,7 @@ Of course, if you dont need to use the wrapper (as in, you have gradle installed
 
 1. Clone repository to empty folder.
 2. Cd to the repository (folder where `src` and `resources` are located).
-3. Run `./gradlew setupDecompWorkspace` to set up an environment.
-4. Run `./gradlew eclipse` or `./gradlew idea` appropriately.
-5. Open your IDE using the generated files (i.e., for IDEA, a ProjectRed.ipr is generated in `./`)
-6. Edit, run, and debug your new code.
-7. Once its bug free and working, you may submit it as a PR to the main repo.
+3. Run `./gradlew genEclipseRuns` or `./gradlew genIntellijRuns` appropriately.
+4. Open your IDE using the generated files (i.e., for IDEA, a ProjectRed.ipr is generated in `./`)
+5. Edit, run, and debug your new code.
+6. Once its bug free and working, you may submit it as a PR to the main repo.
