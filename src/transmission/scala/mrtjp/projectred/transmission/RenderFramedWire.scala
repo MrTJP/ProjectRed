@@ -8,18 +8,16 @@ import codechicken.lib.render.pipeline.{ColourMultiplier, IVertexOperation}
 import codechicken.lib.vec._
 import codechicken.lib.vec.uv.{IconTransformation, UVScale, UVTranslation}
 import codechicken.microblock.api.MicroMaterial
-import codechicken.microblock.{CommonMicroFactory, IMicroHighlightRenderer, MicroMaterialRegistry, MicroblockRender}
+import codechicken.microblock.{CommonMicroFactory, IMicroHighlightRenderer, MicroblockRender}
 import codechicken.multipart.block.BlockMultiPart
 import codechicken.multipart.util.PartRayTraceResult
 import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.projectred.core.UVT
+import mrtjp.projectred.transmission.WireBoxes.fOBounds
 import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
-import net.minecraft.client.renderer.texture.TextureAtlasSprite
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.Hand
-import net.minecraft.util.math.{BlockRayTraceResult, RayTraceResult}
-import org.lwjgl.opengl.GL11
+import net.minecraft.util.math.BlockRayTraceResult
 
 object RenderFramedWire extends IMicroHighlightRenderer
 {
@@ -88,7 +86,7 @@ object RenderFramedWire extends IMicroHighlightRenderer
         ccrs.reset()
         ccrs.bind(MicroblockRender.highlighRenderType, getter, mat)
         ccrs.alphaOverride = 127
-        getOrGenerateJacketedModel(modelKey(part)).renderMaterial(material, ccrs, true)
+        getOrGenerateJacketedModel(modelKey(part)).renderHighlight(material, ccrs, true)
     }
 
     override def renderHighlight(player: PlayerEntity, hand: Hand, hit: BlockRayTraceResult, mcrFactory: CommonMicroFactory, size: Int, material: MicroMaterial, mStack: MatrixStack, getter: IRenderTypeBuffer, partialTicks: Float) =
@@ -98,7 +96,7 @@ object RenderFramedWire extends IMicroHighlightRenderer
             material.isTransparent) false
         else hit match {
             case prt:PartRayTraceResult => prt.part match {
-                case fpart:FramedWirePart if fpart.material != null || fpart.material != material =>
+                case fpart:FramedWirePart if fpart.material == null || fpart.material != material =>
                     RenderFramedWire.renderCoverHighlight(fpart, material, CCRenderState.instance(), mStack, getter)
                     true
                 case _ => false
@@ -336,7 +334,7 @@ class FWireModelGen
     def generateJacketedModel(key:Int) =
     {
         setup(key)
-        new FWireJacketModel(generateJacketedWireModel, generateJacketedBoxes)
+        new FWireJacketModel(generateJacketedWireModel, generateJacketedBoxes, generateJacketHighlightBoxes)
     }
 
     private def generateJacketedWireModel:CCModel =
@@ -371,6 +369,24 @@ class FWireModelGen
             vert.apply(uvt)
         }
         i = addVerts(model, verts, i)
+    }
+
+    private def generateJacketHighlightBoxes:Array[IndexedCuboid6] = {
+        if (connCount == 0) return Array(new IndexedCuboid6(0, WireBoxes.fOBounds(6)))
+
+        val boxes = Array.newBuilder[IndexedCuboid6]
+
+        for (s <- 0 until 6) if ((connMap & 1<<s) != 0) {
+            val box = fOBounds(0).copy
+            box.apply(Rotation.sideRotations(s).at(Vector3.CENTER))
+            val fMask = 1<<(s^1) //dont render face touching center
+            boxes += new IndexedCuboid6(fMask, box)
+        }
+
+        //center box
+        boxes += new IndexedCuboid6(connMap, WireBoxes.fOBounds(6)) //dont render faces on sides with conns
+
+        boxes.result()
     }
 
     private def generateJacketedBoxes:Array[IndexedCuboid6] =
@@ -449,7 +465,7 @@ class FWireModelGen
     }
 }
 
-class FWireJacketModel(wire:CCModel, boxes:Array[IndexedCuboid6])
+class FWireJacketModel(wire:CCModel, boxes:Array[IndexedCuboid6], highlightBoxes:Array[IndexedCuboid6])
 {
     def renderWire(ccrs:CCRenderState, ops:IVertexOperation*)
     {
@@ -460,5 +476,11 @@ class FWireJacketModel(wire:CCModel, boxes:Array[IndexedCuboid6])
     {
         val layer = if (inventory) null else RenderType.getSolid
         for (b <- boxes) MicroblockRender.renderCuboid(ccrs, material, layer, b, b.data.asInstanceOf[Int])
+    }
+
+    def renderHighlight(material:MicroMaterial, ccrs:CCRenderState, inventory:Boolean):Unit = {
+        val layer = if (inventory) null else RenderType.getSolid
+        for (b <- highlightBoxes)
+            MicroblockRender.renderCuboid(ccrs, material, layer, b, b.data.asInstanceOf[Int])
     }
 }
