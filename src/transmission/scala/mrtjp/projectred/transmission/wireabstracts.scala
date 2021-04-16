@@ -388,10 +388,8 @@ abstract class FramedWirePart(wireType:WireType) extends TMultiPart with TWireCo
 
     override def getHollowSize(side:Int) = 8
 
-    override def activate(player:PlayerEntity, hit:PartRayTraceResult, held:ItemStack, hand:Hand): ActionResultType =
-    {
-        def dropMaterial()
-        {
+    override def activate(player:PlayerEntity, hit:PartRayTraceResult, held:ItemStack, hand:Hand):ActionResultType = {
+        def dropMaterial():Unit = {
             if (material != null && !player.abilities.isCreativeMode)
                 PRLib.dropTowardsPlayer(world, pos, ItemMicroBlock.create(0, 1, material), player)
         }
