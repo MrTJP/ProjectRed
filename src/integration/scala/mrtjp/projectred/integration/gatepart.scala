@@ -332,6 +332,7 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
         ccrs.overlay = packedOverlay
         ccrs.bind(new TransformingVertexBuilder(buffers.getBuffer(RenderType.getCutout), mStack), DefaultVertexFormats.BLOCK)
         RenderGate.renderDynamic(this, Vector3.ZERO, partialTicks, ccrs)
+        RenderGate.renderCustomDynamic(this, Vector3.ZERO, mStack, buffers, packedLight, packedOverlay, partialTicks)
     }
 
 //    @SideOnly(Side.CLIENT)

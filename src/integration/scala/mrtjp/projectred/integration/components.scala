@@ -13,8 +13,10 @@ import codechicken.lib.render.pipeline.{ColourMultiplier, IVertexOperation}
 import codechicken.lib.texture.{AtlasRegistrar, TextureUtils}
 import codechicken.lib.vec._
 import codechicken.lib.vec.uv._
+import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.core.vec.VecLib
 import mrtjp.projectred.core.{PRLib, RenderHalo, UVT}
+import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
@@ -757,8 +759,6 @@ class InputPanelButtonsModel extends ComponentModel
     val lights = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25).add(0.2))
 
     var pressMask = 0
-    var pos = BlockPos.ZERO
-    var orientationT:Transformation = _
 
     override def renderModel(t:Transformation, orient:Int, ccrs:CCRenderState)
     {
@@ -771,10 +771,12 @@ class InputPanelButtonsModel extends ComponentModel
         }
     }
 
-    def renderLights()
+    def renderLights(ccrs:CCRenderState, mStack:MatrixStack, buffers:IRenderTypeBuffer, t:Transformation)
     {
-        for (i <- 0 until 16) if ((pressMask&1<<i) != 0)
-            RenderHalo.addLight(pos, i, lights(i).copy.apply(orientationT))
+        for (i <- 0 until 16) if ((pressMask&1<<i) != 0) {
+            RenderHalo.prepareRenderState(ccrs, mStack, buffers)
+            RenderHalo.renderToCCRS(ccrs, lights(i), i, t)
+        }
     }
 }
 
