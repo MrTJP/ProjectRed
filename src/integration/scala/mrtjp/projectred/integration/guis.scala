@@ -6,13 +6,16 @@
 package mrtjp.projectred.integration
 
 import codechicken.lib.packet.PacketCustom
-import mrtjp.core.gui.{GuiLib, MCButtonNode, NodeGui}
+import codechicken.lib.texture.TextureUtils
+import mrtjp.core.gui.{MCButtonNode, NodeGui}
 import mrtjp.core.vec.{Point, Size}
+import mrtjp.projectred.ProjectRedIntegration
 import net.minecraft.entity.player.{PlayerEntity, ServerPlayerEntity}
+import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.StringTextComponent
 
 
-class GuiTimer(part:ITimerGuiLogic) extends NodeGui(w = 256, h = 55, title = new StringTextComponent("guicontainertimer"))
+class GuiTimer(part:ITimerGuiLogic) extends NodeGui(w = 256, h = 55, title = new StringTextComponent(part.getType.getRegistryName.toString))
 {
     {
         def createButton(x:Int, y:Int, w:Int, h:Int, text:String, delta:Int) =
@@ -40,7 +43,9 @@ class GuiTimer(part:ITimerGuiLogic) extends NodeGui(w = 256, h = 55, title = new
 
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        GuiLib.drawGuiBox(0, 0, xSize, ySize, 0)
+        TextureUtils.changeTexture(GuiTimer.background)
+        blit(0, 0, 0, 0, size.width, size.height)
+
         val s = "Timer interval: "+"%.2f".format(part.getTimerMax*0.05)+"s"
         val sw = getFontRenderer.getStringWidth(s)
         getFontRenderer.drawString(s, (xSize-sw)/2, 8, 0x404040)
@@ -48,6 +53,8 @@ class GuiTimer(part:ITimerGuiLogic) extends NodeGui(w = 256, h = 55, title = new
 }
 
 object GuiTimer {
+    val background = new ResourceLocation(ProjectRedIntegration.MOD_ID, "textures/gui/timer_gate.png")
+
     def open(player:PlayerEntity, gate:GatePart):Unit = {
         val packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.OPEN_TIMER_GUI_FROM_SERVER)
         IntegrationNetwork.writePartIndex(packet, gate)
@@ -76,7 +83,7 @@ object GuiTimer {
 //    }
 //}
 
-class GuiCounter(part:ICounterGuiLogic) extends NodeGui(w = 256, h = 145, title = new StringTextComponent("guicontainercounter"))
+class GuiCounter(part:ICounterGuiLogic) extends NodeGui(w = 256, h = 145, title = new StringTextComponent(part.getType.getRegistryName.toString))
 {
     override def onAddedToParent_Impl()
     {
@@ -110,7 +117,9 @@ class GuiCounter(part:ICounterGuiLogic) extends NodeGui(w = 256, h = 145, title 
 
     override def drawBack_Impl(mouse:Point, frame:Float) =
     {
-        GuiLib.drawGuiBox(0, 0, xSize, ySize, 0)
+        TextureUtils.changeTexture(GuiCounter.background)
+        blit(0, 0, 0, 0, size.width, size.height)
+
         var s = "Maximum: "+part.getCounterMax
         getFontRenderer.drawString(s, (xSize-getFontRenderer.getStringWidth(s))/2, 5, 0x404040)
         s = "Increment: "+part.getCounterIncr
@@ -128,6 +137,8 @@ class GuiCounter(part:ICounterGuiLogic) extends NodeGui(w = 256, h = 145, title 
 }
 
 object GuiCounter {
+    val background = new ResourceLocation(ProjectRedIntegration.MOD_ID, "textures/gui/counter_gate.png")
+
     def open(player:PlayerEntity, gate:GatePart):Unit = {
         val packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.OPEN_COUNTER_GUI_FROM_SERVER)
         IntegrationNetwork.writePartIndex(packet, gate)
