@@ -12,10 +12,8 @@ import net.minecraft.entity.player.{PlayerEntity, ServerPlayerEntity}
 import net.minecraft.util.text.StringTextComponent
 
 
-class GuiTimer(part:GatePart) extends NodeGui(w = 256, h = 55, title = new StringTextComponent("guicontainertimer"))
+class GuiTimer(part:ITimerGuiLogic) extends NodeGui(w = 256, h = 55, title = new StringTextComponent("guicontainertimer"))
 {
-    val logic = part.getLogic[ITimerGuiLogic]
-
     {
         def createButton(x:Int, y:Int, w:Int, h:Int, text:String, delta:Int) =
         {
@@ -43,7 +41,7 @@ class GuiTimer(part:GatePart) extends NodeGui(w = 256, h = 55, title = new Strin
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
         GuiLib.drawGuiBox(0, 0, xSize, ySize, 0)
-        val s = "Timer interval: "+"%.2f".format(logic.getTimerMax*0.05)+"s"
+        val s = "Timer interval: "+"%.2f".format(part.getTimerMax*0.05)+"s"
         val sw = getFontRenderer.getStringWidth(s)
         getFontRenderer.drawString(s, (xSize-sw)/2, 8, 0x404040)
     }
@@ -78,10 +76,8 @@ object GuiTimer {
 //    }
 //}
 
-class GuiCounter(part:GatePart) extends NodeGui(w = 256, h = 145, title = new StringTextComponent("guicontainercounter"))
+class GuiCounter(part:ICounterGuiLogic) extends NodeGui(w = 256, h = 145, title = new StringTextComponent("guicontainercounter"))
 {
-    val logic = part.getLogic[ICounterGuiLogic]
-
     override def onAddedToParent_Impl()
     {
         def createButton(x:Int, y:Int, w:Int, h:Int, id:Int, delta:Int) =
@@ -115,13 +111,13 @@ class GuiCounter(part:GatePart) extends NodeGui(w = 256, h = 145, title = new St
     override def drawBack_Impl(mouse:Point, frame:Float) =
     {
         GuiLib.drawGuiBox(0, 0, xSize, ySize, 0)
-        var s = "Maximum: "+logic.getCounterMax
+        var s = "Maximum: "+part.getCounterMax
         getFontRenderer.drawString(s, (xSize-getFontRenderer.getStringWidth(s))/2, 5, 0x404040)
-        s = "Increment: "+logic.getCounterIncr
+        s = "Increment: "+part.getCounterIncr
         getFontRenderer.drawString(s, (xSize-getFontRenderer.getStringWidth(s))/2, 45, 0x404040)
-        s = "Decrement: "+logic.getCounterDecr
+        s = "Decrement: "+part.getCounterDecr
         getFontRenderer.drawString(s, (xSize-getFontRenderer.getStringWidth(s))/2, 85, 0x404040)
-        s = "State: "+logic.getCounterValue
+        s = "State: "+part.getCounterValue
         getFontRenderer.drawString(s, (xSize-getFontRenderer.getStringWidth(s))/2, 125, 0x404040)
     }
 
