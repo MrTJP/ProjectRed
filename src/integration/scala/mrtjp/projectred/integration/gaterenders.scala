@@ -9,13 +9,14 @@ import codechicken.lib.colour.EnumColour
 import codechicken.lib.math.MathHelper
 import codechicken.lib.render.CCRenderState
 import codechicken.lib.texture.{AtlasRegistrar, IIconRegister}
-import codechicken.lib.vec.uv.IconTransformation
-import codechicken.lib.vec.{RedundantTransformation, Transformation, Vector3}
+import codechicken.lib.vec.{Transformation, Vector3}
+import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.projectred.core.TFaceOrient.flipMaskZ
+import mrtjp.projectred.integration
 import mrtjp.projectred.integration.ComponentStore._
+import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.item.ItemStack
 import net.minecraft.particles.RedstoneParticleData
-import net.minecraft.util.math.BlockPos
 
 import java.util.Random
 
@@ -83,6 +84,11 @@ object RenderGate extends IIconRegister
         }
     }
 
+    def renderCustomDynamic(gate:GatePart, pos:Vector3, mStack:MatrixStack, buffers:IRenderTypeBuffer, packedLight:Int, packedOverlay:Int, partialTicks:Float):Unit = {
+        val r = renderers(gate.getGateType.ordinal).asInstanceOf[GateRenderer[GatePart]]
+        r.renderCustomDynamic(gate, gate.rotationT.`with`(pos.translation()), mStack, buffers, packedLight, packedOverlay, partialTicks)
+    }
+
     def renderInv(stack:ItemStack, t:Transformation, gateType:GateType, ccrs:CCRenderState)
     {
         val r = renderers(gateType.ordinal)
@@ -125,6 +131,8 @@ abstract class GateRenderer[T <: GatePart]
 
     def hasSpecials = false
     def renderDynamic(t: Transformation, ccrs: CCRenderState){}
+
+    def renderCustomDynamic(gate:T, t:Transformation, mStack:MatrixStack, buffers:IRenderTypeBuffer, packedLight:Int, packedOverlay:Int, partialTicks:Float):Unit = {}
 
     def prepareInv(stack:ItemStack){prepareInv()}
     def prepareInv(){}
@@ -1115,8 +1123,6 @@ class RenderBusInputPanel extends GateRenderer[BundledGatePart]
     {
         wires(0).on = false
         buttons.pressMask = 0
-        buttons.pos = BlockPos.ZERO
-        buttons.orientationT = new RedundantTransformation
     }
 
     override def prepare(gate:BundledGatePart)
@@ -1125,18 +1131,9 @@ class RenderBusInputPanel extends GateRenderer[BundledGatePart]
         buttons.pressMask = gate.getLogic[BusInputPanel].pressMask
     }
 
-    override def hasSpecials = true
-
-    override def prepareDynamic(gate:BundledGatePart, frame:Float)
-    {
+    override def renderCustomDynamic(gate:BundledGatePart, t:Transformation, mStack:MatrixStack, buffers:IRenderTypeBuffer, packedLight:Int, packedOverlay:Int, partialTicks:Float):Unit = {
         buttons.pressMask = gate.getLogic[BusInputPanel].pressMask
-        buttons.pos = gate.pos
-        buttons.orientationT = gate.rotationT
-    }
-
-    override def renderDynamic(t: Transformation, ccrs: CCRenderState)
-    {
-        buttons.renderLights()
+        buttons.renderLights(CCRenderState.instance(), mStack, buffers, t)
     }
 }
 
