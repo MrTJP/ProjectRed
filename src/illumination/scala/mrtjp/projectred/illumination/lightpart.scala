@@ -205,7 +205,7 @@ object BaseLightPart
 class BaseLightFacePart(definition:LightPartDefinition, colour:Int, inverted:Boolean) extends BaseLightPart(definition, colour, inverted) with TFacePart with IMaskedRedstonePart
 {
     override def solid(side:Int) = false
-    override def getSlotMask:Int = (1<<getSide)&0x40
+    override def getSlotMask:Int = 1<<getSide
 
     override def getConnectionMask(s:Int):Int = {
         if ((s^1) == getSide) 0
