@@ -11,7 +11,7 @@ import codechicken.lib.render.CCRenderState
 import codechicken.lib.render.buffer.TransformingVertexBuilder
 import codechicken.lib.vec._
 import codechicken.microblock.FaceMicroFactory
-import codechicken.multipart.api.part.{ITickablePart, TMultiPart, TNormalOcclusionPart}
+import codechicken.multipart.api.part.{ITickablePart, TIconHitEffectsPart, TMultiPart, TNormalOcclusionPart}
 import codechicken.multipart.block.TileMultiPart
 import codechicken.multipart.util.PartRayTraceResult
 import com.google.common.collect.ImmutableSet
@@ -19,6 +19,7 @@ import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.projectred.api.{IConnectable, IScrewdriver}
 import mrtjp.projectred.core.{Configurator, PRLib, TFaceConnectable, TSwitchPacket}
 import net.minecraft.block.SoundType
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
 import net.minecraft.entity.player.PlayerEntity
@@ -32,24 +33,17 @@ import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
 import java.util.{Collections, Collection => JCollection}
 
-abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclusionPart with TFaceConnectable with TSwitchPacket with ITickablePart //with TIconHitEffectsPart
+abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclusionPart with TFaceConnectable with TSwitchPacket with ITickablePart with TIconHitEffectsPart
 {
-//    private var gateSubID:Byte = 0
     private var gateShape:Byte = 0
 
     var schedTime = 0L
-
-    def getLogic[T]:T
-    def getLogicPrimitive = getLogic[GateLogic[GatePart]]
-
-//    def subID = gateSubID&0xFF
 
     def shape = gateShape&0xFF
     def setShape(s:Int){ gateShape = s.toByte }
 
     def preparePlacement(player:PlayerEntity, pos:BlockPos, side:Int)
     {
-//        gateSubID = gateType.ordinal().toByte
         setSide(side^1)
         setRotation((Rotation.getSidedRotation(player, side)+2)%4)
     }
@@ -57,7 +51,6 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
     override def save(tag:CompoundNBT)
     {
         tag.putByte("orient", orientation)
-//        tag.putByte("subID", gateSubID)
         tag.putByte("shape", gateShape)
         tag.putInt("connMap", connMap)
         tag.putLong("schedTime", schedTime)
@@ -66,7 +59,6 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
     override def load(tag:CompoundNBT)
     {
         orientation = tag.getByte("orient")
-//        gateSubID = tag.getByte("subID")
         gateShape = tag.getByte("shape")
         connMap = tag.getInt("connMap")
         schedTime = tag.getLong("schedTime")
@@ -75,14 +67,12 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
     override def writeDesc(packet:MCDataOutput)
     {
         packet.writeByte(orientation)
-//        packet.writeByte(gateSubID)
         packet.writeByte(gateShape)
     }
 
     override def readDesc(packet:MCDataInput)
     {
         orientation = packet.readByte()
-//        gateSubID = packet.readByte()
         gateShape = packet.readByte()
     }
 
@@ -102,13 +92,13 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
     override def discoverOpen(dir:Int) = true
 
     override def canConnectPart(part:IConnectable, r:Int) =
-        getLogicPrimitive.canConnectTo(this, part, toInternal(r))
+        gateLogicCanConnectTo(part, toInternal(r))
 
     override def canConnectCorner(r:Int) = false
 
     override def scheduledTick()
     {
-        getLogicPrimitive.scheduledTick(this)
+        gateLogicOnScheduledTick()
     }
 
     override def scheduleTick(ticks:Int)
@@ -128,13 +118,13 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
     def onChange()
     {
         processScheduled()
-        getLogicPrimitive.onChange(this)
+        gateLogicOnChange()
     }
 
     override def tick()
     {
         if (!world.isRemote) processScheduled()
-        getLogicPrimitive.onTick(this)
+        gateLogicOnTick()
     }
 
     override def onPartChanged(part:TMultiPart)
@@ -161,7 +151,7 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
         super.onAdded()
         if (!world.isRemote)
         {
-            getLogicPrimitive.setup(this)
+            gateLogicSetup()
             updateInward()
             onChange()
         }
@@ -173,18 +163,12 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
         if (!world.isRemote) notifyAllExternals()
     }
 
-    override def onWorldJoin()
-    {
-        super.onWorldJoin()
-        if (getLogic == null)
-            tile.remPart(this)
-    }
-
     override def onChunkLoad(chunk:Chunk)
     {
         super.onChunkLoad(chunk)
-        if (tile != null)
-            getLogicPrimitive.onWorldLoad(this)
+        if (tile != null) {
+            gateLogicOnWorldLoad()
+        }
     }
 
     def canStay = PRLib.canPlaceGateOnSide(world, pos.offset(Direction.byIndex(side)), Direction.byIndex(side^1))
@@ -212,23 +196,11 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
 
     override def pickItem(hit:PartRayTraceResult) = getItem
 
-//    def getGateDef = GateDefinition(subID)
-
     override def getType = gateType.getPartType
 
-    //    override def getBounds = getLogicPrimitive.getBounds(this)
-//
-//    override def getSubParts = {
-//        Seq(new IndexedCuboid6(-1, getBounds))++getLogicPrimitive.getSubParts(this)
-//    }
-//
-//    override def getOcclusionBoxes = getLogicPrimitive.getOcclusions(this)
-//
-    override def getOcclusionShape = getLogicPrimitive.getOcclusionShape(this)
-
-    override def getCollisionShape = getLogicPrimitive.getCollisionShape(this)
-
-    override def getOutlineShape = getLogicPrimitive.getOutlineShape(this)
+    override def getOcclusionShape:VoxelShape = GatePart.oShapes(side)
+    override def getCollisionShape:VoxelShape = FaceMicroFactory.aShapes(0x10|side)
+    override def getOutlineShape:VoxelShape = FaceMicroFactory.aShapes(0x10|side)
 
     override def getStrength(player:PlayerEntity, hit:PartRayTraceResult) = 2/30f
 
@@ -236,11 +208,11 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
 
     override def solid(side:Int) = false
 
-    override def getLightValue = getLogicPrimitive.lightLevel
+    override def getLightValue = 7
 
     override def activate(player:PlayerEntity, hit:PartRayTraceResult, held:ItemStack, hand:Hand):ActionResultType =
     {
-        if (getLogicPrimitive.activate(this, player, held, hit)) return ActionResultType.SUCCESS
+        if (gateLogicActivate(player, held, hit)) return ActionResultType.SUCCESS
 
         if (!held.isEmpty && held.getItem.isInstanceOf[IScrewdriver] && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held)) {
             if (!world.isRemote) {
@@ -255,7 +227,7 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
 
     def configure()
     {
-        if (getLogicPrimitive.cycleShape(this)) {
+        if (gateLogicCycleShape()) {
             updateInward()
             tile.markDirty()
             tile.notifyPartChange(this)
@@ -286,17 +258,6 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
         sendUpdate(1, _.writeByte(orientation))
     }
 
-//    @SideOnly(Side.CLIENT)
-//    override def renderStatic(pos:Vector3, layer:BlockRenderLayer, ccrs:CCRenderState) =
-//    {
-//        if (layer == BlockRenderLayer.CUTOUT && Configurator.staticGates) {
-//            ccrs.setBrightness(world, this.pos)
-//            RenderGate.renderStatic(this, pos, ccrs)
-//            true
-//        }
-//        else false
-//    }
-
     @OnlyIn(Dist.CLIENT)
     override def renderStatic(layer:RenderType, ccrs:CCRenderState) = {
         if (layer == null || (layer == RenderType.getCutout && Configurator.staticGates)) {
@@ -307,22 +268,6 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
             false
     }
 
-
-    //    @SideOnly(Side.CLIENT)
-//    override def renderDynamic(pos:Vector3, pass:Int, frame:Float)
-//    {
-//        val ccrs = CCRenderState.instance()
-//        TextureUtils.bindBlockTexture()
-//        if (!Configurator.staticGates) {
-//            GL11.glDisable(GL11.GL_LIGHTING)
-//            ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
-//            RenderGate.renderStatic(this, pos, ccrs)
-//            ccrs.draw()
-//            GL11.glEnable(GL11.GL_LIGHTING)
-//        }
-//        RenderGate.renderDynamic(this, pos, frame, ccrs)
-//    }
-    //    override def canRenderDynamic(pass: Int) = pass == 0
     @OnlyIn(Dist.CLIENT)
     override def renderDynamic(mStack:MatrixStack, buffers:IRenderTypeBuffer, packedLight:Int, packedOverlay:Int, partialTicks:Float)
     {
@@ -335,13 +280,28 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
         RenderGate.renderCustomDynamic(this, Vector3.ZERO, mStack, buffers, packedLight, packedOverlay, partialTicks)
     }
 
-//    @SideOnly(Side.CLIENT)
-//    override def getBreakingIcon(hit:CuboidRayTraceResult) = getBrokenIcon(hit.sideHit.ordinal)
+    override def getBounds:Cuboid6 = new Cuboid6(getOutlineShape.getBoundingBox)
 
-//    @SideOnly(Side.CLIENT)
-//    override def getBrokenIcon(side:Int) = ComponentStore.baseIcon
+    override def getBreakingIcon(hit:PartRayTraceResult):TextureAtlasSprite = ComponentStore.baseIcon
+
+    override def getBrokenIcon(side:Int):TextureAtlasSprite = ComponentStore.baseIcon
 
     override def getPlacementSound(context:ItemUseContext):SoundType = SoundType.GLASS
+
+    def gateLogicCanConnectTo(part:IConnectable, r:Int):Boolean
+
+    def gateLogicCycleShape():Boolean = false
+
+    def gateLogicOnChange():Unit
+
+    def gateLogicOnScheduledTick():Unit
+
+    def gateLogicOnTick():Unit = {}
+
+    def gateLogicSetup():Unit = {}
+    def gateLogicOnWorldLoad():Unit = {}
+
+    def gateLogicActivate(player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult):Boolean = false
 }
 
 object GatePart
@@ -358,88 +318,4 @@ object GatePart
         oBoxes(s)(1) = occlusion2.apply(t)
         oShapes(s) = VoxelShapeCache.merge(ImmutableSet.copyOf(oBoxes(s).map(VoxelShapeCache.getShape)))
     }
-}
-
-abstract class GateLogic[T <: GatePart]
-{
-    def canConnectTo(gate:T, part:IConnectable, r:Int):Boolean
-
-    def cycleShape(gate:T) = false
-
-    def onChange(gate:T)
-
-    def scheduledTick(gate:T)
-
-    def onTick(gate:T){}
-
-    def setup(gate:T){}
-    def onWorldLoad(gate:T){}
-
-    def activate(gate:T, player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult) = false
-
-//    def getBounds(gate:T) = FaceMicroFactory.aBounds(0x10|gate.side)
-//    def getSubParts(gate:T) = Seq[IndexedCuboid6]()
-
-
-    def getOutlineShape(gate:T):VoxelShape = FaceMicroFactory.aShapes(0x10|gate.side)
-    def getCollisionShape(gate:T):VoxelShape = FaceMicroFactory.aShapes(0x10|gate.side)
-    def getOcclusionShape(gate:T):VoxelShape = GatePart.oShapes(gate.side)
-
-    def lightLevel = 7
-}
-
-trait TComplexGatePart extends GatePart
-{
-    def getLogicComplex = getLogic[TComplexGateLogic[TComplexGatePart]]
-
-    def assertLogic()
-
-    abstract override def save(tag:CompoundNBT)
-    {
-        super.save(tag)
-        getLogicComplex.save(tag)
-    }
-
-    abstract override def load(tag:CompoundNBT)
-    {
-        super.load(tag)
-        assertLogic()
-        getLogicComplex.load(tag)
-    }
-
-    abstract override def writeDesc(packet:MCDataOutput)
-    {
-        super.writeDesc(packet)
-        getLogicComplex.writeDesc(packet)
-    }
-
-    abstract override def readDesc(packet:MCDataInput)
-    {
-        super.readDesc(packet)
-        assertLogic()
-        getLogicComplex.readDesc(packet)
-    }
-
-    abstract override def read(packet:MCDataInput, key:Int) = key match
-    {
-        case k if k > 10 => getLogicComplex.read(packet, k)
-        case _ => super.read(packet, key)
-    }
-
-    abstract override def preparePlacement(player:PlayerEntity, pos:BlockPos, side:Int)
-    {
-        super.preparePlacement(player, pos, side)
-        assertLogic()
-    }
-}
-
-trait TComplexGateLogic[T <: TComplexGatePart] extends GateLogic[T]
-{
-    def save(tag:CompoundNBT){}
-    def load(tag:CompoundNBT){}
-
-    def readDesc(packet:MCDataInput){}
-    def writeDesc(packet:MCDataOutput){}
-
-    def read(packet:MCDataInput, key:Int){}
 }
