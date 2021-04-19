@@ -11,7 +11,7 @@ import codechicken.multipart.init.CBMultipartModContent
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core.{Configurator, IRedwireEmitter, TFaceRSAcquisitions}
 import net.minecraft.nbt.CompoundNBT
-import net.minecraft.util.Direction
+import net.minecraft.util.{Direction, SoundCategory, SoundEvents}
 
 import java.util.Random
 
@@ -27,8 +27,6 @@ abstract class RedstoneGatePart(gateType:GateType) extends GatePart(gateType) wi
 
     def state = gateState&0xFF
     def setState(s:Int){ gateState = s.toByte }
-
-    def getLogicRS = getLogic[RedstoneGateLogic[RedstoneGatePart]]
 
     override def save(tag:CompoundNBT)
     {
@@ -85,15 +83,15 @@ abstract class RedstoneGatePart(gateType:GateType) extends GatePart(gateType) wi
     {
         if ((side&6) == (this.side&6)) return 0
         val ir = toInternal(absoluteRot(side))
-        if ((getLogicRS.outputMask(shape)&1<<ir) != 0) getLogicRS.getOutput(this, ir) else 0
+        if ((outputMask(shape)&1<<ir) != 0) getOutput(ir) else 0
     }
 
-    override def weakPowerLevel(side:Int) = strongPowerLevel(side)
+    override def weakPowerLevel(side:Int):Int = strongPowerLevel(side)
 
     override def canConnectRedstone(side:Int) =
     {
         if ((side&6) == (this.side&6)) false
-        else getLogicRS.canConnect(this, toInternal(absoluteRot(side)))
+        else gateLogicCanConnect(toInternal(absoluteRot(side)))
     }
 
     override def notifyExternals(mask:Int)
@@ -127,31 +125,29 @@ abstract class RedstoneGatePart(gateType:GateType) extends GatePart(gateType) wi
         case _ => 0
     }
 
-
     override def animateTick(random:Random):Unit = {
         RenderGate.spawnParticles(this, random)
     }
-}
 
-abstract class RedstoneGateLogic[T <: RedstoneGatePart] extends GateLogic[T]
-{
-    override def canConnectTo(gate:T, part:IConnectable, r:Int) = part match
-    {
-        case re:IRedwireEmitter => canConnect(gate, r)
+    def tickSound():Unit = {
+        if (Configurator.logicGateSounds)
+            world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.15F, 0.5f)
+    }
+
+    override def gateLogicCanConnectTo(part:IConnectable, r:Int):Boolean = part match {
+        case re:IRedwireEmitter => gateLogicCanConnect(r)
         case _ => false
     }
 
-    def canConnect(gate:T, r:Int):Boolean = canConnect(gate.shape, r)
-    def canConnect(shape:Int, r:Int):Boolean = ((inputMask(shape)|outputMask(shape))&1<<r) != 0
+    def gateLogicCanConnect(r:Int):Boolean = ((outputMask(shape)|inputMask(shape))&1<<r) != 0
 
-    def outputMask(shape:Int) = 0
-    def inputMask(shape:Int) = 0
+    def outputMask(shape:Int):Int = 0
+    def inputMask(shape:Int):Int = 0
 
-    def getOutput(gate:T, r:Int) = if ((gate.state&0x10<<r) != 0) 15 else 0
-    def getInput(gate:T, mask:Int) =
-    {
+    def getOutput(r:Int):Int = if ((state&0x10<<r) != 0) 15 else 0
+    def getInput(mask:Int):Int = {
         var input = 0
-        for (r <- 0 until 4) if ((mask&1<<r) != 0 && gate.getRedstoneInput(r) > 0) input |= 1<<r
+        for (r <- 0 until 4) if ((mask&1<<r) != 0 && getRedstoneInput(r) > 0) input |= 1<<r
         input
     }
 }

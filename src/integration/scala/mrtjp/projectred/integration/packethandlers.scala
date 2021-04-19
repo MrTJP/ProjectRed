@@ -154,7 +154,7 @@ private object ClientHandler extends IClientPacketHandler
 
     private def handleOpenTimerGuiMessage(mc:Minecraft, data:MCDataInput) {
         readPartIndex(mc.world, data) match  {
-            case gate:GatePart if gate.getLogic.isInstanceOf[ITimerGuiLogic] =>
+            case gate:ITimerGuiLogic =>
                 mc.displayGuiScreen(new GuiTimer(gate))
             case _ =>
         }
@@ -162,7 +162,7 @@ private object ClientHandler extends IClientPacketHandler
 
     private def handleOpenCounterGuiMessage(mc:Minecraft, data:MCDataInput) {
         readPartIndex(mc.world, data) match  {
-            case gate:GatePart if gate.getLogic.isInstanceOf[ICounterGuiLogic] =>
+            case gate:ICounterGuiLogic =>
                 mc.displayGuiScreen(new GuiCounter(gate))
             case _ =>
         }
@@ -180,21 +180,19 @@ private object ServerHandler extends IServerPacketHandler
 
     private def incrCounter(world:World, packet:PacketCustom):Unit = {
         readPartIndex(world, packet) match {
-            case gate:GatePart if gate.getLogic.isInstanceOf[ICounterGuiLogic] =>
-                val t = gate.getLogic[ICounterGuiLogic]
+            case gate:ICounterGuiLogic =>
                 val actionID = packet.readByte()
-                if (actionID == 0) t.setCounterMax(gate, t.getCounterMax+packet.readShort())
-                else if (actionID == 1) t.setCounterIncr(gate, t.getCounterIncr+packet.readShort())
-                else if (actionID == 2) t.setCounterDecr(gate, t.getCounterDecr+packet.readShort())
+                if (actionID == 0) gate.setCounterMax(gate.getCounterMax+packet.readShort())
+                else if (actionID == 1) gate.setCounterIncr(gate.getCounterIncr+packet.readShort())
+                else if (actionID == 2) gate.setCounterDecr(gate.getCounterDecr+packet.readShort())
             case _ =>
         }
     }
 
     private def incrTimer(world:World, packet:PacketCustom):Unit = {
         readPartIndex(world, packet) match {
-            case gate:GatePart if gate.getLogic.isInstanceOf[ITimerGuiLogic] =>
-                val t = gate.getLogic[ITimerGuiLogic]
-                t.setTimerMax(gate, t.getTimerMax+packet.readShort())
+            case gate:ITimerGuiLogic =>
+                gate.setTimerMax(gate.getTimerMax+packet.readShort())
             case _ =>
         }
     }

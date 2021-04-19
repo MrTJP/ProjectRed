@@ -19,64 +19,13 @@ import net.minecraft.entity.item.ItemFrameEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
+import net.minecraft.util.Direction
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
-import net.minecraft.util.{Direction, SoundCategory, SoundEvents}
 import net.minecraft.world.World
 
 import java.util
 
-class SequentialGatePart(gateType:GateType) extends RedstoneGatePart(gateType) with TComplexGatePart
-{
-    private var logic:SequentialGateLogic = null
-
-//    override def getType = GateDefinition.typeComplexGate
-
-    override def getLogic[T]:T = logic.asInstanceOf[T]
-    def getLogicSequential = getLogic[SequentialGateLogic]
-
-    override def assertLogic()
-    {
-        if (logic == null) logic = SequentialGateLogic.create(this, getGateType)
-    }
-}
-
-class SequentialGatePartT(gateType:GateType) extends SequentialGatePart(gateType) with INeighborTileChangePart
-{
-//    override def getType = GateDefinition.typeNeighborGate
-
-    override def weakTileChanges() = getLogic[INeighborTileChangePart].weakTileChanges()
-
-
-    override def onNeighborTileChanged(side:Direction, weak:Boolean) =
-        getLogic[INeighborTileChangePart].onNeighborTileChanged(side, weak)
-}
-
-object SequentialGateLogic
-{
-    import mrtjp.projectred.integration.GateType._
-    def create(gate:SequentialGatePart, gateType:GateType) = gateType match {
-        case SR_LATCH => new SRLatch(gate)
-        case TOGGLE_LATCH => new ToggleLatch(gate)
-        case TIMER => new Timer(gate)
-        case SEQUENCER => new Sequencer(gate)
-        case COUNTER => new Counter(gate)
-        case STATE_CELL => new StateCell(gate)
-        case SYNCHRONIZER => new Synchronizer(gate)
-        case COMPARATOR => new Comparator(gate)
-        case _ => throw new IllegalArgumentException("Invalid gateType: "+gateType)
-    }
-}
-
-abstract class SequentialGateLogic(val gate:SequentialGatePart) extends RedstoneGateLogic[SequentialGatePart] with TComplexGateLogic[SequentialGatePart]
-{
-    def tickSound()
-    {
-        if (Configurator.logicGateSounds)
-            gate.world.playSound(null, gate.pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.15F, 0.5f)
-    }
-}
-
-trait TExtraStateLogic extends SequentialGateLogic
+trait TExtraStateGatePart extends RedstoneGatePart
 {
     private var lState2:Byte = 0
 
@@ -85,102 +34,91 @@ trait TExtraStateLogic extends SequentialGateLogic
 
     def clientState2 = false
 
-    abstract override def save(tag:CompoundNBT)
-    {
+    abstract override def save(tag:CompoundNBT):Unit = {
         super.save(tag)
         tag.putByte("state2", lState2)
     }
 
-    abstract override def load(tag:CompoundNBT)
-    {
+    abstract override def load(tag:CompoundNBT):Unit = {
         super.load(tag)
         lState2 = tag.getByte("state2")
     }
 
-    abstract override def writeDesc(packet:MCDataOutput)
-    {
+    abstract override def writeDesc(packet:MCDataOutput):Unit = {
         super.writeDesc(packet)
         if (clientState2) packet.writeByte(lState2)
     }
 
-    abstract override def readDesc(packet:MCDataInput)
-    {
+    abstract override def readDesc(packet:MCDataInput):Unit = {
         super.readDesc(packet)
         if (clientState2) lState2 = packet.readByte()
     }
 
-    abstract override def read(packet:MCDataInput, key:Int) = key match
-    {
+    abstract override def read(packet:MCDataInput, key:Int):Unit = key match {
         case 11 => lState2 = packet.readByte()
         case _ => super.read(packet, key)
     }
 
-    def sendState2Update(){ gate.sendUpdate(11, _.writeByte(lState2)) }
+    def sendState2Update():Unit = {
+        sendUpdate(11, _.writeByte(lState2))
+    }
 }
 
-class SRLatch(gate:SequentialGatePart) extends SequentialGateLogic(gate) with TExtraStateLogic
+class SRLatch extends RedstoneGatePart(GateType.SR_LATCH) with TExtraStateGatePart
 {
     override def outputMask(shape:Int) = if ((shape>>1) == 0) 0xF else 5
     override def inputMask(shape:Int) = 0xA
 
-    override def cycleShape(gate:SequentialGatePart) =
-    {
-        gate.setShape((gate.shape+1)%4)
+    override def gateLogicCycleShape():Boolean = {
+        setShape((shape+1)%4)
         setState2(flipMaskZ(state2))
-        gate.setState(flipMaskZ(gate.state))
-        gate.onOutputChange(0xF)
-        gate.scheduleTick(2)
+        setState(flipMaskZ(state))
+        onOutputChange(0xF)
+        scheduleTick(2)
         true
     }
 
-    override def setup(gate:SequentialGatePart)
-    {
+    override def gateLogicSetup():Unit = {
         setState2(2)
-        gate.setState(0x30)
+        setState(0x30)
     }
 
-    override def onChange(gate:SequentialGatePart)
-    {
+    override def gateLogicOnChange():Unit = {
         val stateInput = state2
 
-        val oldInput = gate.state&0xF
-        val newInput = getInput(gate, 0xA)
-        val oldOutput = gate.state>>4
+        val oldInput = state&0xF
+        val newInput = getInput(0xA)
+        val oldOutput = state>>4
 
-        if (newInput != oldInput)
-            if (stateInput != 0xA && newInput != 0 && newInput != stateInput) //state needs changing
-            {
-                gate.setState(newInput)
+        if (newInput != oldInput) {
+            if (stateInput != 0xA && newInput != 0 && newInput != stateInput) { //state needs changing
+                setState(newInput)
                 setState2(newInput)
-                gate.onOutputChange(oldOutput) //always going low
-                gate.scheduleTick(2)
+                onOutputChange(oldOutput) //always going low
+                scheduleTick(2)
+            } else {
+                setState(oldOutput<<4|newInput)
+                onInputChange()
             }
-            else
-            {
-                gate.setState(oldOutput<<4|newInput)
-                gate.onInputChange()
-            }
-    }
-
-    override def scheduledTick(gate:SequentialGatePart)
-    {
-        val oldOutput = gate.state>>4
-        val newOutput = calcOutput(gate)
-
-        if (oldOutput != newOutput)
-        {
-            gate.setState(gate.state&0xF|newOutput<<4)
-            gate.onOutputChange(outputMask(gate.shape))
         }
-        onChange(gate)
     }
 
-    def calcOutput(gate:SequentialGatePart):Int =
-    {
-        var input = gate.state&0xF
+    override def gateLogicOnScheduledTick():Unit = {
+        val oldOutput = state>>4
+        val newOutput = calcOutput()
+
+        if (oldOutput != newOutput) {
+            setState(state&0xF|newOutput<<4)
+            onOutputChange(outputMask(shape))
+        }
+        gateLogicOnChange()
+    }
+
+    def calcOutput():Int = {
+        var input = state&0xF
         var stateInput = state2
 
-        if ((gate.shape&1) != 0) //reverse
+        if ((shape&1) != 0) //reverse
         {
             input = flipMaskZ(input)
             stateInput = flipMaskZ(stateInput)
@@ -190,325 +128,302 @@ class SRLatch(gate:SequentialGatePart) extends SequentialGateLogic(gate) with TE
         {
             if (input == 0xA)
             {
-                gate.scheduleTick(2)
+                scheduleTick(2)
                 return 0
             }
 
             stateInput =
-                if (input == 0) if (gate.world.rand.nextBoolean()) 2 else 8
+                if (input == 0) if (world.rand.nextBoolean()) 2 else 8
                 else input
 
-            setState2(if ((gate.shape&1) != 0) flipMaskZ(stateInput) else stateInput)
+            setState2(if ((shape&1) != 0) flipMaskZ(stateInput) else stateInput)
         }
 
         var output = shiftMask(stateInput, 1)
-        if ((gate.shape&2) == 0) output |= stateInput
-        if ((gate.shape&1) != 0) output = flipMaskZ(output) //reverse
+        if ((shape&2) == 0) output |= stateInput
+        if ((shape&1) != 0) output = flipMaskZ(output) //reverse
         output
     }
 }
 
-class ToggleLatch(gate:SequentialGatePart) extends SequentialGateLogic(gate) with TExtraStateLogic
+class ToggleLatch extends RedstoneGatePart(GateType.TOGGLE_LATCH) with TExtraStateGatePart
 {
     override def outputMask(shape:Int) = 5
     override def inputMask(shape:Int) = 0xA
 
     override def clientState2 = true
 
-    override def setup(gate:SequentialGatePart)
-    {
-        gate.setState(0x10)
-        gate.sendStateUpdate()
+
+    override def gateLogicSetup():Unit = {
+        setState(0x10)
+        sendStateUpdate()
     }
 
-    override def onChange(gate:SequentialGatePart)
-    {
-        val oldInput = gate.state&0xF
-        val newInput = getInput(gate, 0xA)
+    override def gateLogicOnChange():Unit = {
+        val oldInput = state&0xF
+        val newInput = getInput(0xA)
         val high = newInput& ~oldInput
 
-        if (high == 2 || high == 8) toggle(gate)
+        if (high == 2 || high == 8) toggle()
 
-        if (oldInput != newInput)
-        {
-            gate.setState(gate.state&0xF0|newInput)
-            gate.onInputChange()
+        if (oldInput != newInput) {
+            setState(state&0xF0|newInput)
+            onInputChange()
         }
     }
 
-    override def scheduledTick(gate:SequentialGatePart)
-    {
-        val oldOutput = gate.state>>4
+    override def gateLogicOnScheduledTick():Unit = {
+        val oldOutput = state>>4
         val newOutput = if (state2 == 0) 1 else 4
-        if (oldOutput != newOutput)
-        {
-            gate.setState(newOutput<<4|gate.state&0xF)
-            gate.onOutputChange(5)
+        if (oldOutput != newOutput) {
+            setState(newOutput<<4|state&0xF)
+            onOutputChange(5)
         }
-        onChange(gate)
+        gateLogicOnChange()
     }
 
-    override def activate(gate:SequentialGatePart, player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult) =
-    {
-        if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver])
-        {
-            if (!gate.world.isRemote) toggle(gate)
+    // Allow toggling with empty hand
+    override def gateLogicActivate(player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult):Boolean = {
+        if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver]) {
+            if (!world.isRemote) toggle()
             true
-        }
-        else false
+        } else false
     }
 
-    def toggle(gate:SequentialGatePart)
-    {
+    def toggle():Unit =  {
         setState2(state2^1)
-        gate.scheduleTick(2)
+        scheduleTick(2)
         tickSound()
     }
 }
 
-trait ITimerGuiLogic
+trait ITimerGuiLogic extends GatePart
 {
     def getTimerMax:Int
-    def setTimerMax(gate:GatePart, t:Int)
+    def setTimerMax(t:Int)
 }
 
-trait ICounterGuiLogic
+trait ICounterGuiLogic extends GatePart
 {
     def getCounterMax:Int
-    def setCounterMax(gate:GatePart, i:Int)
+    def setCounterMax(i:Int)
 
     def getCounterIncr:Int
-    def setCounterIncr(gate:GatePart, i:Int)
+    def setCounterIncr(i:Int)
 
     def getCounterDecr:Int
-    def setCounterDecr(gate:GatePart, i:Int)
+    def setCounterDecr(i:Int)
 
     def getCounterValue:Int
-    def setCounterValue(gate:GatePart, i:Int)
+    def setCounterValue(i:Int)
 }
 
-trait TTimerGateLogic extends SequentialGateLogic with ITimerGuiLogic
+trait TTimerGatePart extends RedstoneGatePart with ITimerGuiLogic
 {
     var pointer_max = 38
     var pointer_start = -1L
 
-    abstract override def save(tag:CompoundNBT)
-    {
+    abstract override def save(tag:CompoundNBT):Unit = {
         super.save(tag)
         tag.putInt("pmax", pointer_max)
-        tag.putLong("pelapsed", if (pointer_start < 0) pointer_start else gate.world.getGameTime-pointer_start)
+        tag.putLong("pelapsed", if (pointer_start < 0) pointer_start else world.getGameTime-pointer_start)
     }
 
-    abstract override def load(tag:CompoundNBT)
-    {
+    abstract override def load(tag:CompoundNBT):Unit = {
         super.load(tag)
         pointer_max = tag.getInt("pmax")
         pointer_start = tag.getLong("pelapsed")
     }
 
-    abstract override def writeDesc(packet:MCDataOutput)
-    {
+    abstract override def writeDesc(packet:MCDataOutput):Unit = {
         super.writeDesc(packet)
         packet.writeInt(pointer_max)
         packet.writeLong(pointer_start)
     }
 
-    abstract override def readDesc(packet:MCDataInput)
-    {
+    abstract override def readDesc(packet:MCDataInput):Unit = {
         super.readDesc(packet)
         pointer_max = packet.readInt()
         pointer_start = packet.readLong()
     }
 
-    abstract override def read(packet:MCDataInput, key:Int) = key match
-    {
+    abstract override def read(packet:MCDataInput, key:Int):Unit = key match {
         case 12 => pointer_max = packet.readInt()
         case 13 =>
             pointer_start = packet.readInt()
-            if (pointer_start >= 0) pointer_start = gate.world.getGameTime-pointer_start
+            if (pointer_start >= 0) pointer_start = world.getGameTime-pointer_start
         case _ => super.read(packet, key)
     }
 
-    abstract override def onWorldLoad(gate: SequentialGatePart)
-    {
-        if (pointer_start >= 0) pointer_start = gate.world.getGameTime-pointer_start
+
+    override def gateLogicOnWorldLoad():Unit = {
+        if (pointer_start >= 0) pointer_start = world.getGameTime-pointer_start
     }
 
-    def pointerValue =
+    def pointerValue:Int =
         if (pointer_start < 0) 0
-        else (gate.world.getGameTime-pointer_start).toInt
+        else (world.getGameTime-pointer_start).toInt
 
-    def sendPointerMaxUpdate(){ gate.sendUpdate(12, _.writeInt(pointer_max)) }
-    def sendPointerUpdate(){ gate.sendUpdate(13, _.writeInt(if (pointer_start < 0) -1 else pointerValue)) }
+    def sendPointerMaxUpdate():Unit = { sendUpdate(12, _.writeInt(pointer_max)) }
+    def sendPointerUpdate():Unit = { sendUpdate(13, _.writeInt(if (pointer_start < 0) -1 else pointerValue)) }
 
-    override def getTimerMax = pointer_max+2
-    override def setTimerMax(gate:GatePart, time:Int)
-    {
+    override def getTimerMax:Int = pointer_max+2
+    override def setTimerMax(time:Int):Unit = {
         var t = time
         val minTime = math.max(4, Configurator.minTimerTicks)
         if (t < minTime) t = minTime
-        if (t != pointer_max)
-        {
+        if (t != pointer_max) {
             pointer_max = t-2
             sendPointerMaxUpdate()
         }
     }
 
-    override def onTick(gate:SequentialGatePart)
-    {
+    override def gateLogicOnTick():Unit = {
         if (pointer_start >= 0)
-            if (gate.world.getGameTime >= pointer_start+pointer_max) pointerTick()
-            else if (pointer_start > gate.world.getGameTime)
-                pointer_start = gate.world.getGameTime
+            if (world.getGameTime >= pointer_start+pointer_max) pointerTick()
+            else if (pointer_start > world.getGameTime)
+                pointer_start = world.getGameTime
     }
 
-    def pointerTick()
+    def pointerTick():Unit
 
-    def resetPointer()
-    {
-        if (pointer_start >= 0)
-        {
+    def resetPointer():Unit = {
+        if (pointer_start >= 0) {
             pointer_start = -1
-            gate.tile.markDirty()
-            if (!gate.world.isRemote) sendPointerUpdate()
+            tile.markDirty()
+            if (!world.isRemote) sendPointerUpdate()
         }
     }
 
-    def startPointer()
-    {
-        if (pointer_start < 0)
-        {
-            pointer_start = gate.world.getGameTime
-            gate.tile.markDirty()
-            if (!gate.world.isRemote) sendPointerUpdate()
+    def startPointer():Unit = {
+        if (pointer_start < 0) {
+            pointer_start = world.getGameTime
+            tile.markDirty()
+            if (!world.isRemote) sendPointerUpdate()
         }
     }
 
-    def interpPointer(f:Float) = if (pointer_start < 0) 0f else (pointerValue+f)/pointer_max
+    def interpPointer(f:Float):Float = if (pointer_start < 0) 0f else (pointerValue+f)/pointer_max
 
-    override def activate(gate:SequentialGatePart, player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult) =
-    {
-        if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver])
-        {
-            if (!gate.world.isRemote) GuiTimer.open(player, gate)
+    override def gateLogicActivate(player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult):Boolean = {
+        if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver]) {
+            if (!world.isRemote) GuiTimer.open(player, this)
             true
-        }
-        else false
+        } else false
     }
 }
 
-class Timer(gate:SequentialGatePart) extends SequentialGateLogic(gate) with TTimerGateLogic
+class Timer extends RedstoneGatePart(GateType.TIMER) with TTimerGatePart
 {
     override def outputMask(shape:Int) = 0xB
     override def inputMask(shape:Int) = 0xE
 
-    override def setup(gate:SequentialGatePart){ startPointer() }
+    override def gateLogicSetup():Unit = { startPointer() }
 
-    override def scheduledTick(gate:SequentialGatePart)
-    {
-        gate.setState(gate.state&0xF)
-        gate.onOutputChange(0xB)
-        onChange(gate)
+    override def gateLogicOnScheduledTick():Unit = {
+        setState(state&0xF)
+        onOutputChange(0xB)
+        gateLogicOnChange()
     }
 
-    override def onChange(gate:SequentialGatePart)
-    {
-        val oldInput = gate.state&0xF
-        val newInput = getInput(gate, 0xE)
+    override def gateLogicOnChange():Unit = {
+        val oldInput = state&0xF
+        val newInput = getInput(0xE)
 
-        if (newInput != oldInput)
-        {
-            gate.setState(gate.state&0xF0|newInput)
-            gate.onInputChange()
+        if (newInput != oldInput) {
+            setState(state&0xF0|newInput)
+            onInputChange()
         }
 
-        if (gate.schedTime < 0)
+        if (schedTime < 0) {
             if (newInput > 0) resetPointer() else startPointer()
+        }
     }
 
-    override def pointerTick()
-    {
+    override def pointerTick():Unit = {
         resetPointer()
-        if (!gate.world.isRemote)
-        {
-            gate.scheduleTick(2)
-            gate.setState(0xB0|gate.state&0xF)
-            gate.onOutputChange(0xB)
+        if (!world.isRemote) {
+            scheduleTick(2)
+            setState(0xB0|state&0xF)
+            onOutputChange(0xB)
             tickSound()
         }
     }
 }
 
-class Sequencer(gate:SequentialGatePart) extends SequentialGateLogic(gate) with ITimerGuiLogic
+class Sequencer extends RedstoneGatePart(GateType.SEQUENCER) with ITimerGuiLogic
 {
     var pointer_max = 40
 
     override def outputMask(shape:Int) = 0xF
 
-    override def onChange(gate:SequentialGatePart){}
-    override def scheduledTick(gate:SequentialGatePart){}
+    override def gateLogicOnChange():Unit = {}
+    override def gateLogicOnScheduledTick():Unit = {}
 
-    override def getTimerMax = pointer_max
-    override def setTimerMax(gate:GatePart, time:Int)
-    {
+    override def getTimerMax:Int = pointer_max
+    override def setTimerMax(time:Int) {
         var t = time
         val minTime = math.max(4, Configurator.minTimerTicks)
         if (t < minTime) t = minTime
-        if (t != pointer_max)
-        {
+        if (t != pointer_max) {
             pointer_max = t
             sendPointerMaxUpdate()
         }
     }
 
-    override def save(tag:CompoundNBT){ tag.putInt("pmax", pointer_max) }
-    override def load(tag:CompoundNBT){ pointer_max = tag.getInt("pmax") }
-
-    override def writeDesc(packet:MCDataOutput){ packet.writeInt(pointer_max) }
-    override def readDesc(packet:MCDataInput){ pointer_max = packet.readInt() }
-
-    override def read(packet:MCDataInput, key:Int) = key match
-    {
-        case 12 => pointer_max = packet.readInt()
-        case _ =>
+    override def save(tag:CompoundNBT):Unit = {
+        super.save(tag)
+        tag.putInt("pmax", pointer_max)
+    }
+    override def load(tag:CompoundNBT):Unit = {
+        super.load(tag)
+        pointer_max = tag.getInt("pmax")
     }
 
-    def sendPointerMaxUpdate(){ gate.sendUpdate(12, _.writeInt(pointer_max)) }
+    override def writeDesc(packet:MCDataOutput):Unit = {
+        super.writeDesc(packet)
+        packet.writeInt(pointer_max)
+    }
 
-    override def onTick(gate:SequentialGatePart)
-    {
-        if (!gate.world.isRemote)
-        {
-            val oldOut = gate.state>>4
-            var out = 1<<gate.world.getDayTime%(pointer_max*4)/pointer_max
-            if (gate.shape == 1) out = flipMaskZ(out)
-            if (oldOut != out)
-            {
-                gate.setState(out<<4)
-                gate.onOutputChange(0xF)
+    override def readDesc(packet:MCDataInput):Unit = {
+        super.readDesc(packet)
+        pointer_max = packet.readInt()
+    }
+
+    override def read(packet:MCDataInput, key:Int):Unit = key match {
+        case 12 => pointer_max = packet.readInt()
+        case _ => super.read(packet, key)
+    }
+
+    def sendPointerMaxUpdate():Unit = { sendUpdate(12, _.writeInt(pointer_max)) }
+
+    override def gateLogicOnTick():Unit = {
+        if (!world.isRemote) {
+            val oldOut = state>>4
+            var out = 1<<world.getDayTime%(pointer_max*4)/pointer_max
+            if (shape == 1) out = flipMaskZ(out)
+            if (oldOut != out) {
+                setState(out<<4)
+                onOutputChange(0xF)
                 tickSound()
             }
         }
     }
 
-    override def cycleShape(gate:SequentialGatePart) =
-    {
-        gate.setShape(gate.shape^1)
+    override def gateLogicCycleShape():Boolean = {
+        setShape(shape^1)
         true
     }
 
-    override def activate(gate:SequentialGatePart, player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult) =
-    {
-        if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver])
-        {
-            if (!gate.world.isRemote) GuiTimer.open(player, gate)
+    override def gateLogicActivate(player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult):Boolean = {
+        if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver]) {
+            if (!world.isRemote) GuiTimer.open(player, this)
             true
-        }
-        else false
+        } else false
     }
 }
 
-class Counter(gate:SequentialGatePart) extends SequentialGateLogic(gate) with ICounterGuiLogic
+class Counter extends RedstoneGatePart(GateType.COUNTER) with ICounterGuiLogic
 {
     var value = 0
     var max = 10
@@ -518,186 +433,163 @@ class Counter(gate:SequentialGatePart) extends SequentialGateLogic(gate) with IC
     override def outputMask(shape:Int) = 5
     override def inputMask(shape:Int) = 10
 
-    override def save(tag:CompoundNBT)
-    {
+    override def save(tag:CompoundNBT):Unit = {
+        super.save(tag)
         tag.putInt("val", value)
         tag.putInt("max", max)
         tag.putInt("inc", incr)
         tag.putInt("dec", decr)
     }
 
-    override def load(tag:CompoundNBT)
-    {
+    override def load(tag:CompoundNBT):Unit = {
+        super.load(tag)
         value = tag.getInt("val")
         max = tag.getInt("max")
         incr = tag.getInt("inc")
         decr = tag.getInt("dec")
     }
 
-    override def writeDesc(packet:MCDataOutput)
-    {
+    override def writeDesc(packet:MCDataOutput):Unit = {
+        super.writeDesc(packet)
         packet.writeInt(value).writeInt(max).writeInt(incr).writeInt(decr)
     }
 
-    override def readDesc(packet:MCDataInput)
-    {
+    override def readDesc(packet:MCDataInput):Unit = {
+        super.readDesc(packet)
         value = packet.readInt()
         max = packet.readInt()
         incr = packet.readInt()
         decr = packet.readInt()
     }
 
-    override def read(packet:MCDataInput, key:Int) = key match
-    {
+    override def read(packet:MCDataInput, key:Int):Unit = key match {
         case 11 => value = packet.readInt()
         case 12 => max = packet.readInt()
         case 13 => incr = packet.readInt()
         case 14 => decr = packet.readInt()
-        case _ =>
+        case _ => super.read(packet, key)
     }
 
-    def sendValueUpdate(){ gate.sendUpdate(11, _.writeInt(value)) }
-    def sendMaxUpdate(){ gate.sendUpdate(12, _.writeInt(max)) }
-    def sendIncrUpdate(){ gate.sendUpdate(13, _.writeInt(incr)) }
-    def sendDecrUpdate(){ gate.sendUpdate(14, _.writeInt(decr)) }
+    def sendValueUpdate():Unit = { sendUpdate(11, _.writeInt(value)) }
+    def sendMaxUpdate():Unit = { sendUpdate(12, _.writeInt(max)) }
+    def sendIncrUpdate():Unit = { sendUpdate(13, _.writeInt(incr)) }
+    def sendDecrUpdate():Unit = { sendUpdate(14, _.writeInt(decr)) }
 
-    override def getCounterValue = value
-    override def getCounterMax = max
-    override def getCounterIncr = incr
-    override def getCounterDecr = decr
+    override def getCounterValue:Int = value
+    override def getCounterMax:Int = max
+    override def getCounterIncr:Int = incr
+    override def getCounterDecr:Int = decr
 
-    override def setCounterValue(gate:GatePart, i:Int)
-    {
+    override def setCounterValue(i:Int):Unit = {
         val oldVal = value
         value = Math.min(max, Math.max(0, i))
-        if (value != oldVal)
-        {
+        if (value != oldVal) {
             tickSound()
             sendValueUpdate()
         }
     }
 
-    override def setCounterMax(gate:GatePart, i:Int)
-    {
+    override def setCounterMax(i:Int):Unit = {
         val oldMax = max
         max = Math.min(32767, Math.max(1, i))
-        if (max != oldMax)
-        {
+        if (max != oldMax) {
             tickSound()
             sendMaxUpdate()
             val oldVal = value
             value = Math.min(value, Math.max(0, i))
-            if (value != oldVal)
-            {
+            if (value != oldVal) {
                 sendValueUpdate()
-                gate.scheduleTick(2)
+                scheduleTick(2)
             }
         }
     }
 
-    override def setCounterIncr(gate:GatePart, i:Int)
-    {
+    override def setCounterIncr(i:Int):Unit = {
         val oldIncr = incr
         incr = Math.min(max, Math.max(1, i))
-        if (incr != oldIncr)
-        {
+        if (incr != oldIncr) {
             tickSound()
             sendIncrUpdate()
         }
     }
 
-    override def setCounterDecr(gate:GatePart, i:Int)
-    {
+    override def setCounterDecr(i:Int):Unit = {
         val oldDecr = decr
         decr = Math.min(max, Math.max(1, i))
-        if (decr != oldDecr)
-        {
+        if (decr != oldDecr) {
             tickSound()
             sendDecrUpdate()
         }
     }
 
-    def onChange(gate:SequentialGatePart)
-    {
-        val oldInput = gate.state&0xF
-        var newInput = getInput(gate, 0xA)
-        if (gate.shape == 1) newInput = flipMaskZ(newInput)
+    def gateLogicOnChange():Unit = {
+        val oldInput = state&0xF
+        var newInput = getInput(0xA)
+        if (shape == 1) newInput = flipMaskZ(newInput)
         val high = newInput& ~oldInput
 
-        if ((high&2) != 0) setCounterValue(gate, value+incr)
-        if ((high&8) != 0) setCounterValue(gate, value-decr)
-        if (oldInput != newInput)
-        {
-            gate.setState(gate.state&0xF0|newInput)
-            gate.onInputChange()
-            gate.scheduleTick(2)
+        if ((high&2) != 0) setCounterValue(value+incr)
+        if ((high&8) != 0) setCounterValue(value-decr)
+        if (oldInput != newInput) {
+            setState(state&0xF0|newInput)
+            onInputChange()
+            scheduleTick(2)
         }
     }
 
-    override def cycleShape(gate:SequentialGatePart) =
-    {
-        gate.setShape(if (gate.shape == 1) 0 else 1)
+    override def gateLogicCycleShape():Boolean = {
+        setShape(if (shape == 1) 0 else 1)
         true
     }
 
-    def scheduledTick(gate:SequentialGatePart)
-    {
-        val oldOutput = gate.state
+    def gateLogicOnScheduledTick():Unit = {
+        val oldOutput = state
         var newOutput = 0
         if (value == max) newOutput = 1
         else if (value == 0) newOutput = 4
-        if (newOutput != oldOutput) gate.setState(gate.state&0xF|newOutput<<4)
-        if (newOutput != oldOutput) gate.onOutputChange(5)
+        if (newOutput != oldOutput) setState(state&0xF|newOutput<<4)
+        if (newOutput != oldOutput) onOutputChange(5)
     }
 
-    override def activate(gate:SequentialGatePart, player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult) =
-    {
-        if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver])
-        {
-            if (!gate.world.isRemote) GuiCounter.open(player, gate)
+    override def gateLogicActivate(player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult):Boolean = {
+        if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver]) {
+            if (!world.isRemote) GuiCounter.open(player, this)
             true
-        }
-        else false
+        } else false
     }
 }
 
-class StateCell(gate:SequentialGatePart) extends SequentialGateLogic(gate) with TTimerGateLogic with TExtraStateLogic
+class StateCell extends RedstoneGatePart(GateType.STATE_CELL) with TTimerGatePart with TExtraStateGatePart
 {
-    override def outputMask(shape:Int) =
-    {
+    override def outputMask(shape:Int):Int = {
         var output = 9
         if (shape == 1) output = flipMaskZ(output)
         output
     }
 
-    override def inputMask(shape:Int) =
-    {
+    override def inputMask(shape:Int):Int = {
         var input = 6
         if (shape == 1) input = flipMaskZ(input)
         input
     }
 
-    override def cycleShape(gate:SequentialGatePart) =
-    {
-        gate.setShape((gate.shape+1)%2)
+    override def gateLogicCycleShape():Boolean = {
+        setShape((shape+1)%2)
         true
     }
 
-    override def onChange(gate:SequentialGatePart)
-    {
-        val oldInput = gate.state&0xF
-        var newInput = getInput(gate, 0xE)
-        if (oldInput != newInput)
-        {
-            gate.setState(gate.state&0xF0|newInput)
-            gate.onInputChange()
+    override def gateLogicOnChange():Unit = {
+        val oldInput = state&0xF
+        var newInput = getInput(0xE)
+        if (oldInput != newInput) {
+            setState(state&0xF0|newInput)
+            onInputChange()
 
-            if (gate.shape == 1) newInput = flipMaskZ(newInput)
-            if ((newInput&4) != 0 && state2 == 0)
-            {
+            if (shape == 1) newInput = flipMaskZ(newInput)
+            if ((newInput&4) != 0 && state2 == 0) {
                 setState2(1)
                 sendState2Update()
-                gate.scheduleTick(2)
+                scheduleTick(2)
             }
 
             if (state2 != 0) if ((newInput&6) != 0) resetPointer()
@@ -708,195 +600,183 @@ class StateCell(gate:SequentialGatePart) extends SequentialGateLogic(gate) with 
     override def pointerTick()
     {
         resetPointer()
-        if (!gate.world.isRemote)
-        {
+        if (!world.isRemote) {
             setState2(0)
             sendState2Update()
-            gate.setState(0x10|gate.state&0xF)
-            gate.onOutputChange(outputMask(gate.shape))
-            gate.scheduleTick(2)
+            setState(0x10|state&0xF)
+            onOutputChange(outputMask(shape))
+            scheduleTick(2)
             tickSound()
         }
     }
 
-    override def scheduledTick(gate:SequentialGatePart)
-    {
+    override def gateLogicOnScheduledTick():Unit = {
         var output = 0
         if (state2 != 0) output = 8
-        if (gate.shape == 1) output = flipMaskZ(output)
+        if (shape == 1) output = flipMaskZ(output)
 
-        gate.setState(output<<4|gate.state&0xF)
-        gate.onOutputChange(outputMask(gate.shape))
+        setState(output<<4|state&0xF)
+        onOutputChange(outputMask(shape))
     }
 }
 
-class Synchronizer(gate:SequentialGatePart) extends SequentialGateLogic(gate) with TExtraStateLogic
+class Synchronizer extends RedstoneGatePart(GateType.SYNCHRONIZER) with TExtraStateGatePart
 {
     override def outputMask(shape:Int) = 1
     override def inputMask(shape:Int) = 14
 
-    override def onChange(gate:SequentialGatePart)
-    {
-        val oldInput = gate.state&0xF
-        val newInput = getInput(gate, 14)
+    override def gateLogicOnChange():Unit = {
+        val oldInput = state&0xF
+        val newInput = getInput(14)
         val high = newInput& ~oldInput
-        if (oldInput != newInput)
-        {
+        if (oldInput != newInput) {
             val oldValue = state2
 
-            gate.setState(gate.state&0xF0|newInput)
-            gate.onInputChange()
-            if ((newInput&4) != 0) setState2(0)
-            else
-            {
+            setState(state&0xF0|newInput)
+            onInputChange()
+            if ((newInput&4) != 0)
+                setState2(0)
+            else {
                 if ((high&2) != 0) setState2(state2|1) //right
                 if ((high&8) != 0) setState2(state2|2) //left
             }
-            if (right && left) gate.scheduleTick(2)
+            if (right && left) scheduleTick(2)
 
             if (state2 != oldValue) sendState2Update()
         }
     }
 
-    override def scheduledTick(gate:SequentialGatePart)
-    {
+    override def gateLogicOnScheduledTick():Unit = {
         val oldValue = state2
-        if (!pulsing && right && left)
-        {
-            gate.setState(gate.state|1<<4)
-            gate.onOutputChange(1)
+        if (!pulsing && right && left) {
+            setState(state|1<<4)
+            onOutputChange(1)
             setState2(state2|4) //pulsing
-            gate.scheduleTick(2)
-        }
-        else if (pulsing)
-        {
-            gate.setState(gate.state& ~0x10)
-            gate.onOutputChange(1)
+            scheduleTick(2)
+        } else if (pulsing) {
+            setState(state& ~0x10)
+            onOutputChange(1)
             setState2(0) //off
         }
         if (state2 != oldValue) sendState2Update()
     }
 
-    def right = (state2&1) != 0
-    def left = (state2&2) != 0
-    def pulsing = (state2&4) != 0
+    def right:Boolean = (state2&1) != 0
+    def left:Boolean = (state2&2) != 0
+    def pulsing:Boolean = (state2&4) != 0
 }
 
-class Comparator(gate:SequentialGatePart) extends SequentialGateLogic(gate) with INeighborTileChangePart
+class Comparator extends RedstoneGatePart(GateType.REPEATER) with INeighborTileChangePart
 {
     var lState2:Short = 0
 
-    def state2 = lState2&0xFFFF
+    def state2:Int = lState2&0xFFFF
     def setState2(i:Int){ lState2 = i.toShort }
 
     override def outputMask(shape:Int) = 1
     override def inputMask(shape:Int) = 0xE
 
-    override def save(tag:CompoundNBT){ tag.putShort("state2", lState2) }
-    override def load(tag:CompoundNBT){ lState2 = tag.getShort("state2") }
+    override def save(tag:CompoundNBT):Unit = {
+        super.save(tag)
+        tag.putShort("state2", lState2)
+    }
+    override def load(tag:CompoundNBT):Unit = {
+        super.load(tag)
+        lState2 = tag.getShort("state2")
+    }
 
-    override def cycleShape(gate:SequentialGatePart) =
-    {
-        gate.setShape(if (gate.shape > 0) 0 else 1)
+    override def gateLogicCycleShape():Boolean = {
+        setShape(if (shape > 0) 0 else 1)
         true
     }
 
-    override def canConnect(shape:Int, r:Int) = true
+    override def gateLogicCanConnect(r:Int) = true
 
-    override def getOutput(gate:SequentialGatePart, r:Int) =
+    override def getOutput(r:Int):Int =
         if (r == 0) state2&0xF
         else 0
 
-    def getAnalogInput(r:Int) = (gate.getRedstoneInput(r)+16)/17
+    def getAnalogInput(r:Int):Int = (getRedstoneInput(r)+16)/17
 
-    def calcInputA:Int =
-    {
+    def calcInputA:Int = {
         //TODO comparator calculations may not be accurate anymore
 
-        val absDir = Direction.byIndex(Rotation.rotateSide(gate.side, gate.toAbsolute(2)))
-        var pos = gate.tile.getPos.offset(absDir)
-        var state = gate.world.getBlockState(pos)
+        val absDir = Direction.byIndex(Rotation.rotateSide(side, toAbsolute(2)))
+        var pos = tile.getPos.offset(absDir)
+        var state = world.getBlockState(pos)
 
         if (state.hasComparatorInputOverride)
-            return state.getComparatorInputOverride(gate.world, pos)
+            return state.getComparatorInputOverride(world, pos)
 
         val i = getAnalogInput(2)
 
-        if (i < 15 && state.isNormalCube(gate.world, pos)) {
+        if (i < 15 && state.isNormalCube(world, pos)) {
             pos = pos.offset(absDir)
-            state = gate.world.getBlockState(pos)
+            state = world.getBlockState(pos)
 
             if (state.hasComparatorInputOverride)
-                return state.getComparatorInputOverride(gate.world, pos)
+                return state.getComparatorInputOverride(world, pos)
 
             if (state.getMaterial == Material.AIR) {
-                val entityitemframe = findItemFrame(gate.world, absDir, pos)
+                val entityitemframe = findItemFrame(world, absDir, pos)
                 if (entityitemframe != null)
                     return entityitemframe.getAnalogOutput
             }
         }
-
         i
     }
 
     /**
       * Copied from BlockRedstoneComparator#findItemFrame(World, EnumFacing, BlockPos)
       */
-    private def findItemFrame(world:World, facing:Direction, pos:BlockPos) =
-    {
+    private def findItemFrame(world:World, facing:Direction, pos:BlockPos):ItemFrameEntity = {
         val list:util.List[ItemFrameEntity] = world.getEntitiesWithinAABB[ItemFrameEntity](classOf[ItemFrameEntity], new AxisAlignedBB(pos.getX.toDouble, pos.getY.toDouble, pos.getZ.toDouble,
             (pos.getX + 1).toDouble, (pos.getY + 1).toDouble, (pos.getZ + 1).toDouble), new Predicate[Entity] {
-                override def apply(input:Entity) = input != null && (input.getHorizontalFacing == facing)
+                override def apply(input:Entity):Boolean = input != null && (input.getHorizontalFacing == facing)
             }
         )
         if (list.size == 1) list.get(0) else null
     }
 
-    def calcInput = getAnalogInput(1)<<4|calcInputA<<8|getAnalogInput(3)<<12
+    def calcInput:Int = getAnalogInput(1)<<4|calcInputA<<8|getAnalogInput(3)<<12
 
-    def digitize(analog:Int) =
-    {
+    def digitize(analog:Int):Int = {
         var digital = 0
         for (i <- 0 until 4) if ((analog>>i*4&0xF) > 0) digital |= 1<<i
         digital
     }
 
-    override def onChange(gate:SequentialGatePart)
-    {
+    override def gateLogicOnChange():Unit = {
         val oldInput = state2&0xFFF0
         val newInput = calcInput
-        if (oldInput != newInput)
-        {
+        if (oldInput != newInput) {
             setState2(state2&0xF|newInput)
-            gate.setState(digitize(newInput|calcOutput)|gate.state&0xF0)
-            gate.onInputChange()
+            setState(digitize(newInput|calcOutput)|state&0xF0)
+            onInputChange()
         }
-        if ((state2&0xF) != calcOutput) gate.scheduleTick(2)
+        if ((state2&0xF) != calcOutput) scheduleTick(2)
     }
 
-    def calcOutput =
-        if (gate.shape == 0) if (inputA >= inputB) inputA else 0
+    def calcOutput:Int =
+        if (shape == 0) if (inputA >= inputB) inputA else 0
         else Math.max(inputA - inputB, 0)
 
-    def inputA = state2>>8&0xF
-    def inputB = Math.max(state2>>4&0xF, state2>>12&0xF)
+    def inputA:Int = state2>>8&0xF
+    def inputB:Int = Math.max(state2>>4&0xF, state2>>12&0xF)
 
-    override def scheduledTick(gate:SequentialGatePart)
-    {
+    override def gateLogicOnScheduledTick():Unit = {
         val oldOutput = state2&0xF
         val newOutput = calcOutput
-        if (oldOutput != newOutput)
-        {
+        if (oldOutput != newOutput) {
             setState2(state2&0xFFF0|newOutput)
-            gate.setState(gate.state&0xF|digitize(newOutput)<<4)
-            gate.onOutputChange(1)
+            setState(state&0xF|digitize(newOutput)<<4)
+            onOutputChange(1)
         }
     }
 
-    override def onNeighborTileChanged(side:Direction, weak:Boolean) =
-    {
-        if (side.ordinal == Rotation.rotateSide(gate.side, gate.toAbsolute(2)))
-            gate.onChange()
+    override def onNeighborTileChanged(side:Direction, weak:Boolean):Unit = {
+        if (side.ordinal == Rotation.rotateSide(this.side, toAbsolute(2)))
+            onChange()
     }
 
     override def weakTileChanges() = true
