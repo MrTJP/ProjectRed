@@ -476,8 +476,8 @@ object WireBoxes
     }
     var fOShapes = fOBounds.map(VoxelShapeCache.getShape)
     var fOShapeStates = {
-        val shapes = new Array[VoxelShape](0x3f)
-        for (m <- 0 until 0x3f) {
+        val shapes = new Array[VoxelShape](64)
+        for (m <- 0 until 64) {
             var builder = Seq.newBuilder[VoxelShape].+=(VoxelShapeCache.getShape(fOBounds(6)))
             for (s <- 0 until 6) {
                 if ((m & (1 << s)) != 0) builder += VoxelShapeCache.getShape(fOBounds(s))
