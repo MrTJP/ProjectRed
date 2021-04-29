@@ -212,6 +212,8 @@ class BaseLightFacePart(definition:LightPartDefinition, colour:Int, inverted:Boo
         else if (s == getSide) 0x10
         else 1<<Rotation.rotationTo(s&6, getSide)
     }
+
+    override def redstoneConductionMap:Int = 0x1F
 }
 
 //trait TAirousLight extends BaseLightPart with ITickable
