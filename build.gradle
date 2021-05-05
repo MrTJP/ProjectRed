@@ -14,8 +14,8 @@ plugins {
     id 'java'
     id 'scala'
     id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
     id "net.covers1624.signing" version '1.1.3'
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
 
 apply plugin: 'net.minecraftforge.gradle'
@@ -245,69 +245,89 @@ publishing {
     }
 }
 
-/*if (project.hasProperty('curseapi')) {
-    curse {
-        doLast {
-            curseIntegration.execute()
-            curseFabrication.execute()
-            curseLighting.execute()
-            curseMechanical.execute()
-            curseWorld.execute()
-            curseCompat.execute()
+curseforge {
+    apiKey = System.getenv('CURSE_TOKEN') ?: 'XXX'
+
+    // Core
+    project {
+        id = '228702'
+        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
+        changelogType = 'markdown'
+        changelog = file('CHANGELOG.md')
+        relations {
+            requiredDependency 'scorge'              // Required for all Scala mods
+            requiredDependency 'codechicken-lib-1-8' // CCL is required for everything
+            requiredDependency 'cb-multipart' // CBMultipart is required for everything
         }
-        projectId = '228702'
-        artifact = baseJar
 
-        additionalArtifact deobfJar
-        additionalArtifact sourceJar
+        mainArtifact coreJar
     }
 
-    task curseIntegration(dependsOn: 'curse', type: CurseUploadTask) {
-        projectId = '229045'
-        artifact = integrationJar
+    // Expansion
+    project {
+        id = '229048'
+        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
+        changelogType = 'markdown'
+        changelog = file('CHANGELOG.md')
+        relations {
+            requiredDependency 'project-red-core'
+        }
+
+        mainArtifact expansionJar
     }
 
-    task curseFabrication(dependsOn: 'curse', type: CurseUploadTask) {
-        projectId = '230111'
-        artifact = fabricationJar
-        relatedProject 'project-red-integration': 'requiredLibrary'
+    // Exploration
+    project {
+        id = '229049'
+        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
+        changelogType = 'markdown'
+        changelog = file('CHANGELOG.md')
+        relations {
+            requiredDependency 'project-red-core'
+        }
+
+        mainArtifact explorationJar
     }
 
-    task curseLighting(dependsOn: 'curse', type: CurseUploadTask) {
-        projectId = '229046'
-        artifact = lightingJar
+    // Illumination
+    project {
+        id = '229046'
+        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
+        changelogType = 'markdown'
+        changelog = file('CHANGELOG.md')
+        relations {
+            requiredDependency 'project-red-core'
+        }
+
+        mainArtifact illuminationJar
     }
 
-    task curseMechanical(dependsOn: 'curse', type: CurseUploadTask) {
-        projectId = '229048'
-        artifact = mechanicalJar
-        relatedProject 'project-red-integration': 'requiredLibrary'
-        relatedProject 'forge-relocation': 'requiredLibrary'
-        relatedProject 'forge-relocation-fmp-plugin': 'requiredLibrary'
+    // Integration
+    project {
+        id = '229045'
+        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
+        changelogType = 'markdown'
+        changelog = file('CHANGELOG.md')
+        relations {
+            requiredDependency 'project-red-core'
+        }
+
+        mainArtifact integrationJar
     }
 
-    task curseWorld(dependsOn: 'curse', type: CurseUploadTask) {
-        projectId = '229049'
-        artifact = worldJar
-    }
+    // Transmission
+    project {
+        id = '478939'
+        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
+        changelogType = 'markdown'
+        changelog = file('CHANGELOG.md')
+        relations {
+            requiredDependency 'project-red-core'
+        }
 
-    task curseCompat(dependsOn: 'curse', type: CurseUploadTask) {
-        projectId = '229050'
-        artifact = compatJar
+        mainArtifact transmissionJar
     }
-
-    configure([curse, curseIntegration, curseFabrication, curseLighting, curseMechanical, curseWorld, curseCompat]) {
-        apiKey = project.curseapi
-        releaseType = 'release'
-        relatedProject 'mrtjpcore': 'requiredLibrary'
-        relatedProject 'forge-multi-part': 'requiredLibrary'
-        addGameVersion project.minecraft.version
-    }
-
-    configure([curseIntegration, curseFabrication, curseLighting, curseMechanical, curseWorld, curseCompat]) {
-        relatedProject 'project-red-base': 'requiredLibrary'
-    }
-}*/
+}
 
 /**
  * Polls the 'compile' configuration for a dependency with the given module name
