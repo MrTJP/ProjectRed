@@ -128,7 +128,7 @@ dependencies {
     moduleCompile sourceSets.core.output
 
     integrationCompile sourceSets.transmission.output //TODO remove this dep
-    
+
     // compile against the JEI API but do not include it at runtime
     coreCompileOnly fg.deobf("mezz.jei:jei-${config.mc_version}:${config.jei_version}:api")
     // at runtime, use the full JEI jar
@@ -183,111 +183,71 @@ task transmissionJar(type: Jar) {
     from sourceSets.transmission.output
 }
 
-// processResources {
-//     //redo task if any of these properties change
-//     inputs.property "version", project.version
-//     inputs.property "mc.version", config.mc_version
-//
-//     // Replace properties in all files
-//     from(sourceSets.main.resources.srcDirs) {
-//         include '**.info'
-//         expand  'mod_version': version, 'mc_version': config.mc_version,
-//                 'forge_version': config.forge_version,
-//                 'tjcore_version': config.tjpcore_version.replace(".+", ""),
-//                 'ccl_version': config.ccl_version.replace(".+", ""),
-//                 'cbm_version': config.cbm_version.replace(".+", "")
-//     }
-//     // Copy everything else
-//     from(sourceSets.main.resources.srcDirs) {
-//         include 'assets/**/*.*'
-//     }
-// }
+sourceSets.findAll {it.name != "main" && it.name != "test" } each { set ->
+    def setNameCaps = "${set.name}".substring(0, 1).toUpperCase() + "${set.name}".substring(1)
+    "process${setNameCaps}Resources" { task ->
+        from(set.resources.srcDirs) { spec ->
+            spec.include 'META-INF/mods.toml'
+            task.doFirst {
+                spec.expand 'version': config.mod_version,
+                        'mc_version': config.mc_version,
+                        'ccl_version': resolve("CodeChickenLib"),
+                        'cbm_version': resolve("CBMultipart")
+            }
+        }
+    }
+}
 
+publishing {
+    repositories {
+        maven {
+            url "https://nexus.covers1624.net/repository/maven-releases/"
+            credentials {
+                username System.getenv('MAVEN_USER')
+                password System.getenv('MAVEN_PASS')
+            }
+        }
+    }
+    publications {
+        ProjectRed(MavenPublication) {
+            groupId project.group
+            artifactId project.archivesBaseName
+            version project.version
+            artifact coreJar
+            artifact expansionJar
+            artifact explorationJar
+            artifact illuminationJar
+            artifact integrationJar
+            artifact transmissionJar
 
-
-// jar {//Because groovy we need to define these first other wise our zipTree call will fail.
-//     classifier = 'all'
-//     version = "${config.mc_version}-${project.version}"
-// }
-
-// task srcJar(type: Jar) {
-//     from sourceSets.main.allSource
-//     classifier = 'sources'
-//     version = "${config.mc_version}-${project.version}"
-// }
-
-// task deobfJar(type: Jar) {
-//     from sourceSets.main.output
-//     classifier = 'deobf'
-//     version = "${config.mc_version}-${project.version}"
-// }
-
-// // Enable experimental features for scala compiler
-// tasks.withType(ScalaCompile) {
-//     scalaCompileOptions.additionalParameters = ["-Xexperimental"]
-//     scalaCompileOptions.setDeprecation false
-// }
-
-// artifacts {
-//     archives integrationJar
-//     archives fabricationJar
-//     archives lightingJar
-//     archives mechanicalJar
-//     archives worldJar
-//     archives compatJar
-//     archives baseJar
-
-//     archives deobfJar
-//     archives srcJar
-// }
-
-// uploadArchives {
-//     repositories {
-//         mavenDeployer {
-//             if (project.hasProperty("local_maven")) {
-//                 repository(url: "file://${local_maven}")
-//                 pom {
-//                     groupId = project.group
-//                     version = "${config.mc_version}-${project.version}"
-//                     artifactId = project.archivesBaseName
-//                     project {
-//                         name project.archivesBaseName
-//                         packaging 'jar'
-//                         description project.archivesBaseName
-//                         url 'https://github.com/MrTJP/'+project.archivesBaseName
-
-//                         scm {
-//                             url 'https://github.com/MrTJP/'+project.archivesBaseName
-//                             connection 'scm:git:git://github.com/MrTJP/'+project.archivesBaseName+'.git'
-//                             developerConnection 'scm:git:git@github.com:MrTJP/'+project.archivesBaseName+'.git'
-//                         }
-
-//                         issueManagement {
-//                             system 'github'
-//                             url 'https://github.com/MrTJP/'+project.archivesBaseName+'/issues'
-//                         }
-
-//                         licenses {
-//                             license {
-//                                 name 'Restricted Public Software License (RPSL) v1.3.1'
-//                                 url 'https://raw.githubusercontent.com/MrTJP/ProjectRed/master/LICENSE.md'
-//                                 distribution 'repo'
-//                             }
-//                         }
-
-//                         developers {
-//                             developer {
-//                                 id 'mrtjp'
-//                                 name 'mrtjp'
-//                                 roles { role 'developer' }
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+            pom {
+                name = archivesBaseName
+                description = archivesBaseName
+                //The publish plugin doesnt like GString's here apparently..
+                url = "https://github.com/MrTJP/ProjectRed".toString()
+                scm {
+                    url = "https://github.com/MrTJP/ProjectRed".toString()
+                    connection = "scm:git:git://github.com/MrTJP/ProjectRed.git".toString()
+                    connection = "scm:git:git@github.com:MrTJP/ProjectRed.git".toString()
+                }
+                issueManagement {
+                    system = 'github'
+                    url = "https://github.com/MrTJP/ProjectRed/issues".toString()
+                }
+                developers {
+                    developer {
+                        id = 'mrtjp'
+                        name = 'mrtjp'
+                    }
+                    developer {
+                        id = 'covers1624'
+                        name = 'covers1624'
+                    }
+                }
+            }
+        }
+    }
+}
 
 /*if (project.hasProperty('curseapi')) {
     curse {
