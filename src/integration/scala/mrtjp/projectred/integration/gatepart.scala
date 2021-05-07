@@ -180,9 +180,9 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
             tile.remPart(this)
     }
 
-    override def onChunkLoad()
+    override def onChunkLoad(chunk:Chunk)
     {
-        super.onChunkLoad()
+        super.onChunkLoad(chunk)
         if (tile != null)
             getLogicPrimitive.onWorldLoad(this)
     }
