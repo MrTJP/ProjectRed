@@ -47,7 +47,7 @@ jobs:
               publish_curse=false
               version_format="\${major}.\${minor}.\${patch}-$release_type-\${increment}"
           esac
-          echo "::warning::publish_maven=$publish_maven, publish_curse=$publish_curse, version_format=$version_format"
+
           echo "::set-output name=release_type::$release_type"
           echo "::set-output name=publish_maven::$publish_maven"
           echo "::set-output name=publish_curse::$publish_curse"
@@ -114,7 +114,7 @@ jobs:
 
       - name: Curse publish
         if: ${{ steps.release_type.outputs.publish_curse == 'true' }}
-        run: echo "TODO ./gradlew curseforge" #./gradlew curseforge
+        run: ./gradlew curseforge
         env:
           AUTO_GENERATED_VERSION: ${{ steps.versioning.outputs.version }}
           CURSE_RELEASE_TYPE: ${{ steps.release_type.outputs.release_type }}
