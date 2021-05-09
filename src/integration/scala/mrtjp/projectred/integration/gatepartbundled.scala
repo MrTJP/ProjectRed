@@ -143,7 +143,7 @@ class BusTransceiver extends BundledGatePart(GateType.BUS_TRANSCEIVER)
 
     override def getBundledOutput(r:Int):Array[Byte] = if (r == 0) output0 else output2
 
-    def calcBundledInput(r:Int):Array[Byte] = raiseSignal(copySignal(getBundledInput(r)), calcBundledOutput(r)) //OR'd w/ output
+    def calcBundledInput(r:Int):Array[Byte] = raiseSignal(copySignal(getBundledInput(r)), getBundledOutput(r)) //OR'd w/ output
 
     override def gateLogicOnChange():Unit = {
         var inputChanged = false
