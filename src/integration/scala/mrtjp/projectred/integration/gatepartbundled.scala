@@ -33,9 +33,9 @@ trait TBundledGatePart extends GatePart with TFaceBundledAquisitions with IBundl
     abstract override def discoverStraightOverride(absDir:Int) =
     {
         val pos = posOfStraight(absDir)
-        world.getTileEntity(pos) match {
+        world.getBlockEntity(pos) match {
             case t:IBundledTile => t.canConnectBundled(absDir^1)
-            case _ if BundledSignalsLib.canConnectBundledViaInteraction(world, pos, Direction.byIndex(absDir^1)) => true
+            case _ if BundledSignalsLib.canConnectBundledViaInteraction(world, pos, Direction.values()(absDir^1)) => true
             case _ => super.discoverStraightOverride(absDir)
         }
     }
@@ -561,7 +561,7 @@ class BusInputPanel extends BundledGatePart(GateType.BUS_INPUT_PANEL)
         if (!held.isEmpty && held.getItem.isInstanceOf[IScrewdriver])
             false
         else if (hit.subHit > -1) {
-            if (!world.isRemote) {
+            if (!world.isClientSide) {
                 pressMask ^= (1<<hit.subHit)
                 gateLogicOnChange()
             }
@@ -642,7 +642,7 @@ class SegmentDisplay extends BundledGatePart(GateType.SEGMENT_DISPLAY)
         if (!held.isEmpty) {
             val c = EnumColour.fromDyeStack(held)
             if (c != null && c.ordinal != (colour&0xFF) && c != EnumColour.BLACK) {
-                if (!world.isRemote) {
+                if (!world.isClientSide) {
                     colour = c.ordinal.toByte
                     sendColourUpdate()
                 }

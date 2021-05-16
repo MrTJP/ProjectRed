@@ -9,12 +9,19 @@ import net.minecraft.world.World
 
 import java.util
 
-class PlanItem extends Item(new Item.Properties().group(ExpansionContent.expansionItemGroup))
+class PlanItem extends Item(new Item.Properties().tab(ExpansionContent.expansionItemGroup))
 {
-    override def addInformation(stack:ItemStack, worldIn:World, tooltip:util.List[ITextComponent], flagIn:ITooltipFlag):Unit = {
+    override def appendHoverText(stack:ItemStack, worldIn:World, tooltip:util.List[ITextComponent], flagIn:ITooltipFlag):Unit = {
         if (PlanItem.hasRecipeInside(stack)) {
-            val s = s"${TextFormatting.BLUE}Output: ${TextFormatting.GRAY+PlanItem.loadPlanOutput(stack).getDisplayName.getFormattedText}"
-            tooltip.add(new StringTextComponent(s))
+            val s = new StringTextComponent("Output: ")
+            s.getStyle.applyFormat(TextFormatting.BLUE)
+
+            val outName = PlanItem.loadPlanOutput(stack).getDisplayName.copy()
+            outName.getStyle.applyFormat(TextFormatting.GRAY)
+
+            s.append(outName)
+
+            tooltip.add(s)
         }
     }
 }
@@ -30,16 +37,16 @@ object PlanItem
             var slotStack = inputs(i)
             if (!slotStack.isEmpty) {
                 val itemStackNBT = new CompoundNBT
-                if (slotStack.isDamageable) { //save without damage bar
+                if (slotStack.isDamageableItem) { //save without damage bar
                     slotStack = slotStack.copy
-                    slotStack.setDamage(0)
+                    slotStack.setDamageValue(0)
                 }
-                slotStack.write(itemStackNBT)
+                slotStack.save(itemStackNBT)
                 inputsNBT.put(s"input_$i", itemStackNBT)
             }
         }
         val outputNBT = new CompoundNBT
-        output.write(outputNBT)
+        output.save(outputNBT)
 
         stack.getOrCreateTag().put("planInputs", inputsNBT)
         stack.getOrCreateTag().put("planOutput", outputNBT)
@@ -51,7 +58,7 @@ object PlanItem
             val inputsNBT = stack.getTag.getCompound("planInputs")
             for (i <- 0 until 9) {
                 val itemStackNBT = inputsNBT.getCompound(s"input_$i")
-                val itemStack = ItemStack.read(itemStackNBT)
+                val itemStack = ItemStack.of(itemStackNBT)
                 if (!itemStack.isEmpty)
                     out(i) = itemStack
             }
@@ -62,7 +69,7 @@ object PlanItem
     def loadPlanOutput(stack:ItemStack):ItemStack = {
         if (stack.hasTag) {
             val outputNBT = stack.getTag.getCompound("planOutput")
-            val itemStack = ItemStack.read(outputNBT)
+            val itemStack = ItemStack.of(outputNBT)
             if (!itemStack.isEmpty) itemStack else ItemStack.EMPTY
         } else
             ItemStack.EMPTY

@@ -43,7 +43,7 @@ object MrTJPCoreNetwork
 
     private[handler] def handleTilePacket(world:World, packet:PacketCustom, pos:BlockPos)
     {
-        world.getTileEntity(pos) match {
+        world.getBlockEntity(pos) match {
             case cpt:TPacketTile => cpt.readFromPacket(packet)
             case _ =>
         }
@@ -59,7 +59,7 @@ private object ClientHandler extends IClientPacketHandler
 {
     override def handlePacket(packet: PacketCustom, mc: Minecraft, handler: IClientPlayNetHandler)
     {
-        val world = mc.world
+        val world = mc.level
         packet.getType match {
             case C_TILE_UPDATE => handleTilePacket(world, packet, packet.readPos())
             case C_ADD_MESSAGE => Messenger.addMessage(packet.readDouble, packet.readDouble, packet.readDouble, packet.readString)
@@ -74,7 +74,7 @@ private object ServerHandler extends IServerPacketHandler
     {
         packet.getType match
         {
-            case S_TILE_UPDATE => handleTilePacket(sender.getEntityWorld, packet, packet.readPos())
+            case S_TILE_UPDATE => handleTilePacket(sender.getLevel, packet, packet.readPos())
             case S_KEY_UPDATE => KeyTracking.updatePlayerKey(packet.readUByte(), sender, packet.readBoolean())
         }
     }

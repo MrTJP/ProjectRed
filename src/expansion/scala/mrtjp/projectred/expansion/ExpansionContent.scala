@@ -13,7 +13,8 @@ import net.minecraft.data.DataGenerator
 import net.minecraft.item.{BlockItem, Item, ItemStack}
 import net.minecraft.tileentity.TileEntityType
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.client.model.generators.{BlockStateProvider, ConfiguredModel, ExistingFileHelper}
+import net.minecraftforge.client.model.generators.{BlockStateProvider, ConfiguredModel}
+import net.minecraftforge.common.data.ExistingFileHelper
 import net.minecraftforge.eventbus.api.{IEventBus, SubscribeEvent}
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent
 import net.minecraftforge.registries.{DeferredRegister, ForgeRegistries}
@@ -30,38 +31,38 @@ object ExpansionContent
     val expansionItemGroup = new SimpleItemGroup(ProjectRedExpansion.MOD_ID, () => new ItemStack(Blocks.DISPENSER))
 
     val projectBenchBlock = BLOCKS.register("project_bench", () => new BaseMachineBlock(() => new TileProjectBench))
-    val projectBenchTile = TILES.register("project_bench", () => TileEntityType.Builder.create(() => new TileProjectBench, projectBenchBlock.get()).build(null))
-    val projectBenchItem = ITEMS.register("project_bench", () => new BlockItem(projectBenchBlock.get(), new Item.Properties().group(expansionItemGroup)))
+    val projectBenchTile = TILES.register("project_bench", () => TileEntityType.Builder.of(() => new TileProjectBench, projectBenchBlock.get()).build(null))
+    val projectBenchItem = ITEMS.register("project_bench", () => new BlockItem(projectBenchBlock.get(), new Item.Properties().tab(expansionItemGroup)))
     val projectBenchContainer = CONTAINERS.register("project_bench", () => ICCLContainerType.create(ContainerProjectBench))
 
     val batteryBoxBlock = BLOCKS.register("battery_box", () => new BaseMachineBlock(() => new TileBatteryBox))
-    val batteryBoxTile = TILES.register("battery_box", () => TileEntityType.Builder.create(() => new TileBatteryBox, batteryBoxBlock.get()).build(null))
-    val batteryBoxItem = ITEMS.register("battery_box", () => new BlockItem(batteryBoxBlock.get(), new Item.Properties().group(expansionItemGroup)))
+    val batteryBoxTile = TILES.register("battery_box", () => TileEntityType.Builder.of(() => new TileBatteryBox, batteryBoxBlock.get()).build(null))
+    val batteryBoxItem = ITEMS.register("battery_box", () => new BlockItem(batteryBoxBlock.get(), new Item.Properties().tab(expansionItemGroup)))
     val batteryBoxContainer = CONTAINERS.register("battery_box", () => ICCLContainerType.create(ContainerBatteryBox))
 
     val chargingBenchBlock = BLOCKS.register("charging_bench", () => new BaseMachineBlock(() => new TileChargingBench))
-    val chargingBenchTile = TILES.register("charging_bench", () => TileEntityType.Builder.create(() => new TileChargingBench, chargingBenchBlock.get).build(null))
-    val chargingBenchItem = ITEMS.register("charging_bench", () => new BlockItem(chargingBenchBlock.get, new Item.Properties().group(expansionItemGroup)))
+    val chargingBenchTile = TILES.register("charging_bench", () => TileEntityType.Builder.of(() => new TileChargingBench, chargingBenchBlock.get).build(null))
+    val chargingBenchItem = ITEMS.register("charging_bench", () => new BlockItem(chargingBenchBlock.get, new Item.Properties().tab(expansionItemGroup)))
     val chargingBenchContainer = CONTAINERS.register("charging_bench", () => ICCLContainerType.create(ContainerChargingBench))
 
     val inductionFurnaceBlock = BLOCKS.register("induction_furnace", () => new BaseMachineBlock(() => new TileInductiveFurnace))
-    val inductionFurnaceTile = TILES.register("induction_furnace", () => TileEntityType.Builder.create(() => new TileInductiveFurnace, inductionFurnaceBlock.get).build(null))
-    val inductionFurnaceItem = ITEMS.register("induction_furnace", () => new BlockItem(inductionFurnaceBlock.get, new Item.Properties().group(expansionItemGroup)))
+    val inductionFurnaceTile = TILES.register("induction_furnace", () => TileEntityType.Builder.of(() => new TileInductiveFurnace, inductionFurnaceBlock.get).build(null))
+    val inductionFurnaceItem = ITEMS.register("induction_furnace", () => new BlockItem(inductionFurnaceBlock.get, new Item.Properties().tab(expansionItemGroup)))
     val inductionFurnaceContainer = CONTAINERS.register("induction_furnace", () => ICCLContainerType.create(ContainerInductiveFurnace))
 
     val electrotineGeneratorBlock = BLOCKS.register("electrotine_generator", () => new BaseMachineBlock(() => new TileElectrotineGenerator))
-    val electrotineGeneratorTile = TILES.register("electrotine_generator", () => TileEntityType.Builder.create(() => new TileElectrotineGenerator, electrotineGeneratorBlock.get).build(null))
-    val electrotineGeneratorItem = ITEMS.register("electrotine_generator", () => new BlockItem(electrotineGeneratorBlock.get, new Item.Properties().group(expansionItemGroup)))
+    val electrotineGeneratorTile = TILES.register("electrotine_generator", () => TileEntityType.Builder.of(() => new TileElectrotineGenerator, electrotineGeneratorBlock.get).build(null))
+    val electrotineGeneratorItem = ITEMS.register("electrotine_generator", () => new BlockItem(electrotineGeneratorBlock.get, new Item.Properties().tab(expansionItemGroup)))
     val electrotineGeneratorContainer = CONTAINERS.register("electrotine_generator", () => ICCLContainerType.create(ContainerElectrotineGenerator))
 
     val autoCraftingBenchBlock = BLOCKS.register("auto_crafting_bench", () => new BaseMachineBlock(() => new TileAutoCrafter))
-    val autoCraftingBenchTile = TILES.register("auto_crafting_bench", () => TileEntityType.Builder.create(() => new TileAutoCrafter, autoCraftingBenchBlock.get).build(null))
-    val autoCraftingBenchItem = ITEMS.register("auto_crafting_bench", () => new BlockItem(autoCraftingBenchBlock.get, new Item.Properties().group(expansionItemGroup)))
+    val autoCraftingBenchTile = TILES.register("auto_crafting_bench", () => TileEntityType.Builder.of(() => new TileAutoCrafter, autoCraftingBenchBlock.get).build(null))
+    val autoCraftingBenchItem = ITEMS.register("auto_crafting_bench", () => new BlockItem(autoCraftingBenchBlock.get, new Item.Properties().tab(expansionItemGroup)))
     val autoCraftingBenchContainer = CONTAINERS.register("auto_crafting_bench", () => ICCLContainerType.create(ContainerAutoCrafter))
 
     val teleposerBlock = BLOCKS.register("teleposer", () => new BaseMachineBlock(() => new TileTeleposer))
-    val teleposerTile = TILES.register("teleposer", () => TileEntityType.Builder.create(() => new TileTeleposer, teleposerBlock.get).build(null))
-    val teleposerItem = ITEMS.register("teleposer", () => new BlockItem(teleposerBlock.get, new Item.Properties().group(expansionItemGroup)))
+    val teleposerTile = TILES.register("teleposer", () => TileEntityType.Builder.of(() => new TileTeleposer, teleposerBlock.get).build(null))
+    val teleposerItem = ITEMS.register("teleposer", () => new BlockItem(teleposerBlock.get, new Item.Properties().tab(expansionItemGroup)))
 
 
     /** Items **/

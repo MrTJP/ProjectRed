@@ -14,7 +14,7 @@ import scala.collection.immutable.HashSet
 object WirePropagator
 {
     def setDustProvidePower(b:Boolean):Unit = {
-        Blocks.REDSTONE_WIRE.asInstanceOf[RedstoneWireBlock].canProvidePower = b
+        Blocks.REDSTONE_WIRE.asInstanceOf[RedstoneWireBlock].shouldSignal = b
     }
 
     private val rwConnectable = ThreadLocal.withInitial[Boolean](() => true)
@@ -122,7 +122,7 @@ class PropagationRun
             entry.getKey.multiPartChange(parts)
         }
 
-        res_NeighborChanges.foreach(b => world.neighborChanged(b.toImmutable, CBMultipartModContent.blockMultipart, b.toImmutable))
+        res_NeighborChanges.foreach(b => world.neighborChanged(b, CBMultipartModContent.blockMultipart, b))
 
         WirePropagator.finishing = parent
 

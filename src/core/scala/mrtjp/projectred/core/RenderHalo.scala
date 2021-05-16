@@ -8,21 +8,22 @@ import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.client.renderer.{IRenderTypeBuffer, Matrix4f, RenderState, RenderType}
-import net.minecraft.util.math.{BlockPos, Vec3d}
+import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderState, RenderType}
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.vector.{Matrix4f, Vector3d}
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 
 object RenderHalo
 {
-    val RenderTypeLamp:RenderType = RenderType.makeType("pr:lamp",
+    val RenderTypeLamp:RenderType = RenderType.create("pr:lamp",
         DefaultVertexFormats.POSITION_COLOR, 7, 8192, false, true,
-        RenderType.State.getBuilder.transparency(RenderState.LIGHTNING_TRANSPARENCY)
-                .texture(RenderState.NO_TEXTURE)
-                .texturing(new RenderState.TexturingState("disable_lighting", () => RenderSystem.disableLighting(), SneakyUtils.none))
-                .cull(RenderState.CULL_DISABLED)
+        RenderType.State.builder().setTransparencyState(RenderState.LIGHTNING_TRANSPARENCY)
+                .setTextureState(RenderState.NO_TEXTURE)
+                .setTexturingState(new RenderState.TexturingState("disable_lighting", () => RenderSystem.disableLighting(), SneakyUtils.none))
+                .setCullState(RenderState.NO_CULL)
 //                .writeMask(RenderState.DEPTH_WRITE)
-                .build(false))
+                .createCompositeState(false))
 
     private var renderList = Vector[LightCache]()
     private val renderEntityPos = new Vector3
@@ -50,18 +51,18 @@ object RenderHalo
     @SubscribeEvent
     def onRenderWorldLast(event:RenderWorldLastEvent):Unit = {
         if (renderList.nonEmpty) {
-            val w = Minecraft.getInstance.world
+            val w = Minecraft.getInstance.level
             val mStack = event.getMatrixStack
-            val buffers = Minecraft.getInstance.getRenderTypeBuffers.getBufferSource
-            val projectedView = Minecraft.getInstance.gameRenderer.getActiveRenderInfo.getProjectedView
+            val buffers = Minecraft.getInstance.renderBuffers().bufferSource()
+            val projectedView = Minecraft.getInstance.gameRenderer.getMainCamera.getPosition
 
             renderAndFlushLights(mStack, buffers, projectedView, event.getProjectionMatrix)
         }
     }
 
-    def renderAndFlushLights(mStack:MatrixStack, buffers:IRenderTypeBuffer, projectedView:Vec3d, viewMat:Matrix4f):Unit = {
-        mStack.push()
-        mStack.translate(-projectedView.getX, -projectedView.getY, -projectedView.getZ)
+    def renderAndFlushLights(mStack:MatrixStack, buffers:IRenderTypeBuffer, projectedView:Vector3d, viewMat:Matrix4f):Unit = {
+        mStack.pushPose()
+        mStack.translate(-projectedView.x, -projectedView.y, -projectedView.z)
 
         val ccrs = CCRenderState.instance()
         prepareRenderState(ccrs, mStack, buffers)
@@ -76,7 +77,7 @@ object RenderHalo
             i += 1
         }
         renderList = Vector()
-        mStack.pop()
+        mStack.popPose()
     }
 
 

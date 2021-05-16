@@ -23,7 +23,7 @@ class OrbitAction extends ParticleAction
         val dp = new Vector3(p2.x, 0, p2.z).subtract(target)
         val dist = dp.mag
         val ang = math.atan2(dp.z, dp.x)+speed*deltaTime(time)
-        p2.setPosition(
+        p2.setPos(
             target.x+math.cos(ang)*dist,
             p2.y,
             target.z+math.sin(ang)*dist

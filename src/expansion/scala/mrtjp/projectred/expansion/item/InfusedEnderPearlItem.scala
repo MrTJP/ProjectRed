@@ -9,9 +9,9 @@ import net.minecraft.world.World
 
 import java.util
 
-class InfusedEnderPearlItem extends Item(new Item.Properties().group(ExpansionContent.expansionItemGroup).maxStackSize(1))
+class InfusedEnderPearlItem extends Item(new Item.Properties().tab(ExpansionContent.expansionItemGroup).stacksTo(1))
 {
-    override def addInformation(stack:ItemStack, worldIn:World, tooltip:util.List[ITextComponent], flagIn:ITooltipFlag):Unit = {
+    override def appendHoverText(stack:ItemStack, worldIn:World, tooltip:util.List[ITextComponent], flagIn:ITooltipFlag):Unit = {
         import InfusedEnderPearlItem._
         if (hasLocation(stack)) {
             val pos = getLocation(stack)

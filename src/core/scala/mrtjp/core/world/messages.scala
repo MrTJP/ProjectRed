@@ -9,8 +9,9 @@ import codechicken.lib.packet.PacketCustom
 import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.core.handler.MrTJPCoreNetwork
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.{IRenderTypeBuffer, Quaternion, Vector3f}
+import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.vector.{Quaternion, Vector3f}
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -53,22 +54,22 @@ object Messenger
     @OnlyIn(Dist.CLIENT)
     def renderMessages(event:RenderWorldLastEvent)
     {
-        val w = Minecraft.getInstance.world
+        val w = Minecraft.getInstance.level
         if (w == null) return
         if (Messenger.messages.isEmpty) return
 
         val deathTime = System.currentTimeMillis-3000L
-        val projectedView = Minecraft.getInstance.gameRenderer.getActiveRenderInfo.getProjectedView
-        val buffers = Minecraft.getInstance.getRenderTypeBuffers.getBufferSource
+        val projectedView = Minecraft.getInstance.gameRenderer.getMainCamera.getPosition
+        val buffers = Minecraft.getInstance.renderBuffers().bufferSource()
         val mStack = event.getMatrixStack
-        mStack.push()
-        mStack.translate(-projectedView.getX, -projectedView.getY, -projectedView.getZ)
+        mStack.pushPose()
+        mStack.translate(-projectedView.x, -projectedView.y, -projectedView.z)
 
         for (m <- Messenger.messages.clone())
             if (m == null || m.receivedOn < deathTime) Messenger.messages -= m
-            else readMessage(mStack, buffers, m, Minecraft.getInstance.world.getGameTime + event.getPartialTicks)
+            else readMessage(mStack, buffers, m, w.getGameTime + event.getPartialTicks)
 
-        mStack.pop()
+        mStack.popPose()
     }
 
     private def readMessage(mStack:MatrixStack, buffers:IRenderTypeBuffer, m:Message, time:Double)
@@ -76,10 +77,10 @@ object Messenger
         var width = 0
         var height = 0
         val lines = m.msg.split("\n")
-        val fr = Minecraft.getInstance.fontRenderer
+        val fr = Minecraft.getInstance.font
         for (line <- lines) {
-            height += fr.FONT_HEIGHT + 4
-            width = Math.max(width, fr.getStringWidth(line))
+            height += fr.lineHeight + 4
+            width = Math.max(width, fr.width(line))
         }
 
         width += 2
@@ -87,24 +88,23 @@ object Messenger
         scaling *= 0.6666667F
         val y = (m.y+0.04*Math.sin((m.x.asInstanceOf[Int]^m.z.asInstanceOf[Int])+time/4)+m.yOffset).asInstanceOf[Float]
 
-        mStack.push()
+        mStack.pushPose()
         mStack.translate(m.x + 0.5F, y, m.z + 0.5F)
         val rot = new Quaternion(Vector3f.YP, (8*Math.sin((m.x.asInstanceOf[Int]^m.z.asInstanceOf[Int])+time/6)).asInstanceOf[Float], true)
-        rot.multiply(Minecraft.getInstance().getRenderManager.getCameraOrientation)
-        mStack.rotate(rot)
+        rot.mul(Minecraft.getInstance().getEntityRenderDispatcher.cameraOrientation())
+        mStack.mulPose(rot)
         mStack.scale(-scaling, -scaling, scaling)
         mStack.translate(0.0F, -10*lines.length, 0.0F)
 
-        val bgOpacity: Float = Minecraft.getInstance.gameSettings.getTextBackgroundOpacity(0.25F)
+        val bgOpacity: Float = Minecraft.getInstance.options.getBackgroundOpacity(0.25F)
         val bgColor: Int = (bgOpacity * 255.0F).toInt << 24
 
         var i = 0
         for (line <- lines) {
-            fr.renderString(line, -fr.getStringWidth(line)/2, 10*i, 553648127, false, mStack.getLast.getMatrix, buffers, true, bgColor, 15728880)
-            fr.renderString(line, -fr.getStringWidth(line)/2, 10*i, -1, false, mStack.getLast.getMatrix, buffers, false, 0, 15728880)
+            fr.draw(mStack, line, -fr.width(line)/2, 10*i, bgColor)
             i += 1
         }
-        mStack.pop()
+        mStack.popPose()
     }
 }
 

@@ -21,12 +21,12 @@ class NodeContainer(containerType:ContainerType[_], windowId:Int) extends Contai
 
 //    def slots:MBuffer[TSlot3] = inventorySlots.asInstanceOf[JList[TSlot3]].asScala
 
-    override def canInteractWith(player:PlayerEntity) = true
+    override def stillValid(player:PlayerEntity) = true
 
-    override def canDragIntoSlot(slot:Slot) = slot match
+    override def canDragTo(slot:Slot) = slot match
     {
         case s:TSlot3 => !s.phantomSlot
-        case _ => super.canDragIntoSlot(slot)
+        case _ => super.canDragTo(slot)
     }
 
     override def addSlot(slot:Slot) =
@@ -58,31 +58,31 @@ class NodeContainer(containerType:ContainerType[_], windowId:Int) extends Contai
             addSlot(slotFactory(playerInv, up(), x, y)) //slots
     }
 
-    override def addListener(listener:IContainerListener)
+    override def addSlotListener(listener:IContainerListener)
     {
-        super.addListener(listener)
+        super.addSlotListener(listener)
         listener match {
-            case p:PlayerEntity if !p.world.isRemote =>
+            case p:PlayerEntity if !p.level.isClientSide =>
                 startWatchDelegate(p)
             case _ =>
         }
     }
 
 
-    override def removeListener(listener:IContainerListener)
+    override def removeSlotListener(listener:IContainerListener)
     {
-        super.removeListener(listener)
+        super.removeSlotListener(listener)
         listener match {
-            case p:PlayerEntity if !p.world.isRemote =>
+            case p:PlayerEntity if !p.level.isClientSide =>
                 stopWatchDelegate(p)
             case _ =>
         }
     }
 
-    override def onContainerClosed(p:PlayerEntity)
+    override def removed(p:PlayerEntity)
     {
-        super.onContainerClosed(p)
-        if (!p.world.isRemote)
+        super.removed(p)
+        if (!p.level.isClientSide)
             stopWatchDelegate(p)
     }
 
@@ -115,15 +115,15 @@ class NodeContainer(containerType:ContainerType[_], windowId:Int) extends Contai
       * @param player The player that has this container open.
       * @return
       */
-    override def slotClick(id:Int, dragType:Int, clickType:ClickType, player:PlayerEntity):ItemStack =
+    override def clicked(id:Int, dragType:Int, clickType:ClickType, player:PlayerEntity):ItemStack =
     {
         try { //Ignore exceptions raised from client-side only slots that wont be found here. To be removed.
-            if (player.world.isRemote && inventorySlots.size() > id && (clickType == ClickType.PICKUP || clickType == ClickType.QUICK_MOVE)) {
-                val slot = inventorySlots.get(id)
-                if (!slot.isEnabled)
+            if (player.level.isClientSide && slots.size() > id && (clickType == ClickType.PICKUP || clickType == ClickType.QUICK_MOVE)) {
+                val slot = slots.get(id)
+                if (!slot.isActive)
                     return handleGhostClick(slot, dragType, clickType, player)
             }
-            super.slotClick(id, dragType, clickType, player)
+            super.clicked(id, dragType, clickType, player)
         } catch {
             case e:Exception => ItemStack.EMPTY
         }
@@ -131,54 +131,54 @@ class NodeContainer(containerType:ContainerType[_], windowId:Int) extends Contai
 
     private def handleGhostClick(slot:Slot, mouse:Int, clickType:ClickType, player:PlayerEntity):ItemStack =
     {
-        val inSlot = slot.getStack
-        val inCursor = player.inventory.getItemStack
-        if (!inCursor.isEmpty && !slot.isItemValid(inCursor)) return inCursor
+        val inSlot = slot.getItem
+        val inCursor = player.inventory.getCarried
+        if (!inCursor.isEmpty && !slot.mayPlace(inCursor)) return inCursor
 
         val stackable = InvWrapper.areItemsStackable(inSlot, inCursor)
         if (stackable)
         {
-            if (!inSlot.isEmpty && inCursor.isEmpty) slot.putStack(ItemStack.EMPTY)
+            if (!inSlot.isEmpty && inCursor.isEmpty) slot.set(ItemStack.EMPTY)
             else if (inSlot.isEmpty && !inCursor.isEmpty)
             {
                 val newStack = inCursor.copy
-                newStack.setCount(if (mouse == 0) math.min(inCursor.getCount, slot.getSlotStackLimit) else 1)
-                slot.putStack(newStack)
+                newStack.setCount(if (mouse == 0) math.min(inCursor.getCount, slot.getMaxStackSize) else 1)
+                slot.set(newStack)
             }
             else if (!inSlot.isEmpty)
             {
                 val toAdd = if (clickType == ClickType.QUICK_MOVE) 10 else 1
-                if (mouse == 0) inSlot.setCount(math.min(slot.getSlotStackLimit, inSlot.getCount+toAdd))
+                if (mouse == 0) inSlot.setCount(math.min(slot.getMaxStackSize, inSlot.getCount+toAdd))
                 else if (mouse == 1) inSlot.setCount(math.max(0, inSlot.getCount-toAdd))
-                if (inSlot.getCount > 0) slot.putStack(inSlot)
-                else slot.putStack(ItemStack.EMPTY)
+                if (inSlot.getCount > 0) slot.set(inSlot)
+                else slot.set(ItemStack.EMPTY)
             }
         }
         else
         {
             val newStack = inCursor.copy
-            newStack.setCount(if (mouse == 0) math.min(inCursor.getCount, slot.getSlotStackLimit) else 1)
-            slot.putStack(newStack)
+            newStack.setCount(if (mouse == 0) math.min(inCursor.getCount, slot.getMaxStackSize) else 1)
+            slot.set(newStack)
         }
 
         inCursor
     }
 
-    override def transferStackInSlot(player:PlayerEntity, i:Int):ItemStack =
+    override def quickMoveStack(player:PlayerEntity, i:Int):ItemStack =
     {
         var stack:ItemStack = ItemStack.EMPTY
-        if (inventorySlots.size > i)
+        if (slots.size > i)
         {
-            val slot = inventorySlots.get(i)
-            if (slot != null && slot.getHasStack)
+            val slot = slots.get(i)
+            if (slot != null && slot.hasItem)
             {
-                stack = slot.getStack
+                stack = slot.getItem
                 val manipStack = stack.copy
 
                 if (!doMerge(player, manipStack, i) || stack.getCount == manipStack.getCount) return ItemStack.EMPTY
 
-                if (manipStack.getCount <= 0) slot.putStack(ItemStack.EMPTY)
-                else slot.putStack(manipStack)
+                if (manipStack.getCount <= 0) slot.set(ItemStack.EMPTY)
+                else slot.set(manipStack)
 
                 slot.onTake(player, stack)
             }
@@ -191,13 +191,13 @@ class NodeContainer(containerType:ContainerType[_], windowId:Int) extends Contai
     @deprecated("use doMerge(_:EntityPlayer, _:ItemStack, _:Int)")
     def doMerge(stack:ItemStack, from:Int):Boolean =
     {
-        if (inventorySlots.size > 36) { //run standard impl on containers w/ player inventory
-            if (inventorySlots.size-36 until inventorySlots.size contains from) { //if item is from player inventory...
-                return tryMergeItemStack(stack, 0, inventorySlots.size-36, false) //merge to rest of container
+        if (slots.size > 36) { //run standard impl on containers w/ player inventory
+            if (slots.size-36 until slots.size contains from) { //if item is from player inventory...
+                return tryMergeItemStack(stack, 0, slots.size-36, false) //merge to rest of container
             }
             else { //else if item from outside player inventory...
-                if (tryMergeItemStack(stack, inventorySlots.size-36, inventorySlots.size-27, true)) return true //try merge to hotbar from back
-                if (tryMergeItemStack(stack, inventorySlots.size-27, inventorySlots.size, true)) return true //then try player inventory from back
+                if (tryMergeItemStack(stack, slots.size-36, slots.size-27, true)) return true //try merge to hotbar from back
+                if (tryMergeItemStack(stack, slots.size-27, slots.size, true)) return true //then try player inventory from back
             }
         }
 
@@ -215,24 +215,24 @@ class NodeContainer(containerType:ContainerType[_], windowId:Int) extends Contai
         {
             while(stack.getCount > 0 && (!reverse && k < end || reverse && k >= start))
             {
-                slot = inventorySlots.get(k)
-                inslot = slot.getStack
+                slot = slots.get(k)
+                inslot = slot.getItem
                 if (/*slot.isEnabled && */!inslot.isEmpty && inslot.getItem == stack.getItem &&
-                        ItemStack.areItemStackTagsEqual(stack, inslot))
+                        ItemStack.tagMatches(stack, inslot))
                 {
-                    val space = math.min(slot.getSlotStackLimit, stack.getMaxStackSize)-inslot.getCount
+                    val space = math.min(slot.getMaxStackSize, stack.getMaxStackSize)-inslot.getCount
                     if (space >= stack.getCount)
                     {
                         inslot.setCount(inslot.getCount + stack.getCount)
                         stack.setCount(0)
-                        slot.onSlotChanged()
+                        slot.setChanged()
                         flag1 = true
                     }
                     else if (space > 0)
                     {
                         stack.setCount(stack.getCount - space)
                         inslot.setCount(inslot.getCount + space)
-                        slot.onSlotChanged()
+                        slot.setChanged()
                         flag1 = true
                     }
                 }
@@ -249,23 +249,23 @@ class NodeContainer(containerType:ContainerType[_], windowId:Int) extends Contai
             {
                 while(!reverse && k < end || reverse && k >= start)
                 {
-                    slot = inventorySlots.get(k)
-                    inslot = slot.getStack
-                    if(/*!slot.isEnabled && */inslot.isEmpty && slot.isItemValid(stack))
+                    slot = slots.get(k)
+                    inslot = slot.getItem
+                    if(/*!slot.isEnabled && */inslot.isEmpty && slot.mayPlace(stack))
                     {
-                        val space = math.min(slot.getSlotStackLimit, stack.getMaxStackSize)
+                        val space = math.min(slot.getMaxStackSize, stack.getMaxStackSize)
                         if (space >= stack.getCount)
                         {
-                            slot.putStack(stack.copy)
-                            slot.onSlotChanged()
+                            slot.set(stack.copy)
+                            slot.setChanged()
                             stack.setCount(0)
                             flag1 = true
                             break()
                         }
                         else
                         {
-                            slot.putStack(stack.split(space))
-                            slot.onSlotChanged()
+                            slot.set(stack.split(space))
+                            slot.setChanged()
                             flag1 = true
                         }
                     }
@@ -278,22 +278,22 @@ class NodeContainer(containerType:ContainerType[_], windowId:Int) extends Contai
     }
 
     //Hack to allow empty containers for use with guis without inventories
-    override def putStackInSlot(slot:Int, stack:ItemStack)
+    override def setItem(slot:Int, stack:ItemStack)
     {
-        if (inventorySlots.isEmpty || inventorySlots.size < slot) return
-        else super.putStackInSlot(slot, stack)
+        if (slots.isEmpty || slots.size < slot) return
+        else super.setItem(slot, stack)
     }
 }
 
 class Slot3(inv:IInventory, i:Int, x:Int, y:Int) extends Slot(inv, i, x, y) with TSlot3
 {
-    override def getSlotStackLimit:Int = slotLimitCalculator()
-    override def canTakeStack(player:PlayerEntity):Boolean = canRemoveDelegate()
-    override def isItemValid(stack:ItemStack):Boolean = canPlaceDelegate(stack)
+    override def getMaxStackSize:Int = slotLimitCalculator()
+    override def mayPickup(player:PlayerEntity):Boolean = canRemoveDelegate()
+    override def mayPlace(stack:ItemStack):Boolean = canPlaceDelegate(stack)
 
-    override def onSlotChanged()
+    override def setChanged()
     {
-        super.onSlotChanged()
+        super.setChanged()
         slotChangeDelegate()
         slotChangeDelegate2()
     }
@@ -303,8 +303,8 @@ trait TSlot3 extends Slot
 {
     var slotChangeDelegate = {() =>}
     var canRemoveDelegate = {() => !phantomSlot}
-    var canPlaceDelegate = {(stack:ItemStack) => inventory.isItemValidForSlot(getSlotIndex, stack)}
-    var slotLimitCalculator = {() => inventory.getInventoryStackLimit}
+    var canPlaceDelegate = {(stack:ItemStack) => container.canPlaceItem(getSlotIndex, stack)}
+    var slotLimitCalculator = {() => container.getMaxStackSize}
 
     var phantomSlot = false
 

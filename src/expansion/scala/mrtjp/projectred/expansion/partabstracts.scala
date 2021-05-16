@@ -57,7 +57,7 @@ trait TFaceElectricalDevice extends TMultiPart with TNormalOcclusionPart with TF
 
     override def discoverOpen(dir:Int):Boolean = true
 
-    override def discoverStraightOverride(absDir:Int):Boolean = world.getTileEntity(posOfStraight(absoluteRot(absDir))) match {
+    override def discoverStraightOverride(absDir:Int):Boolean = world.getBlockEntity(posOfStraight(absoluteRot(absDir))) match {
         case p:IPowerConnectable => p.connectStraight(this, absDir^1, Rotation.rotationTo(absDir, side))
         case _ => false
     }
@@ -65,13 +65,13 @@ trait TFaceElectricalDevice extends TMultiPart with TNormalOcclusionPart with TF
     override def canConnectCorner(r:Int):Boolean = false
 
     override def onPartChanged(part:TMultiPart):Unit = {
-        if (!world.isRemote)
+        if (!world.isClientSide)
             if (updateOutward())
                 onMaskChanged()
     }
 
     override def onNeighborBlockChanged(from:BlockPos):Unit = {
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             if (!dropIfCantStay())
                 if (updateExternalConns())
                     onMaskChanged()
@@ -80,19 +80,19 @@ trait TFaceElectricalDevice extends TMultiPart with TNormalOcclusionPart with TF
 
     override def onAdded():Unit = {
         super.onAdded()
-        if (!world.isRemote)
+        if (!world.isClientSide)
             if (updateInward())
                 onMaskChanged()
     }
 
     override def onRemoved():Unit = {
         super.onRemoved()
-        if (!world.isRemote) notifyAllExternals()
+        if (!world.isClientSide) notifyAllExternals()
     }
 
     def canStay:Boolean = {
-        val pos = tile.getPos.offset(Direction.byIndex(side))
-        PRLib.canPlaceGateOnSide(world, pos, Direction.byIndex(side^1))
+        val pos = tile.getBlockPos.relative(Direction.values()(side))
+        PRLib.canPlaceGateOnSide(world, pos, Direction.values()(side^1))
     }
 
     def dropIfCantStay():Boolean = {
@@ -119,7 +119,7 @@ trait TFaceElectricalDevice extends TMultiPart with TNormalOcclusionPart with TF
 
     override def activate(player:PlayerEntity, hit:PartRayTraceResult, held:ItemStack, hand:Hand):ActionResultType = {
         if (!held.isEmpty && doesRotate && held.getItem.isInstanceOf[IScrewdriver] && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held)) {
-            if (!world.isRemote) {
+            if (!world.isClientSide) {
                 rotate()
                 held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             }
@@ -133,7 +133,7 @@ trait TFaceElectricalDevice extends TMultiPart with TNormalOcclusionPart with TF
         setRotation((rotation+1)%4)
         if (updateInward())
             onMaskChanged()
-        tile.markDirty()
+        tile.setChanged()
         tile.notifyPartChange(this)
         sendOrientUpdate()
         notifyExternals(0xF)

@@ -91,8 +91,8 @@ object RenderFramedWire extends IMicroHighlightRenderer
 
     override def renderHighlight(player: PlayerEntity, hand: Hand, hit: BlockRayTraceResult, mcrFactory: CommonMicroFactory, size: Int, material: MicroMaterial, mStack: MatrixStack, getter: IRenderTypeBuffer, partialTicks: Float) =
     {
-        val tile = BlockMultiPart.getTile(player.world, hit.getPos)
-        if (tile == null || mcrFactory.getFactoryID != 0 || size != 1 || player.isSneaking ||
+        val tile = BlockMultiPart.getTile(player.level, hit.getBlockPos)
+        if (tile == null || mcrFactory.getFactoryID != 0 || size != 1 || player.isCrouching ||
             material.isTransparent) false
         else hit match {
             case prt:PartRayTraceResult => prt.part match {
@@ -474,12 +474,12 @@ class FWireJacketModel(wire:CCModel, boxes:Array[IndexedCuboid6], highlightBoxes
 
     def renderMaterial(material:MicroMaterial, ccrs:CCRenderState, inventory:Boolean)
     {
-        val layer = if (inventory) null else RenderType.getSolid
+        val layer = if (inventory) null else RenderType.solid()
         for (b <- boxes) MicroblockRender.renderCuboid(ccrs, material, layer, b, b.data.asInstanceOf[Int])
     }
 
     def renderHighlight(material:MicroMaterial, ccrs:CCRenderState, inventory:Boolean):Unit = {
-        val layer = if (inventory) null else RenderType.getSolid
+        val layer = if (inventory) null else RenderType.solid()
         for (b <- highlightBoxes)
             MicroblockRender.renderCuboid(ccrs, material, layer, b, b.data.asInstanceOf[Int])
     }

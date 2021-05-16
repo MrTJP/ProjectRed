@@ -123,13 +123,13 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
 
     override def tick()
     {
-        if (!world.isRemote) processScheduled()
+        if (!world.isClientSide) processScheduled()
         gateLogicOnTick()
     }
 
     override def onPartChanged(part:TMultiPart)
     {
-        if (!world.isRemote)
+        if (!world.isClientSide)
         {
             updateOutward()
             onChange()
@@ -138,7 +138,7 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
 
     override def onNeighborBlockChanged(from:BlockPos)
     {
-        if (!world.isRemote)
+        if (!world.isClientSide)
         {
             if (dropIfCantStay()) return
             updateExternalConns()
@@ -149,7 +149,7 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
     override def onAdded()
     {
         super.onAdded()
-        if (!world.isRemote)
+        if (!world.isClientSide)
         {
             gateLogicSetup()
             updateInward()
@@ -160,18 +160,18 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
     override def onRemoved()
     {
         super.onRemoved()
-        if (!world.isRemote) notifyAllExternals()
+        if (!world.isClientSide) notifyAllExternals()
     }
 
-    override def onChunkLoad(chunk:Chunk)
+    override def onChunkLoad()
     {
-        super.onChunkLoad(chunk)
+        super.onChunkLoad()
         if (tile != null) {
             gateLogicOnWorldLoad()
         }
     }
 
-    def canStay = PRLib.canPlaceGateOnSide(world, pos.offset(Direction.byIndex(side)), Direction.byIndex(side^1))
+    def canStay = PRLib.canPlaceGateOnSide(world, pos.relative(Direction.values()(side)), Direction.values()(side^1))
 
     def dropIfCantStay() =
     {
@@ -215,8 +215,8 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
         if (gateLogicActivate(player, held, hit)) return ActionResultType.SUCCESS
 
         if (!held.isEmpty && held.getItem.isInstanceOf[IScrewdriver] && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held)) {
-            if (!world.isRemote) {
-                if (player.isSneaking) configure()
+            if (!world.isClientSide) {
+                if (player.isCrouching) configure()
                 else rotate()
                 held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             }
@@ -229,7 +229,7 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
     {
         if (gateLogicCycleShape()) {
             updateInward()
-            tile.markDirty()
+            tile.setChanged()
             tile.notifyPartChange(this)
             sendShapeUpdate()
             notifyExternals(0xF)
@@ -241,7 +241,7 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
     {
         setRotation((rotation+1)%4)
         updateInward()
-        tile.markDirty()
+        tile.setChanged()
         tile.notifyPartChange(this)
         sendOrientUpdate()
         notifyExternals(0xF)
@@ -260,7 +260,7 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
 
     @OnlyIn(Dist.CLIENT)
     override def renderStatic(layer:RenderType, ccrs:CCRenderState) = {
-        if (layer == null || (layer == RenderType.getCutout && Configurator.staticGates)) {
+        if (layer == null || (layer == RenderType.cutout() && Configurator.staticGates)) {
             ccrs.setBrightness(world, this.pos)
             RenderGate.renderStatic(this, Vector3.ZERO, ccrs)
             true
@@ -275,12 +275,12 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
         ccrs.reset()
         ccrs.brightness = packedLight
         ccrs.overlay = packedOverlay
-        ccrs.bind(new TransformingVertexBuilder(buffers.getBuffer(RenderType.getCutout), mStack), DefaultVertexFormats.BLOCK)
+        ccrs.bind(new TransformingVertexBuilder(buffers.getBuffer(RenderType.cutout()), mStack), DefaultVertexFormats.BLOCK)
         RenderGate.renderDynamic(this, Vector3.ZERO, partialTicks, ccrs)
         RenderGate.renderCustomDynamic(this, Vector3.ZERO, mStack, buffers, packedLight, packedOverlay, partialTicks)
     }
 
-    override def getBounds:Cuboid6 = new Cuboid6(getOutlineShape.getBoundingBox)
+    override def getBounds:Cuboid6 = new Cuboid6(getOutlineShape.bounds())
 
     override def getBreakingIcon(hit:PartRayTraceResult):TextureAtlasSprite = ComponentStore.baseIcon
 

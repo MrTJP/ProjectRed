@@ -5,6 +5,7 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.inventory.container.ICCLContainerFactory
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.util.ServerUtils
+import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.core.gui._
 import mrtjp.core.vec.Point
 import mrtjp.projectred.ProjectRedExpansion
@@ -17,14 +18,14 @@ import net.minecraft.util.{Direction, ResourceLocation}
 class TileInductiveFurnace extends TileProcessingMachine(ExpansionContent.inductionFurnaceTile.get)
 {
     override protected val storage:Array[ItemStack] = Array.fill(2)(ItemStack.EMPTY)
-    override def getInventoryStackLimit = 64
+    override def getMaxStackSize = 64
     override def nbtSaveName:String = "induction_furnace"
 
     override def createMenu(windowId:Int, playerInv:PlayerInventory, player:PlayerEntity):ContainerInductiveFurnace =
         new ContainerInductiveFurnace(playerInv, this, windowId)
 
-    def canExtractItem(slot:Int, itemstack:ItemStack, side:Direction):Boolean = true
-    def canInsertItem(slot:Int, itemstack:ItemStack, side:Direction):Boolean = side == Direction.UP
+    def canTakeItemThroughFace(slot:Int, itemstack:ItemStack, side:Direction):Boolean = true
+    def canPlaceItemThroughFace(slot:Int, itemstack:ItemStack, side:Direction):Boolean = side == Direction.UP
     def getSlotsForFace(s:Direction):Array[Int] = s match {
         case Direction.UP => Array(0) // input
         case Direction.NORTH|Direction.SOUTH|Direction.WEST|Direction.EAST => Array(1) // output
@@ -95,7 +96,7 @@ class ContainerInductiveFurnace(playerInv:PlayerInventory, val tile:TileInductiv
 
 object ContainerInductiveFurnace extends ICCLContainerFactory[ContainerInductiveFurnace] {
     override def create(windowId:Int, inventory:PlayerInventory, packet:MCDataInput):ContainerInductiveFurnace = {
-        inventory.player.world.getTileEntity(packet.readPos()) match {
+        inventory.player.level.getBlockEntity(packet.readPos()) match {
             case t:TileInductiveFurnace => t.createMenu(windowId, inventory, inventory.player)
         }
     }
@@ -103,24 +104,24 @@ object ContainerInductiveFurnace extends ICCLContainerFactory[ContainerInductive
 
 class GuiInductiveFurnace(c:ContainerInductiveFurnace, playerInv:PlayerInventory, title:ITextComponent) extends NodeGui(c, 176, 171, playerInv, title)
 {
-    override def drawBack_Impl(mouse:Point, frame:Float)
+    override def drawBack_Impl(stack:MatrixStack, mouse:Point, frame:Float)
     {
         TextureUtils.changeTexture(GuiInductiveFurnace.background)
-        blit(0, 0, 0, 0, size.width, size.height)
+        blit(stack, 0, 0, 0, 0, size.width, size.height)
 
         val s = c.tile.progressScaled(24)
-        blit(80, 40, 176, 0, s+1, 16)
+        blit(stack, 80, 40, 176, 0, s+1, 16)
 
         if (c.tile.cond.canWork)
-            blit(16, 16, 177, 18, 7, 9)
-        GuiLib.drawVerticalTank(this, 16, 26, 177, 27, 7, 48, c.tile.cond.getChargeScaled(48))
+            blit(stack, 16, 16, 177, 18, 7, 9)
+        GuiLib.drawVerticalTank(stack, this, 16, 26, 177, 27, 7, 48, c.tile.cond.getChargeScaled(48))
 
         if (c.tile.cond.flow == -1)
-            blit(27, 16, 185, 18, 7, 9)
-        GuiLib.drawVerticalTank(this, 27, 26, 185, 27, 7, 48, c.tile.cond.getFlowScaled(48))
+            blit(stack, 27, 16, 185, 18, 7, 9)
+        GuiLib.drawVerticalTank(stack, this, 27, 26, 185, 27, 7, 48, c.tile.cond.getFlowScaled(48))
 
-        font.drawString(title.getFormattedText, 8, 6, EnumColour.GRAY.argb)
-        font.drawString(playerInv.getDisplayName.getFormattedText, 8, 79, EnumColour.GRAY.argb)
+        font.draw(stack, title, 8, 6, EnumColour.GRAY.argb)
+        font.draw(stack, playerInv.getDisplayName, 8, 79, EnumColour.GRAY.argb)
     }
 }
 
@@ -129,7 +130,7 @@ object GuiInductiveFurnace
     val background = new ResourceLocation(ProjectRedExpansion.MOD_ID, "textures/gui/induction_furnace.png")
 
     def register():Unit = {
-        ScreenManager.registerFactory(
+        ScreenManager.register(
             ExpansionContent.inductionFurnaceContainer.get(),
             (cont:ContainerInductiveFurnace, inv, text) => new GuiInductiveFurnace(cont, inv, text))
     }

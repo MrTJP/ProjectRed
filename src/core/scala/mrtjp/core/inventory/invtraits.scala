@@ -17,49 +17,49 @@ trait TInventory extends IInventory
 {
     protected val storage:Array[ItemStack]
 
-    override def getSizeInventory:Int = storage.length
+    override def getContainerSize:Int = storage.length
 
     override def isEmpty:Boolean = storage.forall(_.isEmpty)
 
-    override def isUsableByPlayer(player:PlayerEntity):Boolean = true
-    override def isItemValidForSlot(slot:Int, item:ItemStack):Boolean = true
+    override def stillValid(player:PlayerEntity):Boolean = true
+    override def canPlaceItem(slot:Int, item:ItemStack):Boolean = true
 
-    override def openInventory(player:PlayerEntity):Unit = {}
-    override def closeInventory(player:PlayerEntity):Unit = {}
+    override def startOpen(player:PlayerEntity):Unit = {}
+    override def stopOpen(player:PlayerEntity):Unit = {}
 
-    override def getStackInSlot(slot:Int):ItemStack = storage(slot)
+    override def getItem(slot:Int):ItemStack = storage(slot)
 
-    override def setInventorySlotContents(slot:Int, item:ItemStack):Unit = {
+    override def setItem(slot:Int, item:ItemStack):Unit = {
         storage(slot) = item
-        markDirty()
+        setChanged()
     }
 
-    override def removeStackFromSlot(slot:Int):ItemStack = {
+    override def removeItemNoUpdate(slot:Int):ItemStack = {
         val stack = storage(slot)
         if (!stack.isEmpty) {
             storage(slot) = ItemStack.EMPTY
-            markDirty()
+            setChanged()
         }
         stack
     }
 
-    override def decrStackSize(slot:Int, count:Int):ItemStack = {
+    override def removeItem(slot:Int, count:Int):ItemStack = {
         val stack = storage(slot)
         if (stack.isEmpty) return ItemStack.EMPTY
 
         if (stack.getCount > count) {
             val out = stack.split(count)
-            markDirty()
+            setChanged()
             out
         } else {
             val out = stack
             storage(slot) = ItemStack.EMPTY
-            markDirty()
+            setChanged()
             out
         }
     }
 
-    override def clear():Unit = {
+    override def clearContent():Unit = {
         for (i <- storage.indices)
             storage(i) = ItemStack.EMPTY
     }
@@ -74,7 +74,7 @@ trait TInventory extends IInventory
 
             val index = tag2.getInt("index")
             if (storage.isDefinedAt(index))
-                storage(index) = ItemStack.read(tag2)
+                storage(index) = ItemStack.of(tag2)
         }
     }
 
@@ -84,7 +84,7 @@ trait TInventory extends IInventory
         for (i <- storage.indices) if (!storage(i).isEmpty && storage(i).getCount > 0) {
             val tag2 = new CompoundNBT
             tag2.putInt("index", i)
-            storage(i).write(tag2)
+            storage(i).save(tag2)
             itemList.add(tag2)
         }
 
@@ -95,6 +95,6 @@ trait TInventory extends IInventory
     def dropInvContents(w:World, pos:BlockPos):Unit = {
         for (i <- storage) if (!i.isEmpty) WorldLib.dropItem(w, pos, i)
         for (i <- storage.indices) storage(i) = ItemStack.EMPTY
-        markDirty()
+        setChanged()
     }
 }

@@ -9,17 +9,15 @@ import com.mojang.blaze3d.vertex.IVertexBuilder
 import mrtjp.core.fx.ParticleAction
 import net.minecraft.client.particle.{IParticleRenderType, Particle}
 import net.minecraft.client.renderer.{ActiveRenderInfo, BufferBuilder}
+import net.minecraft.client.world.ClientWorld
 import net.minecraft.entity.Entity
 import net.minecraft.world.World
 
 import scala.collection.mutable.ListBuffer
 
-class CoreParticle(w: World) extends Particle(w, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D) {
-    motionX = 0.0D
-    motionY = 0.0D
-    motionZ = 0.0D
+class CoreParticle(w:ClientWorld) extends Particle(w, 0.0D, 0.0D, 0.0D) {
 
-    canCollide = false
+    hasPhysics = false
     var hasVelocity = false
     var isImmortal = false
 
@@ -48,15 +46,15 @@ class CoreParticle(w: World) extends Particle(w, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0
     }
 
     override def tick() {
-        if (hasVelocity) move(motionX, motionY, motionZ)
+        if (hasVelocity) move(xd, yd, zd)
 
         actions.foreach(_.tickLife())
 
         age += 1
-        if (age > maxAge && !isImmortal) setExpired()
+        if (age > lifetime && !isImmortal) remove()
     }
 
-    override def renderParticle(buffer: IVertexBuilder, renderInfo: ActiveRenderInfo, partialTicks: Float):Unit = {
+    override def render(buffer: IVertexBuilder, renderInfo: ActiveRenderInfo, partialTicks: Float):Unit = {
         actions.foreach(_.runOn(this, partialTicks))
         actions = actions.filterNot(_.isFinished)
     }

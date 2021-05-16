@@ -7,6 +7,7 @@ package mrtjp.core.gui
 
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.util.FontUtils
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem._
 import mrtjp.core.item.ItemKeyStack
 import mrtjp.core.vec.{Point, Rect, Size}
@@ -95,25 +96,25 @@ class NodeItemList(x:Int, y:Int, w:Int, h:Int) extends TNode
         count
     }
 
-    override def drawBack_Impl(mouse:Point, frame:Float)
+    override def drawBack_Impl(stack:MatrixStack, mouse:Point, frame:Float)
     {
-        fillGradient(x, y, x+size.width, y+size.height, 0xff808080, 0xff808080)
+        fillGradient(stack, x, y, x+size.width, y+size.height, 0xff808080, 0xff808080)
         pagesNeeded = (getSeachedCount-1)/(rows*columns)
         if (pagesNeeded < 0) pagesNeeded = 0
         if (currentPage > pagesNeeded) currentPage = pagesNeeded
 
-        if (!downloadFinished) drawLoadingScreen()
-        else drawAllItems(mouse.x, mouse.y)
+        if (!downloadFinished) drawLoadingScreen(stack)
+        else drawAllItems(stack, mouse.x, mouse.y)
     }
 
-    override def drawFront_Impl(mouse:Point, rframe:Float)
+    override def drawFront_Impl(stack:MatrixStack, mouse:Point, rframe:Float)
     {
         //TODO tooltips
 //        if (hover != null) GuiDraw.drawMultiLineTip(
 //            mouse.x+12, mouse.y-12,
 //            hover.makeStack.getTooltip(mcInst.player,
 //                if(mcInst.gameSettings.advancedItemTooltips) ADVANCED else NORMAL))
-        FontUtils.drawCenteredString(
+        FontUtils.drawCenteredString(stack,
             "Page: "+(currentPage+1)+"/"+(pagesNeeded+1), x+(size.width/2), y+frame.height+6, EnumColour.BLACK.rgb)
     }
 
@@ -128,7 +129,7 @@ class NodeItemList(x:Int, y:Int, w:Int, h:Int) extends TNode
         else false
     }
 
-    private def drawLoadingScreen()
+    private def drawLoadingScreen(stack:MatrixStack)
     {
         val barSizeX = size.width/2
         val time = System.currentTimeMillis/(if (waitingForList) 40 else 8)
@@ -138,14 +139,14 @@ class NodeItemList(x:Int, y:Int, w:Int, h:Int) extends TNode
         val xStart = x+size.width/2-barSizeX/2
         val yStart = y+frame.height/3
 
-        FontUtils.drawCenteredString("downloading data", (x+size.width)/2, (y+frame.height)/3+squareSize, 0xff165571)
+        FontUtils.drawCenteredString(stack, "downloading data", (x+size.width)/2, (y+frame.height)/3+squareSize, 0xff165571)
         val xSize = percent
         val ySize = 9
 
-        fillGradient(xStart, yStart, xStart+xSize, yStart+ySize, 0xff165571, 0xff165571)
+        fillGradient(stack, xStart, yStart, xStart+xSize, yStart+ySize, 0xff165571, 0xff165571)
     }
 
-    private def drawAllItems(mx:Int, my:Int)
+    private def drawAllItems(stack:MatrixStack, mx:Int, my:Int)
     {
         hover = null
         selection = null
@@ -174,12 +175,12 @@ class NodeItemList(x:Int, y:Int, w:Int, h:Int) extends TNode
 
                 if (selection != null && (selection == keystack))
                 {
-                    fillGradient(localX-2, localY-2, localX+squareSize-2, localY+squareSize-2, 0xff000000, 0xff000000)
-                    fillGradient(localX-1, localY-1, localX+squareSize-3, localY+squareSize-3, 0xffd2d2d2, 0xffd2d2d2)
-                    fillGradient(localX, localY, localX+squareSize-4, localY+squareSize-4, 0xff595959, 0xff595959)
+                    fillGradient(stack, localX-2, localY-2, localX+squareSize-2, localY+squareSize-2, 0xff000000, 0xff000000)
+                    fillGradient(stack, localX-1, localY-1, localX+squareSize-3, localY+squareSize-3, 0xffd2d2d2, 0xffd2d2d2)
+                    fillGradient(stack, localX, localY, localX+squareSize-4, localY+squareSize-4, 0xff595959, 0xff595959)
                 }
 
-                inscribeItemStack(localX, localY, keystack.makeStack)
+                inscribeItemStack(stack, localX, localY, keystack.makeStack)
                 renderPointerX += 1
 
                 if (renderPointerX > columns)
@@ -213,7 +214,7 @@ class NodeItemList(x:Int, y:Int, w:Int, h:Int) extends TNode
     }
 
     protected var renderItem = Minecraft.getInstance().getItemRenderer
-    private def inscribeItemStack(xPos:Int, yPos:Int, stack:ItemStack)
+    private def inscribeItemStack(mStack:MatrixStack, xPos:Int, yPos:Int, stack:ItemStack)
     {
         val font = stack.getItem.getFontRenderer(stack) match {
             case null => getFontRenderer
@@ -221,14 +222,14 @@ class NodeItemList(x:Int, y:Int, w:Int, h:Int) extends TNode
         }
 
         setBlitOffset(100)
-        renderItem.zLevel = 100.0F
+        renderItem.blitOffset = 100.0F
 //        enableDepthTest()
 //        enableLighting()
-        renderItem.renderItemAndEffectIntoGUI(stack, xPos, yPos)
-        renderItem.renderItemOverlayIntoGUI(font, stack, xPos, yPos, "")
+        renderItem.renderGuiItem(stack, xPos, yPos)
+        renderItem.renderGuiItemDecorations(font, stack, xPos, yPos, "")
 //        disableLighting()
 //        disableDepth()
-        renderItem.zLevel = 0.0F
+        renderItem.blitOffset = 0.0F
         setBlitOffset(0)
 
         if (stack.getCount > 1) {
@@ -238,7 +239,7 @@ class NodeItemList(x:Int, y:Int, w:Int, h:Int) extends TNode
             else if (stack.getCount < 100000) s = stack.getCount/1000+"K"
             else if (stack.getCount < 1000000) s = "0M"+stack.getCount/100000
             else s = stack.getCount/1000000+"M"
-            font.drawStringWithShadow(s, xPos+19-2-font.getStringWidth(s), yPos+6+3, 16777215)
+            font.draw(mStack, s, xPos+19-2-font.width(s), yPos+6+3, 16777215)
         }
     }
 }

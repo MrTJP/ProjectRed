@@ -17,15 +17,14 @@ import codechicken.multipart.api.part.{TFacePart, TMultiPart, TNormalOcclusionPa
 import codechicken.multipart.api.{MultiPartType, RedstoneInteractions, SimpleMultiPartType}
 import codechicken.multipart.block.{BlockMultiPart, TileMultiPart}
 import codechicken.multipart.util.PartRayTraceResult
-import com.google.common.collect.ImmutableMap
 import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.core.vec.InvertX
 import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.core.{Configurator, PRLib, RenderHalo}
 import net.minecraft.block.SoundType
-import net.minecraft.client.renderer.model.ItemCameraTransforms
+import net.minecraft.client.renderer.model.{IModelTransform, ItemCameraTransforms}
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
-import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType, TransformationMatrix}
+import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.{Item, ItemStack, ItemUseContext}
 import net.minecraft.nbt.CompoundNBT
@@ -92,11 +91,11 @@ class BaseLightPart(definition:LightPartDefinition, colour:Int, inverted:Boolean
 
     def checkSupport:Boolean =
     {
-        if (world.isRemote) return false
+        if (world.isClientSide) return false
         if (definition.canFloat) return false
-        val bc = pos.offset(Direction.byIndex(getSide))
+        val bc = pos.relative(Direction.values()(getSide))
 
-        if (!definition.canFloat && !BaseLightPart.canPlaceLight(world, bc, Direction.byIndex(getSide^1))) {
+        if (!definition.canFloat && !BaseLightPart.canPlaceLight(world, bc, Direction.values()(getSide^1))) {
             TileMultiPart.dropItem(getItem, world, Vector3.fromTileCenter(tile))
             tile.remPart(this)
             return true
@@ -127,7 +126,7 @@ class BaseLightPart(definition:LightPartDefinition, colour:Int, inverted:Boolean
     private def updateState(forceRender:Boolean)
     {
         var updated = false
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             val old = powered
             powered = checkPower
             if (old != powered) {
@@ -140,7 +139,7 @@ class BaseLightPart(definition:LightPartDefinition, colour:Int, inverted:Boolean
 
     def updateRender()
     {
-        if (!world.isRemote) sendUpdate(writeDesc)
+        if (!world.isClientSide) sendUpdate(writeDesc)
         tile.recalcLight(false, true)
         tile.markRender()
     }
@@ -149,7 +148,7 @@ class BaseLightPart(definition:LightPartDefinition, colour:Int, inverted:Boolean
 
     @OnlyIn(Dist.CLIENT)
     override def renderStatic(layer:RenderType, ccrs:CCRenderState):Boolean = {
-        if (layer == null || (layer == RenderType.getCutout && Configurator.staticGates)) {
+        if (layer == null || (layer == RenderType.cutout() && Configurator.staticGates)) {
             ccrs.setBrightness(world, this.pos)
             definition.render(this, Vector3.ZERO,ccrs)
             true
@@ -195,7 +194,7 @@ object BaseLightPart
     {
         if (PRLib.canPlaceLight(w, pos, side)) return true
 
-        val part = BlockMultiPart.getPart(w, pos, side.getIndex)
+        val part = BlockMultiPart.getPart(w, pos, side.ordinal)
         if (part.isInstanceOf[HollowMicroblock]) return true
 
         false
@@ -271,7 +270,7 @@ trait LightPartDefinition {
     }
 
     protected def registrationName(colour:Int, inverted:Boolean):String =
-        s"${EnumColour.values()(colour).getName}${ if (inverted) "_inverted" else ""}_${typeName}"
+        s"${EnumColour.values()(colour).getSerializedName}${ if (inverted) "_inverted" else ""}_${typeName}"
 
     def multiPartType(colour:Int, inverted:Boolean):MultiPartType[_] = {
         val partArray = if (inverted) invertedMultiPartTypes else multiPartTypes
@@ -318,11 +317,11 @@ trait LightPartDefinition {
 
     @OnlyIn(Dist.CLIENT)
     def getItemRenderer:IItemRenderer = new IItemRenderer {
-        override def isAmbientOcclusion:Boolean = true
+        override def useAmbientOcclusion:Boolean = true
         override def isGui3d:Boolean = true
-        override def func_230044_c_():Boolean = true
+        override def usesBlockLight():Boolean = true
 
-        override def getTransforms:ImmutableMap[ItemCameraTransforms.TransformType, TransformationMatrix] = TransformUtils.DEFAULT_BLOCK
+        override def getModelTransform:IModelTransform = TransformUtils.DEFAULT_BLOCK
 
         override def renderItem(stack:ItemStack,
                                 transformType:ItemCameraTransforms.TransformType,
@@ -336,7 +335,7 @@ trait LightPartDefinition {
                     ccrs.reset()
                     ccrs.brightness = packedLight
                     ccrs.overlay = packedOverlay
-                    ccrs.bind(RenderType.getCutout, getter, mStack)
+                    ccrs.bind(RenderType.cutout(), getter, mStack)
                     renderInv(light.colour, light.inverted, Vector3.ZERO, ccrs)
 
                     if (light.inverted) {
@@ -364,7 +363,7 @@ trait LightPartDefinition {
     def getInvGlowBounds:Cuboid6 = getGlowBounds(0)
 
     @OnlyIn(Dist.CLIENT)
-    def getRenderLayer:RenderType = RenderType.getSolid
+    def getRenderLayer:RenderType = RenderType.solid()
 
     def render(part:BaseLightPart, pos:Vector3, ccrs:CCRenderState):Unit = {
         val icon = new IconTransformation(getIcon(part.getColor))

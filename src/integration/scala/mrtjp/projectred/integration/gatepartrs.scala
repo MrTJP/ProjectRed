@@ -67,13 +67,13 @@ abstract class RedstoneGatePart(gateType:GateType) extends GatePart(gateType) wi
 
     def onInputChange()
     {
-        tile.markDirty()
+        tile.setChanged()
         sendStateUpdate()
     }
 
     def onOutputChange(mask:Int)
     {
-        tile.markDirty()
+        tile.setChanged()
         sendStateUpdate()
         tile.internalPartChange(this)
         notifyExternals(toAbsoluteMask(mask))
@@ -100,11 +100,11 @@ abstract class RedstoneGatePart(gateType:GateType) extends GatePart(gateType) wi
 
         for (r <- 0 until 4) if ((mask&1<<r) != 0) {
             val absSide = absoluteDir(r)
-            val pos = this.pos.offset(Direction.byIndex(absSide))
+            val pos = this.pos.relative(Direction.values()(absSide))
 
             world.neighborChanged(pos, CBMultipartModContent.blockMultipart, pos)
             for (s <- 0 until 6) if (s != (absSide^1) && (smask&1<<s) == 0)
-                world.neighborChanged(pos.offset(Direction.byIndex(s)), CBMultipartModContent.blockMultipart, pos)
+                world.neighborChanged(pos.relative(Direction.values()(s)), CBMultipartModContent.blockMultipart, pos)
 
             smask |= 1<<absSide
         }
@@ -131,7 +131,7 @@ abstract class RedstoneGatePart(gateType:GateType) extends GatePart(gateType) wi
 
     def tickSound():Unit = {
         if (Configurator.logicGateSounds)
-            world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.15F, 0.5f)
+            world.playSound(null, pos, SoundEvents.LEVER_CLICK, SoundCategory.BLOCKS, 0.15F, 0.5f)
     }
 
     override def gateLogicCanConnectTo(part:IConnectable, r:Int):Boolean = part match {

@@ -3,24 +3,22 @@ package mrtjp.projectred.transmission
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.raytracer.{IndexedVoxelShape, VoxelShapeCache}
 import codechicken.lib.render.CCRenderState
+import codechicken.lib.render.buffer.TransformingVertexBuilder
 import codechicken.lib.vec.{Cuboid6, Rotation, Vector3}
+import codechicken.microblock.api.{ISidedHollowConnect, MicroMaterial}
 import codechicken.microblock.handler.MicroblockModContent
 import codechicken.microblock.{ItemMicroBlock, MicroMaterialRegistry}
-import codechicken.multipart._
-import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core._
-import IWirePart._
-import codechicken.lib.render.buffer.TransformingVertexBuilder
-import codechicken.microblock.api.{ISidedHollowConnect, MicroMaterial}
 import codechicken.multipart.api.part.{TMultiPart, TNormalOcclusionPart}
 import codechicken.multipart.block.TileMultiPart
 import codechicken.multipart.util.{PartMap, PartRayTraceResult}
 import com.google.common.collect.ImmutableSet
 import com.mojang.blaze3d.matrix.MatrixStack
+import mrtjp.projectred.api.IConnectable
+import mrtjp.projectred.core.IWirePart._
+import mrtjp.projectred.core._
 import net.minecraft.block.SoundType
-import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
-import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.inventory.EquipmentSlotType
 import net.minecraft.item.{ItemStack, ItemUseContext}
@@ -30,8 +28,7 @@ import net.minecraft.util.math.shapes.{VoxelShape, VoxelShapes}
 import net.minecraft.util.{ActionResultType, Direction, Hand, SoundCategory}
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
-import java.util.{Collection => JCollection}
-import java.util.Collections
+import java.util.{Collections, Collection => JCollection}
 import scala.jdk.CollectionConverters._
 
 trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagationCommons with TSwitchPacket with TNormalOcclusionPart
@@ -42,7 +39,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
 
     override def onPartChanged(part:TMultiPart)
     {
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             WirePropagator.logCalculation()
 
             if (updateOutward()) {
@@ -55,7 +52,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
 
     override def onNeighborBlockChanged(from: BlockPos)
     {
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             if (dropIfCantStay()) return
             WirePropagator.logCalculation()
             if (updateExternalConns()) {
@@ -69,7 +66,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     override def onAdded()
     {
         super.onAdded()
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             if (updateInward()) onMaskChanged()
             WirePropagator.propagateTo(this, RISING)
         }
@@ -78,7 +75,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     override def onRemoved()
     {
         super.onRemoved()
-        if (!world.isRemote) notifyAllExternals()
+        if (!world.isClientSide) notifyAllExternals()
     }
 
     def sendConnUpdate()
@@ -117,7 +114,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
 
     override def onSignalUpdate()
     {
-        tile.markDirty()
+        tile.setChanged()
     }
 
     override def diminishOnSide(side:Int) = true
@@ -130,8 +127,8 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     {
         //if (CommandDebug.WIRE_READING) debug(player) else
         if (!held.isEmpty && held.getItem == CoreContent.itemMultimeter.get()) {
-            held.damageItem(1, player, (p:PlayerEntity) => p.sendBreakAnimation(EquipmentSlotType.MAINHAND))
-            player.swingArm(hand)
+            held.hurtAndBreak(1, player, (p:PlayerEntity) => p.broadcastBreakEvent(EquipmentSlotType.MAINHAND))
+            player.swing(hand)
             if(test(player))
                 return ActionResultType.SUCCESS
         }
@@ -161,7 +158,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     }
 
     @OnlyIn(Dist.CLIENT)
-    def getRenderLayer = RenderType.getSolid
+    def getRenderLayer = RenderType.solid()
 
     @OnlyIn(Dist.CLIENT)
     def doStaticTessellation(layer:RenderType, ccrs:CCRenderState)
@@ -223,7 +220,7 @@ abstract class WirePart(wireType:WireType) extends TMultiPart with TWireCommons 
     override def canConnectCorner(r:Int) = true
 
     override def canStay = PRLib.canPlaceWireOnSide(world,
-        pos.offset(Direction.byIndex(side)), Direction.byIndex(side^1))
+        pos.relative(Direction.values()(side)), Direction.values()(side^1))
 
     override def getItem = getWireType.makeStack
 
@@ -263,7 +260,7 @@ abstract class WirePart(wireType:WireType) extends TMultiPart with TWireCommons 
         ccrs.reset()
         ccrs.brightness = packedLight
         ccrs.overlay = packedOverlay
-        ccrs.bind(new TransformingVertexBuilder(buffers.getBuffer(RenderType.getSolid), mStack), DefaultVertexFormats.BLOCK)
+        ccrs.bind(new TransformingVertexBuilder(buffers.getBuffer(RenderType.solid()), mStack), DefaultVertexFormats.BLOCK)
         RenderWire.render(this, ccrs)
     }
     @OnlyIn(Dist.CLIENT)
@@ -390,14 +387,14 @@ abstract class FramedWirePart(wireType:WireType) extends TMultiPart with TWireCo
 
     override def activate(player:PlayerEntity, hit:PartRayTraceResult, held:ItemStack, hand:Hand):ActionResultType = {
         def dropMaterial():Unit = {
-            if (material != null && !player.abilities.isCreativeMode)
+            if (material != null && !player.abilities.instabuild)
                 PRLib.dropTowardsPlayer(world, pos, ItemMicroBlock.create(0, 1, material), player)
         }
 
-        if (super.activate(player, hit, held, hand).isSuccess) return ActionResultType.SUCCESS
+        if (super.activate(player, hit, held, hand).shouldSwing) return ActionResultType.SUCCESS
 
-        if (held.isEmpty && player.isSneaking && material != null) {
-            if (!world.isRemote) {
+        if (held.isEmpty && player.isCrouching && material != null) {
+            if (!world.isClientSide) {
                 dropMaterial()
                 material = null
                 sendMatUpdate()
@@ -408,7 +405,7 @@ abstract class FramedWirePart(wireType:WireType) extends TMultiPart with TWireCo
         if (!held.isEmpty && held.getItem == MicroblockModContent.itemMicroBlock && MicroMaterialRegistry.microFactory(held) == 0 && MicroMaterialRegistry.microSize(held) == 1) {
             val newMat = ItemMicroBlock.getMaterialFromStack(held)
             if (material == null || newMat != material) {
-                if(!world.isRemote) {
+                if(!world.isClientSide) {
                     if (newMat == null || newMat.isTransparent) return ActionResultType.PASS
                     else {
                         dropMaterial()
@@ -417,7 +414,7 @@ abstract class FramedWirePart(wireType:WireType) extends TMultiPart with TWireCo
                             SoundCategory.BLOCKS, newMat.getSound.getVolume+1.0F/2.0F,
                             newMat.getSound.getPitch*0.8F)
                         sendMatUpdate()
-                        if (!player.abilities.isCreativeMode) held.shrink(1)
+                        if (!player.abilities.instabuild) held.shrink(1)
                     }
                 }
                 return ActionResultType.SUCCESS
@@ -428,7 +425,7 @@ abstract class FramedWirePart(wireType:WireType) extends TMultiPart with TWireCo
     }
 
     @OnlyIn(Dist.CLIENT)
-    override def getRenderLayer = RenderType.getCutout
+    override def getRenderLayer = RenderType.cutout()
 
     @OnlyIn(Dist.CLIENT)
     override def doFastTessellation(mStack: MatrixStack, buffers: IRenderTypeBuffer, packedLight: Int, packedOverlay: Int, partialTicks: Float)
@@ -437,7 +434,7 @@ abstract class FramedWirePart(wireType:WireType) extends TMultiPart with TWireCo
         ccrs.reset()
         ccrs.brightness = packedLight
         ccrs.overlay = packedOverlay
-        ccrs.bind(new TransformingVertexBuilder(buffers.getBuffer(RenderType.getSolid), mStack), DefaultVertexFormats.BLOCK)
+        ccrs.bind(new TransformingVertexBuilder(buffers.getBuffer(RenderType.solid()), mStack), DefaultVertexFormats.BLOCK)
         RenderFramedWire.render(this, ccrs)
     }
 

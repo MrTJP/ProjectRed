@@ -9,6 +9,7 @@ import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.inventory.container.ICCLContainerFactory
 import codechicken.lib.texture.TextureUtils
+import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.core.gui._
 import mrtjp.core.inventory.{TInventory, TInventoryCapablilityTile}
 import mrtjp.core.vec.Point
@@ -32,15 +33,15 @@ class TileElectrotineGenerator extends TileMachine(ExpansionContent.electrotineG
 
     override protected val storage:Array[ItemStack] = Array.fill(1)(ItemStack.EMPTY)
 
-    override def save(tag:CompoundNBT):Unit = {
-        super.save(tag)
+    override def saveToNBT(tag:CompoundNBT) = {
+        super.saveToNBT(tag)
         saveInv(tag)
         tag.putInt("storage", powerStorage)
         tag.putShort("btime", burnTimeRemaining.toShort)
     }
 
-    override def load(tag:CompoundNBT):Unit = {
-        super.load(tag)
+    override def loadFromNBT(tag:CompoundNBT) = {
+        super.loadFromNBT(tag)
         loadInv(tag)
         powerStorage = tag.getInt("storage")
         burnTimeRemaining = tag.getShort("btime")
@@ -78,10 +79,10 @@ class TileElectrotineGenerator extends TileMachine(ExpansionContent.electrotineG
     override def createMenu(windowId:Int, playerInv:PlayerInventory, player:PlayerEntity):ContainerElectrotineGenerator =
         new ContainerElectrotineGenerator(playerInv, this, windowId)
 
-    override def getInventoryStackLimit = 64
+    override def getMaxStackSize = 64
     override def nbtSaveName = "electrotine_generator"
 
-    override def isItemValidForSlot(slot:Int, stack:ItemStack):Boolean =
+    override def canPlaceItem(slot:Int, stack:ItemStack):Boolean =
         !stack.isEmpty && stack.getItem == CoreContent.itemElectrotineDust.get
 
     def getStorageScaled(i:Int):Int = math.min(i, i*powerStorage/getMaxStorage)
@@ -102,17 +103,17 @@ class TileElectrotineGenerator extends TileMachine(ExpansionContent.electrotineG
         tryChargeConductor()
         tryBurnDust()
 
-        if (world.getGameTime%10 == 0) updateRenderIfNeeded()
+        if (level.getGameTime%10 == 0) updateRenderIfNeeded()
     }
 
     def tryBurnDust():Unit = {
         if (powerStorage < getMaxStorage && burnTimeRemaining < getBurnUseOnCharge)  {
-            val inslot = getStackInSlot(0)
+            val inslot = getItem(0)
             if (!inslot.isEmpty) {
                 inslot.shrink(1)
                 burnTimeRemaining = getBurnTimePerDust
-                if (inslot.isEmpty) setInventorySlotContents(0, ItemStack.EMPTY)
-                else setInventorySlotContents(0, inslot)
+                if (inslot.isEmpty) setItem(0, ItemStack.EMPTY)
+                else setItem(0, inslot)
             }
         }
     }
@@ -154,7 +155,7 @@ class TileElectrotineGenerator extends TileMachine(ExpansionContent.electrotineG
 
     override def onBlockRemoved():Unit = {
         super.onBlockRemoved()
-        dropInvContents(world, getPos)
+        dropInvContents(level, getBlockPos)
     }
 }
 
@@ -167,29 +168,29 @@ class ContainerElectrotineGenerator(playerInv:PlayerInventory, val tile:TileElec
 
     private var st = -1
     private var bt = -1
-    override def detectAndSendChanges():Unit = {
-        super.detectAndSendChanges()
-        for (i <- listeners.asScala) {
+    override def broadcastChanges():Unit = {
+        super.broadcastChanges()
+        for (i <- containerListeners.asScala) {
             if (st != tile.powerStorage)
-                i.sendWindowProperty(this, 3, tile.powerStorage)
+                i.setContainerData(this, 3, tile.powerStorage)
             if (bt != tile.burnTimeRemaining)
-                i.sendWindowProperty(this, 4, tile.burnTimeRemaining)
+                i.setContainerData(this, 4, tile.burnTimeRemaining)
         }
         st = tile.powerStorage
         bt = tile.burnTimeRemaining
     }
 
-    override def updateProgressBar(id:Int, bar:Int):Unit = id match {
+    override def setData(id:Int, bar:Int):Unit = id match {
         case 3 => tile.powerStorage = bar
         case 4 => tile.burnTimeRemaining = bar
-        case _ => super.updateProgressBar(id, bar)
+        case _ => super.setData(id, bar)
     }
 }
 
 object ContainerElectrotineGenerator extends ICCLContainerFactory[ContainerElectrotineGenerator]
 {
     override def create(windowId:Int, inventory:PlayerInventory, packet:MCDataInput):ContainerElectrotineGenerator = {
-        inventory.player.world.getTileEntity(packet.readPos()) match {
+        inventory.player.level.getBlockEntity(packet.readPos()) match {
             case t:TileElectrotineGenerator => t.createMenu(windowId, inventory, inventory.player)
             case _ => null
         }
@@ -198,30 +199,30 @@ object ContainerElectrotineGenerator extends ICCLContainerFactory[ContainerElect
 
 class GuiElectrotineGenerator(c:ContainerElectrotineGenerator, playerInv:PlayerInventory, title:ITextComponent) extends NodeGui(c, 176, 171, playerInv, title)
 {
-    override def drawBack_Impl(mouse:Point, frame:Float):Unit = {
+    override def drawBack_Impl(stack:MatrixStack, mouse:Point, frame:Float):Unit = {
         TextureUtils.changeTexture(GuiElectrotineGenerator.background)
-        blit(0, 0, 0, 0, size.width, size.height)
+        blit(stack, 0, 0, 0, 0, size.width, size.height)
 
         if (c.tile.cond.canWork)
-            blit(22, 16, 176, 1, 7, 9)
-        GuiLib.drawVerticalTank(this, 22, 26, 176, 10, 7, 48, c.tile.cond.getChargeScaled(48))
+            blit(stack, 22, 16, 176, 1, 7, 9)
+        GuiLib.drawVerticalTank(stack, this, 22, 26, 176, 10, 7, 48, c.tile.cond.getChargeScaled(48))
 
         if (c.tile.powerStorage == c.tile.getMaxStorage)
-            blit(54, 16, 184, 1, 14, 9)
-        GuiLib.drawVerticalTank(this, 54, 26, 184, 10, 14, 48, c.tile.getStorageScaled(48))
+            blit(stack, 54, 16, 184, 1, 14, 9)
+        GuiLib.drawVerticalTank(stack, this, 54, 26, 184, 10, 14, 48, c.tile.getStorageScaled(48))
 
         if (c.tile.burnTimeRemaining > 0)
-            blit(93, 16, 199, 1, 7, 9)
-        GuiLib.drawVerticalTank(this, 93, 26, 199, 10, 7, 48, c.tile.getBurnTimeScaled(48))
+            blit(stack, 93, 16, 199, 1, 7, 9)
+        GuiLib.drawVerticalTank(stack, this, 93, 26, 199, 10, 7, 48, c.tile.getBurnTimeScaled(48))
 
         if (c.tile.cond.charge < c.tile.getDrawFloor && (c.tile.powerStorage > 0 || c.tile.burnTimeRemaining > c.tile.getBurnUseOnCharge))
-            blit(30, 46, 211, 0, 23, 9)
+            blit(stack, 30, 46, 211, 0, 23, 9)
 
         if (c.tile.burnTimeRemaining > c.tile.getBurnUseOnCharge && c.tile.powerStorage < c.tile.getMaxStorage)
-            blit(69, 45, 211, 10, 23, 9)
+            blit(stack, 69, 45, 211, 10, 23, 9)
 
-        getFontRenderer.drawString(title.getFormattedText, 8, 6, EnumColour.GRAY.argb)
-        getFontRenderer.drawString(playerInv.getDisplayName.getFormattedText, 8, 79, EnumColour.GRAY.argb)
+        getFontRenderer.draw(stack, title, 8, 6, EnumColour.GRAY.argb)
+        getFontRenderer.draw(stack, playerInv.getDisplayName, 8, 79, EnumColour.GRAY.argb)
     }
 }
 
@@ -230,7 +231,7 @@ object GuiElectrotineGenerator
     val background = new ResourceLocation(ProjectRedExpansion.MOD_ID, "textures/gui/electrotine_generator.png")
 
     def register():Unit = {
-        ScreenManager.registerFactory(
+        ScreenManager.register(
             ExpansionContent.electrotineGeneratorContainer.get,
             (cont:ContainerElectrotineGenerator, inv, text) => new GuiElectrotineGenerator(cont, inv, text)
         )

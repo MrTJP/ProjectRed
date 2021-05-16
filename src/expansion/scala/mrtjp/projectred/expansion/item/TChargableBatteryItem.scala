@@ -16,27 +16,27 @@ trait TChargableBatteryItem extends IChargable
         case b:TChargableBatteryItem if pow > 0 =>
             val newStack = if (b.isEmpty) {
                 val s = new ItemStack(b.getChargedVariant, 1)
-                s.setDamage(s.getMaxDamage)
+                s.setDamageValue(s.getMaxDamage)
                 s
             } else stack
 
-            val spaceLeft = newStack.getDamage
+            val spaceLeft = newStack.getDamageValue
             val toAdd = Math.min(spaceLeft, pow)
-            newStack.setDamage(newStack.getDamage - toAdd)
+            newStack.setDamageValue(newStack.getDamageValue - toAdd)
             (newStack, toAdd)
         case _ => (stack, 0)
     }
 
     override def drawPower(stack:ItemStack, pow:Int):(ItemStack, Int) = stack.getItem match {
         case b:TChargableBatteryItem if b.nonEmpty =>
-            val powerLeft = stack.getMaxDamage - stack.getDamage
+            val powerLeft = stack.getMaxDamage - stack.getDamageValue
             val toDraw = Math.min(powerLeft, pow)
-            stack.setDamage(stack.getDamage + toDraw)
-            val newStack = if (stack.getDamage >= stack.getMaxDamage) new ItemStack(b.getEmptyVariant) else stack
+            stack.setDamageValue(stack.getDamageValue + toDraw)
+            val newStack = if (stack.getDamageValue >= stack.getMaxDamage) new ItemStack(b.getEmptyVariant) else stack
             (newStack, toDraw)
         case _ => (stack, 0)
     }
 
     override def isFullyCharged(stack:ItemStack):Boolean =
-        stack.getDamage == 0 && stack.getItem == getChargedVariant
+        stack.getDamageValue == 0 && stack.getItem == getChargedVariant
 }

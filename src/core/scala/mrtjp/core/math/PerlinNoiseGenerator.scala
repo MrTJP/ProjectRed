@@ -26,7 +26,7 @@ object PerlinNoiseGenerator extends PerlinNoiseGenerator
 class PerlinNoiseGenerator(rand:Random)
 {
     def this() = this(new Random)
-    def this(w:World) = this(w.rand)
+    def this(w:World) = this(w.random)
     def this(seed:Long) = this(new Random(seed))
 
     private final val perm = new Array[Int](512)

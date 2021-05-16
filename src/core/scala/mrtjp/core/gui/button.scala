@@ -6,10 +6,13 @@
 package mrtjp.core.gui
 
 import codechicken.lib.texture.TextureUtils
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import mrtjp.core.vec.{Point, Rect, Size}
 import net.minecraft.client.audio.SimpleSound
+import net.minecraft.client.gui.AbstractGui
 import net.minecraft.util.SoundEvents
+import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.fml.client.gui.GuiUtils
 
 import scala.jdk.CollectionConverters._
@@ -34,7 +37,7 @@ class ButtonNode extends TNode
     {
         if (!consumed && rayTest(p))
         {
-            soundHandler.play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1))
+            soundHandler.play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1))
             onButtonClicked()
             true
         }
@@ -46,15 +49,15 @@ class ButtonNode extends TNode
         clickDelegate()
     }
 
-    override def drawBack_Impl(mouse:Point, rframe:Float)
+    override def drawBack_Impl(stack:MatrixStack, mouse:Point, rframe:Float)
     {
         RenderSystem.color4f(1, 1, 1, 1)
         val mouseover = mouseoverLock || (frame.contains(mouse) && rayTest(mouse))
-        drawButtonBackground(mouseover)
-        drawButton(mouseover)
+        drawButtonBackground(stack, mouseover)
+        drawButton(stack, mouseover)
     }
 
-    override def drawFront_Impl(mouse:Point, rframe:Float)
+    override def drawFront_Impl(stack:MatrixStack, mouse:Point, rframe:Float)
     {
         if (rayTest(mouse))
         {
@@ -65,13 +68,13 @@ class ButtonNode extends TNode
             translateToScreen()
             val Point(mx, my) = parent.convertPointToScreen(mouse)
             val root = getRoot
-            GuiUtils.drawHoveringText(list.asJava, mx+12, my-12, root.width, root.height, -1, getFontRenderer)
+            GuiUtils.drawHoveringText(stack, list.map(new StringTextComponent(_)).asJava, mx+12, my-12, root.width, root.height, -1, getFontRenderer)
             translateFromScreen()
         }
     }
 
-    def drawButtonBackground(mouseover:Boolean){}
-    def drawButton(mouseover:Boolean){}
+    def drawButtonBackground(stack:MatrixStack, mouseover:Boolean){}
+    def drawButton(stack:MatrixStack, mouseover:Boolean){}
 }
 
 /**
@@ -79,19 +82,19 @@ class ButtonNode extends TNode
  */
 trait TButtonMC extends ButtonNode
 {
-    abstract override def drawButtonBackground(mouseover:Boolean)
+    abstract override def drawButtonBackground(stack:MatrixStack, mouseover:Boolean)
     {
-        super.drawButtonBackground(mouseover)
+        super.drawButtonBackground(stack, mouseover)
 
         TextureUtils.changeTexture(GuiLib.guiTex)
 
         RenderSystem.color4f(1, 1, 1, 1)
         val state = if (mouseover) 2 else 1
 
-        blit(position.x, position.y, 0, 46+state*20, size.width/2, size.height/2)
-        blit(position.x+size.width/2, position.y, 200-size.width/2, 46+state*20, size.width/2, size.height/2)
-        blit(position.x, position.y+size.height/2, 0, 46+state*20+20-size.height/2, size.width/2, size.height/2)
-        blit(position.x+size.width/2, position.y+size.height/2, 200-size.width/2, 46+state*20+20-size.height/2, size.width/2, size.height/2)
+        blit(stack, position.x, position.y, 0, 46+state*20, size.width/2, size.height/2)
+        blit(stack, position.x+size.width/2, position.y, 200-size.width/2, 46+state*20, size.width/2, size.height/2)
+        blit(stack, position.x, position.y+size.height/2, 0, 46+state*20+20-size.height/2, size.width/2, size.height/2)
+        blit(stack, position.x+size.width/2, position.y+size.height/2, 200-size.width/2, 46+state*20+20-size.height/2, size.width/2, size.height/2)
     }
 }
 
@@ -103,10 +106,10 @@ trait TButtonText extends ButtonNode
     var text = ""
     def setText(t:String):this.type = {text = t; this}
 
-    abstract override def drawButton(mouseover:Boolean)
+    abstract override def drawButton(stack:MatrixStack, mouseover:Boolean)
     {
-        super.drawButton(mouseover)
-        drawCenteredString(getFontRenderer, text, position.x+size.width/2, position.y+(size.height-8)/2, if (mouseover) 0xFFFFFFA0 else 0xFFE0E0E0)
+        super.drawButton(stack, mouseover)
+        AbstractGui.drawCenteredString(stack, getFontRenderer, text, position.x+size.width/2, position.y+(size.height-8)/2, if (mouseover) 0xFFFFFFA0 else 0xFFE0E0E0)
         RenderSystem.color4f(1, 1, 1, 1)
     }
 }
@@ -118,12 +121,12 @@ class DotSelectNode extends ButtonNode
 {
     size = Size(8, 8)
 
-    override def drawButtonBackground(mouseover:Boolean)
+    override def drawButtonBackground(stack:MatrixStack, mouseover:Boolean)
     {
-        super.drawButtonBackground(mouseover)
+        super.drawButtonBackground(stack, mouseover)
         TextureUtils.changeTexture(GuiLib.guiExtras)
         RenderSystem.color4f(1, 1, 1, 1)
-        blit(position.x, position.y, if (mouseover) 11 else 1, 1, 8, 8)
+        blit(stack, position.x, position.y, if (mouseover) 11 else 1, 1, 8, 8)
     }
 }
 
@@ -146,12 +149,12 @@ class CheckBoxNode extends ButtonNode with TButtonMC
 
     var state = false
 
-    override def drawButton(mouseover:Boolean)
+    override def drawButton(stack:MatrixStack, mouseover:Boolean)
     {
-        super.drawButton(mouseover)
+        super.drawButton(stack, mouseover)
         TextureUtils.changeTexture(GuiLib.guiExtras)
         val u = if (state) 17 else 1
-        blit(position.x, position.y, u, 134, 14, 14)
+        blit(stack, position.x, position.y, u, 134, 14, 14)
     }
 
     override def onButtonClicked()

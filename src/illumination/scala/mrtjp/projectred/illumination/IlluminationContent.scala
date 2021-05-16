@@ -14,8 +14,9 @@ import net.minecraft.item.{BlockItem, Item, Items}
 import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.tileentity.TileEntityType
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.client.model.generators.{BlockStateProvider, ExistingFileHelper, ModelFile}
+import net.minecraftforge.client.model.generators.{BlockStateProvider, ModelFile}
 import net.minecraftforge.common.Tags
+import net.minecraftforge.common.data.ExistingFileHelper
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.{IEventBus, SubscribeEvent}
 import net.minecraftforge.fml.RegistryObject
@@ -53,7 +54,7 @@ object IlluminationContent
         light.register(ITEMS, PARTS)
 
     for (inverted <- Seq(false, true)) for (colour <- 0 until 16) {
-        val regName = s"${EnumColour.values()(colour).getName}${ if (inverted) "_inverted" else ""}_illumar_lamp"
+        val regName = s"${EnumColour.values()(colour).getSerializedName}${ if (inverted) "_inverted" else ""}_illumar_lamp"
 
         val blockReg = if (inverted) invertedIllumarLampBlocks else illumarLampBlocks
         val itemReg = if (inverted) invertedIllumarLampBlockItems else illumarLampBlockItems
@@ -82,10 +83,10 @@ object IlluminationContent
         new IllumarLampBlock((if (inverted) invertedIllumarLampTiles else illumarLampTiles)(colour), colour, inverted)
 
     def illumarBlockItemFactory(blockFactory:Supplier[Block]):Supplier[Item] = () =>
-        new BlockItem(blockFactory.get, new Item.Properties().group(illuminationItemGroup))
+        new BlockItem(blockFactory.get, new Item.Properties().tab(illuminationItemGroup))
 
     def illumarLampTileFactory(colour:Int, inverted:Boolean):Supplier[TileEntityType[IllumarLampTile]] = () =>
-        TileEntityType.Builder.create[IllumarLampTile](() =>
+        TileEntityType.Builder.of[IllumarLampTile](() =>
             new IllumarLampTile((if (inverted) invertedIllumarLampTiles else illumarLampTiles)(colour).get, colour, inverted),
             (if (inverted) invertedIllumarLampBlocks else illumarLampBlocks)(colour).get).build(null)
 
@@ -172,8 +173,8 @@ private class BlockStates(gen:DataGenerator, fileHelper:ExistingFileHelper) exte
         new ResourceLocation(rl.getNamespace, rl.getPath + suffix)
 
     private def makeLamp(lamp:Block, invertedLamp:Block, colour:EnumColour):Unit = {
-        val offLocation = new ResourceLocation(ProjectRedIllumination.MOD_ID, "block/illumar_lamp/" + colour.getName + "_off")
-        val onLocation = new ResourceLocation(ProjectRedIllumination.MOD_ID, "block/illumar_lamp/" + colour.getName + "_on")
+        val offLocation = new ResourceLocation(ProjectRedIllumination.MOD_ID, "block/illumar_lamp/" + colour.getSerializedName + "_off")
+        val onLocation = new ResourceLocation(ProjectRedIllumination.MOD_ID, "block/illumar_lamp/" + colour.getSerializedName + "_on")
         val offModel = models.cubeAll(extend(lamp.getRegistryName, "_off").toString, offLocation)
         val onModel = models.cubeAll(extend(lamp.getRegistryName, "_on").toString, onLocation)
 
@@ -302,13 +303,13 @@ private class Recipes(gen:DataGenerator) extends RecipeProvider(gen)
         }
 
         //Illumar buttons
-        for (c <- 0 until 16) {
-            shapelessRecipe(illumarButtonItems(c), 1)
-                    .addIngredient(Blocks.STONE_BUTTON)
-                    .addIngredient(illumars(c))
-
-            //todo inverted
-        }
+//        for (c <- 0 until 16) {
+//            shapelessRecipe(illumarButtonItems(c), 1)
+//                    .addIngredient(Blocks.STONE_BUTTON)
+//                    .addIngredient(illumars(c))
+//
+//            //todo inverted
+//        }
 
     }
 }

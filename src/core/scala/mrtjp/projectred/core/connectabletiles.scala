@@ -5,7 +5,6 @@ import codechicken.lib.vec.Rotation
 import codechicken.multipart.api.part.TMultiPart
 import codechicken.multipart.block.BlockMultiPart
 import codechicken.multipart.util.PartMap
-import mrtjp.core.world.Messenger
 import mrtjp.projectred.api.IConnectable
 import net.minecraft.entity.LivingEntity
 import net.minecraft.item.ItemStack
@@ -17,41 +16,41 @@ import net.minecraft.world.World
 trait TTileAcquisitions extends CoreTile
 {
     def getStraightCenter(s:Int):TMultiPart = {
-        val pos = posOfInternal.offset(Direction.byIndex(s))
-        val t = BlockMultiPart.getTile(getWorld, pos)
+        val pos = posOfInternal.relative(Direction.values()(s))
+        val t = BlockMultiPart.getTile(getLevel, pos)
         if (t != null) t.getSlottedPart(6)
         else null
     }
 
     def getStraight(s:Int, edgeRot:Int):TMultiPart = {
         val pos = posOfStraight(s)
-        val t = BlockMultiPart.getTile(getWorld, pos)
+        val t = BlockMultiPart.getTile(getLevel, pos)
         if (t != null) t.getSlottedPart(Rotation.rotateSide(s^1, edgeRot))
         else null
     }
 
     def getCorner(s:Int, edgeRot:Int):TMultiPart = {
         val pos = posOfCorner(s, edgeRot)
-        val t = BlockMultiPart.getTile(getWorld, pos)
+        val t = BlockMultiPart.getTile(getLevel, pos)
         if (t != null) t.getSlottedPart(s^1)
         else null
     }
 
-    def posOfStraight(s:Int):BlockPos = getPos.offset(Direction.byIndex(s))
-    def posOfCorner(s:Int, edgeRot:Int):BlockPos = getPos.offset(Direction.byIndex(s)).offset(Direction.byIndex(Rotation.rotateSide(s^1, edgeRot)))
-    def posOfInternal:BlockPos = getPos
+    def posOfStraight(s:Int):BlockPos = getBlockPos.relative(Direction.values()(s))
+    def posOfCorner(s:Int, edgeRot:Int):BlockPos = getBlockPos.relative(Direction.values()(s)).relative(Direction.values()(Rotation.rotateSide(s^1, edgeRot)))
+    def posOfInternal:BlockPos = getBlockPos
 
     def rotFromStraight(s:Int, edgeRot:Int):Int = Rotation.rotationTo(Rotation.rotateSide(s^1, edgeRot), s^1)
     def rotFromCorner(s:Int, edgeRot:Int):Int = Rotation.rotationTo(s^1, Rotation.rotateSide(s^1, edgeRot)^1)
 
     def notifyStraight(s:Int):Unit = {
         val pos = posOfStraight(s)
-        getWorld.neighborChanged(pos, getBlockState.getBlock, posOfInternal)
+        getLevel.neighborChanged(pos, getBlockState.getBlock, posOfInternal)
     }
 
     def notifyCorner(s:Int, edgeRot:Int):Unit = {
         val pos = posOfCorner(s, edgeRot)
-        getWorld.neighborChanged(pos, getBlockState.getBlock, posOfInternal)
+        getLevel.neighborChanged(pos, getBlockState.getBlock, posOfInternal)
     }
 }
 
@@ -114,13 +113,13 @@ trait TTileConnectable extends CoreTile with TTileAcquisitions with IConnectable
     def onMaskChanged(){}
 
     def outsideCornerEdgeOpen(s:Int, edgeRot:Int):Boolean = {
-        val pos = posOfInternal.offset(Direction.byIndex(s))
-        if (getWorld.isAirBlock(pos)) true
+        val pos = posOfInternal.relative(Direction.values()(s))
+        if (getLevel.isEmptyBlock(pos)) true
         else
         {
             val side1 = s^1
             val side2 = Rotation.rotateSide(s^1, edgeRot)
-            val t = BlockMultiPart.getTile(getWorld, pos)
+            val t = BlockMultiPart.getTile(getLevel, pos)
             if (t != null)
                 t.getSlottedPart(side1) == null && t.getSlottedPart(side2) == null && t.getSlottedPart(PartMap.edgeBetween(side1, side2)) == null
             else false
@@ -144,8 +143,8 @@ trait TTileConnectable extends CoreTile with TTileAcquisitions with IConnectable
     }
 
     def discoverStraightOverride(s:Int):Boolean = {//TODO remove to discoverStraightCenterOverride
-        val pos = posOfInternal.offset(Direction.byIndex(s))
-        val t = getWorld.getTileEntity(pos) match {
+        val pos = posOfInternal.relative(Direction.values()(s))
+        val t = getLevel.getBlockEntity(pos) match {
             case t: TTileConnectable => t
             case _ => null
         }
@@ -185,13 +184,13 @@ trait TConnectableInstTile extends CoreTile with TTileConnectable
 {
     def clientNeedsMap = false
 
-    abstract override def save(tag:CompoundNBT):Unit = {
-        super.save(tag)
+    abstract override def saveToNBT(tag:CompoundNBT) = {
+        super.saveToNBT(tag)
         tag.putLong("connMap", connMap)
     }
 
-    abstract override def load(tag:CompoundNBT):Unit = {
-        super.load(tag)
+    abstract override def loadFromNBT(tag:CompoundNBT) = {
+        super.loadFromNBT(tag)
         connMap = tag.getLong("connMap")
     }
 
@@ -210,12 +209,12 @@ trait TConnectableInstTile extends CoreTile with TTileConnectable
 
     abstract override def onNeighborBlockChanged(neighborPos:BlockPos):Unit = {
         super.onNeighborBlockChanged(neighborPos)
-        if (!getWorld.isRemote) if (updateExternals()) sendConnUpdate()
+        if (!getLevel.isClientSide) if (updateExternals()) sendConnUpdate()
     }
 
     abstract override def onBlockPlaced(player:LivingEntity, stack:ItemStack):Unit = {
         super.onBlockPlaced(player, stack)
-        if (!getWorld.isRemote) if (updateExternals()) sendConnUpdate()
+        if (!getLevel.isClientSide) if (updateExternals()) sendConnUpdate()
     }
 
     abstract override def onBlockRemoved():Unit = {
@@ -231,11 +230,11 @@ trait TConnectableInstTile extends CoreTile with TTileConnectable
         var smask = 0
 
         for (absSide <- 0 until 6) if ((mask&1<<absSide) != 0) {
-            val pos = getPos.offset(Direction.byIndex(absSide))
+            val pos = getBlockPos.relative(Direction.values()(absSide))
 
-            getWorld.neighborChanged(pos, getBlockState.getBlock, getPos)
+            getLevel.neighborChanged(pos, getBlockState.getBlock, getBlockPos)
             for (s <- 0 until 6) if (s != (absSide^1) && (smask&1<<s) == 0)
-                getWorld.neighborChanged(pos.offset(Direction.byIndex(s)), getBlockState.getBlock, pos)
+                getLevel.neighborChanged(pos.relative(Direction.values()(s)), getBlockState.getBlock, pos)
 
             smask |= 1<<absSide
         }
@@ -265,7 +264,7 @@ trait TPowerTile extends CoreTile with TConnectableInstTile with TCachedPowerCon
         if (maskConnectsStraightCenter(s)) {
             getStraightCenter(s) match {
                 case tp:IPowerConnectable => tp.conductor(s^1)
-                case _ => getWorld.getTileEntity(posOfInternal.offset(Direction.byIndex(s))) match {
+                case _ => getLevel.getBlockEntity(posOfInternal.relative(Direction.values()(s))) match {
                     case tp:IPowerConnectable => tp.conductor(s^1)
                     case _ => null
                 }
@@ -296,5 +295,5 @@ trait TPowerTile extends CoreTile with TConnectableInstTile with TCachedPowerCon
         needsCache = true
     }
 
-    override def connWorld:World = getWorld
+    override def connWorld:World = getLevel
 }

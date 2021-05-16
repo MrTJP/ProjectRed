@@ -15,18 +15,18 @@ class SimpleInventory(size:Int, name:String, stackLimit:Int) extends TInventory
 
     override protected val storage  = Array.fill(size)(ItemStack.EMPTY)//new Array[ItemStack](size)
 
-    override def getInventoryStackLimit = stackLimit
+    override def getMaxStackSize:Int = stackLimit
 
     override def nbtSaveName = name
 
-    override def markDirty(){}
+    override def setChanged():Unit = {}
 }
 
 class ArrayWrapInventory(override protected val storage:Array[ItemStack], name:String, stackLimit:Int) extends TInventory
 {
-    override def getInventoryStackLimit = stackLimit
+    override def getMaxStackSize:Int = stackLimit
 
-    override def markDirty(){}
+    override def setChanged():Unit = {}
 
     override def nbtSaveName = name
 }

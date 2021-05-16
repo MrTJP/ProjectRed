@@ -9,12 +9,12 @@ import codechicken.multipart.api.{MultiPartType, SimpleMultiPartType}
 import mrtjp.projectred.ProjectRedTransmission.MOD_ID
 import mrtjp.projectred.core.CoreContent._
 import mrtjp.projectred.transmission.TransmissionContent._
-import net.minecraft.data.{DataGenerator, ItemTagsProvider}
+import net.minecraft.data.{BlockTagsProvider, DataGenerator, ItemTagsProvider}
 import net.minecraft.item.ItemStack
-import net.minecraft.tags.ItemTags.{Wrapper => ItemTag}
+import net.minecraft.tags.ItemTags
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.client.model.generators.ExistingFileHelper
 import net.minecraftforge.common.Tags.{Items => ForgeItemTags}
+import net.minecraftforge.common.data.ExistingFileHelper
 import net.minecraftforge.eventbus.api.{IEventBus, SubscribeEvent}
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent
 import net.minecraftforge.registries.{DeferredRegister, ForgeRegistries}
@@ -214,9 +214,9 @@ object TransmissionContent {
     val partFramedPowerLowLoadWire = PARTS.register("low_load_framed_power_wire", wirePart(WireType.FRAMED_POWER_LOWLOAD))
 
     /** Item Tags */
-    val tagItemInsulatedWire = new ItemTag(new ResourceLocation(MOD_ID, "insulated_wire"))
-    val tagItemBundledWire = new ItemTag(new ResourceLocation(MOD_ID, "bundled_wire"))
-    val tagItemInsulatedFramedWire = new ItemTag(new ResourceLocation(MOD_ID, "framed_insulated_wire"))
+    val tagItemInsulatedWire = ItemTags.bind(new ResourceLocation(MOD_ID, "insulated_wire"))
+    val tagItemBundledWire = ItemTags.bind(new ResourceLocation(MOD_ID, "bundled_wire"))
+    val tagItemInsulatedFramedWire = ItemTags.bind(new ResourceLocation(MOD_ID, "framed_insulated_wire"))
 
     private def itemPartWire(wireType: WireType): Supplier[ItemPartWire] = () => new ItemPartWire(wireType)
 
@@ -243,7 +243,7 @@ private object DataGen {
             gen.addProvider(new ItemModels(gen, helper))
         }
         if (event.includeServer()) {
-            gen.addProvider(new ItemTags(gen))
+            gen.addProvider(new ItemTags(gen, helper))
             gen.addProvider(new Recipes(gen))
         }
         //        gen.addProvider(new BlockTags(gen))
@@ -251,7 +251,7 @@ private object DataGen {
     }
 }
 
-private class ItemModels(gen: DataGenerator, fileHelper: ExistingFileHelper) extends ItemModelProvider(gen, MOD_ID, fileHelper) {
+private class ItemModels(gen: DataGenerator, fileHelper:ExistingFileHelper) extends ItemModelProvider(gen, MOD_ID, fileHelper) {
 
     override def getName = "ProjectRed-Transmission Item Models."
 
@@ -317,11 +317,11 @@ private class ItemModels(gen: DataGenerator, fileHelper: ExistingFileHelper) ext
     }
 }
 
-private class ItemTags(gen: DataGenerator) extends ItemTagsProvider(gen) {
+private class ItemTags(gen: DataGenerator, fileHelper:ExistingFileHelper) extends ItemTagsProvider(gen, new BlockTagsProvider(gen, MOD_ID, fileHelper), MOD_ID, fileHelper) {
     override def getName = "ProjectRed-Transmission Item Tags."
 
-    override protected def registerTags() {
-        getBuilder(tagItemInsulatedWire)
+    override protected def addTags() {
+        tag(tagItemInsulatedWire)
             .add(itemInsulatedWhiteWire)
             .add(itemInsulatedOrangeWire)
             .add(itemInsulatedMagentaWire)
@@ -339,7 +339,7 @@ private class ItemTags(gen: DataGenerator) extends ItemTagsProvider(gen) {
             .add(itemInsulatedRedWire)
             .add(itemInsulatedBlackWire)
 
-        getBuilder(tagItemBundledWire)
+        tag(tagItemBundledWire)
             .add(itemBundledWhiteWire)
             .add(itemBundledOrangeWire)
             .add(itemBundledMagentaWire)
@@ -357,7 +357,7 @@ private class ItemTags(gen: DataGenerator) extends ItemTagsProvider(gen) {
             .add(itemBundledRedWire)
             .add(itemBundledBlackWire)
 
-        getBuilder(tagItemInsulatedFramedWire)
+        tag(tagItemInsulatedFramedWire)
             .add(itemFramedInsulatedWhiteWire)
             .add(itemFramedInsulatedOrangeWire)
             .add(itemFramedInsulatedMagentaWire)
@@ -392,7 +392,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
         //Insulated wires.
         for (w <- insulatedWires) {
             shapedRecipe(w, 12)
-                .key('W', new ItemTag(w.wireType.getColour.getWoolTagName))
+                .key('W', ItemTags.bind(w.wireType.getColour.getWoolTagName))
                 .key('R', itemRedIngot)
                 .patternLine("WRW")
                 .patternLine("WRW")
@@ -400,7 +400,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
             shapelessRecipe(w, 1, new ResourceLocation(w.getRegistryName + "_re_color"))
                 .addIngredient(tagItemInsulatedWire)
-                .addIngredient(new ItemTag(w.wireType.getColour.getDyeTagName))
+                .addIngredient(ItemTags.bind(w.wireType.getColour.getDyeTagName))
         }
 
         //Bundled wires
@@ -414,7 +414,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
         for (w <- bundledWires) {
             shapelessRecipe(w, 1, new ResourceLocation(w.getRegistryName + "_re_color"))
                 .addIngredient(tagItemBundledWire)
-                .addIngredient(new ItemTag(w.wireType.getColour.getDyeTagName))
+                .addIngredient(ItemTags.bind(w.wireType.getColour.getDyeTagName))
         }
 
         //Framed wires
@@ -450,7 +450,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
             shapelessRecipe(w, 1, new ResourceLocation(w.getRegistryName + "_re_color"))
                 .addIngredient(tagItemInsulatedFramedWire)
-                .addIngredient(new ItemTag(w.wireType.getColour.getDyeTagName))
+                .addIngredient(ItemTags.bind(w.wireType.getColour.getDyeTagName))
         }
 
         shapedRecipe(itemPowerLowLoadWire, 12)

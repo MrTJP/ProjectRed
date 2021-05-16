@@ -12,18 +12,18 @@ abstract class ItemCraftingDamage(properties: Item.Properties) extends Item(prop
     override def hasContainerItem(itemStack:ItemStack) = true
 
     override def getContainerItem(stack:ItemStack) =
-        if (isDamageable) {
+        if (canBeDepleted) {
             val ret = stack.copy()
-            ret.setDamage(ret.getDamage + 1);
+            ret.setDamageValue(ret.getDamageValue + 1);
             ret
         } else {
             stack
         }
 }
 
-class ItemDrawPlate extends ItemCraftingDamage(new Item.Properties().maxDamage(512).group(itemGroupCore))
+class ItemDrawPlate extends ItemCraftingDamage(new Item.Properties().durability(512).tab(itemGroupCore))
 
-class ItemScrewdriver extends Item(new Item.Properties().maxStackSize(1).maxDamage(128).setNoRepair().group(itemGroupCore)) with IScrewdriver
+class ItemScrewdriver extends Item(new Item.Properties().stacksTo(1).durability(128).setNoRepair().tab(itemGroupCore)) with IScrewdriver
 {
 
     override def doesSneakBypassUse(stack: ItemStack, world: IWorldReader, pos: BlockPos, player: PlayerEntity) = true
@@ -33,11 +33,11 @@ class ItemScrewdriver extends Item(new Item.Properties().maxStackSize(1).maxDama
     override def damageScrewdriver(player: PlayerEntity, stack:ItemStack)
     {
         if (!Configurator.unbreakableScrewdriver)
-            stack.damageItem(1, player, (p:PlayerEntity) => {})
+            stack.hurtAndBreak(1, player, (p:PlayerEntity) => {})
     }
 }
 
-class ItemMultimeter extends Item(new Item.Properties().maxStackSize(1).maxDamage(256).setNoRepair().group(itemGroupCore))
+class ItemMultimeter extends Item(new Item.Properties().stacksTo(1).durability(256).setNoRepair().tab(itemGroupCore))
 {
     override def doesSneakBypassUse(stack: ItemStack, world: IWorldReader, pos: BlockPos, player: PlayerEntity) = true
 }

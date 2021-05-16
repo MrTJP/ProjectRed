@@ -40,25 +40,25 @@ object WorldLib
 
     def dropItem(world:World, pos:BlockPos, stack:ItemStack)
     {
-        if (!world.isRemote && world.getGameRules.getBoolean(GameRules.DO_TILE_DROPS))
+        if (!world.isClientSide && world.getGameRules.getBoolean(GameRules.RULE_DOBLOCKDROPS))
         {
             val d = 0.7D
-            val dx = world.rand.nextFloat*d+(1.0D-d)*0.5D
-            val dy = world.rand.nextFloat*d+(1.0D-d)*0.5D
-            val dz = world.rand.nextFloat*d+(1.0D-d)*0.5D
+            val dx = world.random.nextFloat*d+(1.0D-d)*0.5D
+            val dy = world.random.nextFloat*d+(1.0D-d)*0.5D
+            val dz = world.random.nextFloat*d+(1.0D-d)*0.5D
             val item = new ItemEntity(world, pos.getX+dx, pos.getY+dy, pos.getZ+dz, stack)
-            item.setPickupDelay(10)
-            world.addEntity(item)
+            item.setPickUpDelay(10)
+            world.addFreshEntity(item)
         }
     }
 
     def centerEject(w:World, pos:BlockPos, stack:ItemStack, dir:Int, vel:Double)
     {
-        val pos2 = pos.offset(Direction.byIndex(dir))
+        val pos2 = pos.relative(Direction.values()(dir))
         val item = new ItemEntity(w, pos2.getX+0.5D, pos2.getY+0.5D, pos2.getZ+0.5D, stack)
 
 
-        item.setPickupDelay(10)
+        item.setPickUpDelay(10)
         var motionY = 0D
         var motionZ = 0D
         var motionX = 0D
@@ -71,8 +71,8 @@ object WorldLib
             case 4 => motionX = -vel
             case 5 => motionX =  vel
         }
-        item.setMotion(motionX, motionY, motionZ)
-        w.addEntity(item)
+        item.setDeltaMovement(motionX, motionY, motionZ)
+        w.addFreshEntity(item)
     }
 
     def hasItem(state: BlockState) : Boolean = {
@@ -89,7 +89,7 @@ object WorldLib
     {
         case b:IGrowable => !b.isInstanceOf[GrassBlock]
         case b:IPlantable => true
-        case _ => state.isFoliage(world, pos)
+        case _ => false
     }
 
 /*
@@ -115,7 +115,7 @@ object WorldLib
     def isBlockTouchingAir(world:World, pos:BlockPos):Boolean =
     {
         for (s <- 0 until 6)
-            if (world.isAirBlock(pos.offset(Direction.byIndex(s))))
+            if (world.isEmptyBlock(pos.relative(Direction.values()(s))))
                 return true
 
         false
@@ -134,14 +134,14 @@ object WorldLib
     }*/
 
     def getSkyLightValue(world:World, pos:BlockPos) =
-        world.getLightFor(LightType.SKY, pos)-world.getSkylightSubtracted
+        world.getBrightness(LightType.SKY, pos)-world.getSkyDarken
 
-    def getBlockLightValue(w:World, pos:BlockPos) = w.getLightFor(LightType.BLOCK, pos)
+    def getBlockLightValue(w:World, pos:BlockPos) = w.getBrightness(LightType.BLOCK, pos)
 
     private val noise = new PerlinNoiseGenerator(2576710L)
     def getWindSpeed(world:World, pos:BlockPos):Double =
     {
-        if (world.dimension.isSurfaceWorld) return 0.5D
+//        if (world.dimension.isSurfaceWorld) return 0.5D
         var nv = noise.noise(world.getDayTime*0.00000085D, 0, 0, 5, 7.5D, 5.0D, true)
 
         nv = math.max(0.0D, 1.6D*(nv-0.006D)+0.06D)*math.sqrt(pos.getY)/16.0D

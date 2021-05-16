@@ -4,9 +4,9 @@ import mrtjp.projectred.expansion.ExpansionContent
 import net.minecraft.item.Item
 
 class BatteryItem extends Item(new Item.Properties()
-        .group(ExpansionContent.expansionItemGroup)
-        .maxStackSize(1)
-        .maxDamage(1600)
+        .tab(ExpansionContent.expansionItemGroup)
+        .stacksTo(1)
+        .durability(1600)
         .setNoRepair()) with TChargableBatteryItem
 {
     override def isEmpty = false

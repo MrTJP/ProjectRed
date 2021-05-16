@@ -5,6 +5,7 @@
  */
 package mrtjp.core.gui
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.core.vec.{Point, Rect, Size}
 import org.lwjgl.opengl.GL11
 
@@ -13,19 +14,19 @@ class ClipNode extends TNode
     var size = Size.zeroSize
     override def frame = Rect(position, size)
 
-    override protected[gui] def drawBack(mouse:Point, rframe:Float)
+    override protected[gui] def drawBack(stack:MatrixStack, mouse:Point, rframe:Float)
     {
         if (!hidden)
         {
             val dp = mouse-position
             for (n <- familyByZ)
             {
-                if (n == this) drawBack_Impl(mouse, rframe)
+                if (n == this) drawBack_Impl(stack, mouse, rframe)
                 else
                 {
                     onChildPredraw()
                     translateTo()
-                    n.drawBack(dp, rframe)
+                    n.drawBack(stack, dp, rframe)
                     translateFrom()
                     onChildPostdraw()
                 }
@@ -33,19 +34,19 @@ class ClipNode extends TNode
         }
     }
 
-    override protected[gui] def drawFront(mouse:Point, rframe:Float)
+    override protected[gui] def drawFront(stack:MatrixStack, mouse:Point, rframe:Float)
     {
         if (!hidden)
         {
             val dp = mouse-position
             for (n <- familyByZ)
             {
-                if (n == this) drawFront_Impl(mouse, rframe)
+                if (n == this) drawFront_Impl(stack, mouse, rframe)
                 else
                 {
                     onChildPredraw()
                     translateTo()
-                    n.drawFront(dp, rframe)
+                    n.drawFront(stack, dp, rframe)
                     translateFrom()
                     onChildPostdraw()
                 }
@@ -55,11 +56,11 @@ class ClipNode extends TNode
 
     private def onChildPredraw()
     {
-        val wScale = mcInst.getMainWindow.getScaledWidth
-        val hScale = mcInst.getMainWindow.getScaledHeight
+        val wScale = mcInst.getWindow.getGuiScaledWidth
+        val hScale = mcInst.getWindow.getGuiScaledHeight
 
         val absPos = parent.convertPointToScreen(position)
-        val sFrame = new Rect(absPos.x*wScale, mcInst.getMainWindow.getHeight-(absPos.y*hScale)-size.height*hScale,
+        val sFrame = new Rect(absPos.x*wScale, mcInst.getWindow.getHeight-(absPos.y*hScale)-size.height*hScale,
             size.width*wScale, size.height*hScale)
 
         GL11.glEnable(GL11.GL_SCISSOR_TEST)

@@ -11,7 +11,7 @@ import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
 import net.minecraft.entity.player.{PlayerEntity, ServerPlayerEntity}
 import net.minecraft.nbt.CompoundNBT
-import net.minecraft.util.{ActionResultType, Direction}
+import net.minecraft.util.{ActionResultType, Direction, Util}
 import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
@@ -75,13 +75,13 @@ trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with TRSP
     override def debug(player:PlayerEntity) =
     {
         player.sendMessage(new StringTextComponent(
-            (if (world.isRemote) "Client" else "Server")+" signal strength: "+getSignal))
+            (if (world.isClientSide) "Client" else "Server")+" signal strength: "+getSignal), Util.NIL_UUID)
         true
     }
 
     override def test(player:PlayerEntity) =
     {
-        if (world.isRemote) Messenger.addMessage(pos.getX, pos.getY+0.5, pos.getZ, "/#f/#c[c] = "+getSignal)
+        if (world.isClientSide) Messenger.addMessage(pos.getX, pos.getY+0.5, pos.getZ, "/#f/#c[c] = "+getSignal)
         else if (player.isInstanceOf[ServerPlayerEntity]) {
             val packet = Messenger.createPacket
             packet.writeDouble(pos.getX+0.0D)
@@ -198,7 +198,7 @@ abstract class FramedRedwirePart(wireType:WireType) extends FramedWirePart(wireT
     override def propagateOther(mode:Int)
     {
         for (s <- 0 until 6) if (!maskConnects(s))
-            WirePropagator.addNeighborChange(pos.offset(Direction.byIndex(s)))
+            WirePropagator.addNeighborChange(pos.relative(Direction.values()(s)))
     }
 
     def calculateSignal =
@@ -259,20 +259,20 @@ class RedAlloyWirePart(wireType:WireType) extends RedwirePart(wireType) with TRe
     override def onRemoved()
     {
         super.onRemoved()
-        if (!world.isRemote) tile.notifyNeighborChange(side)
+        if (!world.isClientSide) tile.notifyNeighborChange(side)
     }
 
     override def propagateOther(mode:Int)
     {
-        WirePropagator.addNeighborChange(pos.offset(Direction.byIndex(side)))
-        WirePropagator.addNeighborChange(pos.offset(Direction.byIndex(side^1)))
+        WirePropagator.addNeighborChange(pos.relative(Direction.values()(side)))
+        WirePropagator.addNeighborChange(pos.relative(Direction.values()(side^1)))
 
         for (r <- 0 until 4) if (!maskConnects(r))
-            WirePropagator.addNeighborChange(pos.offset(Direction.byIndex(Rotation.rotateSide(side, r))))
+            WirePropagator.addNeighborChange(pos.relative(Direction.values()(Rotation.rotateSide(side, r))))
 
         for (s <- 0 until 6) if (s != (side^1))
             WirePropagator.addNeighborChange(pos
-                    .offset(Direction.byIndex(side)).offset(Direction.byIndex(s)))
+                    .relative(Direction.values()(side)).relative(Direction.values()(s)))
     }
 }
 

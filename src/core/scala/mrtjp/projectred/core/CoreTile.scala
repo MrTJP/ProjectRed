@@ -72,38 +72,38 @@ abstract class CoreTile(tileType:TileEntityType[_]) extends TileEntity(tileType)
     final def dropAndRemove():Unit = {
         val il = new ListBuffer[ItemStack]
         addHarvestContents(il)
-        for (stack <- il) WorldLib.dropItem(world, pos, stack)
-        world.removeBlock(pos, false)
+        for (stack <- il) WorldLib.dropItem(level, getBlockPos, stack)
+        level.removeBlock(getBlockPos, false)
     }
 
-    final override def remove():Unit = {
+    final override def setRemoved():Unit = {
         if (!isRemoved) {
-            super.remove()
+            super.setRemoved()
             onBlockRemoved()
         }
     }
 
     final def pushState():Unit = {
-        if (!world.isRemote) {
-            val baseState = getBlockState.getBlock.getDefaultState
+        if (!level.isClientSide) {
+            val baseState = getBlockState.getBlock.defaultBlockState()
             val newState = covertToBlockState(baseState)
-            world.setBlockState(getPos, newState)
+            level.setBlockAndUpdate(getBlockPos, newState)
         }
     }
 
     final def markRender():Unit = {
 //        world.markBlockRangeForRenderUpdate(pos, pos)
-        if (world.isRemote && world.isInstanceOf[ClientWorld]) {
-            world.asInstanceOf[ClientWorld].worldRenderer
-                    .markBlockRangeForRenderUpdate(pos.getX, pos.getY, pos.getZ,
-                        pos.getX, pos.getY, pos.getZ)
+        if (level.isClientSide && level.isInstanceOf[ClientWorld]) {
+            level.asInstanceOf[ClientWorld].levelRenderer
+                    .setBlocksDirty(getBlockPos.getX, getBlockPos.getY, getBlockPos.getZ,
+                        getBlockPos.getX, getBlockPos.getY, getBlockPos.getZ)
         }
     }
 
     final def recalcLight(sky:Boolean, block:Boolean):Unit = {
-        val lm = world.getChunkProvider.getLightManager
-        if (sky && lm.skyLight != null) lm.skyLight.checkLight(pos)
-        if (block && lm.blockLight != null) lm.blockLight.checkLight(pos)
+        val lm = level.getChunkSource.getLightEngine
+        if (sky && lm.skyEngine != null) lm.skyEngine.checkBlock(getBlockPos)
+        if (block && lm.blockEngine != null) lm.blockEngine.checkBlock(getBlockPos)
     }
 
 //    final def markDescUpdate() {
@@ -117,10 +117,10 @@ abstract class CoreTile(tileType:TileEntityType[_]) extends TileEntity(tileType)
     def onScheduledTick():Unit = {}
 
     final def scheduleTick(time: Int):Unit = {
-        val tn = world.getGameTime + time
+        val tn = level.getGameTime + time
         if (schedTick > 0L && schedTick < tn) return
         schedTick = tn
-        markDirty()
+        setChanged()
     }
 
     final def isTickScheduled:Boolean = schedTick >= 0L
@@ -129,29 +129,29 @@ abstract class CoreTile(tileType:TileEntityType[_]) extends TileEntity(tileType)
     def updateServer():Unit = {}
 
     final override def tick():Unit = {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             updateServer()
-            val time = world.getGameTime
+            val time = level.getGameTime
             if (schedTick >= 0L && time >= schedTick) {
                 schedTick = -1L
                 onScheduledTick()
-                markDirty()
+                setChanged()
             }
         } else
             updateClient()
     }
 
-    final override def write(tag:CompoundNBT):CompoundNBT = {
-        super.write(tag)
+    final override def save(tag:CompoundNBT):CompoundNBT = {
+        super.save(tag)
         tag.putLong("sched", schedTick)
-        save(tag)
+        saveToNBT(tag)
         tag
     }
 
-    final override def read(tag:CompoundNBT):Unit = {
-        super.read(tag)
+    final override def load(state:BlockState, tag:CompoundNBT):Unit = {
+        super.load(state, tag)
         schedTick = tag.getLong("sched")
-        load(tag)
+        loadFromNBT(tag)
     }
 
     /*
@@ -167,15 +167,15 @@ abstract class CoreTile(tileType:TileEntityType[_]) extends TileEntity(tileType)
         tag
     }
 
-    final override def handleUpdateTag(tag:CompoundNBT):Unit = {
-        super.handleUpdateTag(tag)
+    final override def handleUpdateTag(state:BlockState, tag:CompoundNBT):Unit = {
+        super.handleUpdateTag(state, tag)
         val in = MCDataByteBuf.readFromNBT(tag, "descpkt")
         readDesc(in)
     }
 
-    def save(tag:CompoundNBT) {}
+    def saveToNBT(tag:CompoundNBT) {}
 
-    def load(tag:CompoundNBT) {}
+    def loadFromNBT(tag:CompoundNBT) {}
 
     def writeDesc(out:MCDataOutput) {}
 
@@ -192,7 +192,7 @@ abstract class CoreTile(tileType:TileEntityType[_]) extends TileEntity(tileType)
         val packet = CoreNetwork.createUpdatePacket(this)
         packet.writeByte(key)
         writeFunc(packet)
-        if (!world.isRemote)
+        if (!level.isClientSide)
             packet.sendToChunk(this)
         else
             packet.sendToServer()

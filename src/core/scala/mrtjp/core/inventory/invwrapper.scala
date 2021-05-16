@@ -36,7 +36,7 @@ object InvWrapper
     //Used for wrapping inventory tiles
     def wrap(world:World, pos:BlockPos, side:Direction):InvWrapper =
     {
-        val tile = world.getTileEntity(pos)
+        val tile = world.getBlockEntity(pos)
         if (tile == null) return null
 
         def wrap(opt:LazyOptional[IItemHandler]):InvWrapper = {
@@ -67,7 +67,7 @@ object InvWrapper
     }
 
     //Used for wrapping raw inventories for help with internal inventory manipulation
-    def wrapInternal(inv:IInventory):VanillaWrapper = wrapInternal(inv, 0 until inv.getSizeInventory)
+    def wrapInternal(inv:IInventory):VanillaWrapper = wrapInternal(inv, 0 until inv.getContainerSize)
 
     def wrapInternal(inv:IInventory, slots:Range):VanillaWrapper =
     {
@@ -84,7 +84,7 @@ object InvWrapper
     def areItemsSame(stack1:ItemStack, stack2:ItemStack):Boolean =
     {
         if (stack1.isEmpty || stack2.isEmpty) return stack1 == stack2
-        stack1.getItem == stack2.getItem && ItemStack.areItemStackTagsEqual(stack2, stack1)
+        stack1.getItem == stack2.getItem && ItemStack.tagMatches(stack2, stack1)
     }
 
 //    def getInventory(world:World, pos:BlockPos):IInventory =
@@ -363,13 +363,13 @@ class VanillaWrapper(inv:IInventory, internalMode:Boolean) extends InvWrapper
     }
     protected var side:Direction = null
 
-    var slots:Seq[Int] = 0 until inv.getSizeInventory
+    var slots:Seq[Int] = 0 until inv.getContainerSize
 
     def setSlotsFromSide(s:Int) =
     {
         if (sidedInv != null)
         {
-            side = Direction.byIndex(s)
+            side = Direction.values()(s)
             slots = sidedInv.getSlotsForFace(side)
         }
         else setSlotsAll()
@@ -386,7 +386,7 @@ class VanillaWrapper(inv:IInventory, internalMode:Boolean) extends InvWrapper
     def setSlotsAll() =
     {
         side = null
-        slots = (0 until inv.getSizeInventory)
+        slots = (0 until inv.getContainerSize)
         this
     }
 
@@ -394,10 +394,10 @@ class VanillaWrapper(inv:IInventory, internalMode:Boolean) extends InvWrapper
     {
         var space = 0
         val item2 = item.testStack
-        val slotStackLimit = math.min(inv.getInventoryStackLimit, item.getMaxStackSize)
+        val slotStackLimit = math.min(inv.getMaxStackSize, item.getMaxStackSize)
         for (slot <- slots)
         {
-            val s = inv.getStackInSlot(slot)
+            val s = inv.getItem(slot)
             if (canInsertItem(slot, item2))
             {
                 if (s.isEmpty) space += slotStackLimit
@@ -410,10 +410,10 @@ class VanillaWrapper(inv:IInventory, internalMode:Boolean) extends InvWrapper
     override def hasSpaceForItem(item:ItemKey):Boolean =
     {
         val item2 = item.testStack
-        val slotStackLimit = math.min(inv.getInventoryStackLimit, item2.getMaxStackSize)
+        val slotStackLimit = math.min(inv.getMaxStackSize, item2.getMaxStackSize)
         for (slot <- slots)
         {
-            val s = inv.getStackInSlot(slot)
+            val s = inv.getItem(slot)
             if (canInsertItem(slot, item2))
             {
                 if (s.isEmpty) return true
@@ -431,7 +431,7 @@ class VanillaWrapper(inv:IInventory, internalMode:Boolean) extends InvWrapper
 
         for (slot <- slots)
         {
-            val inSlot = inv.getStackInSlot(slot)
+            val inSlot = inv.getItem(slot)
             if (!inSlot.isEmpty && eq.matches(item, ItemKey.get(inSlot)))
             {
                 val toAdd = inSlot.getCount-(if (hidePerSlot || hidePerType && first) 1 else 0)
@@ -446,7 +446,7 @@ class VanillaWrapper(inv:IInventory, internalMode:Boolean) extends InvWrapper
     {
         for (slot <- slots)
         {
-            val inSlot = inv.getStackInSlot(slot)
+            val inSlot = inv.getItem(slot)
             if (!inSlot.isEmpty && eq.matches(item, ItemKey.get(inSlot))) return true
         }
 
@@ -456,24 +456,24 @@ class VanillaWrapper(inv:IInventory, internalMode:Boolean) extends InvWrapper
     override def injectItem(item:ItemKey, toAdd:Int):Int =
     {
         var itemsLeft = toAdd
-        val slotStackLimit = math.min(inv.getInventoryStackLimit, item.getMaxStackSize)
+        val slotStackLimit = math.min(inv.getMaxStackSize, item.getMaxStackSize)
 
         for (pass <- Seq(0, 1)) for (slot <- slots) if (canInsertItem(slot, item.testStack))
         {
-            val inSlot = inv.getStackInSlot(slot)
+            val inSlot = inv.getItem(slot)
 
             if (!inSlot.isEmpty && InvWrapper.areItemsStackable(item.testStack, inSlot))
             {
                 val fit = math.min(slotStackLimit-inSlot.getCount, itemsLeft)
                 inSlot.grow(fit)
                 itemsLeft -= fit
-                inv.setInventorySlotContents(slot, inSlot)
+                inv.setItem(slot, inSlot)
             }
             else if (pass == 1 && inSlot.isEmpty)
             {
-                val toInsert = item.makeStack(math.min(inv.getInventoryStackLimit, itemsLeft))
+                val toInsert = item.makeStack(math.min(inv.getMaxStackSize, itemsLeft))
                 itemsLeft -= toInsert.getCount
-                inv.setInventorySlotContents(slot, toInsert)
+                inv.setItem(slot, toInsert)
             }
 
             if (itemsLeft == 0) return toAdd
@@ -489,10 +489,10 @@ class VanillaWrapper(inv:IInventory, internalMode:Boolean) extends InvWrapper
         var first = true
         for (slot <- slots) if (canExtractItem(slot, item.testStack))
         {
-            val inSlot = inv.getStackInSlot(slot)
+            val inSlot = inv.getItem(slot)
             if (!inSlot.isEmpty && eq.matches(item, ItemKey.get(inSlot))) //TODO extraction shouldnt rely on eq matches..?
             {
-                left -= inv.decrStackSize(slot, math.min(left, inSlot.getCount-(if (hidePerSlot || hidePerType&&first) 1 else 0))).getCount
+                left -= inv.removeItem(slot, math.min(left, inSlot.getCount-(if (hidePerSlot || hidePerType&&first) 1 else 0))).getCount
                 first = false
             }
             if (left <= 0) return toExtract
@@ -505,7 +505,7 @@ class VanillaWrapper(inv:IInventory, internalMode:Boolean) extends InvWrapper
         var items = Map[ItemKey, Int]()
         for (slot <- slots)
         {
-            val inSlot = inv.getStackInSlot(slot)
+            val inSlot = inv.getItem(slot)
             if (!inSlot.isEmpty)
             {
                 val key = ItemKey.get(inSlot)
@@ -522,12 +522,12 @@ class VanillaWrapper(inv:IInventory, internalMode:Boolean) extends InvWrapper
     protected def canInsertItem(slot:Int, item:ItemStack):Boolean =
     {
         if (internalMode) return true
-        if (side == null) inv.isItemValidForSlot(slot, item) else sidedInv.canInsertItem(slot, item, side)
+        if (side == null) inv.canPlaceItem(slot, item) else sidedInv.canPlaceItemThroughFace(slot, item, side)
     }
 
     protected def canExtractItem(slot:Int, item:ItemStack):Boolean =
     {
         if (internalMode) return true
-        if (side == null) inv.isItemValidForSlot(slot, item) else sidedInv.canExtractItem(slot, item, side)
+        if (side == null) inv.canPlaceItem(slot, item) else sidedInv.canTakeItemThroughFace(slot, item, side)
     }
 }

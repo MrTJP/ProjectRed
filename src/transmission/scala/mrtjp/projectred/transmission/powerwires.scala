@@ -34,12 +34,12 @@ trait TPowerWireCommons extends TWireCommons with TPowerPartCommons with ITickab
 
     override def tick()
     {
-        if (!world.isRemote) cond.update()
+        if (!world.isClientSide) cond.update()
     }
 
     override def test(player:PlayerEntity):Boolean =
     {
-        if (world.isRemote && !player.isInstanceOf[ServerPlayerEntity]) return true
+        if (world.isClientSide && !player.isInstanceOf[ServerPlayerEntity]) return true
 
         val p = Messenger.createPacket
         p.writeDouble(pos.getX).writeDouble(pos.getY).writeDouble(pos.getZ)
@@ -63,13 +63,13 @@ trait TPowerWireCommons extends TWireCommons with TPowerPartCommons with ITickab
 
 trait PowerWire extends WirePart with TPowerWireCommons with TFacePowerPart
 {
-    override def discoverStraightOverride(absDir:Int) = world.getTileEntity(posOfStraight(absoluteRot(absDir))) match
+    override def discoverStraightOverride(absDir:Int) = world.getBlockEntity(posOfStraight(absoluteRot(absDir))) match
     {
         case p:IPowerConnectable => p.connectStraight(this, absDir^1, Rotation.rotationTo(absDir, side))
         case _ => false
     }
 
-    override def discoverCornerOverride(absDir:Int) = world.getTileEntity(posOfCorner(absoluteRot(absDir))) match
+    override def discoverCornerOverride(absDir:Int) = world.getBlockEntity(posOfCorner(absoluteRot(absDir))) match
     {
         case p:IPowerConnectable =>
             p.connectCorner(this, side^1, Rotation.rotationTo(side, absDir^1))
@@ -79,7 +79,7 @@ trait PowerWire extends WirePart with TPowerWireCommons with TFacePowerPart
 
 trait FramedPowerWire extends FramedWirePart with TPowerWireCommons with TCenterPowerPart
 {
-    override def discoverStraightOverride(s:Int) = world.getTileEntity(posOfStraight(s)) match
+    override def discoverStraightOverride(s:Int) = world.getBlockEntity(posOfStraight(s)) match
     {
         case p:IPowerConnectable =>
             p.connectStraight(this, s^1, -1)

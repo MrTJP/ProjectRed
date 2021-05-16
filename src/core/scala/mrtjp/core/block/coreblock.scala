@@ -6,6 +6,7 @@
 package mrtjp.core.block
 
 import codechicken.lib.vec.Vector3
+import net.minecraft.block.AbstractBlock
 import net.minecraft.item.BlockItem
 //import mrtjp.core.item.ItemDefinition
 import net.minecraft.block.Block
@@ -13,7 +14,7 @@ import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
-class BlockCore(properties: Block.Properties) extends Block(properties) {
+class BlockCore(properties: AbstractBlock.Properties) extends Block(properties) {
     def getItemBlockClass: Class[_ <: BlockItem] = classOf[ItemBlockCore]
 }
 

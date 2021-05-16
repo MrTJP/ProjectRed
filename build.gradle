@@ -3,7 +3,8 @@ import java.time.Instant
 buildscript {
     repositories {
         mavenLocal()
-        maven { url = "https://proxy-maven.covers1624.net/" }
+        maven { url = "https://files.minecraftforge.net/maven/" }
+        // maven { url = "https://proxy-maven.covers1624.net/" }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:4.1.+'
@@ -50,7 +51,7 @@ println "Starting build of ${archivesBaseName}, Version: ${config.mod_version}"
 println "Using Forge: ${config.forge_version}, for Minecraft: ${config.mc_version}, with Mappings: ${config.mappings}"
 
 minecraft {
-    mappings channel: 'snapshot', version: config.mappings
+    mappings channel: 'official', version: config.mc_version
     accessTransformer = file("src/core/resources/META-INF/accesstransformer.cfg")
     runs {
         client {
