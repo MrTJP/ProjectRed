@@ -11,24 +11,13 @@ import mrtjp.core.fx._
 import net.minecraft.client.particle.Particle
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.world.ClientWorld
 import net.minecraft.entity.Entity
 import net.minecraft.world.World
 import org.lwjgl.opengl.GL11
 
-class SpriteParticle(w:World) extends CoreParticle(w) with TColourParticle with TAlphaParticle with TPositionedParticle with TTextureParticle with TScalableParticle
+class SpriteParticle(w:ClientWorld) extends CoreParticle(w) with TColourParticle with TAlphaParticle with TPositionedParticle with TTextureParticle with TScalableParticle
 {
-    override def x = posX
-    override def y = posY
-    override def z = posZ
-
-    override def px = prevPosX
-    override def py = prevPosY
-    override def pz = prevPosZ
-
-    override def px_=(x:Double){prevPosX = x}
-    override def py_=(y:Double){prevPosY = y}
-    override def pz_=(z:Double){prevPosZ = z}
-
     /*override def renderParticle(buffer:BufferBuilder, entity:Entity, frame:Float, cosyaw:Float, cospitch:Float, sinyaw:Float, sinsinpitch:Float, cossinpitch:Float)
     {
         super.renderParticle(buffer, entity, frame, cosyaw, cospitch, sinyaw, sinsinpitch, cossinpitch)

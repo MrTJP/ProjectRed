@@ -1,28 +1,27 @@
 package mrtjp.projectred.core
 
 import codechicken.lib.colour.EnumColour
-import codechicken.lib.datagen.recipe.{FurnaceRecipeBuilder, ShapedRecipeBuilder, ShapelessRecipeBuilder, RecipeProvider}
 import codechicken.lib.datagen.ItemModelProvider
+import codechicken.lib.datagen.recipe.RecipeProvider
 import codechicken.lib.gui.SimpleItemGroup
 import codechicken.lib.util.CrashLock
-import codechicken.microblock.{EdgeMicroFactory, FaceMicroFactory, ItemMicroBlock, MicroMaterialRegistry, MicroRecipe}
 import codechicken.microblock.handler.MicroblockModContent
+import codechicken.microblock.{EdgeMicroFactory, FaceMicroFactory, ItemMicroBlock, MicroMaterialRegistry}
 import mrtjp.projectred.ProjectRedCore.MOD_ID
 import mrtjp.projectred.core.CoreContent._
 import net.minecraft.data._
-import net.minecraft.item.crafting.Ingredient
 import net.minecraft.item.{Item, ItemStack, Items}
-import net.minecraft.tags.ItemTags.{Wrapper => ItemTag}
+import net.minecraft.tags.ItemTags
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.client.model.generators.ExistingFileHelper
 import net.minecraftforge.common.Tags
 import net.minecraftforge.common.Tags.Items._
 import net.minecraftforge.common.crafting.{NBTIngredient => ForgeNBTIngredient}
+import net.minecraftforge.common.data.ExistingFileHelper
 import net.minecraftforge.eventbus.api.{IEventBus, SubscribeEvent}
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent
 import net.minecraftforge.registries.{DeferredRegister, ForgeRegistries}
 
-import java.util.function.{Consumer, Supplier}
+import java.util.function.Supplier
 
 object CoreContent {
 
@@ -137,39 +136,39 @@ object CoreContent {
 
 
     //region Tags
-    val tagIngotsCopper = new ItemTag("forge:ingots/copper")
-    val tagIngotsTin = new ItemTag("forge:ingots/tin")
-    val tagIngotsSilver = new ItemTag("forge:ingots/silver")
+    val tagIngotsCopper = ItemTags.bind("forge:ingots/copper")
+    val tagIngotsTin = ItemTags.bind("forge:ingots/tin")
+    val tagIngotsSilver = ItemTags.bind("forge:ingots/silver")
 
-    val tagIngotsRedAlloy = new ItemTag("forge:ingots/red_alloy")
-    val tagIngotsElectrotineAlloy = new ItemTag("forge:ingots/electrotine_alloy")
+    val tagIngotsRedAlloy = ItemTags.bind("forge:ingots/red_alloy")
+    val tagIngotsElectrotineAlloy = ItemTags.bind("forge:ingots/electrotine_alloy")
 
-    val tagGemsRuby = new ItemTag("forge:gems/ruby")
-    val tagGemsSapphire = new ItemTag("forge:gems/sapphire")
-    val tagGemsPeridot = new ItemTag("forge:gems/peridot")
+    val tagGemsRuby = ItemTags.bind("forge:gems/ruby")
+    val tagGemsSapphire = ItemTags.bind("forge:gems/sapphire")
+    val tagGemsPeridot = ItemTags.bind("forge:gems/peridot")
 
-    val tagDustsElectrotine = new ItemTag("forge:dusts/electrotine")
+    val tagDustsElectrotine = ItemTags.bind("forge:dusts/electrotine")
 
-    val tagIllumars = new ItemTag(new ResourceLocation(MOD_ID, "illumars"))
-    val tagIllumarsWhite = new ItemTag(new ResourceLocation(MOD_ID, "illumars/white"))
-    val tagIllumarsOrange = new ItemTag(new ResourceLocation(MOD_ID, "illumars/orange"))
-    val tagIllumarsMagenta = new ItemTag(new ResourceLocation(MOD_ID, "illumars/magenta"))
-    val tagIllumarsLightBlue = new ItemTag(new ResourceLocation(MOD_ID, "illumars/light_blue"))
-    val tagIllumarsYellow = new ItemTag(new ResourceLocation(MOD_ID, "illumars/yellow"))
-    val tagIllumarsLime = new ItemTag(new ResourceLocation(MOD_ID, "illumars/lime"))
-    val tagIllumarsPink = new ItemTag(new ResourceLocation(MOD_ID, "illumars/pink"))
-    val tagIllumarsGray = new ItemTag(new ResourceLocation(MOD_ID, "illumars/gray"))
-    val tagIllumarsLightGray = new ItemTag(new ResourceLocation(MOD_ID, "illumars/light_gray"))
-    val tagIllumarsCyan = new ItemTag(new ResourceLocation(MOD_ID, "illumars/cyan"))
-    val tagIllumarsPurple = new ItemTag(new ResourceLocation(MOD_ID, "illumars/purple"))
-    val tagIllumarsBlue = new ItemTag(new ResourceLocation(MOD_ID, "illumars/blue"))
-    val tagIllumarsBrown = new ItemTag(new ResourceLocation(MOD_ID, "illumars/brown"))
-    val tagIllumarsGreen = new ItemTag(new ResourceLocation(MOD_ID, "illumars/green"))
-    val tagIllumarsRed = new ItemTag(new ResourceLocation(MOD_ID, "illumars/red"))
-    val tagIllumarsBlack = new ItemTag(new ResourceLocation(MOD_ID, "illumars/black"))
+    val tagIllumars = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars"))
+    val tagIllumarsWhite = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/white"))
+    val tagIllumarsOrange = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/orange"))
+    val tagIllumarsMagenta = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/magenta"))
+    val tagIllumarsLightBlue = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/light_blue"))
+    val tagIllumarsYellow = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/yellow"))
+    val tagIllumarsLime = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/lime"))
+    val tagIllumarsPink = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/pink"))
+    val tagIllumarsGray = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/gray"))
+    val tagIllumarsLightGray = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/light_gray"))
+    val tagIllumarsCyan = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/cyan"))
+    val tagIllumarsPurple = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/purple"))
+    val tagIllumarsBlue = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/blue"))
+    val tagIllumarsBrown = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/brown"))
+    val tagIllumarsGreen = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/green"))
+    val tagIllumarsRed = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/red"))
+    val tagIllumarsBlack = ItemTags.bind(new ResourceLocation(MOD_ID, "illumars/black"))
     //endregion
 
-    private def simpleItem: Supplier[Item] = () => new Item(new Item.Properties().group(itemGroupCore))
+    private def simpleItem: Supplier[Item] = () => new Item(new Item.Properties().tab(itemGroupCore))
 
     def register(bus: IEventBus) {
         LOCK.lock()
@@ -194,14 +193,14 @@ private object DataGen {
             gen.addProvider(new ItemModels(gen, helper))
         }
         if (event.includeServer) {
-            gen.addProvider(new ItemTags(gen))
+            gen.addProvider(new ItemTags(gen, helper))
             gen.addProvider(new Recipes(gen))
         }
     }
 }
 
 
-private class ItemModels(gen: DataGenerator, helper: ExistingFileHelper) extends ItemModelProvider(gen, MOD_ID, helper) {
+private class ItemModels(gen: DataGenerator, helper:ExistingFileHelper) extends ItemModelProvider(gen, MOD_ID, helper) {
     override protected def registerModels() {
         generated(itemPlate)
         generated(itemConductivePlate)
@@ -276,68 +275,68 @@ private class ItemModels(gen: DataGenerator, helper: ExistingFileHelper) extends
     override def getName = "ProjectRed-Core Item Models"
 }
 
-private class ItemTags(gen: DataGenerator) extends ItemTagsProvider(gen) {
+private class ItemTags(gen:DataGenerator, helper:ExistingFileHelper) extends ItemTagsProvider(gen, new BlockTagsProvider(gen, MOD_ID, helper), MOD_ID, helper) {
 
-    override protected def registerTags() {
-        getBuilder(Tags.Items.INGOTS)
-            .add(tagIngotsCopper)
-            .add(tagIngotsTin)
-            .add(tagIngotsSilver)
-            .add(tagIngotsRedAlloy)
-            .add(tagIngotsElectrotineAlloy)
-        getBuilder(Tags.Items.GEMS)
-            .add(tagGemsRuby)
-            .add(tagGemsSapphire)
-            .add(tagGemsPeridot)
-        getBuilder(Tags.Items.DUSTS)
-            .add(tagDustsElectrotine)
+    override protected def addTags() {
+        tag(Tags.Items.INGOTS)
+            .addTag(tagIngotsCopper)
+            .addTag(tagIngotsTin)
+            .addTag(tagIngotsSilver)
+            .addTag(tagIngotsRedAlloy)
+            .addTag(tagIngotsElectrotineAlloy)
+        tag(Tags.Items.GEMS)
+            .addTag(tagGemsRuby)
+            .addTag(tagGemsSapphire)
+            .addTag(tagGemsPeridot)
+        tag(Tags.Items.DUSTS)
+            .addTag(tagDustsElectrotine)
 
-        getBuilder(tagIngotsCopper).add(itemCopperIngot)
-        getBuilder(tagIngotsTin).add(itemTinIngot)
-        getBuilder(tagIngotsSilver).add(itemSilverIngot)
+        tag(tagIngotsCopper).add(itemCopperIngot)
+        tag(tagIngotsTin).add(itemTinIngot)
+        tag(tagIngotsSilver).add(itemSilverIngot)
 
-        getBuilder(tagIngotsRedAlloy).add(itemRedIngot)
-        getBuilder(tagIngotsElectrotineAlloy).add(itemElectrotineIngot)
+        tag(tagIngotsRedAlloy).add(itemRedIngot)
+        tag(tagIngotsElectrotineAlloy).add(itemElectrotineIngot)
 
-        getBuilder(tagGemsRuby).add(itemRuby)
-        getBuilder(tagGemsSapphire).add(itemSapphire)
-        getBuilder(tagGemsPeridot).add(itemPeridot)
+        tag(tagGemsRuby).add(itemRuby)
+        tag(tagGemsSapphire).add(itemSapphire)
+        tag(tagGemsPeridot).add(itemPeridot)
 
-        getBuilder(tagDustsElectrotine).add(itemElectrotineDust)
+        tag(tagDustsElectrotine).add(itemElectrotineDust)
 
-        getBuilder(tagIllumars)
-            .add(tagIllumarsWhite)
-            .add(tagIllumarsOrange)
-            .add(tagIllumarsMagenta)
-            .add(tagIllumarsLightBlue)
-            .add(tagIllumarsYellow)
-            .add(tagIllumarsLime)
-            .add(tagIllumarsPink)
-            .add(tagIllumarsGray)
-            .add(tagIllumarsLightGray)
-            .add(tagIllumarsCyan)
-            .add(tagIllumarsPurple)
-            .add(tagIllumarsBlue)
-            .add(tagIllumarsBrown)
-            .add(tagIllumarsGreen)
-            .add(tagIllumarsRed)
-            .add(tagIllumarsBlack)
-        getBuilder(tagIllumarsWhite).add(itemWhiteIllumar)
-        getBuilder(tagIllumarsOrange).add(itemOrangeIllumar)
-        getBuilder(tagIllumarsMagenta).add(itemMagentaIllumar)
-        getBuilder(tagIllumarsLightBlue).add(itemLightBlueIllumar)
-        getBuilder(tagIllumarsYellow).add(itemYellowIllumar)
-        getBuilder(tagIllumarsLime).add(itemLimeIllumar)
-        getBuilder(tagIllumarsPink).add(itemPinkIllumar)
-        getBuilder(tagIllumarsGray).add(itemGrayIllumar)
-        getBuilder(tagIllumarsLightGray).add(itemLightGrayIllumar)
-        getBuilder(tagIllumarsCyan).add(itemCyanIllumar)
-        getBuilder(tagIllumarsPurple).add(itemPurpleIllumar)
-        getBuilder(tagIllumarsBlue).add(itemBlueIllumar)
-        getBuilder(tagIllumarsBrown).add(itemBrownIllumar)
-        getBuilder(tagIllumarsGreen).add(itemGreenIllumar)
-        getBuilder(tagIllumarsRed).add(itemRedIllumar)
-        getBuilder(tagIllumarsBlack).add(itemBlackIllumar)
+        tag(tagIllumars)
+            .addTag(tagIllumarsWhite)
+            .addTag(tagIllumarsOrange)
+            .addTag(tagIllumarsMagenta)
+            .addTag(tagIllumarsLightBlue)
+            .addTag(tagIllumarsYellow)
+            .addTag(tagIllumarsLime)
+            .addTag(tagIllumarsPink)
+            .addTag(tagIllumarsGray)
+            .addTag(tagIllumarsLightGray)
+            .addTag(tagIllumarsCyan)
+            .addTag(tagIllumarsPurple)
+            .addTag(tagIllumarsBlue)
+            .addTag(tagIllumarsBrown)
+            .addTag(tagIllumarsGreen)
+            .addTag(tagIllumarsRed)
+            .addTag(tagIllumarsBlack)
+        tag(tagIllumarsWhite).add(itemWhiteIllumar)
+        tag(tagIllumarsOrange).add(itemOrangeIllumar)
+        tag(tagIllumarsMagenta).add(itemMagentaIllumar)
+        tag(tagIllumarsLightBlue).add(itemLightBlueIllumar)
+        tag(tagIllumarsYellow).add(itemYellowIllumar)
+        tag(tagIllumarsLime).add(itemLimeIllumar)
+        tag(tagIllumarsPink).add(itemPinkIllumar)
+        tag(tagIllumarsGray).add(itemGrayIllumar)
+        tag(tagIllumarsLightGray).add(itemLightGrayIllumar)
+        tag(tagIllumarsCyan).add(itemCyanIllumar)
+        tag(tagIllumarsPurple).add(itemPurpleIllumar)
+        tag(tagIllumarsBlue).add(itemBlueIllumar)
+        tag(tagIllumarsBrown).add(itemBrownIllumar)
+        tag(tagIllumarsGreen).add(itemGreenIllumar)
+        tag(tagIllumarsRed).add(itemRedIllumar)
+        tag(tagIllumarsBlack).add(itemBlackIllumar)
     }
 
     override def getName = "ProjectRed-Core Item Tags"
@@ -530,7 +529,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
     private def addLumarRecipe(colour: EnumColour) {
         shapelessRecipe(illumars(colour.ordinal))
             .addIngredient(DUSTS_GLOWSTONE, 2)
-            .addIngredient(new ItemTag(colour.getDyeTagName), 2)
+            .addIngredient(ItemTags.bind(colour.getDyeTagName), 2)
     }
 
 

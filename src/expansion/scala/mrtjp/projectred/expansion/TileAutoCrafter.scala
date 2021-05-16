@@ -9,6 +9,7 @@ import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.inventory.container.ICCLContainerFactory
 import codechicken.lib.texture.TextureUtils
+import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.core.gui._
 import mrtjp.core.inventory.{TInventory, TInventoryCapablilityTile}
 import mrtjp.core.vec.{Point, Size}
@@ -42,15 +43,15 @@ class TileAutoCrafter extends TileMachine(ExpansionContent.autoCraftingBenchTile
     private var cycleTimer1 = getUnpoweredCycleTimer
     private var cycleTimer2 = getPoweredCycleTimer
 
-    override def save(tag:CompoundNBT):Unit = {
-        super.save(tag)
+    override def saveToNBT(tag:CompoundNBT) = {
+        super.saveToNBT(tag)
         saveInv(tag)
         tag.putInt("cyt1", cycleTimer1)
         tag.putInt("cyt2", cycleTimer2)
     }
 
-    override def load(tag:CompoundNBT):Unit = {
-        super.load(tag)
+    override def loadFromNBT(tag:CompoundNBT) = {
+        super.loadFromNBT(tag)
         loadInv(tag)
         cycleTimer1 = tag.getInt("cyt1")
         cycleTimer2 = tag.getInt("cyt2")
@@ -72,11 +73,12 @@ class TileAutoCrafter extends TileMachine(ExpansionContent.autoCraftingBenchTile
     override def doesOrient = false
     override def doesRotate = false
 
-    override def getInventoryStackLimit = 64
+
+    override def getMaxStackSize = 64
     override def nbtSaveName = "auto_crafting_bench"
 
-    override def canExtractItem(slot:Int, item:ItemStack, side:Direction):Boolean = 9 until 27 contains slot
-    override def canInsertItem(slot:Int, item:ItemStack, side:Direction):Boolean = 9 until 27 contains slot
+    override def canPlaceItemThroughFace(slot:Int, item:ItemStack, side:Direction):Boolean = 9 until 27 contains slot
+    override def canTakeItemThroughFace(slot:Int, item:ItemStack, side:Direction):Boolean = 9 until 27 contains slot
     override def getSlotsForFace(side:Direction):Array[Int] = (9 until 27).toArray
 
     override def updateServer():Unit = {
@@ -103,23 +105,23 @@ class TileAutoCrafter extends TileMachine(ExpansionContent.autoCraftingBenchTile
     def cyclePlanSlot():Unit = {
         val start = planSlot
         do planSlot = (planSlot+1)%9
-        while (planSlot != start && getStackInSlot(planSlot).isEmpty)
+        while (planSlot != start && getItem(planSlot).isEmpty)
         if (planSlot != start) refreshRecipe()
     }
 
     def refreshRecipe():Unit = {
         craftHelper.clear()
 
-        val plan = getStackInSlot(planSlot)
+        val plan = getItem(planSlot)
         if (!plan.isEmpty && PlanItem.hasRecipeInside(plan)) {
             val inputs = PlanItem.loadPlanInputs(plan)
             craftHelper.loadInputs(inputs)
-            craftHelper.findRecipeFromInputs(world)
+            craftHelper.findRecipeFromInputs(level)
         }
     }
 
-    override def markDirty():Unit = {
-        super.markDirty()
+    override def setChanged():Unit = {
+        super.setChanged()
         recipeNeedsRefresh = true
     }
 
@@ -130,9 +132,9 @@ class TileAutoCrafter extends TileMachine(ExpansionContent.autoCraftingBenchTile
         }
 
         if (craftHelper.recipe != null) {
-            craftHelper.loadStorage((9 until 27).map(getStackInSlot).toArray, true)
+            craftHelper.loadStorage((9 until 27).map(getItem).toArray, true)
 
-            if (craftHelper.consumeAndCraftToStorage(world, 64)) {
+            if (craftHelper.consumeAndCraftToStorage(level, 64)) {
                 craftHelper.unloadStorage(this, {_ + 9})
                 true
             } else
@@ -144,7 +146,7 @@ class TileAutoCrafter extends TileMachine(ExpansionContent.autoCraftingBenchTile
 
     override def onBlockRemoved():Unit = {
         super.onBlockRemoved()
-        dropInvContents(world, getPos)
+        dropInvContents(level, getBlockPos)
     }
 
     override def createMenu(windowId:Int, playerInv:PlayerInventory, player:PlayerEntity):ContainerAutoCrafter =
@@ -156,7 +158,7 @@ class ContainerAutoCrafter(player:PlayerInventory, val tile:TileAutoCrafter, win
     {
         for (((x, y), i) <- GuiLib.createSlotGrid(98, 22, 3, 3, 0, 0).zipWithIndex) {
             val slot = new Slot(tile, i, x, y) {
-                override def isItemValid(stack:ItemStack):Boolean =
+                override def mayPlace(stack:ItemStack):Boolean =
                     stack.getItem.isInstanceOf[PlanItem] && PlanItem.hasRecipeInside(stack)
             }
             addSlot(slot)
@@ -170,17 +172,17 @@ class ContainerAutoCrafter(player:PlayerInventory, val tile:TileAutoCrafter, win
 
     private var slot = -1
 
-    override def detectAndSendChanges():Unit = {
-        super.detectAndSendChanges()
-        for (i <- listeners.asScala) {
-            if (slot != tile.planSlot) i.sendWindowProperty(this, 3, tile.planSlot)
+    override def broadcastChanges():Unit = {
+        super.broadcastChanges()
+        for (i <- containerListeners.asScala) {
+            if (slot != tile.planSlot) i.setContainerData(this, 3, tile.planSlot)
             slot = tile.planSlot
         }
     }
 
-    override def updateProgressBar(id:Int, bar:Int):Unit = id match {
+    override def setData(id:Int, bar:Int):Unit = id match {
         case 3 => tile.planSlot = bar
-        case _ => super.updateProgressBar(id, bar)
+        case _ => super.setData(id, bar)
     }
 
     override def doMerge(stack:ItemStack, from:Int):Boolean = {
@@ -212,7 +214,7 @@ class ContainerAutoCrafter(player:PlayerInventory, val tile:TileAutoCrafter, win
 object ContainerAutoCrafter extends ICCLContainerFactory[ContainerAutoCrafter]
 {
     override def create(windowId:Int, inv:PlayerInventory, packet:MCDataInput):ContainerAutoCrafter = {
-        inv.player.world.getTileEntity(packet.readPos()) match {
+        inv.player.level.getBlockEntity(packet.readPos()) match {
             case t:TileAutoCrafter => t.createMenu(windowId, inv, inv.player)
             case _ => null
         }
@@ -223,9 +225,9 @@ class GuiAutoCrafter(c:ContainerAutoCrafter, playerInv:PlayerInventory, title:IT
 {
     {
         val cycle = new IconButtonNode {
-            override def drawButton(mouseover:Boolean) {
+            override def drawButton(stack:MatrixStack, mouseover:Boolean) {
                 TextureUtils.changeTexture(GuiAutoCrafter.background)
-                blit(position.x, position.y, 176, 0, 14, 14)
+                blit(stack, position.x, position.y, 176, 0, 14, 14)
             }
         }
         cycle.position = Point(59, 41)
@@ -234,46 +236,46 @@ class GuiAutoCrafter(c:ContainerAutoCrafter, playerInv:PlayerInventory, title:IT
         addChild(cycle)
     }
 
-    override def drawBack_Impl(mouse:Point, rframe:Float)
+    override def drawBack_Impl(stack:MatrixStack, mouse:Point, rframe:Float)
     {
         TextureUtils.changeTexture(GuiAutoCrafter.background)
-        blit(0, 0, 0, 0, size.width, size.height)
+        blit(stack, 0, 0, 0, 0, size.width, size.height)
 
         if (c.tile.cond.canWork)
-            blit(16, 16, 177, 18, 7, 9)
-        GuiLib.drawVerticalTank(this, 16, 26, 177, 27, 7, 48, c.tile.cond.getChargeScaled(48))
+            blit(stack, 16, 16, 177, 18, 7, 9)
+        GuiLib.drawVerticalTank(stack, this, 16, 26, 177, 27, 7, 48, c.tile.cond.getChargeScaled(48))
 
         if (c.tile.cond.flow == -1)
-            blit(27, 16, 185, 18, 7, 9)
-        GuiLib.drawVerticalTank(this, 27, 26, 185, 27, 7, 48, c.tile.cond.getFlowScaled(48))
+            blit(stack, 27, 16, 185, 18, 7, 9)
+        GuiLib.drawVerticalTank(stack, this, 27, 26, 185, 27, 7, 48, c.tile.cond.getFlowScaled(48))
 
-        val plan = c.tile.getStackInSlot(c.tile.planSlot)
+        val plan = c.tile.getItem(c.tile.planSlot)
         if (!plan.isEmpty && PlanItem.hasRecipeInside(plan))
-            ItemDisplayNode.renderItem(this, Point(152, 58), Size(16, 16), zPosition, true, PlanItem.loadPlanOutput(plan))
+            ItemDisplayNode.renderItem(stack:MatrixStack,this, Point(152, 58), Size(16, 16), zPosition, true, PlanItem.loadPlanOutput(plan))
 
-        getFontRenderer.drawString(title.getFormattedText, 8, 6, EnumColour.GRAY.argb)
-        getFontRenderer.drawString(playerInv.getDisplayName.getFormattedText, 8, 120, EnumColour.GRAY.argb)
+        getFontRenderer.draw(stack, title, 8, 6, EnumColour.GRAY.argb)
+        getFontRenderer.draw(stack, playerInv.getDisplayName, 8, 120, EnumColour.GRAY.argb)
     }
 
-    override def drawFront_Impl(mouse:Point, rframe:Float)
+    override def drawFront_Impl(stack:MatrixStack, mouse:Point, rframe:Float)
     {
-        if (Minecraft.getInstance().gameSettings.keyBindSneak.isPressed)
-            drawPlanOutputOverlay(c.inventorySlots.asScala)
+        if (Minecraft.getInstance().options.keyShift.isDown)
+            drawPlanOutputOverlay(stack, c.slots.asScala)
 
         TextureUtils.changeTexture(GuiAutoCrafter.background)
 
         val Point(sx, sy) = Point(18, 18).multiply(c.tile.planSlot%3, c.tile.planSlot/3).add(98, 22).subtract(3)
-        blit(sx, sy, 193, 0, 22, 22)
+        blit(stack, sx, sy, 193, 0, 22, 22)
     }
 
-    private def drawPlanOutputOverlay(slots:Iterable[Slot]) {
-        for (slot <- slots) if (slot.getHasStack) {
-            val stack = slot.getStack
+    private def drawPlanOutputOverlay(mStack:MatrixStack, slots:Iterable[Slot]) {
+        for (slot <- slots) if (slot.hasItem) {
+            val stack = slot.getItem
             if (PlanItem.hasRecipeInside(stack)) {
                 val output = PlanItem.loadPlanOutput(stack)
                 val colour = EnumColour.LIGHT_BLUE.argb(0xCC)
-                fillGradient(slot.xPos, slot.yPos, slot.xPos+16, slot.yPos+16, colour, colour)
-                ItemDisplayNode.renderItem(this, Point(slot.xPos+1, slot.yPos+1), Size(14, 14), 100, true, output)
+                fillGradient(mStack, slot.x, slot.y, slot.x+16, slot.y+16, colour, colour)
+                ItemDisplayNode.renderItem(mStack, this, Point(slot.x+1, slot.y+1), Size(14, 14), 100, true, output)
             }
         }
     }
@@ -284,7 +286,7 @@ object GuiAutoCrafter
     val background = new ResourceLocation(ProjectRedExpansion.MOD_ID, "textures/gui/auto_crafting_bench.png")
 
     def register():Unit = {
-        ScreenManager.registerFactory(
+        ScreenManager.register(
             ExpansionContent.autoCraftingBenchContainer.get(),
             (cont:ContainerAutoCrafter, inv, text) => new GuiAutoCrafter(cont, inv, text))
     }

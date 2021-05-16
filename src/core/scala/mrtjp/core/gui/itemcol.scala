@@ -5,6 +5,7 @@
  */
 package mrtjp.core.gui
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem._
 import mrtjp.core.item.ItemKeyStack
 import mrtjp.core.vec.{Point, Rect, Size}
@@ -73,10 +74,10 @@ class ItemDisplayNode extends TNode
 
     override def frame = Rect(position, size)
 
-    override def drawBack_Impl(mouse:Point, rframe:Float)
+    override def drawBack_Impl(mStack:MatrixStack, mouse:Point, rframe:Float)
     {
-        fillGradient(position.x, position.y, position.x+size.width, position.y+size.height, backgroundColour, backgroundColour)
-        ItemDisplayNode.renderItem(this, position, size, zPosition, drawNumber, stack.makeStack)
+        fillGradient(mStack, position.x, position.y, position.x+size.width, position.y+size.height, backgroundColour, backgroundColour)
+        ItemDisplayNode.renderItem(mStack, this, position, size, zPosition, drawNumber, stack.makeStack)
     }
 
     override def mouseClicked_Impl(p:Point, button:Int, consumed:Boolean) =
@@ -89,7 +90,7 @@ class ItemDisplayNode extends TNode
         else false
     }
 
-    override def drawFront_Impl(mouse:Point, rframe:Float)
+    override def drawFront_Impl(stack:MatrixStack, mouse:Point, rframe:Float)
     {
         if (drawTooltip && frame.contains(mouse) && rayTest(mouse))
             drawTooltip(mouse)
@@ -103,9 +104,10 @@ class ItemDisplayNode extends TNode
         val Point(mx, my) = parent.convertPointToScreen(mouse)
 
         import scala.jdk.CollectionConverters._
-        val lines = stack.makeStack.getTooltip(mcInst.player,
-            if(mcInst.gameSettings.advancedItemTooltips) ADVANCED else NORMAL)
-        val l2 = Seq(lines.asScala.head)++lines.asScala.tail.map(TextFormatting.GRAY + _.getFormattedText)
+        val lines = stack.makeStack.getTooltipLines(mcInst.player,
+            if(mcInst.options.advancedItemTooltips) ADVANCED else NORMAL).asScala
+        lines.tail.foreach(_.getStyle.applyFormat(TextFormatting.GRAY))
+
         //TODO tooltips
         //GuiDraw.drawMultiLineTip(mx+12, my-12, l2)
 
@@ -118,10 +120,10 @@ object ItemDisplayNode
 {
     val renderItem = Minecraft.getInstance().getItemRenderer
 
-    def renderItem(gui:AbstractGui, position:Point, size:Size, zPosition:Double, drawNumber:Boolean, stack:ItemStack)
+    def renderItem(mStack:MatrixStack, gui:AbstractGui, position:Point, size:Size, zPosition:Double, drawNumber:Boolean, stack:ItemStack)
     {
         val font = stack.getItem.getFontRenderer(stack) match {
-            case null => Minecraft.getInstance().fontRenderer
+            case null => Minecraft.getInstance().font
             case r => r
         }
 
@@ -137,14 +139,14 @@ object ItemDisplayNode
         translated(-position.x, -position.y, 0)
 
         gui.setBlitOffset((zPosition+10).toInt)
-        renderItem.zLevel = (zPosition+10.0).toFloat
+        renderItem.blitOffset = (zPosition+10.0).toFloat
 //        enableDepthTest()
 //        enableLighting()
-        renderItem.renderItemAndEffectIntoGUI(stack, position.x, position.y)
-        renderItem.renderItemOverlayIntoGUI(font, stack, position.x, position.y, "")
+        renderItem.renderGuiItem(stack, position.x, position.y)
+        renderItem.renderGuiItemDecorations(font, stack, position.x, position.y, "")
 //        disableLighting()
 //        disableDepthTest()
-        renderItem.zLevel = zPosition.toFloat
+        renderItem.blitOffset = zPosition.toFloat
 
         if (drawNumber && stack.getCount > 1) {
             val s =
@@ -153,7 +155,7 @@ object ItemDisplayNode
                 else if (stack.getCount < 100000) stack.getCount/1000+"K"
                 else if (stack.getCount < 1000000) "0."+stack.getCount/100000+"M"
                 else stack.getCount/1000000+"M"
-            font.drawStringWithShadow(s, position.x+19-2-font.getStringWidth(s), position.y+6+3, 16777215)
+            font.draw(mStack, s, position.x+19-2-font.width(s), position.y+6+3, 16777215)
         }
         popMatrix()
         glItemPost()

@@ -12,11 +12,12 @@ import mrtjp.core.fx.{TAlphaParticle, TColourParticle, TTextureParticle}
 import net.minecraft.client.particle.Particle
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.world.ClientWorld
 import net.minecraft.entity.Entity
 import net.minecraft.world.World
 import org.lwjgl.opengl.GL11
 
-class BeamMulti(w:World) extends CoreParticle(w) with TAlphaParticle with TColourParticle with TTextureParticle
+class BeamMulti(w:ClientWorld) extends CoreParticle(w) with TAlphaParticle with TColourParticle with TTextureParticle
 {
     texture = "projectred:textures/particles/beam1.png"
     setSize(0.02F, 0.02F)

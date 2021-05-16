@@ -11,40 +11,31 @@ import net.minecraft.util.math.BlockPos
 
 trait TPositionedParticle extends CoreParticle
 {
-    //Implement manually because x, y, z are protected now
-    def x:Double
-    def y:Double
-    def z:Double
+//    def px:Double = xo
+//    def py:Double = yo
+//    def pz:Double = zo
+//
+//    def px_=(x:Double):Unit = { xo = x }
+//    def py_=(y:Double):Unit = { yo = y }
+//    def pz_=(z:Double):Unit = { zo = z }
 
-    def x_=(x:Double){setPosition(x, y, z)}
-    def y_=(y:Double){setPosition(x, y, z)}
-    def z_=(z:Double){setPosition(x, y, z)}
-
-    def px:Double
-    def py:Double
-    def pz:Double
-
-    def px_=(x:Double)
-    def py_=(y:Double)
-    def pz_=(z:Double)
-
-    def dx = x-px
-    def dy = y-py
-    def dz = z-pz
+    def dx:Double = x-xo
+    def dy:Double = y-yo
+    def dz:Double = z-zo
 
     def position = new Vector3(x, y, z)
-    def prevPosition = new Vector3(px, py, pz)
+    def prevPosition = new Vector3(xo, yo, zo)
 
     def setPos(pos:Vector3)
     {
-        setPosition(pos.x, pos.y, pos.z)
+        setPos(pos.x, pos.y, pos.z)
     }
 
     def setPrevPos(pos:Vector3)
     {
-        px = pos.x
-        py = pos.y
-        pz = pos.z
+        xo = pos.x
+        yo = pos.y
+        zo = pos.z
     }
 
     def blockPosition = new BlockPos(math.floor(x).toInt, math.floor(y).toInt, math.floor(z).toInt)
@@ -52,9 +43,9 @@ trait TPositionedParticle extends CoreParticle
     abstract override def tick()
     {
         super.tick()
-        px = x
-        py = y
-        pz = z
+        xo = x
+        yo = y
+        zo = z
     }
 }
 

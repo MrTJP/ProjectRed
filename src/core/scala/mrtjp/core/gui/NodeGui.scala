@@ -5,6 +5,7 @@
  */
 package mrtjp.core.gui
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import mrtjp.core.vec.{Point, Rect, Size}
 import net.minecraft.client.Minecraft
@@ -76,8 +77,8 @@ class NodeGui[T <: NodeContainer](c:T = new NodeContainer(null, -1), w:Int, h:In
 //     */
 //    def this(w:Int, h:Int) = this(new NodeContainer(null, -1), w, h, null, null)
 
-    xSize = w
-    ySize = h
+    imageWidth = w
+    imageHeight = h
 
     /**
       * Flag used for debugging. Enabling will cause all nodes in tree to render visible outline.
@@ -93,12 +94,12 @@ class NodeGui[T <: NodeContainer](c:T = new NodeContainer(null, -1), w:Int, h:In
     final override def init()
     {
         super.init()
-        position = Point(guiLeft, guiTop)
-        if (size == Size.zeroSize) size = Size(xSize, ySize) //TODO Legacy (size should be set directly)
+        position = Point(leftPos, topPos)
+        if (size == Size.zeroSize) size = Size(imageWidth, imageHeight) //TODO Legacy (size should be set directly)
         else
         {
-            xSize = size.width
-            ySize = size.height
+            imageWidth = size.width
+            imageHeight = size.height
         }
     }
 
@@ -108,11 +109,11 @@ class NodeGui[T <: NodeContainer](c:T = new NodeContainer(null, -1), w:Int, h:In
         update()
     }
 
-    final override def render(mouseX: Int, mouseY: Int, partialTicks: Float)
+    final override def render(stack:MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float)
     {
-        renderBackground()
-        super.render(mouseX, mouseY, partialTicks)
-        renderHoveredToolTip(mouseX, mouseY)
+        renderBackground(stack)
+        super.render(stack, mouseX, mouseY, partialTicks)
+        renderTooltip(stack, mouseX, mouseY)
     }
 
     final override def init(mc:Minecraft, i:Int, j:Int) {
@@ -163,24 +164,24 @@ class NodeGui[T <: NodeContainer](c:T = new NodeContainer(null, -1), w:Int, h:In
     private var lastFrame = 0.0F
 
     // Front/back rendering overridden, because at root, we dont push the children to our pos, because its zero.
-    final override def drawGuiContainerBackgroundLayer(f:Float, mx:Int, my:Int)
+    final override def renderBg(stack:MatrixStack, f:Float, mx:Int, my:Int)
     {
         lastFrame = f
         val mouse = new Point(mx, my)
         frameUpdate(mouse, f)
         RenderSystem.disableDepthTest()
         RenderSystem.color4f(1, 1, 1, 1)
-        rootDrawBack(mouse, f)
+        rootDrawBack(stack, mouse, f)
         RenderSystem.color4f(1, 1, 1, 1)
         RenderSystem.enableDepthTest()
     }
 
-    final override def drawGuiContainerForegroundLayer(mx:Int, my:Int)
+    final override def renderLabels(stack:MatrixStack, mx:Int, my:Int)
     {
         val mouse = new Point(mx, my)
         RenderSystem.disableDepthTest()
         RenderSystem.color4f(1, 1, 1, 1)
-        rootDrawFront(mouse, lastFrame)
+        rootDrawFront(stack, mouse, lastFrame)
         RenderSystem.color4f(1, 1, 1, 1)
         RenderSystem.enableDepthTest()
 

@@ -14,8 +14,9 @@ import mrtjp.core.fx.particles.{BeamPulse2, SpriteParticle}
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.expansion.item.InfusedEnderPearlItem
 import net.minecraft.client.Minecraft
+import net.minecraft.client.world.ClientWorld
 import net.minecraft.entity.item.{EnderPearlEntity, ItemEntity}
-import net.minecraft.entity.{Entity, EntityType}
+import net.minecraft.entity.{Entity, EntityType, LivingEntity}
 import net.minecraft.item.{ItemStack, Items}
 import net.minecraft.nbt.{CompoundNBT, INBT}
 import net.minecraft.util.math.BlockPos
@@ -36,13 +37,13 @@ class TileTeleposer extends TileMachine(ExpansionContent.teleposerTile.get) with
     var isCharged = false
     var storage = 0
 
-    override def save(tag:CompoundNBT):Unit = {
-        super.save(tag)
+    override def saveToNBT(tag:CompoundNBT) = {
+        super.saveToNBT(tag)
         tag.putInt("storage", storage)
     }
 
-    override def load(tag:CompoundNBT):Unit = {
-        super.load(tag)
+    override def loadFromNBT(tag:CompoundNBT) = {
+        super.loadFromNBT(tag)
         storage = tag.getInt("storage")
         isCharged = storage >= getTransportDraw
     }
@@ -66,7 +67,7 @@ class TileTeleposer extends TileMachine(ExpansionContent.teleposerTile.get) with
     }
 
     def sendTransformFX():Unit = {
-        sendUpdate(2, _)
+        sendUpdate(2, _ => ())
     }
 
     def sendICUpdate():Unit = {
@@ -86,7 +87,7 @@ class TileTeleposer extends TileMachine(ExpansionContent.teleposerTile.get) with
         if (storage >= getTransportDraw) {
             updateHeldItems()
             updateOrbits()
-            if (world.getGameTime%20 == 0) {
+            if (getLevel.getGameTime%20 == 0) {
                 tryInfusePearlItem()
                 tryTransportEnderProjectile()
             }
@@ -99,7 +100,7 @@ class TileTeleposer extends TileMachine(ExpansionContent.teleposerTile.get) with
             storage += n
         }
 
-        if (world.getGameTime%10 == 0) updateRendersIfNeeded()
+        if (getLevel.getGameTime%10 == 0) updateRendersIfNeeded()
     }
 
     override def updateClient():Unit = {
@@ -137,14 +138,14 @@ class TileTeleposer extends TileMachine(ExpansionContent.teleposerTile.get) with
             case Some(ei) if ei.getItem.getItem == Items.ENDER_PEARL && ei.getItem.getCount == 1 =>
                 ei.remove()
                 val stack = new ItemStack(ExpansionContent.infusedEnderPearlItem.get)
-                InfusedEnderPearlItem.setLocation(stack, getPos)
+                InfusedEnderPearlItem.setLocation(stack, getBlockPos)
 
-                val ent = new ItemEntity(world, ei.getPosX, ei.getPosY, ei.getPosZ, stack)
-                ent.setPickupDelay(20)
+                val ent = new ItemEntity(getLevel, ei.getX, ei.getY, ei.getZ, stack)
+                ent.setPickUpDelay(20)
                 //ent.age = ei.age //TODO
-                ent.hoverStart = ei.hoverStart
+                ent.bobOffs = ei.bobOffs
 
-                world.addEntity(ent)
+                level.addFreshEntity(ent)
                 sendTransformFX()
 
             case _ =>
@@ -153,24 +154,22 @@ class TileTeleposer extends TileMachine(ExpansionContent.teleposerTile.get) with
 
     def tryTransportEnderProjectile():Unit = {
         getDestination match {
-            case Some(dest) if storage > getTransportDraw => world.getTileEntity(dest) match {
+            case Some(dest) if storage > getTransportDraw => level.getBlockEntity(dest) match {
                 case te:TileTeleposer if te.storage >= te.getTransportDraw => te.getDestination match {
                     case Some(thatDest) if thatDest.equals(dest) => getProminentEnderProjectile match {
-                        case Some(ep) =>
+                        case Some(ep) if ep.getOwner.isInstanceOf[LivingEntity] =>
                             ep.remove()
-                            if (ep.getThrower != null) {
-                                val newEP = new EnderPearlEntity(world, ep.getThrower)
-                                newEP.setMotion(0, 0.1, 0)
-                                newEP.setPosition(dest.getX, dest.getY + 1, dest.getZ)
-                                CapabilityTeleposedEnderPearl.setTeleposed(newEP)
-                                world.addEntity(newEP)
-                                te.getProminentHeldItem match {
-                                    case Some(destHeld) => destHeld.setPickupDelay(80)
-                                    case _ =>
-                                }
-                                storage -= getTransportDraw
-                                te.storage -= te.getTransportDraw
+                            val newEP = new EnderPearlEntity(level, ep.getOwner.asInstanceOf[LivingEntity])
+                            newEP.setDeltaMovement(0, 0.1, 0)
+                            newEP.setPos(dest.getX, dest.getY + 1, dest.getZ)
+                            CapabilityTeleposedEnderPearl.setTeleposed(newEP)
+                            level.addFreshEntity(newEP)
+                            te.getProminentHeldItem match {
+                                case Some(destHeld) => destHeld.setPickUpDelay(80)
+                                case _ =>
                             }
+                            storage -= getTransportDraw
+                            te.storage -= te.getTransportDraw
                         case _ =>
                     }
                     case _ =>
@@ -195,33 +194,33 @@ class TileTeleposer extends TileMachine(ExpansionContent.teleposerTile.get) with
     }
 
     def getProminentEnderProjectile:Option[EnderPearlEntity] = {
-        val box = Cuboid6.full.copy.add(new Vector3(getPos.getX, getPos.getY+1, getPos.getZ)).aabb
+        val box = Cuboid6.full.copy.add(new Vector3(getBlockPos.getX, getBlockPos.getY+1, getBlockPos.getZ)).aabb
 
-        world.getEntitiesWithinAABB(EntityType.ENDER_PEARL, box, new Predicate[EnderPearlEntity] {
+        level.getEntities(EntityType.ENDER_PEARL, box, new Predicate[EnderPearlEntity] {
             override def apply(t:EnderPearlEntity):Boolean =
                 !CapabilityTeleposedEnderPearl.isTeleposed(t)
         }).asScala.headOption
     }
 
     def getProjectilesToOrbit:Array[EnderPearlEntity] = {
-        val box = new Cuboid6(-3, 0, -3, 4, 4, 4).add(Vector3.fromBlockPos(getPos)).aabb
-        world.getEntitiesWithinAABB(EntityType.ENDER_PEARL, box, new Predicate[EnderPearlEntity] {
+        val box = new Cuboid6(-3, 0, -3, 4, 4, 4).add(Vector3.fromBlockPos(getBlockPos)).aabb
+        level.getEntities(EntityType.ENDER_PEARL, box, new Predicate[EnderPearlEntity] {
             override def apply(t:EnderPearlEntity):Boolean = !CapabilityTeleposedEnderPearl.isTeleposed(t)
         }).asScala.toArray
     }
 
     def getAllItemEntities:Array[ItemEntity] = {
         Cuboid6.full = new Cuboid6(0, 0, 0, 1, 1, 1)
-        val box = Cuboid6.full.copy.add(new Vector3(getPos.getX, getPos.getY+1, getPos.getZ)).aabb
-        world.getEntitiesWithinAABB(EntityType.ITEM, box, new Predicate[ItemEntity] {
+        val box = Cuboid6.full.copy.add(new Vector3(getBlockPos.getX, getBlockPos.getY+1, getBlockPos.getZ)).aabb
+        level.getEntities(EntityType.ITEM, box, new Predicate[ItemEntity] {
             override def apply(t:ItemEntity):Boolean = t.getItem.getItem == Items.ENDER_PEARL ||
                     t.getItem.getItem == ExpansionContent.infusedEnderPearlItem.get
         }).asScala.toArray
     }
 
     def makeEntityOrbit(e:EnderPearlEntity):Unit = {
-        val target = Vector3.CENTER.copy.add(getPos.getX, getPos.getY+1, getPos.getZ)
-        val rpos = new Vector3(e.getPosX, e.getPosY, e.getPosZ).subtract(target)
+        val target = Vector3.CENTER.copy.add(getBlockPos.getX, getBlockPos.getY+1, getBlockPos.getZ)
+        val rpos = new Vector3(e.getX, e.getY, e.getZ).subtract(target)
         val targetDistance = math.max(0.35, math.sqrt(rpos.x*rpos.x+rpos.z*rpos.z)*0.97)
         val targetHeight = rpos.y*0.97
         val orbitSpeed = 0.3
@@ -229,12 +228,12 @@ class TileTeleposer extends TileMachine(ExpansionContent.teleposerTile.get) with
         if (orbitAngle > math.Pi*2) orbitAngle -= math.Pi*2
         else if (orbitAngle < 0) orbitAngle += math.Pi*2
 
-        if (e.getPosY > target.y) e.setPosition(e.getPosX, e.getPosY - 0.05, e.getPosZ)
-        else if (e.getPosY < target.y) e.setPosition(e.getPosX, e.getPosY + 0.05, e.getPosZ)
+        if (e.getY > target.y) e.setPos(e.getX, e.getY - 0.05, e.getZ)
+        else if (e.getY < target.y) e.setPos(e.getX, e.getY + 0.05, e.getZ)
 
-        e.setMotion(0, 0, 0)
+        e.setDeltaMovement(0, 0, 0)
 
-        e.setPosition(
+        e.setPos(
             target.x+math.cos(orbitAngle)*targetDistance,
             target.y+targetHeight,
             target.z+math.sin(orbitAngle)*targetDistance
@@ -242,16 +241,16 @@ class TileTeleposer extends TileMachine(ExpansionContent.teleposerTile.get) with
     }
 
     def makeEntityHeld(e:ItemEntity):Unit = {
-        val target = Vector3.CENTER.copy.add(getPos.getX, getPos.getY+0.6, getPos.getZ)
-        val rpos = new Vector3(e.getPosX, e.getPosY, e.getPosZ).subtract(target)
+        val target = Vector3.CENTER.copy.add(getBlockPos.getX, getBlockPos.getY+0.6, getBlockPos.getZ)
+        val rpos = new Vector3(e.getX, e.getY, e.getZ).subtract(target)
         val targetPos = rpos.multiply(0.80).add(target)
 
-        e.setMotion(0, 0, 0)
+        e.setDeltaMovement(0, 0, 0)
 
-        val maxAge = e.getItem.getItem.getEntityLifespan(e.getItem, e.world)
+        val maxAge = e.getItem.getItem.getEntityLifespan(e.getItem, e.level)
         e.lifespan = e.getAge + maxAge
 
-        e.setPosition(targetPos.x, targetPos.y, targetPos.z)
+        e.setPos(targetPos.x, targetPos.y, targetPos.z)
     }
 
     private var beams:AnyRef = null
@@ -265,24 +264,24 @@ class TileTeleposer extends TileMachine(ExpansionContent.teleposerTile.get) with
         while (beams2.length < elist.size) beams2 :+= null
         beams = beams2
 
-        val source = Vector3.CENTER.copy.add(getPos.getX, getPos.getY+1, getPos.getZ)
+        val source = Vector3.CENTER.copy.add(getBlockPos.getX, getBlockPos.getY+1, getBlockPos.getZ)
 
         for (i <- elist.indices) {
             var beam = beams2(i)
             if (beam == null || !beam.isAlive) {
-                beam = new BeamPulse2(world)
-                beam.setMaxAge(20)
-                beam.alpha = 0.3
+                beam = new BeamPulse2(level.asInstanceOf[ClientWorld])
+                beam.setLifetime(20)
+                beam.alpha = 0.3f
                 beam.setRGB(0.5, 0.5, 0.5)
                 beams2(i) = beam
-                Minecraft.getInstance().particles.addEffect(beam)
+                Minecraft.getInstance().particleEngine.add(beam)
             }
             val ent = elist(i)
 
-            beam.setAge(beam.getAge%beam.getMaxAge)
+            beam.setAge(beam.getAge%beam.getLifetime)
             beam.setPos(source)
-            beam.setTarget(ent.getPosX, ent.getPosY, ent.getPosZ)
-            if (source.copy.subtract(new Vector3(ent.getPosX, ent.getPosY, ent.getPosZ)).mag() < 0.75)
+            beam.setTarget(ent.getX, ent.getY, ent.getZ)
+            if (source.copy.subtract(new Vector3(ent.getX, ent.getY, ent.getZ)).mag() < 0.75)
                 beam.doPulse(EnumColour.GREEN.rF, EnumColour.GREEN.gF, EnumColour.GREEN.bF)
         }
 
@@ -290,13 +289,13 @@ class TileTeleposer extends TileMachine(ExpansionContent.teleposerTile.get) with
 
     @OnlyIn(Dist.CLIENT)
     def doRandomSparklies():Unit = {
-        if (world.getGameTime%15 == 0 && world.rand.nextDouble() > 0.20) {
-            val x = getPos.getX
-            val y = getPos.getY
-            val z = getPos.getZ
+        if (level.getGameTime%15 == 0 && level.random.nextDouble() > 0.20) {
+            val x = getBlockPos.getX
+            val y = getBlockPos.getY
+            val z = getBlockPos.getZ
 
-            val p = new SpriteParticle(world)
-            p.setPos(new Vector3(x+0.5, y+1.0, z+0.5).add(new Vector3(1, 1, 1).multiply(world.rand.nextDouble())))
+            val p = new SpriteParticle(level.asInstanceOf[ClientWorld])
+            p.setPos(new Vector3(x+0.5, y+1.0, z+0.5).add(new Vector3(1, 1, 1).multiply(level.random.nextDouble())))
             p.isImmortal = true
             p.texture = "projectred-core:textures/particles/flutter1.png"
             p.rgb = new Vector3(EnumColour.PINK.rF, EnumColour.PINK.gF, EnumColour.PINK.bF)
@@ -326,30 +325,30 @@ class TileTeleposer extends TileMachine(ExpansionContent.teleposerTile.get) with
             )
             p.runAction(a)
 
-            Minecraft.getInstance().particles.addEffect(p)
+            Minecraft.getInstance().particleEngine.add(p)
         }
     }
 
     @OnlyIn(Dist.CLIENT)
     def doTransformFX():Unit = {
-        val x = getPos.getX
-        val y = getPos.getY
-        val z = getPos.getZ
+        val x = getBlockPos.getX
+        val y = getBlockPos.getY
+        val z = getBlockPos.getZ
 
         for (i <- 0 until 16) {
             val start = new Vector3(x, y+1, z).add(Vector3.CENTER)
-            val p = new SpriteParticle(world)
-            Minecraft.getInstance().particles.addEffect(p)
+            val p = new SpriteParticle(level.asInstanceOf[ClientWorld])
+            Minecraft.getInstance().particleEngine.add(p)
             p.setPos(start)
             p.isImmortal = true
             p.texture = "projectred-core:textures/particles/bubble.png"
             p.rgb = new Vector3(EnumColour.MAGENTA.rF, EnumColour.MAGENTA.gF, EnumColour.MAGENTA.bF)
             p.scale = new Vector3(0, 0, 0)
-            val s = world.rand.nextDouble()*0.1
+            val s = level.random.nextDouble()*0.1
             val a1 = sequence(
                 group(
                     scaleTo(0.025+s, 0.025+s, 0.025+s, 5),
-                    moveTo(start.x+world.rand.nextDouble()-0.5, start.y+world.rand.nextDouble()-0.5, start.z+world.rand.nextDouble()-0.5, 10)
+                    moveTo(start.x+level.random.nextDouble()-0.5, start.y+level.random.nextDouble()-0.5, start.z+level.random.nextDouble()-0.5, 10)
                 ),
                 sequence(
                     changeTexture("projectred-core:textures/particles/bubble_pop.png"),

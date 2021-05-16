@@ -8,11 +8,12 @@ package mrtjp.core.vec
 import codechicken.lib.render.CCModel
 import codechicken.lib.vec.Vector3
 import net.minecraft.util.Direction
-import net.minecraft.util.math.{BlockPos, BlockRayTraceResult, RayTraceResult, Vec3d}
+import net.minecraft.util.math.vector.Vector3d
+import net.minecraft.util.math.{BlockPos, BlockRayTraceResult, RayTraceResult}
 
 object ModelRayTracer
 {
-    def raytraceModel(x:Double, y:Double, z:Double, from1:Vec3d, to1:Vec3d, model:CCModel):RayTraceResult =
+    def raytraceModel(x:Double, y:Double, z:Double, from1:Vector3d, to1:Vector3d, model:CCModel):RayTraceResult =
     {
         val from = new Vector3(from1)
         val to = new Vector3(to1)
@@ -32,7 +33,7 @@ object ModelRayTracer
             case Some((dist, tri)) =>
                 val side = getSide(tri.normal.copy.add(start.copy.add(dir).multiply(dist).multiply(0.001)))
                 val mop = new BlockRayTraceResult(calcPlayerHit(new Vector3(x, y, z), from.copy.add(dir.copy.multiply(dist))).vec3(),
-                    Direction.byIndex(side), new BlockPos(x.toInt, y.toInt, z.toInt), false)
+                    Direction.values()(side), new BlockPos(x.toInt, y.toInt, z.toInt), false)
                 mop.subHit = 0
                 mop
             case None => null

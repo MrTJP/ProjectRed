@@ -9,6 +9,7 @@ import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.inventory.container.ICCLContainerFactory
 import codechicken.lib.texture.TextureUtils
+import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.core.gui.{GuiLib, Slot3, _}
 import mrtjp.core.inventory.{InvWrapper, TInventory, TInventoryCapablilityTile}
 import mrtjp.core.item.ItemKey
@@ -32,15 +33,15 @@ class TileChargingBench extends TileMachine(ExpansionContent.chargingBenchTile.g
 
     private var slotRoundRobin = 0
 
-    override def save(tag:CompoundNBT):Unit = {
-        super.save(tag)
+    override def saveToNBT(tag:CompoundNBT) = {
+        super.saveToNBT(tag)
         tag.putInt("storage", powerStorage)
         tag.putByte("srr", slotRoundRobin.toByte)
         saveInv(tag)
     }
 
-    override def load(tag:CompoundNBT):Unit = {
-        super.load(tag)
+    override def loadFromNBT(tag:CompoundNBT) = {
+        super.loadFromNBT(tag)
         powerStorage = tag.getInt("storage")
         slotRoundRobin = tag.getByte("srr")
         isCharged = cond.canWork
@@ -71,18 +72,18 @@ class TileChargingBench extends TileMachine(ExpansionContent.chargingBenchTile.g
     }
 
     override protected val storage = Array.fill(16)(ItemStack.EMPTY)//new Array[ItemStack](16)
-    override def getInventoryStackLimit = 1
+    override def getMaxStackSize = 1
     override def nbtSaveName = "charging_bench"
 
-    override def canExtractItem(slot:Int, stack:ItemStack, side:Direction):Boolean = true
-    override def canInsertItem(slot:Int, stack:ItemStack, side:Direction):Boolean = side == Direction.UP
+    override def canTakeItemThroughFace(slot:Int, stack:ItemStack, side:Direction):Boolean = true
+    override def canPlaceItemThroughFace(slot:Int, stack:ItemStack, side:Direction):Boolean = side == Direction.UP
     override def getSlotsForFace(side:Direction):Array[Int] = side match  {
         case Direction.UP => (0 until 8).toArray
         case Direction.NORTH|Direction.SOUTH|Direction.WEST|Direction.EAST => (8 until 16).toArray
         case _ => Array.emptyIntArray
     }
 
-    override def isItemValidForSlot(slot:Int, item:ItemStack):Boolean =
+    override def canPlaceItem(slot:Int, item:ItemStack):Boolean =
         slot < 8 && item.getItem.isInstanceOf[IChargable]
 
     override def createMenu(windowId:Int, playerInv:PlayerInventory, player:PlayerEntity):ContainerChargingBench =
@@ -111,18 +112,18 @@ class TileChargingBench extends TileMachine(ExpansionContent.chargingBenchTile.g
             tryChargeSlot((slotRoundRobin+i)%8)
         slotRoundRobin = (slotRoundRobin+1)%8
 
-        if (world.getGameTime%10 == 0) updateRendersIfNeeded()
+        if (level.getGameTime%10 == 0) updateRendersIfNeeded()
     }
 
     def tryChargeSlot(i:Int):Unit = {
-        val stack = getStackInSlot(i)
+        val stack = getItem(i)
         if (!stack.isEmpty) stack.getItem match {
             case ic:IChargable =>
                 val toAdd = math.min(powerStorage, getChargeSpeed)
                 val (newStack, added) = ic.addPower(stack, toAdd)
                 if (ic.isFullyCharged(newStack) && dropStackDown(newStack))
-                    setInventorySlotContents(i, ItemStack.EMPTY)
-                else setInventorySlotContents(i, newStack)
+                    setItem(i, ItemStack.EMPTY)
+                else setItem(i, newStack)
                 powerStorage -= added
             case _ =>
         }
@@ -136,7 +137,7 @@ class TileChargingBench extends TileMachine(ExpansionContent.chargingBenchTile.g
 
     def containsUncharged:Boolean = {
         for (i <- 0 until 8) {
-            val stack = getStackInSlot(i)
+            val stack = getItem(i)
             if (!stack.isEmpty) stack.getItem match {
                 case ic:IChargable if !ic.isFullyCharged(stack) => return true
                 case _ =>
@@ -157,7 +158,7 @@ class TileChargingBench extends TileMachine(ExpansionContent.chargingBenchTile.g
 
     override def onBlockRemoved():Unit = {
         super.onBlockRemoved()
-        dropInvContents(world, getPos)
+        dropInvContents(level, getBlockPos)
     }
 }
 
@@ -177,18 +178,18 @@ class ContainerChargingBench(playerInv:PlayerInventory, val tile:TileChargingBen
     }
 
     private var st = -1
-    override def detectAndSendChanges() {
-        super.detectAndSendChanges()
-        for (i <- listeners.asScala) {
+    override def broadcastChanges() {
+        super.broadcastChanges()
+        for (i <- containerListeners.asScala) {
             if (st != tile.powerStorage)
-                i.sendWindowProperty(this, 3, tile.powerStorage)
+                i.setContainerData(this, 3, tile.powerStorage)
         }
         st = tile.powerStorage
     }
 
-    override def updateProgressBar(id:Int, bar:Int):Unit = id match {
+    override def setData(id:Int, bar:Int):Unit = id match {
         case 3 => tile.powerStorage = bar
-        case _ => super.updateProgressBar(id, bar)
+        case _ => super.setData(id, bar)
     }
 
     override def doMerge(stack:ItemStack, from:Int):Boolean =
@@ -211,7 +212,7 @@ class ContainerChargingBench(playerInv:PlayerInventory, val tile:TileChargingBen
 
 object ContainerChargingBench extends ICCLContainerFactory[ContainerChargingBench] {
     override def create(windowId:Int, inventory:PlayerInventory, packet:MCDataInput):ContainerChargingBench = {
-        inventory.player.world.getTileEntity(packet.readPos()) match {
+        inventory.player.level.getBlockEntity(packet.readPos()) match {
             case t:TileChargingBench => t.createMenu(windowId, inventory, inventory.player)
             case _ => null
         }
@@ -220,30 +221,30 @@ object ContainerChargingBench extends ICCLContainerFactory[ContainerChargingBenc
 
 class GuiChargingBench(c:ContainerChargingBench, playerInv:PlayerInventory, title:ITextComponent) extends NodeGui(c, 176, 183, playerInv, title)
 {
-    private def drawVerticalTank(x:Int, y:Int, u:Int, v:Int, w:Int, h:Int, prog:Int):Unit = {
-        blit(x, y+h-prog, u, v+h-prog, w, prog)
+    private def drawVerticalTank(stack:MatrixStack, x:Int, y:Int, u:Int, v:Int, w:Int, h:Int, prog:Int):Unit = {
+        blit(stack, x, y+h-prog, u, v+h-prog, w, prog)
     }
 
-    override def drawBack_Impl(mouse:Point, frame:Float):Unit = {
+    override def drawBack_Impl(stack:MatrixStack, mouse:Point, frame:Float):Unit = {
         TextureUtils.changeTexture(GuiChargingBench.background)
-        blit(0, 0, 0, 0, size.width, size.height)
+        blit(stack, 0, 0, 0, 0, size.width, size.height)
 
         if (c.tile.cond.canWork)
-            blit(14, 17, 176, 1, 7, 9)
-        GuiLib.drawVerticalTank(this, 14, 27, 176, 10, 7, 48, c.tile.cond.getChargeScaled(48))
+            blit(stack, 14, 17, 176, 1, 7, 9)
+        GuiLib.drawVerticalTank(stack, this, 14, 27, 176, 10, 7, 48, c.tile.cond.getChargeScaled(48))
 
         if (c.tile.powerStorage == c.tile.getMaxStorage)
-            blit(41, 17, 184, 1, 14, 9)
-        GuiLib.drawVerticalTank(this, 41, 27, 184, 10, 14, 48, c.tile.getStorageScaled(48))
+            blit(stack, 41, 17, 184, 1, 14, 9)
+        GuiLib.drawVerticalTank(stack, this, 41, 27, 184, 10, 14, 48, c.tile.getStorageScaled(48))
 
         if (c.tile.cond.charge > c.tile.getDrawCeil && c.tile.powerStorage < c.tile.getMaxStorage)
-            blit(26, 48, 199, 0, 10, 8)
+            blit(stack, 26, 48, 199, 0, 10, 8)
 
         if (c.tile.containsUncharged && c.tile.powerStorage > 0)
-            blit(63, 29, 210, 0, 17, 10)
+            blit(stack, 63, 29, 210, 0, 17, 10)
 
-        font.drawString(title.getFormattedText, 8, 6, EnumColour.GRAY.argb)
-        font.drawString(playerInv.getDisplayName.getFormattedText, 8, 91, EnumColour.GRAY.argb)
+        font.draw(stack, title, 8, 6, EnumColour.GRAY.argb)
+        font.draw(stack, playerInv.getDisplayName, 8, 91, EnumColour.GRAY.argb)
     }
 }
 
@@ -252,7 +253,7 @@ object GuiChargingBench
     val background = new ResourceLocation(ProjectRedExpansion.MOD_ID, "textures/gui/charging_bench.png")
 
     def register():Unit = {
-        ScreenManager.registerFactory(
+        ScreenManager.register(
             ExpansionContent.chargingBenchContainer.get(),
             (cont:ContainerChargingBench, inv, text) => new GuiChargingBench(cont, inv, text))
     }

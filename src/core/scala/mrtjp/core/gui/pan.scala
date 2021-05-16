@@ -6,6 +6,7 @@
 package mrtjp.core.gui
 
 import codechicken.lib.colour.EnumColour
+import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.core.vec.{Point, Rect, Size, Vec2}
 
 /**
@@ -96,26 +97,26 @@ class PanNode extends TNode
         }
     }
 
-    override def drawBack_Impl(mouse:Point, rframe:Float)
+    override def drawBack_Impl(stack:MatrixStack, mouse:Point, rframe:Float)
     {
-        drawScrollBars()
+        drawScrollBars(stack)
     }
 
-    override def drawFront_Impl(mouse:Point, rframe:Float){}
+    override def drawFront_Impl(stack:MatrixStack, mouse:Point, rframe:Float){}
 
-    private def drawScrollBars()
+    private def drawScrollBars(stack:MatrixStack)
     {
         if (scrollBarVertical)
         {
-            fillGradient(position.x+size.width-scrollBarThickness, position.y, position.x+size.width, position.y+size.height, scrollBarBGColour, scrollBarBGColour)
+            fillGradient(stack, position.x+size.width-scrollBarThickness, position.y, position.x+size.width, position.y+size.height, scrollBarBGColour, scrollBarBGColour)
             val s = getScrollBarRight
-            fillGradient(s.x, s.y, s.x+s.width, s.y+s.height, scrollBarColour, scrollBarColour)
+            fillGradient(stack, s.x, s.y, s.x+s.width, s.y+s.height, scrollBarColour, scrollBarColour)
         }
         if (scrollBarHorizontal)
         {
-            fillGradient(position.x, position.y+size.height-scrollBarThickness, position.x+size.width, position.y+size.height, scrollBarBGColour, scrollBarBGColour)
+            fillGradient(stack, position.x, position.y+size.height-scrollBarThickness, position.x+size.width, position.y+size.height, scrollBarBGColour, scrollBarBGColour)
             val s = getScrollBarBelow
-            fillGradient(s.x, s.y, s.x+s.width, s.y+s.height, scrollBarColour, scrollBarColour)
+            fillGradient(stack, s.x, s.y, s.x+s.width, s.y+s.height, scrollBarColour, scrollBarColour)
         }
     }
 

@@ -6,15 +6,13 @@ import codechicken.lib.render.item.IItemRenderer
 import codechicken.lib.util.TransformUtils
 import codechicken.lib.vec.{Cuboid6, Vector3}
 import codechicken.multipart.api.IRedstoneConnectorBlock
-import com.google.common.collect.ImmutableMap
 import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.projectred.core.RenderHalo
 import net.minecraft.block.material.Material
-import net.minecraft.block.{Block, BlockState}
-import net.minecraft.client.renderer.model.{IBakedModel, ItemCameraTransforms}
+import net.minecraft.block.{AbstractBlock, Block, BlockState}
+import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.renderer.model.{IBakedModel, IModelTransform, ItemCameraTransforms}
 import net.minecraft.client.renderer.tileentity.{TileEntityRenderer, TileEntityRendererDispatcher}
-import net.minecraft.client.renderer.{IRenderTypeBuffer, TransformationMatrix}
-import net.minecraft.entity.EntityType
 import net.minecraft.item.{BlockItem, BlockItemUseContext, ItemStack}
 import net.minecraft.state.StateContainer
 import net.minecraft.state.properties.BlockStateProperties
@@ -28,44 +26,42 @@ import java.util.Random
 import java.util.function.Supplier
 
 class IllumarLampBlock(tileSupplier:Supplier[TileEntityType[IllumarLampTile]], val colour:Int, val inverted:Boolean) extends Block(
-    Block.Properties.create(Material.REDSTONE_LIGHT)
-            .hardnessAndResistance(0.5F)
-            .lightValue(15)) with IRedstoneConnectorBlock
+    AbstractBlock.Properties.of(Material.BUILDABLE_GLASS)
+            .strength(0.5F)
+            .lightLevel(_ => 15)) with IRedstoneConnectorBlock
 {
-    setDefaultState(getDefaultState.`with`(BlockStateProperties.LIT, Boolean.box(inverted)))
+    registerDefaultState(defaultBlockState.setValue(BlockStateProperties.LIT, Boolean.box(inverted)))
 
-    override def getLightValue(state:BlockState):Int =
-        if (state.get(BlockStateProperties.LIT)) super.getLightValue(state)
+    override def getLightValue(state:BlockState, world:IBlockReader, pos:BlockPos):Int =
+        if (state.getValue(BlockStateProperties.LIT)) super.getLightValue(state, world, pos)
         else 0
 
     override def getStateForPlacement(context:BlockItemUseContext):BlockState =
-        this.getDefaultState.`with`(BlockStateProperties.LIT,
-            Boolean.box(context.getWorld.isBlockPowered(context.getPos) != inverted))
+        this.defaultBlockState().setValue(BlockStateProperties.LIT,
+            Boolean.box(context.getLevel.hasNeighborSignal(context.getClickedPos) != inverted))
 
     override def neighborChanged(state:BlockState, worldIn:World, pos:BlockPos, blockIn:Block, fromPos:BlockPos, isMoving:Boolean) {
-        if (!worldIn.isRemote) {
-            val isLit = state.get(BlockStateProperties.LIT)
-            val shouldBeLit = worldIn.isBlockPowered(pos) != inverted
+        if (!worldIn.isClientSide) {
+            val isLit = state.getValue(BlockStateProperties.LIT)
+            val shouldBeLit = worldIn.hasNeighborSignal(pos) != inverted
 
             if (isLit != shouldBeLit)
-                if (!worldIn.getPendingBlockTicks.isTickScheduled(pos, this))
-                    worldIn.getPendingBlockTicks.scheduleTick(pos, this, 2)
+                if (!worldIn.getBlockTicks.hasScheduledTick(pos, this))
+                    worldIn.getBlockTicks.scheduleTick(pos, this, 2)
         }
     }
 
     override def tick(state:BlockState, worldIn:ServerWorld, pos:BlockPos, rand:Random) {
-        val isLit = state.get(BlockStateProperties.LIT)
-        val shouldBeLit = worldIn.isBlockPowered(pos) != inverted
+        val isLit = state.getValue(BlockStateProperties.LIT)
+        val shouldBeLit = worldIn.hasNeighborSignal(pos) != inverted
 
         if (isLit != shouldBeLit)
-            worldIn.setBlockState(pos, state.`with`(BlockStateProperties.LIT, Boolean.box(shouldBeLit)))
+            worldIn.setBlockAndUpdate(pos, state.setValue(BlockStateProperties.LIT, Boolean.box(shouldBeLit)))
     }
 
-    override protected def fillStateContainer(builder:StateContainer.Builder[Block, BlockState]) {
+    override protected def createBlockStateDefinition(builder:StateContainer.Builder[Block, BlockState]) {
         builder.add(BlockStateProperties.LIT)
     }
-
-    override def canEntitySpawn(state:BlockState, worldIn:IBlockReader, pos:BlockPos, `type`:EntityType[_]) = true
 
     override def getConnectionMask(world:IWorldReader, pos:BlockPos, side:Int) = 0x1F
 
@@ -80,7 +76,7 @@ class IllumarLampBlock(tileSupplier:Supplier[TileEntityType[IllumarLampTile]], v
 
 class IllumarLampTile(tileType:TileEntityType[IllumarLampTile], val colour:Int, val inverted:Boolean) extends TileEntity(tileType)
 {
-    def isOn:Boolean = world.getBlockState(pos).get(BlockStateProperties.LIT)
+    def isOn:Boolean = level.getBlockState(getBlockPos).getValue(BlockStateProperties.LIT)
 }
 
 class IllumarLampTileRender(dispatcher:TileEntityRendererDispatcher) extends TileEntityRenderer[IllumarLampTile](dispatcher) {
@@ -97,7 +93,7 @@ object IllumarLampTileRender {
 class IllumarLampItemRenderer(wrappedModel:IBakedModel) extends WrappedItemModel(wrappedModel) with IItemRenderer {
 
     override def renderItem(stack:ItemStack, transformType:ItemCameraTransforms.TransformType, mStack:MatrixStack, getter:IRenderTypeBuffer, packedLight:Int, packedOverlay:Int):Unit = {
-        renderWrapped(stack, transformType, mStack, getter, packedLight, packedOverlay)
+        renderWrapped(stack, transformType, mStack, getter, packedLight, packedOverlay, false)
 
         stack.getItem match {
             case il:BlockItem =>
@@ -114,10 +110,10 @@ class IllumarLampItemRenderer(wrappedModel:IBakedModel) extends WrappedItemModel
         }
     }
 
-    override def getTransforms:ImmutableMap[ItemCameraTransforms.TransformType, TransformationMatrix] = TransformUtils.DEFAULT_BLOCK
-    override def isAmbientOcclusion:Boolean = true
+    override def getModelTransform:IModelTransform = TransformUtils.DEFAULT_BLOCK
+    override def useAmbientOcclusion:Boolean = true
     override def isGui3d:Boolean = true
-    override def func_230044_c_():Boolean = true
+    override def usesBlockLight:Boolean = true
 }
 
 //class BlockAirousLight extends BlockCore(Material.AIR)

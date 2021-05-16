@@ -13,18 +13,17 @@ import mrtjp.projectred.core.CoreContent._
 import mrtjp.projectred.core.ShapelessNBTCopyRecipeBuilder
 import mrtjp.projectred.exploration.ExplorationContent._
 import net.minecraft.block.material.Material
-import net.minecraft.block.{Block, Blocks, WallBlock}
+import net.minecraft.block.{AbstractBlock, Block, Blocks, WallBlock}
 import net.minecraft.data.{BlockTagsProvider, DataGenerator, ItemTagsProvider}
 import net.minecraft.inventory.EquipmentSlotType
 import net.minecraft.item._
 import net.minecraft.item.crafting.Ingredient
-import net.minecraft.tags.BlockTags.{Wrapper => BlockTag}
-import net.minecraft.tags.ItemTags.{Wrapper => ItemTag}
-import net.minecraft.tags.{Tag, BlockTags => MCBlockTags, ItemTags => VanillaItemTags}
+import net.minecraft.tags.{BlockTags, ITag, ItemTags}
 import net.minecraft.util.{ResourceLocation, SoundEvents}
-import net.minecraftforge.client.model.generators.{BlockStateProvider, ExistingFileHelper}
+import net.minecraftforge.client.model.generators.BlockStateProvider
 import net.minecraftforge.common.Tags.{Blocks => ForgeBlockTags, Items => ForgeItemTags}
 import net.minecraftforge.common.ToolType
+import net.minecraftforge.common.data.ExistingFileHelper
 import net.minecraftforge.eventbus.api.{IEventBus, SubscribeEvent}
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent
 import net.minecraftforge.registries.{DeferredRegister, ForgeRegistries}
@@ -44,7 +43,7 @@ object ExplorationContent {
     val athameItemTier = SimpleItemTier.builder(ItemTier.DIAMOND)
         .maxUses(100)
         .enchantability(30)
-        .repairMaterial(() => Ingredient.fromItems(itemSilverIngot))
+        .repairMaterial(() => Ingredient.of(itemSilverIngot))
         .build()
 
     val rubyItemTier = SimpleItemTier.builder()
@@ -53,7 +52,7 @@ object ExplorationContent {
         .attackDamage(3.00F)
         .harvestLevel(2)
         .enchantability(10)
-        .repairMaterial(() => Ingredient.fromItems(itemRuby))
+        .repairMaterial(() => Ingredient.of(itemRuby))
         .build()
     val sapphireItemTier = SimpleItemTier.builder()
         .maxUses(512)
@@ -61,7 +60,7 @@ object ExplorationContent {
         .attackDamage(3.00F)
         .harvestLevel(2)
         .enchantability(10)
-        .repairMaterial(() => Ingredient.fromItems(itemSapphire))
+        .repairMaterial(() => Ingredient.of(itemSapphire))
         .build()
     val peridotItemTier = SimpleItemTier.builder()
         .maxUses(512)
@@ -69,15 +68,15 @@ object ExplorationContent {
         .attackDamage(2.75F)
         .harvestLevel(2)
         .enchantability(14)
-        .repairMaterial(() => Ingredient.fromItems(itemPeridot))
+        .repairMaterial(() => Ingredient.of(itemPeridot))
         .build()
 
     val rubyArmorMaterial = SimpleArmorMaterial.builder()
         .durabilityFactor(16)
         .damageReduction(Array(3, 6, 8, 3))
         .enchantability(10)
-        .soundEvent(SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND)
-        .repairMaterial(() => Ingredient.fromItems(itemRuby))
+        .soundEvent(SoundEvents.ARMOR_EQUIP_DIAMOND)
+        .repairMaterial(() => Ingredient.of(itemRuby))
         .textureName(MOD_ID + ":ruby")
         .toughness(1.25F)
         .build()
@@ -86,8 +85,8 @@ object ExplorationContent {
         .durabilityFactor(16)
         .damageReduction(Array(3, 6, 8, 3))
         .enchantability(10)
-        .soundEvent(SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND)
-        .repairMaterial(() => Ingredient.fromItems(itemSapphire))
+        .soundEvent(SoundEvents.ARMOR_EQUIP_DIAMOND)
+        .repairMaterial(() => Ingredient.of(itemSapphire))
         .textureName(MOD_ID + ":sapphire")
         .toughness(1.25F)
         .build()
@@ -96,8 +95,8 @@ object ExplorationContent {
         .durabilityFactor(14)
         .damageReduction(Array(3, 6, 8, 3))
         .enchantability(14)
-        .soundEvent(SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND)
-        .repairMaterial(() => Ingredient.fromItems(itemPeridot))
+        .soundEvent(SoundEvents.ARMOR_EQUIP_DIAMOND)
+        .repairMaterial(() => Ingredient.of(itemPeridot))
         .textureName(MOD_ID + ":peridot")
         .toughness(1.25F)
         .build()
@@ -193,13 +192,13 @@ object ExplorationContent {
     var itemRedBackpack = ITEMS.register("red_backpack", () => new ItemBackpack())
     var itemBlackBackpack = ITEMS.register("black_backpack", () => new ItemBackpack())
 
-    val itemRubyAxe = ITEMS.register("ruby_axe", makeItem(new AxeItem(rubyItemTier, 8.0F, -3.0F, _)))
-    val itemSapphireAxe = ITEMS.register("sapphire_axe", makeItem(new AxeItem(sapphireItemTier, 8.0F, -3.0F, _)))
-    val itemPeridotAxe = ITEMS.register("peridot_axe", makeItem(new AxeItem(peridotItemTier, 8.0F, -3.0F, _)))
+    val itemRubyAxe = ITEMS.register("ruby_axe", makeItem(new AxeItem(rubyItemTier, 5.0F, -3.0F, _)))
+    val itemSapphireAxe = ITEMS.register("sapphire_axe", makeItem(new AxeItem(sapphireItemTier, 5.0F, -3.0F, _)))
+    val itemPeridotAxe = ITEMS.register("peridot_axe", makeItem(new AxeItem(peridotItemTier, 5.0F, -3.0F, _)))
 
-    val itemRubyHoe = ITEMS.register("ruby_hoe", makeItem(new HoeItem(rubyItemTier, 0.0F, _)))
-    val itemSapphireHoe = ITEMS.register("sapphire_hoe", makeItem(new HoeItem(sapphireItemTier, 0.0F, _)))
-    val itemPeridotHoe = ITEMS.register("peridot_hoe", makeItem(new HoeItem(peridotItemTier, 0.25F, _)))
+    val itemRubyHoe = ITEMS.register("ruby_hoe", makeItem(new HoeItem(rubyItemTier, -3, 0.0F, _)))
+    val itemSapphireHoe = ITEMS.register("sapphire_hoe", makeItem(new HoeItem(sapphireItemTier, -3, 0.0F, _)))
+    val itemPeridotHoe = ITEMS.register("peridot_hoe", makeItem(new HoeItem(peridotItemTier, -3, 0.0F, _)))
 
     val itemRubyPickaxe = ITEMS.register("ruby_pickaxe", makeItem(new PickaxeItem(rubyItemTier, 1, -2.8F, _)))
     val itemSapphirePickaxe = ITEMS.register("sapphire_pickaxe", makeItem(new PickaxeItem(sapphireItemTier, 1, -2.8F, _)))
@@ -266,66 +265,66 @@ object ExplorationContent {
     val containerBackpack = CONTAINERS.register("container_type", () => ICCLContainerType.create((id, inv, _) => new ContainerBackpack(id, inv)))
 
     /** Block Tags */
-    val tagBlockRubyOre = new BlockTag("forge:ores/ruby")
-    val tagBlockSapphireOre = new BlockTag("forge:ores/sapphire")
-    val tagBlockPeridotOre = new BlockTag("forge:ores/peridot")
-    val tagBlockCopperOre = new BlockTag("forge:ores/copper")
-    val tagBlockTinOre = new BlockTag("forge:ores/tin")
-    val tagBlockSilverOre = new BlockTag("forge:ores/silver")
-    val tagBlockElectrotineOre = new BlockTag("forge:ores/electrotine")
+    val tagBlockRubyOre = BlockTags.bind("forge:ores/ruby")
+    val tagBlockSapphireOre = BlockTags.bind("forge:ores/sapphire")
+    val tagBlockPeridotOre = BlockTags.bind("forge:ores/peridot")
+    val tagBlockCopperOre = BlockTags.bind("forge:ores/copper")
+    val tagBlockTinOre = BlockTags.bind("forge:ores/tin")
+    val tagBlockSilverOre = BlockTags.bind("forge:ores/silver")
+    val tagBlockElectrotineOre = BlockTags.bind("forge:ores/electrotine")
 
-    val tagBlockMarble = new BlockTag("forge:stone/marble")
-    val tagBlockBasalt = new BlockTag("forge:stone/basalt")
-    val tagBlockRubyBlock = new BlockTag("forge:storage_blocks/ruby")
-    val tagBlockSapphireBlock = new BlockTag("forge:storage_blocks/sapphire")
-    val tagBlockPeridotBlock = new BlockTag("forge:storage_blocks/peridot")
-    val tagBlockCopperBlock = new BlockTag("forge:storage_blocks/copper")
-    val tagBlockTinBlock = new BlockTag("forge:storage_blocks/tin")
-    val tagBlockSilverBlock = new BlockTag("forge:storage_blocks/silver")
-    val tagBlockElectrotineBlock = new BlockTag("forge:storage_blocks/electrotine")
+    val tagBlockMarble = BlockTags.bind("forge:stone/marble")
+    val tagBlockBasalt = BlockTags.bind("forge:stone/basalt")
+    val tagBlockRubyBlock = BlockTags.bind("forge:storage_blocks/ruby")
+    val tagBlockSapphireBlock = BlockTags.bind("forge:storage_blocks/sapphire")
+    val tagBlockPeridotBlock = BlockTags.bind("forge:storage_blocks/peridot")
+    val tagBlockCopperBlock = BlockTags.bind("forge:storage_blocks/copper")
+    val tagBlockTinBlock = BlockTags.bind("forge:storage_blocks/tin")
+    val tagBlockSilverBlock = BlockTags.bind("forge:storage_blocks/silver")
+    val tagBlockElectrotineBlock = BlockTags.bind("forge:storage_blocks/electrotine")
 
     /** Item Tags */
-    val tagItemRubyOre = new ItemTag("forge:ores/ruby")
-    val tagItemSapphireOre = new ItemTag("forge:ores/sapphire")
-    val tagItemPeridotOre = new ItemTag("forge:ores/peridot")
-    val tagItemCopperOre = new ItemTag("forge:ores/copper")
-    val tagItemTinOre = new ItemTag("forge:ores/tin")
-    val tagItemSilverOre = new ItemTag("forge:ores/silver")
-    val tagItemElectrotineOre = new ItemTag("forge:ores/electrotine")
+    val tagItemRubyOre = ItemTags.bind("forge:ores/ruby")
+    val tagItemSapphireOre = ItemTags.bind("forge:ores/sapphire")
+    val tagItemPeridotOre = ItemTags.bind("forge:ores/peridot")
+    val tagItemCopperOre = ItemTags.bind("forge:ores/copper")
+    val tagItemTinOre = ItemTags.bind("forge:ores/tin")
+    val tagItemSilverOre = ItemTags.bind("forge:ores/silver")
+    val tagItemElectrotineOre = ItemTags.bind("forge:ores/electrotine")
 
-    val tagItemMarble = new ItemTag("forge:stone/marble")
-    val tagItemBasalt = new ItemTag("forge:stone/basalt")
-    val tagItemRubyBlock = new ItemTag("forge:storage_blocks/ruby")
-    val tagItemSapphireBlock = new ItemTag("forge:storage_blocks/sapphire")
-    val tagItemPeridotBlock = new ItemTag("forge:storage_blocks/peridot")
-    val tagItemCopperBlock = new ItemTag("forge:storage_blocks/copper")
-    val tagItemTinBlock = new ItemTag("forge:storage_blocks/tin")
-    val tagItemSilverBlock = new ItemTag("forge:storage_blocks/silver")
-    val tagItemElectrotineBlock = new ItemTag("forge:storage_blocks/electrotine")
+    val tagItemMarble = ItemTags.bind("forge:stone/marble")
+    val tagItemBasalt = ItemTags.bind("forge:stone/basalt")
+    val tagItemRubyBlock = ItemTags.bind("forge:storage_blocks/ruby")
+    val tagItemSapphireBlock = ItemTags.bind("forge:storage_blocks/sapphire")
+    val tagItemPeridotBlock = ItemTags.bind("forge:storage_blocks/peridot")
+    val tagItemCopperBlock = ItemTags.bind("forge:storage_blocks/copper")
+    val tagItemTinBlock = ItemTags.bind("forge:storage_blocks/tin")
+    val tagItemSilverBlock = ItemTags.bind("forge:storage_blocks/silver")
+    val tagItemElectrotineBlock = ItemTags.bind("forge:storage_blocks/electrotine")
 
-    val tagBackpacks = new ItemTag(new ResourceLocation(MOD_ID, "backpacks"))
-    val tagBackpacksWhite = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/white"))
-    val tagBackpacksOrange = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/orange"))
-    val tagBackpacksMagenta = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/magenta"))
-    val tagBackpacksLightBlue = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/light_blue"))
-    val tagBackpacksYellow = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/yellow"))
-    val tagBackpacksLime = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/lime"))
-    val tagBackpacksPink = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/pink"))
-    val tagBackpacksGray = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/gray"))
-    val tagBackpacksLightGray = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/light_gray"))
-    val tagBackpacksCyan = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/cyan"))
-    val tagBackpacksPurple = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/purple"))
-    val tagBackpacksBlue = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/blue"))
-    val tagBackpacksBrown = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/brown"))
-    val tagBackpacksGreen = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/green"))
-    val tagBackpacksRed = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/red"))
-    val tagBackpacksBlack = new ItemTag(new ResourceLocation(MOD_ID, "backpacks/black"))
-    val tagBackpackDisallowed = new ItemTag(new ResourceLocation(MOD_ID, "backpack/disallowed"))
+    val tagBackpacks = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks"))
+    val tagBackpacksWhite = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/white"))
+    val tagBackpacksOrange = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/orange"))
+    val tagBackpacksMagenta = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/magenta"))
+    val tagBackpacksLightBlue = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/light_blue"))
+    val tagBackpacksYellow = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/yellow"))
+    val tagBackpacksLime = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/lime"))
+    val tagBackpacksPink = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/pink"))
+    val tagBackpacksGray = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/gray"))
+    val tagBackpacksLightGray = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/light_gray"))
+    val tagBackpacksCyan = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/cyan"))
+    val tagBackpacksPurple = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/purple"))
+    val tagBackpacksBlue = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/blue"))
+    val tagBackpacksBrown = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/brown"))
+    val tagBackpacksGreen = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/green"))
+    val tagBackpacksRed = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/red"))
+    val tagBackpacksBlack = ItemTags.bind(new ResourceLocation(MOD_ID, "backpacks/black"))
+    val tagBackpackDisallowed = ItemTags.bind(new ResourceLocation(MOD_ID, "backpack/disallowed"))
 
     private def makeOreBlock(harvestLevel: Int = 1, minXP: Int = 0, maxXP: Int = 0): Supplier[Block] = () =>
         new BlockOre(
-            Block.Properties.create(Material.ROCK)
-                .hardnessAndResistance(3.0F, 5.0F)
+            AbstractBlock.Properties.of(Material.STONE)
+                .strength(3.0F, 5.0F)
                 .harvestLevel(harvestLevel)
                 .harvestTool(ToolType.PICKAXE),
             minXP,
@@ -334,21 +333,21 @@ object ExplorationContent {
 
     private def makeDecorativeBlock(harvestLevel: Int = 2, hardness: Float = 5.0F, resistance: Float = 10.0F): Supplier[Block] = () =>
         new Block(
-            Block.Properties.create(Material.ROCK)
-                .hardnessAndResistance(hardness, resistance)
+            AbstractBlock.Properties.of(Material.STONE)
+                .strength(hardness, resistance)
                 .harvestLevel(harvestLevel)
                 .harvestTool(ToolType.PICKAXE)
         )
 
     private def makeDecorativeWallBlock(block: Supplier[Block]): Supplier[WallBlock] = () =>
-        new WallBlock(Block.Properties.from(block))
+        new WallBlock(AbstractBlock.Properties.copy(block))
 
     private def makeItemBlock[T <: Block](block: Supplier[T]): Supplier[Item] = () =>
-        new BlockItem(block.get(), new Item.Properties().group(explorationItemGroup))
+        new BlockItem(block.get(), new Item.Properties().tab(explorationItemGroup))
 
 
     private def makeItem(make: Item.Properties => Item): Supplier[Item] = () =>
-        make(new Item.Properties().group(explorationItemGroup))
+        make(new Item.Properties().tab(explorationItemGroup))
 
 
     def register(bus: IEventBus) {
@@ -371,8 +370,8 @@ private object DataGen {
             gen.addProvider(new ItemModels(gen, helper))
         }
         if (event.includeServer) {
-            gen.addProvider(new BlockTags(gen))
-            gen.addProvider(new ItemTags(gen))
+            gen.addProvider(new BlockTags(gen, helper))
+            gen.addProvider(new ItemTags(gen, helper))
             gen.addProvider(new BlockLootTables(gen))
             gen.addProvider(new Recipes(gen))
         }
@@ -553,74 +552,73 @@ private class ItemModels(gen: DataGenerator, fileHelper: ExistingFileHelper) ext
     }
 }
 
-private class BlockTags(gen: DataGenerator) extends BlockTagsProvider(gen) {
+private class BlockTags(gen:DataGenerator, fileHelper:ExistingFileHelper) extends BlockTagsProvider(gen, MOD_ID, fileHelper) {
     override def getName = "ProjectRed-Exploration Block Tags."
 
-    override protected def registerTags() {
-        getBuilder(MCBlockTags.WALLS).add(blockMarbleWall)
-        getBuilder(MCBlockTags.WALLS).add(blockMarbleBrickWall)
-        getBuilder(MCBlockTags.WALLS).add(blockBasaltWall)
-        getBuilder(MCBlockTags.WALLS).add(blockBasaltCobbleWall)
-        getBuilder(MCBlockTags.WALLS).add(blockBasaltBrickWall)
-        getBuilder(MCBlockTags.WALLS).add(blockRubyBlockWall)
-        getBuilder(MCBlockTags.WALLS).add(blockSapphireBlockWall)
-        getBuilder(MCBlockTags.WALLS).add(blockPeridotBlockWall)
-        getBuilder(MCBlockTags.WALLS).add(blockCopperBlockWall)
-        getBuilder(MCBlockTags.WALLS).add(blockTinBlockWall)
-        getBuilder(MCBlockTags.WALLS).add(blockSilverBlockWall)
-        getBuilder(MCBlockTags.WALLS).add(blockElectrotineBlockWall)
+    override protected def addTags() {
+        tag(BlockTags.WALLS).add(blockMarbleWall)
+        tag(BlockTags.WALLS).add(blockMarbleBrickWall)
+        tag(BlockTags.WALLS).add(blockBasaltWall)
+        tag(BlockTags.WALLS).add(blockBasaltCobbleWall)
+        tag(BlockTags.WALLS).add(blockBasaltBrickWall)
+        tag(BlockTags.WALLS).add(blockRubyBlockWall)
+        tag(BlockTags.WALLS).add(blockSapphireBlockWall)
+        tag(BlockTags.WALLS).add(blockPeridotBlockWall)
+        tag(BlockTags.WALLS).add(blockCopperBlockWall)
+        tag(BlockTags.WALLS).add(blockTinBlockWall)
+        tag(BlockTags.WALLS).add(blockSilverBlockWall)
+        tag(BlockTags.WALLS).add(blockElectrotineBlockWall)
 
-        getBuilder(ForgeBlockTags.ORES)
-            .add(tagBlockRubyOre)
-            .add(tagBlockSapphireOre)
-            .add(tagBlockPeridotOre)
-            .add(tagBlockCopperOre)
-            .add(tagBlockTinOre)
-            .add(tagBlockSilverOre)
-            .add(tagBlockElectrotineOre)
-        getBuilder(tagBlockRubyOre).add(blockRubyOre)
-        getBuilder(tagBlockSapphireOre).add(blockSapphireOre)
-        getBuilder(tagBlockPeridotOre).add(blockPeridotOre)
-        getBuilder(tagBlockCopperOre).add(blockCopperOre)
-        getBuilder(tagBlockTinOre).add(blockTinOre)
-        getBuilder(tagBlockSilverOre).add(blockSilverOre)
-        getBuilder(tagBlockElectrotineOre).add(blockElectrotineOre)
+        tag(ForgeBlockTags.ORES)
+            .addTag(tagBlockRubyOre)
+            .addTag(tagBlockSapphireOre)
+            .addTag(tagBlockPeridotOre)
+            .addTag(tagBlockCopperOre)
+            .addTag(tagBlockTinOre)
+            .addTag(tagBlockSilverOre)
+            .addTag(tagBlockElectrotineOre)
+        tag(tagBlockRubyOre).add(blockRubyOre)
+        tag(tagBlockSapphireOre).add(blockSapphireOre)
+        tag(tagBlockPeridotOre).add(blockPeridotOre)
+        tag(tagBlockCopperOre).add(blockCopperOre)
+        tag(tagBlockTinOre).add(blockTinOre)
+        tag(tagBlockSilverOre).add(blockSilverOre)
+        tag(tagBlockElectrotineOre).add(blockElectrotineOre)
 
-        getBuilder(ForgeBlockTags.STORAGE_BLOCKS)
-            .add(tagBlockMarble)
-            .add(tagBlockBasalt)
-            .add(tagBlockRubyBlock)
-            .add(tagBlockSapphireBlock)
-            .add(tagBlockPeridotBlock)
-            .add(tagBlockCopperBlock)
-            .add(tagBlockTinBlock)
-            .add(tagBlockSilverBlock)
-            .add(tagBlockElectrotineBlock)
-        getBuilder(tagBlockMarble).add(blockMarble)
-        getBuilder(tagBlockBasalt).add(blockBasalt)
-        getBuilder(tagBlockRubyBlock).add(blockRubyBlock)
-        getBuilder(tagBlockSapphireBlock).add(blockSapphireBlock)
-        getBuilder(tagBlockPeridotBlock).add(blockPeridotBlock)
-        getBuilder(tagBlockCopperBlock).add(blockCopperBlock)
-        getBuilder(tagBlockTinBlock).add(blockTinBlock)
-        getBuilder(tagBlockSilverBlock).add(blockSilverBlock)
-        getBuilder(tagBlockElectrotineBlock).add(blockElectrotineBlock)
-
+        tag(ForgeBlockTags.STORAGE_BLOCKS)
+            .addTag(tagBlockMarble)
+            .addTag(tagBlockBasalt)
+            .addTag(tagBlockRubyBlock)
+            .addTag(tagBlockSapphireBlock)
+            .addTag(tagBlockPeridotBlock)
+            .addTag(tagBlockCopperBlock)
+            .addTag(tagBlockTinBlock)
+            .addTag(tagBlockSilverBlock)
+            .addTag(tagBlockElectrotineBlock)
+        tag(tagBlockMarble).add(blockMarble)
+        tag(tagBlockBasalt).add(blockBasalt)
+        tag(tagBlockRubyBlock).add(blockRubyBlock)
+        tag(tagBlockSapphireBlock).add(blockSapphireBlock)
+        tag(tagBlockPeridotBlock).add(blockPeridotBlock)
+        tag(tagBlockCopperBlock).add(blockCopperBlock)
+        tag(tagBlockTinBlock).add(blockTinBlock)
+        tag(tagBlockSilverBlock).add(blockSilverBlock)
+        tag(tagBlockElectrotineBlock).add(blockElectrotineBlock)
     }
 }
 
-private class ItemTags(gen: DataGenerator) extends ItemTagsProvider(gen) {
+private class ItemTags(gen:DataGenerator, fileHelper:ExistingFileHelper) extends ItemTagsProvider(gen, new BlockTagsProvider(gen, MOD_ID, fileHelper), MOD_ID, fileHelper) {
     override def getName = "ProjectRed-Exploration Item Tags."
 
-    override protected def registerTags() {
-        getBuilder(ForgeItemTags.ORES)
-            .add(tagItemRubyOre)
-            .add(tagItemSapphireOre)
-            .add(tagItemPeridotOre)
-            .add(tagItemCopperOre)
-            .add(tagItemTinOre)
-            .add(tagItemSilverOre)
-            .add(tagItemElectrotineOre)
+    override protected def addTags() {
+        tag(ForgeItemTags.ORES)
+            .addTag(tagItemRubyOre)
+            .addTag(tagItemSapphireOre)
+            .addTag(tagItemPeridotOre)
+            .addTag(tagItemCopperOre)
+            .addTag(tagItemTinOre)
+            .addTag(tagItemSilverOre)
+            .addTag(tagItemElectrotineOre)
 
         copy(tagBlockRubyOre, tagItemRubyOre)
         copy(tagBlockSapphireOre, tagItemSapphireOre)
@@ -630,16 +628,16 @@ private class ItemTags(gen: DataGenerator) extends ItemTagsProvider(gen) {
         copy(tagBlockSilverOre, tagItemSilverOre)
         copy(tagBlockElectrotineOre, tagItemElectrotineOre)
 
-        getBuilder(ForgeItemTags.STORAGE_BLOCKS)
-            .add(tagItemMarble)
-            .add(tagItemBasalt)
-            .add(tagItemRubyBlock)
-            .add(tagItemSapphireBlock)
-            .add(tagItemPeridotBlock)
-            .add(tagItemCopperBlock)
-            .add(tagItemTinBlock)
-            .add(tagItemSilverBlock)
-            .add(tagItemElectrotineBlock)
+        tag(ForgeItemTags.STORAGE_BLOCKS)
+            .addTag(tagItemMarble)
+            .addTag(tagItemBasalt)
+            .addTag(tagItemRubyBlock)
+            .addTag(tagItemSapphireBlock)
+            .addTag(tagItemPeridotBlock)
+            .addTag(tagItemCopperBlock)
+            .addTag(tagItemTinBlock)
+            .addTag(tagItemSilverBlock)
+            .addTag(tagItemElectrotineBlock)
         copy(tagBlockMarble, tagItemMarble)
         copy(tagBlockBasalt, tagItemBasalt)
         copy(tagBlockRubyBlock, tagItemRubyBlock)
@@ -650,41 +648,41 @@ private class ItemTags(gen: DataGenerator) extends ItemTagsProvider(gen) {
         copy(tagBlockSilverBlock, tagItemSilverBlock)
         copy(tagBlockElectrotineBlock, tagItemElectrotineBlock)
 
-        getBuilder(tagBackpacks)
-            .add(tagBackpacksWhite)
-            .add(tagBackpacksOrange)
-            .add(tagBackpacksMagenta)
-            .add(tagBackpacksLightBlue)
-            .add(tagBackpacksYellow)
-            .add(tagBackpacksLime)
-            .add(tagBackpacksPink)
-            .add(tagBackpacksGray)
-            .add(tagBackpacksLightGray)
-            .add(tagBackpacksCyan)
-            .add(tagBackpacksPurple)
-            .add(tagBackpacksBlue)
-            .add(tagBackpacksBrown)
-            .add(tagBackpacksGreen)
-            .add(tagBackpacksRed)
-            .add(tagBackpacksBlack)
-        getBuilder(tagBackpacksWhite).add(itemWhiteBackpack)
-        getBuilder(tagBackpacksOrange).add(itemOrangeBackpack)
-        getBuilder(tagBackpacksMagenta).add(itemMagentaBackpack)
-        getBuilder(tagBackpacksLightBlue).add(itemLightBlueBackpack)
-        getBuilder(tagBackpacksYellow).add(itemYellowBackpack)
-        getBuilder(tagBackpacksLime).add(itemLimeBackpack)
-        getBuilder(tagBackpacksPink).add(itemPinkBackpack)
-        getBuilder(tagBackpacksGray).add(itemGrayBackpack)
-        getBuilder(tagBackpacksLightGray).add(itemLightGrayBackpack)
-        getBuilder(tagBackpacksCyan).add(itemCyanBackpack)
-        getBuilder(tagBackpacksPurple).add(itemPurpleBackpack)
-        getBuilder(tagBackpacksBlue).add(itemBlueBackpack)
-        getBuilder(tagBackpacksBrown).add(itemBrownBackpack)
-        getBuilder(tagBackpacksGreen).add(itemGreenBackpack)
-        getBuilder(tagBackpacksRed).add(itemRedBackpack)
-        getBuilder(tagBackpacksBlack).add(itemBlackBackpack)
+        tag(tagBackpacks)
+            .addTag(tagBackpacksWhite)
+            .addTag(tagBackpacksOrange)
+            .addTag(tagBackpacksMagenta)
+            .addTag(tagBackpacksLightBlue)
+            .addTag(tagBackpacksYellow)
+            .addTag(tagBackpacksLime)
+            .addTag(tagBackpacksPink)
+            .addTag(tagBackpacksGray)
+            .addTag(tagBackpacksLightGray)
+            .addTag(tagBackpacksCyan)
+            .addTag(tagBackpacksPurple)
+            .addTag(tagBackpacksBlue)
+            .addTag(tagBackpacksBrown)
+            .addTag(tagBackpacksGreen)
+            .addTag(tagBackpacksRed)
+            .addTag(tagBackpacksBlack)
+        tag(tagBackpacksWhite).add(itemWhiteBackpack)
+        tag(tagBackpacksOrange).add(itemOrangeBackpack)
+        tag(tagBackpacksMagenta).add(itemMagentaBackpack)
+        tag(tagBackpacksLightBlue).add(itemLightBlueBackpack)
+        tag(tagBackpacksYellow).add(itemYellowBackpack)
+        tag(tagBackpacksLime).add(itemLimeBackpack)
+        tag(tagBackpacksPink).add(itemPinkBackpack)
+        tag(tagBackpacksGray).add(itemGrayBackpack)
+        tag(tagBackpacksLightGray).add(itemLightGrayBackpack)
+        tag(tagBackpacksCyan).add(itemCyanBackpack)
+        tag(tagBackpacksPurple).add(itemPurpleBackpack)
+        tag(tagBackpacksBlue).add(itemBlueBackpack)
+        tag(tagBackpacksBrown).add(itemBrownBackpack)
+        tag(tagBackpacksGreen).add(itemGreenBackpack)
+        tag(tagBackpacksRed).add(itemRedBackpack)
+        tag(tagBackpacksBlack).add(itemBlackBackpack)
 
-        getBuilder(tagBackpackDisallowed).add(tagBackpacks)
+        tag(tagBackpackDisallowed).addTag(tagBackpacks)
     }
 }
 
@@ -906,7 +904,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine(" S ")
 
         shapedRecipe(Items.STRING, 4, new ResourceLocation(MOD_ID, "string_from_wool"))
-            .key('W', VanillaItemTags.WOOL)
+            .key('W', ItemTags.WOOL)
             .key('G', itemWoolGin)
             .patternLine("GW")
 
@@ -943,7 +941,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
         addSawRecipe(itemSapphireSaw, tagGemsSapphire)
         addSawRecipe(itemPeridotSaw, tagGemsPeridot)
 
-        addSickleRecipe(itemWoodSickle, VanillaItemTags.PLANKS)
+        addSickleRecipe(itemWoodSickle, ItemTags.PLANKS)
         addSickleRecipe(itemStoneSickle, Items.FLINT)
         addSickleRecipe(itemIronSickle, ForgeItemTags.INGOTS_IRON)
         addSickleRecipe(itemGoldSickle, ForgeItemTags.INGOTS_GOLD)
@@ -974,19 +972,19 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .key('C', itemWovenCloth)
             .patternLine("CCC")
         if (colour != EnumColour.WHITE) {
-            b.key('D', new ItemTag(colour.getDyeTagName))
+            b.key('D', ItemTags.bind(colour.getDyeTagName))
             b.patternLine("CDC")
         } else {
             b.patternLine("C C")
         }
         b.patternLine("CCC")
 
-        builder(ShapelessNBTCopyRecipeBuilder(backpacks(colour.ordinal), 1, new ResourceLocation(MOD_ID, colour.getName + "_backpack_recolor")))
+        builder(ShapelessNBTCopyRecipeBuilder(backpacks(colour.ordinal), 1, new ResourceLocation(MOD_ID, colour.getSerializedName + "_backpack_recolor")))
             .addIngredient(tagBackpacks)
-            .addIngredient(new ItemTag(colour.getDyeTagName))
+            .addIngredient(ItemTags.bind(colour.getDyeTagName))
     }
 
-    def addAxeRecipe(result: Item, material: Tag[Item]) {
+    def addAxeRecipe(result: Item, material: ITag[Item]) {
         shapedRecipe(result)
             .key('M', material)
             .key('S', ForgeItemTags.RODS_WOODEN)
@@ -995,7 +993,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine(" S ")
     }
 
-    def addHoeRecipe(result: Item, material: Tag[Item]) {
+    def addHoeRecipe(result: Item, material: ITag[Item]) {
         shapedRecipe(result)
             .key('M', material)
             .key('S', ForgeItemTags.RODS_WOODEN)
@@ -1004,7 +1002,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine(" S ")
     }
 
-    def addPickaxeRecipe(result: Item, material: Tag[Item]) {
+    def addPickaxeRecipe(result: Item, material: ITag[Item]) {
         shapedRecipe(result)
             .key('M', material)
             .key('S', ForgeItemTags.RODS_WOODEN)
@@ -1013,7 +1011,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine(" S ")
     }
 
-    def addShovelRecipe(result: Item, material: Tag[Item]) {
+    def addShovelRecipe(result: Item, material: ITag[Item]) {
         shapedRecipe(result)
             .key('M', material)
             .key('S', ForgeItemTags.RODS_WOODEN)
@@ -1022,7 +1020,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine(" S ")
     }
 
-    def addSwordRecipe(result: Item, material: Tag[Item]) {
+    def addSwordRecipe(result: Item, material: ITag[Item]) {
         shapedRecipe(result)
             .key('M', material)
             .key('S', ForgeItemTags.RODS_WOODEN)
@@ -1031,7 +1029,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine(" S ")
     }
 
-    def addSawRecipe(result: Item, material: Tag[Item]) {
+    def addSawRecipe(result: Item, material: ITag[Item]) {
         shapedRecipe(result)
             .key('M', material)
             .key('S', ForgeItemTags.RODS_WOODEN)
@@ -1040,7 +1038,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("SMM")
     }
 
-    def addSickleRecipe(result: Item, material: Tag[Item]) {
+    def addSickleRecipe(result: Item, material: ITag[Item]) {
         shapedRecipe(result)
             .key('M', material)
             .key('S', ForgeItemTags.RODS_WOODEN)
@@ -1058,14 +1056,14 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("SM ")
     }
 
-    def addHelmetRecipe(result: Item, material: Tag[Item]) {
+    def addHelmetRecipe(result: Item, material: ITag[Item]) {
         shapedRecipe(result)
             .key('M', material)
             .patternLine("MMM")
             .patternLine("M M")
     }
 
-    def addChestplateRecipe(result: Item, material: Tag[Item]) {
+    def addChestplateRecipe(result: Item, material: ITag[Item]) {
         shapedRecipe(result)
             .key('M', material)
             .patternLine("M M")
@@ -1073,7 +1071,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("MMM")
     }
 
-    def addLeggingsRecipe(result: Item, material: Tag[Item]) {
+    def addLeggingsRecipe(result: Item, material: ITag[Item]) {
         shapedRecipe(result)
             .key('M', material)
             .patternLine("MMM")
@@ -1081,7 +1079,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("M M")
     }
 
-    def addBootsRecipe(result: Item, material: Tag[Item]) {
+    def addBootsRecipe(result: Item, material: ITag[Item]) {
         shapedRecipe(result)
             .key('M', material)
             .patternLine("M M")

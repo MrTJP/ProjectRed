@@ -48,11 +48,11 @@ abstract class ArrayGatePart(gateType:GateType) extends RedstoneGatePart(gateTyp
         if (!p.isInstanceOf[TFaceOrient] || p.tile == null) return 0xF
         val part = p.asInstanceOf[TFaceOrient]
         val here = pos
-        val there = new BlockPos.Mutable(part.pos)
+        val there = pos.mutable()
 
         if (here == there && (side&6) != (part.side&6)) return 1<<Rotation.rotationTo(side, part.side)
 
-        if (side != part.side) there.move(Direction.byIndex(side^1)) //bring corner up to same plane
+        if (side != part.side) there.move(Direction.values()(side^1)) //bring corner up to same plane
 
         import codechicken.lib.vec.Rotation._
         (here.getX-there.getX, here.getY-there.getY, here.getZ-there.getZ) match {
@@ -93,7 +93,7 @@ abstract class ArrayGatePart(gateType:GateType) extends RedstoneGatePart(gateTyp
     }
 
     override def onSignalUpdate():Unit = {
-        tile.markDirty()
+        tile.setChanged()
         super.onChange()
     }
 
@@ -143,7 +143,7 @@ abstract class ArrayGatePart(gateType:GateType) extends RedstoneGatePart(gateTyp
     override def preparePlacement(player:PlayerEntity, pos:BlockPos, side:Int):Unit = {
         super.preparePlacement(player, pos, side)
         if (canCross) {
-            val npart = BlockMultiPart.getPart(player.world, pos, this.side^1)
+            val npart = BlockMultiPart.getPart(player.level, pos, this.side^1)
             npart match {
                 case apart:ArrayGatePart => if (apart.getGateType == getGateType && (apart.rotation&1) == (rotation&1))
                     setRotation((rotation+1)%4)

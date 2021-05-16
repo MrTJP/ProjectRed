@@ -234,7 +234,7 @@ class ExplorationProxy_client extends ExplorationProxy_server
 
     @OnlyIn(Dist.CLIENT)
     override def clientSetup(event: FMLClientSetupEvent) {
-        ScreenManager.registerFactory(ExplorationContent.containerBackpack.get(), (c: ContainerBackpack, i, t) => new GuiBackpack(c, i, t))
+        ScreenManager.register(ExplorationContent.containerBackpack.get(), (c: ContainerBackpack, i, t) => new GuiBackpack(c, i, t))
     }
 
 /*    @SideOnly(Side.CLIENT)

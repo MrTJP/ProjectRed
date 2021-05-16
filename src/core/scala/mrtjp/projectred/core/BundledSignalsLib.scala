@@ -17,7 +17,7 @@ object BundledSignalsLib
 
     def getBundledInput(world:World, pos:BlockPos, facing:Direction):Array[Byte] = {
         val side = facing.ordinal
-        world.getTileEntity(pos.offset(Direction.byIndex(side))) match {
+        world.getBlockEntity(pos.relative(Direction.values()(side))) match {
             case ibt:IBundledTile => ibt.getBundledSignal(side^1)
 
             case tmp:TileMultiPart =>

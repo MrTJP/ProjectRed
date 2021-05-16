@@ -5,11 +5,10 @@ import codechicken.lib.util.ServerUtils
 import codechicken.lib.vec.Rotation
 import mrtjp.core.gui.NodeContainer
 import mrtjp.core.inventory.{TInventory, TInventoryCapablilityTile}
-import mrtjp.core.world.Messenger
 import mrtjp.projectred.api._
 import mrtjp.projectred.core._
 import net.minecraft.block.material.Material
-import net.minecraft.block.{Block, BlockState}
+import net.minecraft.block.{AbstractBlock, Block, BlockState}
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.{PlayerEntity, ServerPlayerEntity}
 import net.minecraft.inventory.ISidedInventory
@@ -61,7 +60,7 @@ import scala.jdk.CollectionConverters._
 //    val UNLISTED_CHARGE_PROPERTY = new UnlistedIntegerProperty("charge")
 //}
 
-class BaseMachineBlock(tileFactory:() => CoreTile) extends Block(Block.Properties.create(Material.ROCK)) {
+class BaseMachineBlock(tileFactory:() => CoreTile) extends Block(AbstractBlock.Properties.of(Material.STONE)) {
 
     override def hasTileEntity(state:BlockState):Boolean = true
 
@@ -74,21 +73,21 @@ class BaseMachineBlock(tileFactory:() => CoreTile) extends Block(Block.Propertie
     // Ideally this logic would be handled by the tile to keep this block generic,
     // but there isn't a good way to get this `context` to the tile
     override def getStateForPlacement(context:BlockItemUseContext):BlockState = {
-        val placementPos = context.getPos.offset(context.getFace)
+        val placementPos = context.getClickedPos.relative(context.getClickedFace)
 //        val placementSide = context.getFace.getOpposite
 
         val side = calcFacing(context.getPlayer, placementPos)
         val rot = Rotation.getSidedRotation(context.getPlayer, side)
 
-        getDefaultState
-                .`with`(BaseMachineBlock.SIDE_PROPERTY, Int.box(side))
-                .`with`(BaseMachineBlock.ROTATION_PROPERTY, Int.box(rot))
+        defaultBlockState()
+                .setValue(BaseMachineBlock.SIDE_PROPERTY, Int.box(side))
+                .setValue(BaseMachineBlock.ROTATION_PROPERTY, Int.box(rot))
     }
 
     private def calcFacing(ent:PlayerEntity, blockPos:BlockPos):Int = {
-        val yawrx = Math.floor(ent.rotationYaw*4.0F/360.0F+0.5D).toInt&0x3
-        if ((Math.abs(ent.getPosX-blockPos.getX) < 2.0D) && (Math.abs(ent.getPosZ-blockPos.getZ) < 2.0D)) {
-            val p = ent.getPosY+1.82D-blockPos.getY
+        val yawrx = Math.floor(ent.yRot*4.0F/360.0F+0.5D).toInt&0x3
+        if ((Math.abs(ent.getX-blockPos.getX) < 2.0D) && (Math.abs(ent.getZ-blockPos.getZ) < 2.0D)) {
+            val p = ent.getY+1.82D-blockPos.getY
             if (p > 2.0D) return 0
             if (p < 0.0D) return 1
         }
@@ -101,46 +100,46 @@ class BaseMachineBlock(tileFactory:() => CoreTile) extends Block(Block.Propertie
     }
 
     override def neighborChanged(state:BlockState, world:World, pos:BlockPos, blockIn:Block, fromPos:BlockPos, isMoving:Boolean):Unit = {
-        val tile = world.getTileEntity(pos)
+        val tile = world.getBlockEntity(pos)
         if (tile != null && tile.isInstanceOf[CoreTile]) {
             tile.asInstanceOf[CoreTile].onNeighborBlockChanged(fromPos)
         }
     }
 
     override def onNeighborChange(state:BlockState, world:IWorldReader, pos:BlockPos, neighbor:BlockPos):Unit = {
-        val tile = world.getTileEntity(pos)
+        val tile = world.getBlockEntity(pos)
         if (tile != null && tile.isInstanceOf[CoreTile]) {
             tile.asInstanceOf[CoreTile].onNeighborTileChange(neighbor)
         }
     }
 
-    override def onBlockActivated(state:BlockState, world:World, pos:BlockPos, player:PlayerEntity, handIn:Hand, hit:BlockRayTraceResult):ActionResultType = {
-        val tile = world.getTileEntity(pos)
+    override def use(state:BlockState, world:World, pos:BlockPos, player:PlayerEntity, handIn:Hand, hit:BlockRayTraceResult):ActionResultType = {
+        val tile = world.getBlockEntity(pos)
         if (tile != null && tile.isInstanceOf[CoreTile]) {
             tile.asInstanceOf[CoreTile].onBlockActivated(player, handIn, hit)
         } else
             ActionResultType.FAIL
     }
 
-    override def onReplaced(oldState:BlockState, world:World, pos:BlockPos, newState:BlockState, isMoving:Boolean):Unit = {
-        val tile = world.getTileEntity(pos)
+    override def onRemove(oldState:BlockState, world:World, pos:BlockPos, newState:BlockState, isMoving:Boolean):Unit = {
+        val tile = world.getBlockEntity(pos)
         if (tile != null && tile.isInstanceOf[CoreTile]) {
             if (oldState.getBlock == newState.getBlock && newState.hasTileEntity) // state change but same block/tile
                 tile.asInstanceOf[CoreTile].onBlockStateReplaced(newState)
             else // complete block change
                 tile.asInstanceOf[CoreTile].onBlockRemoved()
         }
-        super.onReplaced(oldState, world, pos, newState, isMoving) // remove tile if this is a different block now
+        super.onRemove(oldState, world, pos, newState, isMoving) // remove tile if this is a different block now
     }
 
-    override def onBlockPlacedBy(world:World, pos:BlockPos, state:BlockState, player:LivingEntity, stack:ItemStack):Unit = {
-        val tile = world.getTileEntity(pos)
+    override def setPlacedBy(world:World, pos:BlockPos, state:BlockState, player:LivingEntity, stack:ItemStack):Unit = {
+        val tile = world.getBlockEntity(pos)
         if (tile != null && tile.isInstanceOf[CoreTile]) {
             tile.asInstanceOf[CoreTile].onBlockPlaced(player, stack)
         }
     }
 
-    override protected def fillStateContainer(builder:StateContainer.Builder[Block, BlockState]):Unit = {
+    override protected def createBlockStateDefinition(builder:StateContainer.Builder[Block, BlockState]):Unit = {
         builder.add(BaseMachineBlock.SIDE_PROPERTY)
         builder.add(BaseMachineBlock.ROTATION_PROPERTY)
     }
@@ -170,14 +169,14 @@ abstract class TileMachine(tileType:TileEntityType[_]) extends CoreTile(tileType
 
 
     override def loadBlockState(state:BlockState):Unit = {
-        setSide(state.get(BaseMachineBlock.SIDE_PROPERTY))
-        setRotation(state.get(BaseMachineBlock.ROTATION_PROPERTY))
+        setSide(state.getValue(BaseMachineBlock.SIDE_PROPERTY))
+        setRotation(state.getValue(BaseMachineBlock.ROTATION_PROPERTY))
     }
 
     override def covertToBlockState(state:BlockState):BlockState = {
         super.covertToBlockState(state)
-            .`with`(BaseMachineBlock.SIDE_PROPERTY, Int.box(side))
-            .`with`(BaseMachineBlock.ROTATION_PROPERTY, Int.box(rotation))
+            .setValue(BaseMachineBlock.SIDE_PROPERTY, Int.box(side))
+            .setValue(BaseMachineBlock.ROTATION_PROPERTY, Int.box(rotation))
     }
 
     override def writeDesc(out:MCDataOutput):Unit = {
@@ -190,11 +189,11 @@ abstract class TileMachine(tileType:TileEntityType[_]) extends CoreTile(tileType
         orientation = in.readByte
     }
 
-    override def save(tag:CompoundNBT):Unit = {
+    override def saveToNBT(tag:CompoundNBT) = {
         tag.putByte("rot", orientation)
     }
 
-    override def load(tag:CompoundNBT):Unit = {
+    override def loadFromNBT(tag:CompoundNBT) = {
         orientation = tag.getByte("rot")
     }
 
@@ -206,7 +205,7 @@ abstract class TileMachine(tileType:TileEntityType[_]) extends CoreTile(tileType
     }
 
     override def onBlockActivated(player:PlayerEntity, hand:Hand, hit:BlockRayTraceResult):ActionResultType = {
-        val held = player.getHeldItemMainhand
+        val held = player.getMainHandItem
         if ((doesRotate || doesOrient) && !held.isEmpty && held.getItem.isInstanceOf[IScrewdriver]
                 && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held))
         {
@@ -217,7 +216,7 @@ abstract class TileMachine(tileType:TileEntityType[_]) extends CoreTile(tileType
                     sendOrientUpdate()
                     pushState()
                 }
-                getWorld.notifyNeighbors(getPos, getBlockState.getBlock)
+                getLevel.blockUpdated(getBlockPos, getBlockState.getBlock)
                 onBlockRotated()
                 held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             }
@@ -228,13 +227,13 @@ abstract class TileMachine(tileType:TileEntityType[_]) extends CoreTile(tileType
                     sendOrientUpdate()
                     pushState()
                 }
-                getWorld.notifyNeighbors(getPos, getBlockState.getBlock)
+                getLevel.blockUpdated(getBlockPos, getBlockState.getBlock)
                 onBlockRotated()
                 held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             }
 
-            if (!getWorld.isRemote) {
-                if (player.isSneaking || !doesOrient)
+            if (!getLevel.isClientSide) {
+                if (player.isCrouching || !doesOrient)
                     rotate()
                 else
                     orient()
@@ -267,15 +266,15 @@ trait TGuiMachine extends TileMachine with INamedContainerProvider
 
         if (result != ActionResultType.PASS)
             result
-        else if (!player.isSneaking) {
-            if (!getWorld.isRemote) openGui(player)
+        else if (!player.isCrouching) {
+            if (!getLevel.isClientSide) openGui(player)
             ActionResultType.SUCCESS
         } else ActionResultType.PASS
     }
 
     def openGui(player:PlayerEntity):Unit = {
         ServerUtils.openContainer(player.asInstanceOf[ServerPlayerEntity],
-            this, (p:MCDataOutput) => p.writePos(getPos))
+            this, (p:MCDataOutput) => p.writePos(getBlockPos))
     }
 
     override def getDisplayName:ITextComponent = new StringTextComponent(getType.getRegistryName.getPath)
@@ -297,13 +296,13 @@ trait TPoweredMachine extends TileMachine with TPowerTile with ILowLoadMachine {
         cond.update()
     }
 
-    abstract override def save(tag:CompoundNBT):Unit = {
-        super.save(tag)
+    abstract override def saveToNBT(tag:CompoundNBT) = {
+        super.saveToNBT(tag)
         cond.save(tag)
     }
 
-    abstract override def load(tag:CompoundNBT):Unit = {
-        super.load(tag)
+    abstract override def loadFromNBT(tag:CompoundNBT) = {
+        super.loadFromNBT(tag)
         cond.load(tag)
     }
 
@@ -325,8 +324,8 @@ abstract class TileProcessingMachine(tileType:TileEntityType[_]) extends TileMac
     var workRemaining = 0
     var workMax = 0
 
-    override def save(tag:CompoundNBT):Unit = {
-        super.save(tag)
+    override def saveToNBT(tag:CompoundNBT) = {
+        super.saveToNBT(tag)
         tag.putBoolean("ch", isCharged)
         tag.putBoolean("work", isWorking)
         tag.putInt("rem", workRemaining)
@@ -334,8 +333,8 @@ abstract class TileProcessingMachine(tileType:TileEntityType[_]) extends TileMac
         saveInv(tag)
     }
 
-    override def load(tag:CompoundNBT):Unit = {
-        super.load(tag)
+    override def loadFromNBT(tag:CompoundNBT) = {
+        super.loadFromNBT(tag)
         isCharged = tag.getBoolean("ch")
         isWorking = tag.getBoolean("work")
         workRemaining = tag.getInt("rem")
@@ -402,17 +401,17 @@ abstract class TileProcessingMachine(tileType:TileEntityType[_]) extends TileMac
             startWork()
         }
 
-        if (getWorld.getGameTime%10 == 0) updateRendersIfNeeded()
+        if (getLevel.getGameTime%10 == 0) updateRendersIfNeeded()
     }
 
-    override def markDirty():Unit = {
-        super.markDirty()
+    override def setChanged():Unit = {
+        super.setChanged()
         if (isWorking && !canStart) endWork()
     }
 
     override def onBlockRemoved():Unit = {
         super.onBlockRemoved()
-        dropInvContents(getWorld, getPos)
+        dropInvContents(getLevel, getBlockPos)
     }
 
     def progressScaled(scale:Int):Int = {
@@ -441,25 +440,25 @@ class ContainerPoweredMachine(tile:TPoweredMachine, containerType:ContainerType[
     private var ch = -2
     private var fl = -2
 
-    override def detectAndSendChanges():Unit = {
-        super.detectAndSendChanges()
-        for (ic <- listeners.asScala) {
+    override def broadcastChanges():Unit = {
+        super.broadcastChanges()
+        for (ic <- containerListeners.asScala) {
 
-            if (ch != tile.cond.charge) ic.sendWindowProperty(this, 0, tile.cond.charge)
+            if (ch != tile.cond.charge) ic.setContainerData(this, 0, tile.cond.charge)
             if (fl != tile.cond.flow) {
-                ic.sendWindowProperty(this, 1, tile.cond.flow&0xFFFF)
-                ic.sendWindowProperty(this, 2, tile.cond.flow>>16&0xFFFF)
+                ic.setContainerData(this, 1, tile.cond.flow&0xFFFF)
+                ic.setContainerData(this, 2, tile.cond.flow>>16&0xFFFF)
             }
             ch = tile.cond.charge
             fl = tile.cond.flow
         }
     }
 
-    override def updateProgressBar(id:Int, bar:Int):Unit = id match {
+    override def setData(id:Int, bar:Int):Unit = id match {
         case 0 => tile.cond.charge = bar
         case 1 => tile.cond.flow = tile.cond.flow&0xFFFF0000|bar&0xFFFF
         case 2 => tile.cond.flow = tile.cond.flow&0xFFFF|(bar&0xFFFF)<<16
-        case _ => super.updateProgressBar(id, bar)
+        case _ => super.setData(id, bar)
     }
 }
 
@@ -468,19 +467,19 @@ class ContainerProcessingMachine(tile:TileProcessingMachine, containerType:Conta
     private var wr = 0
     private var wm = 0
 
-    override def detectAndSendChanges():Unit = {
-        super.detectAndSendChanges()
-        for (i <- listeners.asScala) {
-            if (wr != tile.workRemaining) i.sendWindowProperty(this, 3, tile.workRemaining)
-            if (wm != tile.workMax) i.sendWindowProperty(this, 4, tile.workMax)
+    override def broadcastChanges():Unit = {
+        super.broadcastChanges()
+        for (i <- containerListeners.asScala) {
+            if (wr != tile.workRemaining) i.setContainerData(this, 3, tile.workRemaining)
+            if (wm != tile.workMax) i.setContainerData(this, 4, tile.workMax)
         }
         wr = tile.workRemaining
         wm = tile.workMax
     }
 
-    override def updateProgressBar(id:Int, bar:Int):Unit = id match {
+    override def setData(id:Int, bar:Int):Unit = id match {
         case 3 => tile.workRemaining = bar
         case 4 => tile.workMax = bar
-        case _ => super.updateProgressBar(id, bar)
+        case _ => super.setData(id, bar)
     }
 }

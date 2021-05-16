@@ -18,7 +18,7 @@ import scala.jdk.CollectionConverters._
 
 trait ILightMicroblockMixinMarker {}
 
-class LightMicroMaterial(val block:Supplier[Block]) extends BlockMicroMaterial(block.get().getDefaultState) with ILightMicroblockMixinMarker
+class LightMicroMaterial(val block:Supplier[Block]) extends BlockMicroMaterial(block.get().defaultBlockState()) with ILightMicroblockMixinMarker
 {
     def getLightColor:Int = state.getBlock.asInstanceOf[IllumarLampBlock].colour
 }

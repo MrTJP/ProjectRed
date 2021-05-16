@@ -10,30 +10,19 @@ import codechicken.lib.texture.TextureUtils
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.IVertexBuilder
 import mrtjp.core.fx._
-import net.minecraft.client.particle.IParticleRenderType
+import net.minecraft.client.particle.{IParticleRenderType, Particle}
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{ActiveRenderInfo, BufferBuilder}
+import net.minecraft.client.world.ClientWorld
 import net.minecraft.world.World
 import org.lwjgl.opengl.GL11
 
-class BeamPulse2(w:World) extends CoreParticle(w) with TAlphaParticle with TColourParticle with TPositionedParticle with TTargetParticle with TTextureParticle
+class BeamPulse2(w:ClientWorld) extends CoreParticle(w) with TAlphaParticle with TColourParticle with TPositionedParticle with TTargetParticle with TTextureParticle
 {
     texture = "projectred-core:textures/particles/beam1.png"
     setSize(0.02F, 0.02F)
 
     var flareTexture = "projectred-core:textures/particles/beamflare.png"
-
-    override def x = posX
-    override def y = posY
-    override def z = posZ
-
-    override def px = prevPosX
-    override def py = prevPosY
-    override def pz = prevPosZ
-
-    override def px_=(x:Double){prevPosX = x}
-    override def py_=(y:Double){prevPosY = y}
-    override def pz_=(z:Double){prevPosZ = z}
 
     private var s:ParticleAction = null
     def doPulse(r:Double, g:Double, b:Double):Unit = {
@@ -47,8 +36,8 @@ class BeamPulse2(w:World) extends CoreParticle(w) with TAlphaParticle with TColo
     }
 
 
-    override def renderParticle(buffer:IVertexBuilder, renderInfo:ActiveRenderInfo, frame:Float):Unit = {
-        super.renderParticle(buffer, renderInfo, frame)
+    override def render(buffer:IVertexBuilder, renderInfo:ActiveRenderInfo, frame:Float):Unit = {
+        super.render(buffer, renderInfo, frame)
 
         TextureUtils.changeTexture(texture)
         val var9 = 1.0F
@@ -78,9 +67,9 @@ class BeamPulse2(w:World) extends CoreParticle(w) with TAlphaParticle with TColo
         depthMask(false)
         color4f(1.0F, 1.0F, 1.0F, 1.0F)
 
-        val xx = px+dx*frame-renderInfo.getProjectedView.x
-        val yy = py+dy*frame-renderInfo.getProjectedView.y
-        val zz = pz+dz*frame-renderInfo.getProjectedView.z
+        val xx = xo+dx*frame-renderInfo.getPosition.x
+        val yy = yo+dy*frame-renderInfo.getPosition.y
+        val zz = zo+dz*frame-renderInfo.getPosition.z
         translated(xx, yy, zz)
 
         rotatef(90.0F, 1.0F, 0.0F, 0.0F)
@@ -106,10 +95,10 @@ class BeamPulse2(w:World) extends CoreParticle(w) with TAlphaParticle with TColo
             rs.reset()
             rs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX, buffer.asInstanceOf[BufferBuilder])
 
-            buffer.pos(var44, var29, 0.0D).color(r, g, b, a).tex(var33, var37).endVertex()
-            buffer.pos(var44, 0.0D, 0.0D).color(r, g, b, a).tex(var33, var35).endVertex()
-            buffer.pos(var17, 0.0D, 0.0D).color(r, g, b, a).tex(var31, var35).endVertex()
-            buffer.pos(var17, var29, 0.0D).color(r, g, b, a).tex(var31, var37).endVertex()
+            buffer.vertex(var44, var29, 0.0D).color(r, g, b, a).uv(var33, var37).endVertex()
+            buffer.vertex(var44, 0.0D, 0.0D).color(r, g, b, a).uv(var33, var35).endVertex()
+            buffer.vertex(var17, 0.0D, 0.0D).color(r, g, b, a).uv(var31, var35).endVertex()
+            buffer.vertex(var17, var29, 0.0D).color(r, g, b, a).uv(var31, var37).endVertex()
 
             rs.draw()
         }

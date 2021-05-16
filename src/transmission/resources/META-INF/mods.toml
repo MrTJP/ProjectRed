@@ -1,6 +1,7 @@
 modLoader="scorge"
 loaderVersion="[3.1,)"
 issueTrackerURL="https://github.com/MrTJP/ProjectRed"
+license="RPSL"
 
 [[mods]]
     modId="projectred-transmission"
@@ -23,7 +24,7 @@ Redstone. The way it was meant to be.
 [[dependencies.projectred-transmission]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15.2]"
+    versionRange="[1.16.4]"
     ordering="NONE"
     side="BOTH"
 [[dependencies.projectred-transmission]]

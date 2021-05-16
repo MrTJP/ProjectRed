@@ -6,12 +6,14 @@
 package mrtjp.core.gui
 
 import codechicken.lib.colour.EnumColour
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import mrtjp.core.vec.{Point, Rect, Size}
 import net.minecraft.client.gui.AbstractGui
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.item.ItemStack
+import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.fml.client.gui.GuiUtils
 
 import scala.jdk.CollectionConverters._
@@ -45,7 +47,7 @@ class TabNode(wMin:Int, hMin:Int, wMax:Int, hMax:Int, val color:Int) extends TNo
     var active = false
     def isOpen = active && size.width==wMax && size.height==hMax
 
-    override def drawBack_Impl(mouse:Point, rframe:Float)
+    override def drawBack_Impl(stack:MatrixStack, mouse:Point, rframe:Float)
     {
         val w = if (active) wMax else wMin
         val h = if (active) hMax else hMin
@@ -55,41 +57,41 @@ class TabNode(wMin:Int, hMin:Int, wMax:Int, hMax:Int, val color:Int) extends TNo
 
         size = Size(currentW.round.toInt, currentH.round.toInt)
 
-        drawBox()
-        drawIcon()
+        drawBox(stack)
+        drawIcon(stack)
         if (isOpen)
         {
-            drawTab()
+            drawTab(stack)
             ourChildren.foreach(_.hidden = false)
         }
         else ourChildren.foreach(_.hidden = true)
     }
 
-    override def drawFront_Impl(mouse:Point, rframe:Float)
+    override def drawFront_Impl(stack:MatrixStack, mouse:Point, rframe:Float)
     {
         if (rayTest(mouse))
         {
             val list = ListBuffer[String]()
             buildToolTip(list)
             val root = getRoot
-            GuiUtils.drawHoveringText(list.asJava, mouse.x+12, mouse.y-12, root.width, root.height, -1, getFontRenderer)
+            GuiUtils.drawHoveringText(stack, list.map(new StringTextComponent(_)).asJava, mouse.x+12, mouse.y-12, root.width, root.height, -1, getFontRenderer)
         }
     }
 
-    def drawTab(){}
+    def drawTab(stack:MatrixStack){}
 
-    def drawIcon(){}
+    def drawIcon(stack:MatrixStack){}
 
     def buildToolTip(list:ListBuffer[String]){}
 
-    def drawBox()
+    def drawBox(stack:MatrixStack)
     {
         val r = (color>>16&255)/255.0F
         val g = (color>>8&255)/255.0F
         val b = (color&255)/255.0F
         RenderSystem.color4f(r, g, b, 1)
 
-        GuiLib.drawGuiBox(position.x, position.y, size.width, size.height, 0)
+        GuiLib.drawGuiBox(stack, position.x, position.y, size.width, size.height, 0)
     }
 
     override def mouseClicked_Impl(p:Point, button:Int, consumed:Boolean) =
@@ -111,16 +113,16 @@ trait TStackTab extends TabNode
     /** The ItemStack to render as the overlay. */
     var iconStack:ItemStack = ItemStack.EMPTY
 
-    abstract override def drawIcon()
+    abstract override def drawIcon(stack:MatrixStack)
     {
-        super.drawIcon()
+        super.drawIcon(stack)
         RenderSystem.color4f(1, 1, 1, 1)
         RenderSystem.enableRescaleNormal()
-        mcInst.getItemRenderer.zLevel = (zPosition+25).toFloat
-        mcInst.getItemRenderer.renderItemAndEffectIntoGUI(iconStack, position.x+3, position.y+3)
+        mcInst.getItemRenderer.blitOffset = (zPosition+25).toFloat
+        mcInst.getItemRenderer.renderGuiItem(iconStack, position.x+3, position.y+3)
         RenderSystem.disableRescaleNormal()
-        RenderSystem.disableLighting()
-        RenderHelper.disableStandardItemLighting()
+//        RenderSystem.disableLighting()
+//        RenderHelper.disableStandardItemLighting()
     }
 }
 
@@ -132,10 +134,10 @@ trait TIconTab extends TabNode
     /** The sprite to render as the overlay. */
     var icon:TextureAtlasSprite = null
 
-    abstract override def drawIcon()
+    abstract override def drawIcon(stack:MatrixStack)
     {
-        super.drawIcon()
-        AbstractGui.blit(position.x+3, position.x+3, getBlitOffset, 16, 16, icon)
+        super.drawIcon(stack)
+        AbstractGui.blit(stack, position.x+3, position.x+3, getBlitOffset, 16, 16, icon)
     }
 }
 

@@ -17,18 +17,16 @@ import codechicken.microblock.FaceMicroFactory
 import codechicken.multipart.api.part.{ITickablePart, TMultiPart}
 import codechicken.multipart.api.{ItemMultiPart, MultiPartType}
 import codechicken.multipart.util.PartRayTraceResult
-import com.google.common.collect.{ImmutableMap, ImmutableSet}
+import com.google.common.collect.ImmutableSet
 import com.google.gson.{JsonDeserializationContext, JsonObject}
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.datafixers.util.Pair
-import mrtjp.core.world.Messenger
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
-import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType
 import net.minecraft.client.renderer.model._
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
-import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType, TransformationMatrix}
+import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
 import net.minecraft.item.{Item, ItemStack, ItemUseContext}
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.resources.IResourceManager
@@ -82,7 +80,7 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
     }
 
     override def tick():Unit = {
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             cond.update()
             if (cond.voltage() < 100.0) {
                 val I = 2.5*heightMultiplier*timeOfDayMultiplier*sideMultiplier*rainMultiplier*visibilityMultiplier
@@ -106,16 +104,16 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
         case 4|5 => 0.3
     }
 
-    def rainMultiplier:Double = 1.0-world.rainingStrength
+    def rainMultiplier:Double = 1.0-world.rainLevel
 
     def visibilityMultiplier:Double =
         if (tile.getSlottedPart(1) != null) 0.0
         else if (world.canSeeSky(pos)) 1.0
-        else if (world.canSeeSky(pos.up()) && !world.getBlockState(pos.up).getMaterial.isOpaque) 0.7
+        else if (world.canSeeSky(pos.above()) && !world.getBlockState(pos.above()).getMaterial.isSolidBlocking) 0.7
         else 0.0
 
     override def renderStatic(layer:RenderType, ccrs:CCRenderState):Boolean = {
-        if (layer == null || (layer == RenderType.getCutout && Configurator.staticGates)) {
+        if (layer == null || (layer == RenderType.cutout() && Configurator.staticGates)) {
             ccrs.setBrightness(world, this.pos)
             RenderSolarPanel.render(ccrs, side, Vector3.ZERO)
             true
@@ -125,7 +123,7 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
 
     @OnlyIn(Dist.CLIENT)
     override def getBreakingIcon(hit:PartRayTraceResult):TextureAtlasSprite =
-        getBrokenIcon(hit.getFace.ordinal)
+        getBrokenIcon(hit.getDirection.ordinal)
 
     @OnlyIn(Dist.CLIENT)
     override def getBrokenIcon(side:Int):TextureAtlasSprite =
@@ -149,12 +147,12 @@ object SolarPanelPart
     }
 }
 
-class ItemSolarPanel extends ItemMultiPart(new Item.Properties().group(ExpansionContent.expansionItemGroup))
+class ItemSolarPanel extends ItemMultiPart(new Item.Properties().tab(ExpansionContent.expansionItemGroup))
 {
     override def newPart(context:ItemUseContext):TMultiPart = {
-        val side = context.getFace
-        val onPos = context.getPos.offset(side.getOpposite)
-        if (!PRLib.canPlaceGateOnSide(context.getWorld, onPos, side)) {
+        val side = context.getClickedFace
+        val onPos = context.getClickedPos.relative(side.getOpposite)
+        if (!PRLib.canPlaceGateOnSide(context.getLevel, onPos, side)) {
             null
         } else {
             val part = ExpansionContent.solarPanelPart.get.createPartServer(null).asInstanceOf[SolarPanelPart]
@@ -199,10 +197,10 @@ object RenderSolarPanel extends IItemRenderer with IIconRegister
         reg.registerSprite(new ResourceLocation(ProjectRedExpansion.MOD_ID, "block/solar_panel/bottom"), bottom = _)
     }
 
-    override def isAmbientOcclusion = true
+    override def useAmbientOcclusion = true
     override def isGui3d = true
-    override def getTransforms:ImmutableMap[TransformType, TransformationMatrix] = TransformUtils.DEFAULT_BLOCK
-    override def func_230044_c_() = true
+    override def getModelTransform:IModelTransform = TransformUtils.DEFAULT_BLOCK
+    override def usesBlockLight() = true
 
     override def renderItem(stack:ItemStack, transformType:ItemCameraTransforms.TransformType, mStack:MatrixStack, getter:IRenderTypeBuffer, packedLight:Int, packedOverlay:Int):Unit =
     {
@@ -213,7 +211,7 @@ object RenderSolarPanel extends IItemRenderer with IIconRegister
         ccrs.reset()
         ccrs.brightness = packedLight
         ccrs.overlay = packedOverlay
-        ccrs.bind(RenderType.getCutout, getter, mStack)
+        ccrs.bind(RenderType.cutout(), getter, mStack)
         models(0).render(ccrs, iconT)
     }
 
@@ -222,7 +220,7 @@ object RenderSolarPanel extends IItemRenderer with IIconRegister
 
         override def getTextures(owner: IModelConfiguration, modelGetter: Function[ResourceLocation, IUnbakedModel], missingTextureErrors: util.Set[Pair[String, String]]) = Collections.emptyList()
 
-        override def bake(owner: IModelConfiguration, bakery: ModelBakery, spriteGetter: Function[Material, TextureAtlasSprite], modelTransform: IModelTransform, overrides: ItemOverrideList, modelLocation: ResourceLocation) = RenderSolarPanel
+        override def bake(owner: IModelConfiguration, bakery: ModelBakery, spriteGetter: Function[RenderMaterial, TextureAtlasSprite], modelTransform: IModelTransform, overrides: ItemOverrideList, modelLocation: ResourceLocation) = RenderSolarPanel
 
         // Following 2 methods included because of compile issues
         override def onResourceManagerReload(resourceManager:IResourceManager, resourcePredicate:Predicate[IResourceType]):Unit = {}

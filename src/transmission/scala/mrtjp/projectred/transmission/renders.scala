@@ -3,7 +3,7 @@ package mrtjp.projectred.transmission
 import codechicken.lib.render._
 import codechicken.lib.render.item.IItemRenderer
 import codechicken.lib.render.pipeline.IVertexOperation
-import codechicken.lib.util.{SneakyUtils, TransformUtils}
+import codechicken.lib.util.TransformUtils
 import codechicken.lib.vec.uv.IconTransformation
 import com.google.gson.{JsonDeserializationContext, JsonObject}
 import com.mojang.blaze3d.matrix.MatrixStack
@@ -17,20 +17,20 @@ import net.minecraft.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.model.geometry.IModelGeometry
 import net.minecraftforge.client.model.{IModelConfiguration, IModelLoader}
-import net.minecraftforge.resource.{IResourceType, SelectiveReloadStateHandler}
+import net.minecraftforge.resource.IResourceType
 
 import java.util
 import java.util.Collections
 import java.util.function.{Predicate, Function => JFunc}
 
 trait TWireItemRenderCommon extends IItemRenderer {
-    override def isAmbientOcclusion = false
+    override def useAmbientOcclusion = false
 
     override def isGui3d = true
 
-    override def getTransforms = TransformUtils.DEFAULT_BLOCK
+    override def getModelTransform:IModelTransform = TransformUtils.DEFAULT_BLOCK
 
-    override def func_230044_c_ = true
+    override def usesBlockLight = true
 
     override def renderItem(stack: ItemStack, transformType: TransformType, mStack: MatrixStack, getter: IRenderTypeBuffer, packedLight: Int, packedOverlay: Int) = {
         stack.getItem match {
@@ -46,7 +46,7 @@ trait TWireItemRenderCommon extends IItemRenderer {
 
     def renderWireInventory(stack: ItemStack, wireType: WireType, ccrs: CCRenderState, transformType: TransformType, mStack: MatrixStack, renderTypes: IRenderTypeBuffer) {
 
-        ccrs.bind(RenderType.getCutout, renderTypes, mStack)
+        ccrs.bind(RenderType.cutout(), renderTypes, mStack)
         doRender(wireType.getThickness, wireType.getItemColour << 8 | 0xFF, ccrs, new IconTransformation(wireType.getTextures.get(0)))
     }
 
@@ -72,7 +72,7 @@ class WireModelLoader extends IModelLoader[WireModelLoader] with IModelGeometry[
 
     override def getTextures(owner: IModelConfiguration, modelGetter: JFunc[ResourceLocation, IUnbakedModel], missingTextureErrors: util.Set[Pair[String, String]]) = Collections.emptyList()
 
-    override def bake(owner: IModelConfiguration, bakery: ModelBakery, spriteGetter: JFunc[Material, TextureAtlasSprite], modelTransform: IModelTransform, overrides: ItemOverrideList, modelLocation: ResourceLocation) = WireItemRenderer
+    override def bake(owner: IModelConfiguration, bakery: ModelBakery, spriteGetter: JFunc[RenderMaterial, TextureAtlasSprite], modelTransform: IModelTransform, overrides: ItemOverrideList, modelLocation: ResourceLocation) = WireItemRenderer
 
     // Following 2 methods included because of compile issues
     override def onResourceManagerReload(resourceManager:IResourceManager, resourcePredicate:Predicate[IResourceType]):Unit = {}
@@ -84,7 +84,7 @@ class FramedWireModelLoader extends IModelLoader[FramedWireModelLoader] with IMo
 
     override def getTextures(owner: IModelConfiguration, modelGetter: JFunc[ResourceLocation, IUnbakedModel], missingTextureErrors: util.Set[Pair[String, String]]) = Collections.emptyList()
 
-    override def bake(owner: IModelConfiguration, bakery: ModelBakery, spriteGetter: JFunc[Material, TextureAtlasSprite], modelTransform: IModelTransform, overrides: ItemOverrideList, modelLocation: ResourceLocation) = FramedWireItemRenderer
+    override def bake(owner: IModelConfiguration, bakery: ModelBakery, spriteGetter: JFunc[RenderMaterial, TextureAtlasSprite], modelTransform: IModelTransform, overrides: ItemOverrideList, modelLocation: ResourceLocation) = FramedWireItemRenderer
 
     // Following 2 methods included because of compile issues
     override def onResourceManagerReload(resourceManager:IResourceManager, resourcePredicate:Predicate[IResourceType]):Unit = {}

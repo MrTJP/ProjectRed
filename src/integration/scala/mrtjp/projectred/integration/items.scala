@@ -15,25 +15,18 @@ import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
 import java.util.{List => JList}
 
-class ItemPartGate(val gateType:GateType) extends ItemMultiPart(new Item.Properties().group(IntegrationContent.integrationItemGroup))
+class ItemPartGate(val gateType:GateType) extends ItemMultiPart(new Item.Properties().tab(IntegrationContent.integrationItemGroup))
 {
-    var infoBuilderFunc = {(stack:ItemStack, l:JList[ITextComponent]) => }
-
     override def newPart(context:ItemUseContext) = {
-        val side = context.getFace
-        val onPos = context.getPos.offset(side.getOpposite)
-        if (!PRLib.canPlaceGateOnSide(context.getWorld, onPos, side)) {
+        val side = context.getClickedFace
+        val onPos = context.getClickedPos.relative(side.getOpposite)
+        if (!PRLib.canPlaceGateOnSide(context.getLevel, onPos, side)) {
             null
         } else {
             val gatePart = gateType.getPartType.createPartServer(null).asInstanceOf[GatePart]
             gatePart.preparePlacement(context.getPlayer, onPos, side.ordinal())
             gatePart
         }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    override def addInformation(stack:ItemStack, worldIn:World, tooltip:JList[ITextComponent], flagIn:ITooltipFlag) {
-        infoBuilderFunc(stack, tooltip)
     }
 }
 

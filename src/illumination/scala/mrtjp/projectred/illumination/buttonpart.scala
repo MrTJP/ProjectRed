@@ -26,7 +26,7 @@ class LightButtonPart(partType:MultiPartType[_], colour:Int)
 
     override def activate(player:PlayerEntity, hit:PartRayTraceResult, item:ItemStack, hand:Hand):ActionResultType = {
         if (!item.isEmpty && item.getItem.isInstanceOf[IScrewdriver] && item.getItem.asInstanceOf[IScrewdriver].canUse(player, item)) {
-            if (!world.isRemote) {
+            if (!world.isClientSide) {
                 inverted = !inverted
                 sendUpdate(writeDesc)
                 item.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, item)

@@ -3,7 +3,7 @@ package mrtjp.projectred.expansion.item
 import mrtjp.projectred.expansion.ExpansionContent
 import net.minecraft.item.Item
 
-class EmptyBatteryItem extends Item(new Item.Properties().group(ExpansionContent.expansionItemGroup)) with TChargableBatteryItem
+class EmptyBatteryItem extends Item(new Item.Properties().tab(ExpansionContent.expansionItemGroup)) with TChargableBatteryItem
 {
     override def isEmpty = true
 

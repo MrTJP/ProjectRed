@@ -23,13 +23,13 @@ import java.util.function.{Predicate, Function => JFunc}
 
 object GateItemRenderer extends IItemRenderer
 {
-    override def isAmbientOcclusion = true
+    override def useAmbientOcclusion():Boolean = true
 
-    override def isGui3d = true
+    override def isGui3d:Boolean = true
 
-    override def getTransforms = TransformUtils.DEFAULT_BLOCK
+    override def getModelTransform = TransformUtils.DEFAULT_BLOCK
 
-    override def func_230044_c_() = true
+    override def usesBlockLight():Boolean = true
 
     override def renderItem(stack:ItemStack, transformType:ItemCameraTransforms.TransformType, mStack:MatrixStack, getter:IRenderTypeBuffer, packedLight:Int, packedOverlay:Int):Unit =
     {
@@ -39,10 +39,12 @@ object GateItemRenderer extends IItemRenderer
                 ccrs.reset()
                 ccrs.brightness = packedLight
                 ccrs.overlay = packedOverlay
-                ccrs.bind(RenderType.getCutout, getter, mStack)
+                ccrs.bind(RenderType.cutout(), getter, mStack)
                 RenderGate.renderInv(stack, new RedundantTransformation,gate.gateType, ccrs)
         }
     }
+
+
 
     //    override def renderItem(item:ItemStack, transformType: TransformType)
     //    {
@@ -67,7 +69,7 @@ object GateItemRenderer extends IItemRenderer
 
         override def getTextures(owner: IModelConfiguration, modelGetter: JFunc[ResourceLocation, IUnbakedModel], missingTextureErrors: util.Set[Pair[String, String]]) = Collections.emptyList()
 
-        override def bake(owner: IModelConfiguration, bakery: ModelBakery, spriteGetter: JFunc[Material, TextureAtlasSprite], modelTransform: IModelTransform, overrides: ItemOverrideList, modelLocation: ResourceLocation) = GateItemRenderer
+        override def bake(owner: IModelConfiguration, bakery: ModelBakery, spriteGetter: JFunc[RenderMaterial, TextureAtlasSprite], modelTransform: IModelTransform, overrides: ItemOverrideList, modelLocation: ResourceLocation) = GateItemRenderer
 
         // Following 2 methods included because of compile issues
         override def onResourceManagerReload(resourceManager:IResourceManager, resourcePredicate:Predicate[IResourceType]):Unit = {}

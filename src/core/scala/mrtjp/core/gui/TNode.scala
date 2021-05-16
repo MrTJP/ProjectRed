@@ -5,6 +5,7 @@
  */
 package mrtjp.core.gui
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import mrtjp.core.vec.{Point, Rect, Size}
 import net.minecraft.client.Minecraft
@@ -75,9 +76,9 @@ trait TNode extends AbstractGui
     var userInteractionEnabled = true
 
     def mcInst:Minecraft = Minecraft.getInstance()
-    def soundHandler = mcInst.getSoundHandler
+    def soundHandler = mcInst.getSoundManager
     def renderEngine:TextureManager = mcInst.textureManager
-    def getFontRenderer:FontRenderer = mcInst.fontRenderer
+    def getFontRenderer:FontRenderer = mcInst.font
 
     /** For checking if this is the root node in the tree. */
     def isRoot = this.isInstanceOf[NodeGui[_]]
@@ -344,36 +345,36 @@ trait TNode extends AbstractGui
         operate2(consumed){keyPressed_Impl(ch, keycode, _)}{_.keyPressed(ch, keycode, _)}
     }
 
-    protected[gui] def drawBack(mouse:Point, rframe:Float)
+    protected[gui] def drawBack(stack:MatrixStack, mouse:Point, rframe:Float)
     {
         if (!hidden)
         {
             val dp = mouse-position
             for (n <- familyByZ)
             {
-                if (n == this) drawBack_Impl(mouse, rframe)
+                if (n == this) drawBack_Impl(stack, mouse, rframe)
                 else
                 {
                     translateTo()
-                    n.drawBack(dp, rframe)
+                    n.drawBack(stack, dp, rframe)
                     translateFrom()
                 }
             }
         }
     }
 
-    protected[gui] def drawFront(mouse:Point, rframe:Float)
+    protected[gui] def drawFront(stack:MatrixStack, mouse:Point, rframe:Float)
     {
         if (!hidden)
         {
             val dp = mouse-position
             for (n <- familyByZ)
             {
-                if (n == this) drawFront_Impl(mouse, rframe)
+                if (n == this) drawFront_Impl(stack, mouse, rframe)
                 else
                 {
                     translateTo()
-                    n.drawFront(dp, rframe)
+                    n.drawFront(stack, dp, rframe)
                     translateFrom()
                 }
             }
@@ -381,7 +382,7 @@ trait TNode extends AbstractGui
     }
 
     //todo move to NodeGui.
-    protected[gui] def rootDrawBack(mouse:Point, rframe:Float)
+    protected[gui] def rootDrawBack(stack:MatrixStack, mouse:Point, rframe:Float)
     {
         if (!hidden)
         {
@@ -389,23 +390,23 @@ trait TNode extends AbstractGui
             val dp = mouse-position
             for (n <- familyByZ)
             {
-                if (n == this) drawBack_Impl(mouse, rframe)
-                else n.drawBack(dp, rframe)
+                if (n == this) drawBack_Impl(stack, mouse, rframe)
+                else n.drawBack(stack, dp, rframe)
             }
             translateFrom()
         }
     }
 
     //todo move to NodeGui.
-    protected[gui] def rootDrawFront(mouse:Point, rframe:Float)
+    protected[gui] def rootDrawFront(stack:MatrixStack, mouse:Point, rframe:Float)
     {
         if (!hidden)
         {
             val dp = mouse-position
             for (n <- familyByZ)
             {
-                if (n == this) drawFront_Impl(mouse, rframe)
-                else n.drawFront(dp, rframe)
+                if (n == this) drawFront_Impl(stack, mouse, rframe)
+                else n.drawFront(stack, dp, rframe)
             }
         }
     }
@@ -507,7 +508,7 @@ trait TNode extends AbstractGui
       * @param mouse The current position of the mouse, relative to the parent.
       * @param rframe The partial frame until the next frame.
       */
-    def drawBack_Impl(mouse:Point, rframe:Float){}
+    def drawBack_Impl(stack:MatrixStack, mouse:Point, rframe:Float){}
 
     /**
       * Called to draw the background. All drawing is done relative to the parent, as GL11 is translated to the
@@ -518,5 +519,5 @@ trait TNode extends AbstractGui
       * @param mouse The current position of the mouse, relative to the parent.
       * @param rframe The partial frame until the next frame.
       */
-    def drawFront_Impl(mouse:Point, rframe:Float){}
+    def drawFront_Impl(stack:MatrixStack, mouse:Point, rframe:Float){}
 }

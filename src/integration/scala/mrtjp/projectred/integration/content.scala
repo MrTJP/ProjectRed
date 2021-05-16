@@ -10,8 +10,8 @@ import mrtjp.projectred.ProjectRedIntegration
 import net.minecraft.block.Blocks
 import net.minecraft.data.DataGenerator
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.client.model.generators.ExistingFileHelper
 import net.minecraftforge.common.Tags
+import net.minecraftforge.common.data.ExistingFileHelper
 import net.minecraftforge.eventbus.api.{IEventBus, SubscribeEvent}
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent
 import net.minecraftforge.registries.{DeferredRegister, ForgeRegistries}

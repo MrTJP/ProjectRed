@@ -7,6 +7,7 @@ package mrtjp.projectred.integration
 
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.texture.TextureUtils
+import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.core.gui.{MCButtonNode, NodeGui}
 import mrtjp.core.vec.{Point, Size}
 import mrtjp.projectred.ProjectRedIntegration
@@ -41,14 +42,14 @@ class GuiTimer(part:ITimerGuiLogic) extends NodeGui(w = 256, h = 55, title = new
         createButton(211, 25, 40, 20, "+10s", 200)
     }
 
-    override def drawBack_Impl(mouse:Point, frame:Float)
+    override def drawBack_Impl(stack:MatrixStack, mouse:Point, frame:Float)
     {
         TextureUtils.changeTexture(GuiTimer.background)
-        blit(0, 0, 0, 0, size.width, size.height)
+        blit(stack, 0, 0, 0, 0, size.width, size.height)
 
         val s = "Timer interval: "+"%.2f".format(part.getTimerMax*0.05)+"s"
-        val sw = getFontRenderer.getStringWidth(s)
-        getFontRenderer.drawString(s, (xSize-sw)/2, 8, 0x404040)
+        val sw = getFontRenderer.width(s)
+        getFontRenderer.draw(stack, s, (getXSize-sw)/2, 8, 0x404040)
     }
 }
 
@@ -115,24 +116,24 @@ class GuiCounter(part:ICounterGuiLogic) extends NodeGui(w = 256, h = 145, title 
         }
     }
 
-    override def drawBack_Impl(mouse:Point, frame:Float) =
+    override def drawBack_Impl(stack:MatrixStack, mouse:Point, frame:Float) =
     {
         TextureUtils.changeTexture(GuiCounter.background)
-        blit(0, 0, 0, 0, size.width, size.height)
+        blit(stack, 0, 0, 0, 0, size.width, size.height)
 
         var s = "Maximum: "+part.getCounterMax
-        getFontRenderer.drawString(s, (xSize-getFontRenderer.getStringWidth(s))/2, 5, 0x404040)
+        getFontRenderer.draw(stack, s, (getXSize-getFontRenderer.width(s))/2, 5, 0x404040)
         s = "Increment: "+part.getCounterIncr
-        getFontRenderer.drawString(s, (xSize-getFontRenderer.getStringWidth(s))/2, 45, 0x404040)
+        getFontRenderer.draw(stack, s, (getXSize-getFontRenderer.width(s))/2, 45, 0x404040)
         s = "Decrement: "+part.getCounterDecr
-        getFontRenderer.drawString(s, (xSize-getFontRenderer.getStringWidth(s))/2, 85, 0x404040)
+        getFontRenderer.draw(stack, s, (getXSize-getFontRenderer.width(s))/2, 85, 0x404040)
         s = "State: "+part.getCounterValue
-        getFontRenderer.drawString(s, (xSize-getFontRenderer.getStringWidth(s))/2, 125, 0x404040)
+        getFontRenderer.draw(stack, s, (getXSize-getFontRenderer.width(s))/2, 125, 0x404040)
     }
 
     override def update_Impl()
     {
-        if (part.tile == null) mcInst.player.closeScreen()
+        if (part.tile == null) mcInst.player.closeContainer()
     }
 }
 

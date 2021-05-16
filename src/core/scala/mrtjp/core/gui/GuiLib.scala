@@ -7,6 +7,7 @@ package mrtjp.core.gui
 
 import codechicken.lib.render.CCRenderState
 import codechicken.lib.texture.TextureUtils
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.gui.AbstractGui
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -84,10 +85,10 @@ object GuiLib
 
         val rs = CCRenderState.instance()
         val vb = rs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-        vb.pos(x, y+18, 0).tex(0, 1).endVertex()
-        vb.pos(x+18, y+18, 0).tex(1, 1).endVertex()
-        vb.pos(x+18, y, 0).tex(1, 0).endVertex()
-        vb.pos(x, y, 0).tex(0, 0).endVertex()
+        vb.vertex(x, y+18, 0).uv(0, 1).endVertex()
+        vb.vertex(x+18, y+18, 0).uv(1, 1).endVertex()
+        vb.vertex(x+18, y, 0).uv(1, 0).endVertex()
+        vb.vertex(x, y, 0).uv(0, 0).endVertex()
         rs.draw()
     }
 
@@ -100,9 +101,9 @@ object GuiLib
       * @param height The height of the box.
       * @param zLevel The z-position of the box.
       */
-    def drawGuiBox(x:Int, y:Int, width:Int, height:Int, zLevel:Float)
+    def drawGuiBox(stack:MatrixStack, x:Int, y:Int, width:Int, height:Int, zLevel:Float)
     {
-        drawGuiBox(x, y, width, height, zLevel, true, true, true, true)
+        drawGuiBox(stack, x, y, width, height, zLevel, true, true, true, true)
     }
 
     /**
@@ -119,7 +120,7 @@ object GuiLib
       * @param bottom True if should render the bottom edge.
       * @param right True if should render the right edge.
       */
-    def drawGuiBox(x:Int, y:Int, width:Int, height:Int, zLevel:Float, top:Boolean, left:Boolean, bottom:Boolean, right:Boolean)
+    def drawGuiBox(stack:MatrixStack, x:Int, y:Int, width:Int, height:Int, zLevel:Float, top:Boolean, left:Boolean, bottom:Boolean, right:Boolean)
     {
 /*        val u = 1
         val v = 29
@@ -183,7 +184,7 @@ object GuiLib
       * @param h The height of the bar to be rendered.
       * @param prog The percentage progress of the bar, 100 being full at the top and 0 being empty at the bottom.
       */
-    def drawVerticalTank(gui:AbstractGui, x:Int, y:Int, u:Int, v:Int, w:Int, h:Int, prog:Int):Unit = {
-        gui.blit(x, y+h-prog, u, v+h-prog, w, prog)
+    def drawVerticalTank(stack:MatrixStack, gui:AbstractGui, x:Int, y:Int, u:Int, v:Int, w:Int, h:Int, prog:Int):Unit = {
+        gui.blit(stack, x, y+h-prog, u, v+h-prog, w, prog)
     }
 }

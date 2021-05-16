@@ -153,17 +153,17 @@ private object ClientHandler extends IClientPacketHandler
     }
 
     private def handleOpenTimerGuiMessage(mc:Minecraft, data:MCDataInput) {
-        readPartIndex(mc.world, data) match  {
+        readPartIndex(mc.level, data) match  {
             case gate:ITimerGuiLogic =>
-                mc.displayGuiScreen(new GuiTimer(gate))
+                mc.setScreen(new GuiTimer(gate))
             case _ =>
         }
     }
 
     private def handleOpenCounterGuiMessage(mc:Minecraft, data:MCDataInput) {
-        readPartIndex(mc.world, data) match  {
+        readPartIndex(mc.level, data) match  {
             case gate:ICounterGuiLogic =>
-                mc.displayGuiScreen(new GuiCounter(gate))
+                mc.setScreen(new GuiCounter(gate))
             case _ =>
         }
     }
@@ -173,8 +173,8 @@ private object ServerHandler extends IServerPacketHandler
 {
     override def handlePacket(packet: PacketCustom, sender: ServerPlayerEntity, handler: IServerPlayNetHandler):Unit = {
         packet.getType match  {
-            case INCR_TIMER_FROM_CLIENT => incrTimer(sender.world, packet)
-            case INCR_COUNTER_FROM_CLIENT => incrCounter(sender.world, packet)
+            case INCR_TIMER_FROM_CLIENT => incrTimer(sender.level, packet)
+            case INCR_COUNTER_FROM_CLIENT => incrCounter(sender.level, packet)
         }
     }
 

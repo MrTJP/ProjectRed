@@ -230,7 +230,7 @@ class Repeater extends ComboGatePart(GateType.REPEATER)
     // Allow configuring without screwdriver
     override def gateLogicActivate(player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult):Boolean = {
         if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver]) {
-            if (!world.isRemote) configure()
+            if (!world.isClientSide) configure()
             true
         } else
             false
@@ -284,10 +284,10 @@ class LightSensor extends ComboGatePart(GateType.LIGHT_SENSOR)
     override def gateLogicSetup(){ gateLogicOnTick() }
 
     override def gateLogicOnTick():Unit = {
-        if (world.isRemote) return
+        if (world.isClientSide) return
 
-        def sky:Int = world.getLightFor(LightType.SKY, pos)-world.getSkylightSubtracted
-        def block:Int = world.getLightFor(LightType.BLOCK, pos)
+        def sky:Int = world.getBrightness(LightType.SKY, pos)-world.getSkyDarken
+        def block:Int = world.getBrightness(LightType.BLOCK, pos)
 
         val newOutput = shape match {
             case 1 => sky
@@ -320,8 +320,8 @@ class RainSensor extends ComboGatePart(GateType.RAIN_SENSOR)
     override def feedbackMask(shape:Int) = 4
 
     override def gateLogicOnTick():Unit = {
-        if (!world.isRemote) {
-            val newOutput = if (world.isRaining && world.canBlockSeeSky(pos)) 4 else 0
+        if (!world.isClientSide) {
+            val newOutput = if (world.isRaining && world.canSeeSky(pos)) 4 else 0
             val oldOutput = state>>4
             if (newOutput != oldOutput) {
                 setState(newOutput<<4|state&0xF)

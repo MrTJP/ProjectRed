@@ -10,7 +10,7 @@ import mrtjp.projectred.core._
 import net.minecraft.entity.player.{PlayerEntity, ServerPlayerEntity}
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.Direction
+import net.minecraft.util.{Direction, Util}
 import net.minecraft.util.text.StringTextComponent
 
 trait IBundledCablePart extends IWirePart with IBundledEmitter
@@ -122,7 +122,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
                     tmpSignal(i.getInsulatedColour) = s.toByte
             case b:IBundledEmitter => BundledCommons.raiseSignal(tmpSignal, b.getBundledSignal(r))
             case t:TileEntity => BundledCommons.raiseSignal(tmpSignal,
-                BundledSignalsLib.getBundledSignalViaInteraction(t.getWorld, t.getPos, Direction.byIndex(r)))
+                BundledSignalsLib.getBundledSignalViaInteraction(t.getLevel, t.getBlockPos, Direction.values()(r)))
             case _ =>
         }
         tmpSignal
@@ -167,13 +167,13 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
             if (s.length == 1) sb.append('0')
             sb.append(s)
         }
-        player.sendMessage(new StringTextComponent(sb.toString()))
+        player.sendMessage(new StringTextComponent(sb.toString), Util.NIL_UUID)
         true
     }
 
     override def test(player: PlayerEntity) =
     {
-        if (!world.isRemote && player.isInstanceOf[ServerPlayerEntity]) {
+        if (!world.isClientSide && player.isInstanceOf[ServerPlayerEntity]) {
             var s = ""
             for (i <- 0 until 16) if (getBundledSignal.apply(i) != 0) s = s+"["+i+"]"
 
@@ -209,9 +209,9 @@ class BundledCablePart(wireType: WireType) extends WirePart(wireType) with TFace
 
     override def calcStraightArray(r:Int) =
     {
-        world.getTileEntity(posOfStraight(r)) match {
+        world.getBlockEntity(posOfStraight(r)) match {
             case ibe:IBundledEmitter => resolveArray(ibe, absoluteDir(rotFromStraight(r)))
-            case t:TileEntity if BundledSignalsLib.isValidInteractionFor(world, t.getPos, Direction.byIndex(rotFromStraight(r))) =>
+            case t:TileEntity if BundledSignalsLib.isValidInteractionFor(world, t.getBlockPos, Direction.values()(rotFromStraight(r))) =>
                 resolveArray(t, absoluteDir(rotFromStraight(r)))
             case _ => super.calcStraightArray(r)
         }
@@ -219,12 +219,12 @@ class BundledCablePart(wireType: WireType) extends WirePart(wireType) with TFace
 
     override def discoverStraightOverride(absDir:Int) =
     {
-        val pos = this.pos.offset(Direction.byIndex(absDir))
-        world.getTileEntity(pos) match {
+        val pos = this.pos.relative(Direction.values()(absDir))
+        world.getBlockEntity(pos) match {
             case b:IMaskedBundledTile => b.canConnectBundled(absDir^1) &&
                     (b.getConnectionMask(absDir^1)&1<<Rotation.rotationTo(absDir, side)) != 0
             case b:IBundledTile => b.canConnectBundled(absDir^1)
-            case _ => BundledSignalsLib.canConnectBundledViaInteraction(world, pos, Direction.byIndex(absDir^1))
+            case _ => BundledSignalsLib.canConnectBundledViaInteraction(world, pos, Direction.values()(absDir^1))
         }
     }
 }
@@ -243,9 +243,9 @@ class FramedBundledCablePart(wireType: WireType) extends FramedWirePart(wireType
 
     override def calcStraightArray(s:Int) =
     {
-        world.getTileEntity(posOfStraight(s)) match {
+        world.getBlockEntity(posOfStraight(s)) match {
             case ibe:IBundledEmitter => resolveArray(ibe, s^1)
-            case t:TileEntity if BundledSignalsLib.isValidInteractionFor(world, t.getPos, Direction.byIndex(s^1)) =>
+            case t:TileEntity if BundledSignalsLib.isValidInteractionFor(world, t.getBlockPos, Direction.values()(s^1)) =>
                 resolveArray(t, s^1)
             case _ => super.calcStraightArray(s)
         }
@@ -253,12 +253,12 @@ class FramedBundledCablePart(wireType: WireType) extends FramedWirePart(wireType
 
     override def discoverStraightOverride(absDir:Int) =
     {
-        val pos = this.pos.offset(Direction.byIndex(absDir))
-        world.getTileEntity(pos) match {
+        val pos = this.pos.relative(Direction.values()(absDir))
+        world.getBlockEntity(pos) match {
             case b:IMaskedBundledTile => b.canConnectBundled(absDir^1) &&
                     (b.getConnectionMask(absDir^1)&0x10) != 0
             case b:IBundledTile => b.canConnectBundled(absDir^1)
-            case _ => BundledSignalsLib.canConnectBundledViaInteraction(world, pos, Direction.byIndex(absDir^1))
+            case _ => BundledSignalsLib.canConnectBundledViaInteraction(world, pos, Direction.values()(absDir^1))
         }
     }
 }

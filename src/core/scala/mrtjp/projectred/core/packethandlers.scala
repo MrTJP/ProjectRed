@@ -35,13 +35,13 @@ object CoreNetwork
 
     def createUpdatePacket(tile:CoreTile):PacketCustom = {
         val packet = new PacketCustom(NET_CHANNEL,
-            if (!tile.getWorld.isRemote) TILE_UPDATE_FROM_SERVER else TILE_UPDATE_FROM_CLIENT)
-        packet.writePos(tile.getPos)
+            if (!tile.getLevel.isClientSide) TILE_UPDATE_FROM_SERVER else TILE_UPDATE_FROM_CLIENT)
+        packet.writePos(tile.getBlockPos)
         packet
     }
 
     private[core] def handleTileUpdate(world:World, input:MCDataInput):Unit = {
-        val tile = world.getTileEntity(input.readPos())
+        val tile = world.getBlockEntity(input.readPos())
         if (tile != null && tile.isInstanceOf[CoreTile])
             tile.asInstanceOf[CoreTile].handleRecievedPacket(input)
     }
@@ -51,7 +51,7 @@ private object ClientHandler extends IClientPacketHandler
 {
     override def handlePacket(packet: PacketCustom, mc: Minecraft, handler: IClientPlayNetHandler):Unit = {
         packet.getType match {
-            case TILE_UPDATE_FROM_SERVER => handleTileUpdate(mc.world, packet)
+            case TILE_UPDATE_FROM_SERVER => handleTileUpdate(mc.level, packet)
             case _ =>
         }
     }
@@ -61,7 +61,7 @@ private object ServerHandler extends IServerPacketHandler
 {
     override def handlePacket(packet: PacketCustom, sender: ServerPlayerEntity, handler: IServerPlayNetHandler):Unit = {
         packet.getType match  {
-            case TILE_UPDATE_FROM_CLIENT => handleTileUpdate(sender.world, packet)
+            case TILE_UPDATE_FROM_CLIENT => handleTileUpdate(sender.level, packet)
             case _ =>
         }
     }

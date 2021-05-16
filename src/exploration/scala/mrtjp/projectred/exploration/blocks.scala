@@ -1,11 +1,11 @@
 package mrtjp.projectred.exploration
 
 import mrtjp.core.math.MathLib
-import net.minecraft.block.{Block, BlockState}
+import net.minecraft.block.{AbstractBlock, Block, BlockState}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IWorldReader
 
-class BlockOre(properties: Block.Properties, minXP: Int = 0, maxXP: Int = 0) extends Block(properties) {
+class BlockOre(properties: AbstractBlock.Properties, minXP: Int = 0, maxXP: Int = 0) extends Block(properties) {
     override def getExpDrop(state: BlockState, world: IWorldReader, pos: BlockPos, fortune: Int, silktouch: Int) =
         if (silktouch == 0) MathLib.randomFromIntRange(minXP to maxXP) else 0
 }

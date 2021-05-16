@@ -79,7 +79,7 @@ trait TFacePowerPart extends TMultiPart with TFaceConnectable with TPowerPartCom
             if ((connMap&1<<id) != 0) getCorner(id) match //corner
             {
                 case p:IPowerConnectable => return p.conductor(rotFromCorner(id))
-                case _ => world.getTileEntity(posOfCorner(id)) match
+                case _ => world.getBlockEntity(posOfCorner(id)) match
                 {
                     case p:IPowerConnectable if outsideCornerEdgeOpen(id) => return p.conductor(absoluteDir(rotFromCorner(id)))
                     case _ =>
@@ -88,7 +88,7 @@ trait TFacePowerPart extends TMultiPart with TFaceConnectable with TPowerPartCom
             else if ((connMap&0x10<<id) != 0) getStraight(id) match //straight
             {
                 case p:IPowerConnectable => return p.conductor(rotFromStraight(id))
-                case _ => world.getTileEntity(posOfStraight(id)) match
+                case _ => world.getBlockEntity(posOfStraight(id)) match
                 {
                     case p:IPowerConnectable => return p.conductor(absoluteDir(rotFromStraight(id)))
                     case _ =>
@@ -121,7 +121,7 @@ trait TCenterPowerPart extends TMultiPart with TCenterConnectable with TPowerPar
             if ((connMap&1<<id) != 0) getStraight(id) match //straight
             {
                 case p:IPowerConnectable => return p.conductor(id^1)
-                case _ => world.getTileEntity(posOfStraight(id)) match {
+                case _ => world.getBlockEntity(posOfStraight(id)) match {
                     case p:IPowerConnectable => return p.conductor(id^1)
                     case _ =>
                 }

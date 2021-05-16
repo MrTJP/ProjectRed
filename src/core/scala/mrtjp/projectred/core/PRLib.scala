@@ -18,18 +18,18 @@ object PRLib
 
     def dropTowardsPlayer(w:World, pos:BlockPos, stack:ItemStack, p:PlayerEntity)
     {
-        if (!w.isRemote && w.getGameRules.getBoolean(GameRules.DO_TILE_DROPS))
+        if (!w.isClientSide && w.getGameRules.getBoolean(GameRules.RULE_DOBLOCKDROPS))
         {
             val bpos = Vector3.fromVec3i(pos)
-            val d = new Vector3(p.getPositionVec).subtract(bpos).normalize()
+            val d = new Vector3(p.position()).subtract(bpos).normalize()
             val vel = d.copy.multiply(8.0)
             val tpos = bpos.add(Vector3.CENTER).add(d.copy.multiply(1.25))
 
             val item = new ItemEntity(w, tpos.x, tpos.y, tpos.z, stack)
             vel.multiply(0.02)
-            item.setVelocity(vel.x, vel.y, vel.z)
-            item.setPickupDelay(0)
-            w.addEntity(item)
+            item.setDeltaMovement(vel.x, vel.y, vel.z)
+            item.setPickUpDelay(0)
+            w.addFreshEntity(item)
         }
     }
 
@@ -38,7 +38,7 @@ object PRLib
     {
         val state = w.getBlockState(pos)
         if (wireWhitelist.contains(state.getBlock)) return true
-        Block.hasSolidSide(state, w, pos, side)
+        state.isFaceSturdy(w, pos, side)
     }
 
     private val gateWhiteList = Seq(Blocks.GLASS)
@@ -57,7 +57,7 @@ object PRLib
     {
         if (canPlaceWireOnSide(w, pos, side)) return true
         if (side == Direction.UP) {
-            return Block.hasEnoughSolidSide(w, pos, Direction.UP)
+            return Block.canSupportCenter(w, pos, side)
         }
         false
     }

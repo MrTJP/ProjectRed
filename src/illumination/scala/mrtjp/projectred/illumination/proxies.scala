@@ -169,10 +169,10 @@ class IlluminationProxyClient extends IlluminationProxy {
             override def read(deserializationContext:JsonDeserializationContext, modelContents:JsonObject):GenericModelLoader = this
             override def getTextures(owner:IModelConfiguration,
                                      modelGetter:function.Function[ResourceLocation, IUnbakedModel],
-                                     missingTextureErrors:util.Set[Pair[String, String]]):util.Collection[Material] = Collections.emptyList()
+                                     missingTextureErrors:util.Set[Pair[String, String]]):util.Collection[RenderMaterial] = Collections.emptyList()
             override def bake(owner:IModelConfiguration,
                               bakery:ModelBakery,
-                              spriteGetter:function.Function[Material, TextureAtlasSprite],
+                              spriteGetter:function.Function[RenderMaterial, TextureAtlasSprite],
                               modelTransform:IModelTransform,
                               overrides:ItemOverrideList,
                               modelLocation:ResourceLocation):IBakedModel = renderer

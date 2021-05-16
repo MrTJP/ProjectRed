@@ -2,6 +2,7 @@ package mrtjp.projectred.exploration
 
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.texture.TextureUtils
+import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.core.gui.NodeGui
 import mrtjp.core.vec.Point
 import mrtjp.projectred.ProjectRedExploration
@@ -11,21 +12,21 @@ import net.minecraft.util.text.ITextComponent
 
 class GuiBackpack(container: ContainerBackpack, playerInv: PlayerInventory, title: ITextComponent) extends NodeGui(container, 176, 168, playerInv, title)
 {
-    override def drawBack_Impl(mouse:Point, frame:Float)
+    override def drawBack_Impl(stack:MatrixStack, mouse:Point, frame:Float)
     {
         TextureUtils.changeTexture(new ResourceLocation(ProjectRedExploration.MOD_ID, "textures/gui/backpack.png"))
-        blit(0, 0, 0, 0, xSize, ySize)
+        blit(stack, 0, 0, 0, 0, getXSize, getYSize)
     }
 
-    override def drawFront_Impl(mouse:Point, frame:Float)
+    override def drawFront_Impl(stack:MatrixStack, mouse:Point, frame:Float)
     {
-        getFontRenderer.drawString(title.getFormattedText, 8, 6, EnumColour.GRAY.rgb)
-        getFontRenderer.drawString(playerInventory.getName.getFormattedText, 8, 75, EnumColour.GRAY.rgb)
+        getFontRenderer.draw(stack, title, 8, 6, EnumColour.GRAY.rgb)
+        getFontRenderer.draw(stack, playerInv.getName, 8, 75, EnumColour.GRAY.rgb)
     }
 
     override def keyPressed_Impl(c:Char, keycode:Int, consumed:Boolean) =
     {
-        keycode == playerInventory.player.inventory.currentItem + 2
+        keycode == playerInv.player.inventory.selected + 2
     }
 }
 

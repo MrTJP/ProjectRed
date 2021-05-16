@@ -133,7 +133,7 @@ class SRLatch extends RedstoneGatePart(GateType.SR_LATCH) with TExtraStateGatePa
             }
 
             stateInput =
-                if (input == 0) if (world.rand.nextBoolean()) 2 else 8
+                if (input == 0) if (world.random.nextBoolean()) 2 else 8
                 else input
 
             setState2(if ((shape&1) != 0) flipMaskZ(stateInput) else stateInput)
@@ -185,7 +185,7 @@ class ToggleLatch extends RedstoneGatePart(GateType.TOGGLE_LATCH) with TExtraSta
     // Allow toggling with empty hand
     override def gateLogicActivate(player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult):Boolean = {
         if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver]) {
-            if (!world.isRemote) toggle()
+            if (!world.isClientSide) toggle()
             true
         } else false
     }
@@ -290,16 +290,16 @@ trait TTimerGatePart extends RedstoneGatePart with ITimerGuiLogic
     def resetPointer():Unit = {
         if (pointer_start >= 0) {
             pointer_start = -1
-            tile.markDirty()
-            if (!world.isRemote) sendPointerUpdate()
+            tile.setChanged()
+            if (!world.isClientSide) sendPointerUpdate()
         }
     }
 
     def startPointer():Unit = {
         if (pointer_start < 0) {
             pointer_start = world.getGameTime
-            tile.markDirty()
-            if (!world.isRemote) sendPointerUpdate()
+            tile.setChanged()
+            if (!world.isClientSide) sendPointerUpdate()
         }
     }
 
@@ -307,7 +307,7 @@ trait TTimerGatePart extends RedstoneGatePart with ITimerGuiLogic
 
     override def gateLogicActivate(player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult):Boolean = {
         if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver]) {
-            if (!world.isRemote) GuiTimer.open(player, this)
+            if (!world.isClientSide) GuiTimer.open(player, this)
             true
         } else false
     }
@@ -342,7 +342,7 @@ class Timer extends RedstoneGatePart(GateType.TIMER) with TTimerGatePart
 
     override def pointerTick():Unit = {
         resetPointer()
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             scheduleTick(2)
             setState(0xB0|state&0xF)
             onOutputChange(0xB)
@@ -398,7 +398,7 @@ class Sequencer extends RedstoneGatePart(GateType.SEQUENCER) with ITimerGuiLogic
     def sendPointerMaxUpdate():Unit = { sendUpdate(12, _.writeInt(pointer_max)) }
 
     override def gateLogicOnTick():Unit = {
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             val oldOut = state>>4
             var out = 1<<world.getDayTime%(pointer_max*4)/pointer_max
             if (shape == 1) out = flipMaskZ(out)
@@ -417,7 +417,7 @@ class Sequencer extends RedstoneGatePart(GateType.SEQUENCER) with ITimerGuiLogic
 
     override def gateLogicActivate(player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult):Boolean = {
         if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver]) {
-            if (!world.isRemote) GuiTimer.open(player, this)
+            if (!world.isClientSide) GuiTimer.open(player, this)
             true
         } else false
     }
@@ -553,7 +553,7 @@ class Counter extends RedstoneGatePart(GateType.COUNTER) with ICounterGuiLogic
 
     override def gateLogicActivate(player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult):Boolean = {
         if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver]) {
-            if (!world.isRemote) GuiCounter.open(player, this)
+            if (!world.isClientSide) GuiCounter.open(player, this)
             true
         } else false
     }
@@ -600,7 +600,7 @@ class StateCell extends RedstoneGatePart(GateType.STATE_CELL) with TTimerGatePar
     override def pointerTick()
     {
         resetPointer()
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             setState2(0)
             sendState2Update()
             setState(0x10|state&0xF)
@@ -701,27 +701,25 @@ class Comparator extends RedstoneGatePart(GateType.REPEATER) with INeighborTileC
     def calcInputA:Int = {
         //TODO comparator calculations may not be accurate anymore
 
-        val absDir = Direction.byIndex(Rotation.rotateSide(side, toAbsolute(2)))
-        var pos = tile.getPos.offset(absDir)
+        val absDir = Direction.values()(Rotation.rotateSide(side, toAbsolute(2)))
+        var pos = tile.getBlockPos.relative(absDir)
         var state = world.getBlockState(pos)
 
-        if (state.hasComparatorInputOverride)
-            return state.getComparatorInputOverride(world, pos)
+        if (state.hasAnalogOutputSignal)
+            return state.getAnalogOutputSignal(world, pos)
 
-        val i = getAnalogInput(2)
+        var i = getAnalogInput(2)
 
-        if (i < 15 && state.isNormalCube(world, pos)) {
-            pos = pos.offset(absDir)
+        if (i < 15 && state.isRedstoneConductor(world, pos)) {
+            pos = pos.relative(absDir)
             state = world.getBlockState(pos)
 
-            if (state.hasComparatorInputOverride)
-                return state.getComparatorInputOverride(world, pos)
+            if (state.hasAnalogOutputSignal)
+                i = math.max(state.getAnalogOutputSignal(world, pos), i)
 
-            if (state.getMaterial == Material.AIR) {
-                val entityitemframe = findItemFrame(world, absDir, pos)
-                if (entityitemframe != null)
-                    return entityitemframe.getAnalogOutput
-            }
+            val entityitemframe = findItemFrame(world, absDir, pos)
+            if (entityitemframe != null)
+                i = math.max(entityitemframe.getAnalogOutput, i)
         }
         i
     }
@@ -730,9 +728,9 @@ class Comparator extends RedstoneGatePart(GateType.REPEATER) with INeighborTileC
       * Copied from BlockRedstoneComparator#findItemFrame(World, EnumFacing, BlockPos)
       */
     private def findItemFrame(world:World, facing:Direction, pos:BlockPos):ItemFrameEntity = {
-        val list:util.List[ItemFrameEntity] = world.getEntitiesWithinAABB[ItemFrameEntity](classOf[ItemFrameEntity], new AxisAlignedBB(pos.getX.toDouble, pos.getY.toDouble, pos.getZ.toDouble,
+        val list:util.List[ItemFrameEntity] = world.getEntitiesOfClass[ItemFrameEntity](classOf[ItemFrameEntity], new AxisAlignedBB(pos.getX.toDouble, pos.getY.toDouble, pos.getZ.toDouble,
             (pos.getX + 1).toDouble, (pos.getY + 1).toDouble, (pos.getZ + 1).toDouble), new Predicate[Entity] {
-                override def apply(input:Entity):Boolean = input != null && (input.getHorizontalFacing == facing)
+                override def apply(input:Entity):Boolean = input != null && (input.getDirection == facing)
             }
         )
         if (list.size == 1) list.get(0) else null
