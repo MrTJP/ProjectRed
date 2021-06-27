@@ -21,7 +21,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.Direction
-import net.minecraft.util.math.shapes.VoxelShape
+import net.minecraft.util.math.shapes.{ISelectionContext, VoxelShape}
 
 import java.util.Random
 import scala.jdk.CollectionConverters._
@@ -553,7 +553,7 @@ class BusInputPanel extends BundledGatePart(GateType.BUS_INPUT_PANEL)
         gateLogicOnChange()
     }
 
-    override def getOutlineShape:VoxelShape =
+    override def getShape(context:ISelectionContext):VoxelShape =
         BusInputPanel.getOrCreateOutline(orientation&0xFF, pressMask&0xFFFF)
 
 

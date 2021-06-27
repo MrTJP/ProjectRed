@@ -29,7 +29,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.{Item, ItemStack, ItemUseContext}
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.shapes.VoxelShape
+import net.minecraft.util.math.shapes.{ISelectionContext, VoxelShape}
 import net.minecraft.util.{Direction, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
@@ -168,8 +168,8 @@ class BaseLightPart(definition:LightPartDefinition, colour:Int, inverted:Boolean
 
     def getLightBounds:Cuboid6 = definition.getGlowBounds(getSide)
 
-    override def getOutlineShape:VoxelShape = definition.getShape(getSide)
-    override def getOcclusionShape:VoxelShape = getOutlineShape
+    override def getShape(context: ISelectionContext):VoxelShape = definition.getShape(getSide)
+    override def getOcclusionShape:VoxelShape = getShape(ISelectionContext.empty())
 
     override def getType:MultiPartType[_] = definition.multiPartType(colour, inverted)
 

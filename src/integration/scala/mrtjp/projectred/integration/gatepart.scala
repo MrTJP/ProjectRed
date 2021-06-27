@@ -26,7 +26,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.{ItemStack, ItemUseContext}
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.shapes.VoxelShape
+import net.minecraft.util.math.shapes.{ISelectionContext, VoxelShape}
 import net.minecraft.util.{ActionResultType, Direction, Hand}
 import net.minecraft.world.chunk.Chunk
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
@@ -163,9 +163,9 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
         if (!world.isClientSide) notifyAllExternals()
     }
 
-    override def onChunkLoad()
+    override def onChunkLoad(chunk: Chunk)
     {
-        super.onChunkLoad()
+        super.onChunkLoad(chunk)
         if (tile != null) {
             gateLogicOnWorldLoad()
         }
@@ -199,8 +199,8 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
     override def getType = gateType.getPartType
 
     override def getOcclusionShape:VoxelShape = GatePart.oShapes(side)
-    override def getCollisionShape:VoxelShape = FaceMicroFactory.aShapes(0x10|side)
-    override def getOutlineShape:VoxelShape = FaceMicroFactory.aShapes(0x10|side)
+    override def getCollisionShape(context:ISelectionContext):VoxelShape = FaceMicroFactory.aShapes(0x10|side)
+    override def getShape(context: ISelectionContext):VoxelShape = getCollisionShape(context)
 
     override def getStrength(player:PlayerEntity, hit:PartRayTraceResult) = 2/30f
 
@@ -280,7 +280,7 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
         RenderGate.renderCustomDynamic(this, Vector3.ZERO, mStack, buffers, packedLight, packedOverlay, partialTicks)
     }
 
-    override def getBounds:Cuboid6 = new Cuboid6(getOutlineShape.bounds())
+    override def getBounds:Cuboid6 = new Cuboid6(getShape(ISelectionContext.empty()).bounds())
 
     override def getBreakingIcon(hit:PartRayTraceResult):TextureAtlasSprite = ComponentStore.baseIcon
 

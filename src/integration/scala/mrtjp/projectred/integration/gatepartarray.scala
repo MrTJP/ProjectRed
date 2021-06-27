@@ -17,7 +17,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.Direction
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.shapes.VoxelShape
+import net.minecraft.util.math.shapes.{ISelectionContext, VoxelShape}
 
 abstract class ArrayGatePart(gateType:GateType) extends RedstoneGatePart(gateType) with IRedwirePart with TFaceRSPropagation
 {
@@ -300,8 +300,8 @@ abstract class ArrayGatePartCrossing(gateType:GateType) extends ArrayGatePart(ga
         }
     }
 
-    override def getOutlineShape:VoxelShape =  ArrayGatePart.cShapes(side)
-    override def getCollisionShape:VoxelShape = ArrayGatePart.cShapes(side)
+    override def getShape(context:ISelectionContext):VoxelShape = getCollisionShape(context)
+    override def getCollisionShape(context:ISelectionContext):VoxelShape = ArrayGatePart.cShapes(side)
     override def getOcclusionShape:VoxelShape = ArrayGatePart.oShapes(side)
 
     override def onSignalUpdate():Unit = {
@@ -390,8 +390,8 @@ class ANDCell extends ArrayGatePartTopOnly(GateType.AND_CELL) with TSimpleRSGate
 
     override def calcOutput(input:Int):Int = if (input == 4 && signal != 0) 1 else 0
 
-    override def getOutlineShape:VoxelShape =  ArrayGatePart.cShapes(side)
-    override def getCollisionShape:VoxelShape = ArrayGatePart.cShapes(side)
+    override def getShape(context:ISelectionContext):VoxelShape = getCollisionShape(context)
+    override def getCollisionShape(context:ISelectionContext):VoxelShape = ArrayGatePart.cShapes(side)
     override def getOcclusionShape:VoxelShape = ArrayGatePart.oShapes(side)
 }
 

@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
-import net.minecraft.util.math.shapes.VoxelShape
+import net.minecraft.util.math.shapes.{ISelectionContext, VoxelShape}
 import net.minecraft.util.{ActionResultType, Hand}
 
 class LightButtonPart(partType:MultiPartType[_], colour:Int)
@@ -91,11 +91,11 @@ class LightButtonPart(partType:MultiPartType[_], colour:Int)
         }
     }
 
-    override def getCollisionShape:VoxelShape =
+    override def getCollisionShape(context:ISelectionContext):VoxelShape =
         if (tile == null) {
             VoxelShapeCache.getShape(Cuboid6.full)
         } else
-            super.getCollisionShape
+            super.getCollisionShape(context)
 
 
     //    @SideOnly(Side.CLIENT)
