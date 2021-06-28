@@ -67,12 +67,13 @@ object Messenger
 
         for (m <- Messenger.messages.clone())
             if (m == null || m.receivedOn < deathTime) Messenger.messages -= m
-            else readMessage(mStack, buffers, m, w.getGameTime + event.getPartialTicks)
+            else readMessage(mStack, m, w.getGameTime + event.getPartialTicks)
 
         mStack.popPose()
     }
 
-    private def readMessage(mStack:MatrixStack, buffers:IRenderTypeBuffer, m:Message, time:Double)
+    @OnlyIn(Dist.CLIENT)
+    private def readMessage(mStack:MatrixStack, m:Message, time:Double)
     {
         var width = 0
         var height = 0
