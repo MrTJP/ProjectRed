@@ -24,7 +24,7 @@ import net.minecraft.inventory.EquipmentSlotType
 import net.minecraft.item.{ItemStack, ItemUseContext}
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.shapes.{VoxelShape, VoxelShapes}
+import net.minecraft.util.math.shapes.{ISelectionContext, VoxelShape, VoxelShapes}
 import net.minecraft.util.{ActionResultType, Direction, Hand, SoundCategory}
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
@@ -243,9 +243,9 @@ abstract class WirePart(wireType:WireType) extends TMultiPart with TWireCommons 
 
     override def getStrength(player:PlayerEntity, hit:PartRayTraceResult) = 2/30f
 
-    override def getOutlineShape = new IndexedVoxelShape(WireBoxes.sShapes(getThickness)(side), 0)
+    override def getShape(context: ISelectionContext) = new IndexedVoxelShape(WireBoxes.sShapes(getThickness)(side), 0)
 
-    override def getCollisionShape = VoxelShapes.empty()
+    override def getCollisionShape(context:ISelectionContext) = VoxelShapes.empty()
 
     override def getOcclusionShape = WireBoxes.oShapes(getThickness)(side)
 
@@ -366,7 +366,7 @@ abstract class FramedWirePart(wireType:WireType) extends TMultiPart with TWireCo
         else super.getDrops
     }
 
-    override def getOutlineShape = new IndexedVoxelShape(getCollisionShape, 0)
+    override def getShape(context: ISelectionContext) = new IndexedVoxelShape(getCollisionShape(context), 0)
 
     override def getOcclusionShape =
     {
@@ -375,7 +375,7 @@ abstract class FramedWirePart(wireType:WireType) extends TMultiPart with TWireCo
         else fOShapes(6)
     }
 
-    override def getCollisionShape =
+    override def getCollisionShape(context: ISelectionContext) =
     {
         import mrtjp.projectred.transmission.WireBoxes._
         var m = 0
