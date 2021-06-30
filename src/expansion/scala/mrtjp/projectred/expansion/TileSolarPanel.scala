@@ -31,7 +31,7 @@ import net.minecraft.item.{Item, ItemStack, ItemUseContext}
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.math.shapes.VoxelShape
+import net.minecraft.util.math.shapes.{ISelectionContext, VoxelShape}
 import net.minecraft.world.World
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.client.model.geometry.IModelGeometry
@@ -67,8 +67,8 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
 
     override def getBounds:Cuboid6 = FaceMicroFactory.aBounds(0x10|side)
 
-    override def getOutlineShape:VoxelShape = FaceMicroFactory.aShapes(0x10|side)
-    override def getCollisionShape:VoxelShape = FaceMicroFactory.aShapes(0x10|side)
+    override def getShape(context:ISelectionContext):VoxelShape = FaceMicroFactory.aShapes(0x10|side)
+
     override def getOcclusionShape:VoxelShape = SolarPanelPart.oShapes(side)
 
     override def doesRotate = false
