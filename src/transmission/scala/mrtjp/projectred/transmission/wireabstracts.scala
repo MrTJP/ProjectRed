@@ -243,8 +243,6 @@ abstract class WirePart(wireType:WireType) extends TMultiPart with TWireCommons 
 
     override def getStrength(player:PlayerEntity, hit:PartRayTraceResult) = 2/30f
 
-    override def getInteractionShape: VoxelShape = getShape(ISelectionContext.empty())
-
     override def getShape(context: ISelectionContext) = new IndexedVoxelShape(WireBoxes.sShapes(getThickness)(side), 0)
 
     override def getCollisionShape(context:ISelectionContext) = VoxelShapes.empty()
