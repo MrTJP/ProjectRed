@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - release/*
+      - publish/*
 
 jobs:
   build:
@@ -22,8 +22,9 @@ jobs:
       - name: Resolve release type
         id: release_type
         run: |
-          # Extract release type from ref (refs/heads/release/{type})
-          release_type="$(echo $GITHUB_REF | sed -E 's/refs\/heads\/release\/([a-zA-Z0-9]+)(-.*)?/\1/')"
+          # Extract release type from ref (refs/heads/publish/{channel}/{type})
+          release_channel="$(echo $GITHUB_REF | sed -E 's/refs\/heads\/publish\/([a-zA-Z0-9.-]+)\/([a-zA-Z0-9.-]+)/\1/')"
+          release_type="$(echo $GITHUB_REF | sed -E 's/refs\/heads\/publish\/([a-zA-Z0-9.-]+)\/([a-zA-Z0-9.-]+)/\2/')"
 
           case $release_type in
             "release")
@@ -48,6 +49,7 @@ jobs:
               version_format="\${major}.\${minor}.\${patch}-$release_type-\${increment}"
           esac
 
+          echo "::set-output name=release_channel::$release_channel"
           echo "::set-output name=release_type::$release_type"
           echo "::set-output name=publish_maven::$publish_maven"
           echo "::set-output name=publish_curse::$publish_curse"
@@ -125,8 +127,8 @@ jobs:
         with:
           auth: ${{ secrets.GIST_SECRET }}
           gistID: 3ef501bc64c896a86fd706dfea8ba367
-          filename: projectred-badge-${{ steps.release_type.outputs.release_type }}.json
-          label: ${{ steps.release_type.outputs.release_type }}
+          filename: projectred-badge-${{ steps.release_type.outputs.release_channel }}-${{ steps.release_type.outputs.release_type }}.json
+          label: Project Red ${{ steps.release_type.outputs.release_channel }}
           message: ${{ steps.versioning.outputs.version }}
           color: green
           namedLogo: CurseForge
