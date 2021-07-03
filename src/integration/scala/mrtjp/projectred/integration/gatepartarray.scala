@@ -48,7 +48,7 @@ abstract class ArrayGatePart(gateType:GateType) extends RedstoneGatePart(gateTyp
         if (!p.isInstanceOf[TFaceOrient] || p.tile == null) return 0xF
         val part = p.asInstanceOf[TFaceOrient]
         val here = pos
-        val there = pos.mutable()
+        val there = part.pos.mutable()
 
         if (here == there && (side&6) != (part.side&6)) return 1<<Rotation.rotationTo(side, part.side)
 
