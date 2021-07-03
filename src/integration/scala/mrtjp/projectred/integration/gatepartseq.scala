@@ -666,7 +666,7 @@ class Synchronizer extends RedstoneGatePart(GateType.SYNCHRONIZER) with TExtraSt
     def pulsing:Boolean = (state2&4) != 0
 }
 
-class Comparator extends RedstoneGatePart(GateType.REPEATER) with INeighborTileChangePart
+class Comparator extends RedstoneGatePart(GateType.COMPARATOR) with INeighborTileChangePart
 {
     var lState2:Short = 0
 
