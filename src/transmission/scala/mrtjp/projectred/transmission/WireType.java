@@ -83,7 +83,23 @@ public enum WireType implements SimpleMultiPartType.SimpleMultiPartTypeFactory<T
     FRAMED_INSULATED_RED       (TransmissionContent::itemFramedInsulatedRedWire,       TransmissionContent::partFramedInsulatedRedWire,       FramedInsulatedRedAlloyPart::new, EnumColour.RED,        1, "insulated/redoff",       "insulated/redon"),
     FRAMED_INSULATED_BLACK     (TransmissionContent::itemFramedInsulatedBlackWire,     TransmissionContent::partFramedInsulatedBlackWire,     FramedInsulatedRedAlloyPart::new, EnumColour.BLACK,      1, "insulated/blackoff",     "insulated/blackon"),
 
-    FRAMED_BUNDLED_NEUTRAL(TransmissionContent::itemFramedBundledNeutralWire, TransmissionContent::partFramedBundledNeutralWire, FramedBundledCablePart::new, 2, "bundled/neutral"),
+    FRAMED_BUNDLED_NEUTRAL   (TransmissionContent::itemFramedBundledNeutralWire,   TransmissionContent::partFramedBundledNeutralWire, FramedBundledCablePart::new, 2, "bundled/neutral"),
+    FRAMED_BUNDLED_WHITE     (TransmissionContent::itemFramedBundledWhiteWire,     TransmissionContent::partFramedBundledWhiteWire,     FramedBundledCablePart::new, EnumColour.WHITE,      2, "bundled/white"),
+    FRAMED_BUNDLED_ORANGE    (TransmissionContent::itemFramedBundledOrangeWire,    TransmissionContent::partFramedBundledOrangeWire,    FramedBundledCablePart::new, EnumColour.ORANGE,     2, "bundled/orange"),
+    FRAMED_BUNDLED_MAGENTA   (TransmissionContent::itemFramedBundledMagentaWire,   TransmissionContent::partFramedBundledMagentaWire,   FramedBundledCablePart::new, EnumColour.MAGENTA,    2, "bundled/magenta"),
+    FRAMED_BUNDLED_LIGHT_BLUE(TransmissionContent::itemFramedBundledLightBlueWire, TransmissionContent::partFramedBundledLightBlueWire, FramedBundledCablePart::new, EnumColour.LIGHT_BLUE, 2, "bundled/lightblue"),
+    FRAMED_BUNDLED_YELLOW    (TransmissionContent::itemFramedBundledYellowWire,    TransmissionContent::partFramedBundledYellowWire,    FramedBundledCablePart::new, EnumColour.YELLOW,     2, "bundled/yellow"),
+    FRAMED_BUNDLED_LIME      (TransmissionContent::itemFramedBundledLimeWire,      TransmissionContent::partFramedBundledLimeWire,      FramedBundledCablePart::new, EnumColour.LIME,       2, "bundled/lime"),
+    FRAMED_BUNDLED_PINK      (TransmissionContent::itemFramedBundledPinkWire,      TransmissionContent::partFramedBundledPinkWire,      FramedBundledCablePart::new, EnumColour.PINK,       2, "bundled/pink"),
+    FRAMED_BUNDLED_GRAY      (TransmissionContent::itemFramedBundledGrayWire,      TransmissionContent::partFramedBundledGrayWire,      FramedBundledCablePart::new, EnumColour.GRAY,       2, "bundled/grey"),
+    FRAMED_BUNDLED_LIGHT_GRAY(TransmissionContent::itemFramedBundledLightGrayWire, TransmissionContent::partFramedBundledLightGrayWire, FramedBundledCablePart::new, EnumColour.LIGHT_GRAY, 2, "bundled/lightgrey"),
+    FRAMED_BUNDLED_CYAN      (TransmissionContent::itemFramedBundledCyanWire,      TransmissionContent::partFramedBundledCyanWire,      FramedBundledCablePart::new, EnumColour.CYAN,       2, "bundled/cyan"),
+    FRAMED_BUNDLED_PURPLE    (TransmissionContent::itemFramedBundledPurpleWire,    TransmissionContent::partFramedBundledPurpleWire,    FramedBundledCablePart::new, EnumColour.PURPLE,     2, "bundled/purple"),
+    FRAMED_BUNDLED_BLUE      (TransmissionContent::itemFramedBundledBlueWire,      TransmissionContent::partFramedBundledBlueWire,      FramedBundledCablePart::new, EnumColour.BLUE,       2, "bundled/blue"),
+    FRAMED_BUNDLED_BROWN     (TransmissionContent::itemFramedBundledBrownWire,     TransmissionContent::partFramedBundledBrownWire,     FramedBundledCablePart::new, EnumColour.BROWN,      2, "bundled/brown"),
+    FRAMED_BUNDLED_GREEN     (TransmissionContent::itemFramedBundledGreenWire,     TransmissionContent::partFramedBundledGreenWire,     FramedBundledCablePart::new, EnumColour.GREEN,      2, "bundled/green"),
+    FRAMED_BUNDLED_RED       (TransmissionContent::itemFramedBundledRedWire,       TransmissionContent::partFramedBundledRedWire,       FramedBundledCablePart::new, EnumColour.RED,        2, "bundled/red"),
+    FRAMED_BUNDLED_BLACK     (TransmissionContent::itemFramedBundledBlackWire,     TransmissionContent::partFramedBundledBlackWire,     FramedBundledCablePart::new, EnumColour.BLACK,      2, "bundled/black"),
 
     FRAMED_POWER_LOWLOAD(TransmissionContent::itemFramedPowerLowLoadWire, TransmissionContent::partFramedPowerLowLoadWire, FramedLowLoadPowerLine::new, 1, "power/lowload");
     //@formatter:on

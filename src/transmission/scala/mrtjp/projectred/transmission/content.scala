@@ -89,6 +89,22 @@ object TransmissionContent {
     val itemFramedInsulatedBlackWire = ITEMS.register("black_framed_insulated_wire", itemPartFramedWire(WireType.FRAMED_INSULATED_BLACK))
 
     val itemFramedBundledNeutralWire = ITEMS.register("neutral_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_NEUTRAL))
+    val itemFramedBundledWhiteWire = ITEMS.register("white_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_WHITE))
+    val itemFramedBundledOrangeWire = ITEMS.register("orange_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_ORANGE))
+    val itemFramedBundledMagentaWire = ITEMS.register("magenta_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_MAGENTA))
+    val itemFramedBundledLightBlueWire = ITEMS.register("light_blue_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_LIGHT_BLUE))
+    val itemFramedBundledYellowWire = ITEMS.register("yellow_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_YELLOW))
+    val itemFramedBundledLimeWire = ITEMS.register("lime_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_LIME))
+    val itemFramedBundledPinkWire = ITEMS.register("pink_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_PINK))
+    val itemFramedBundledGrayWire = ITEMS.register("gray_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_GRAY))
+    val itemFramedBundledLightGrayWire = ITEMS.register("light_gray_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_LIGHT_GRAY))
+    val itemFramedBundledCyanWire = ITEMS.register("cyan_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_CYAN))
+    val itemFramedBundledPurpleWire = ITEMS.register("purple_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_PURPLE))
+    val itemFramedBundledBlueWire = ITEMS.register("blue_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_BLUE))
+    val itemFramedBundledBrownWire = ITEMS.register("brown_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_BROWN))
+    val itemFramedBundledGreenWire = ITEMS.register("green_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_GREEN))
+    val itemFramedBundledRedWire = ITEMS.register("red_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_RED))
+    val itemFramedBundledBlackWire = ITEMS.register("black_framed_bundled_wire", itemPartFramedWire(WireType.FRAMED_BUNDLED_BLACK))
 
     val itemFramedPowerLowLoadWire = ITEMS.register("low_load_framed_power_wire", itemPartFramedWire(WireType.FRAMED_POWER_LOWLOAD))
 
@@ -148,6 +164,25 @@ object TransmissionContent {
         itemFramedInsulatedGreenWire.get,
         itemFramedInsulatedRedWire.get,
         itemFramedInsulatedBlackWire.get
+    )
+
+    lazy val framedBundledWires = List(
+        itemFramedBundledWhiteWire.get,
+        itemFramedBundledOrangeWire.get,
+        itemFramedBundledMagentaWire.get,
+        itemFramedBundledLightBlueWire.get,
+        itemFramedBundledYellowWire.get,
+        itemFramedBundledLimeWire.get,
+        itemFramedBundledPinkWire.get,
+        itemFramedBundledGrayWire.get,
+        itemFramedBundledLightGrayWire.get,
+        itemFramedBundledCyanWire.get,
+        itemFramedBundledPurpleWire.get,
+        itemFramedBundledBlueWire.get,
+        itemFramedBundledBrownWire.get,
+        itemFramedBundledGreenWire.get,
+        itemFramedBundledRedWire.get,
+        itemFramedBundledBlackWire.get
     )
 
     /** Parts */
@@ -210,6 +245,22 @@ object TransmissionContent {
     val partFramedInsulatedBlackWire = PARTS.register("black_framed_insulated_wire", wirePart(WireType.FRAMED_INSULATED_BLACK))
 
     val partFramedBundledNeutralWire = PARTS.register("neutral_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_NEUTRAL))
+    val partFramedBundledWhiteWire = PARTS.register("white_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_WHITE))
+    val partFramedBundledOrangeWire = PARTS.register("orange_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_ORANGE))
+    val partFramedBundledMagentaWire = PARTS.register("magenta_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_MAGENTA))
+    val partFramedBundledLightBlueWire = PARTS.register("light_blue_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_LIGHT_BLUE))
+    val partFramedBundledYellowWire = PARTS.register("yellow_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_YELLOW))
+    val partFramedBundledLimeWire = PARTS.register("lime_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_LIME))
+    val partFramedBundledPinkWire = PARTS.register("pink_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_PINK))
+    val partFramedBundledGrayWire = PARTS.register("gray_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_GRAY))
+    val partFramedBundledLightGrayWire = PARTS.register("light_gray_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_LIGHT_GRAY))
+    val partFramedBundledCyanWire = PARTS.register("cyan_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_CYAN))
+    val partFramedBundledPurpleWire = PARTS.register("purple_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_PURPLE))
+    val partFramedBundledBlueWire = PARTS.register("blue_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_BLUE))
+    val partFramedBundledBrownWire = PARTS.register("brown_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_BROWN))
+    val partFramedBundledGreenWire = PARTS.register("green_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_GREEN))
+    val partFramedBundledRedWire = PARTS.register("red_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_RED))
+    val partFramedBundledBlackWire = PARTS.register("black_framed_bundled_wire", wirePart(WireType.FRAMED_BUNDLED_BLACK))
 
     val partFramedPowerLowLoadWire = PARTS.register("low_load_framed_power_wire", wirePart(WireType.FRAMED_POWER_LOWLOAD))
 
@@ -217,6 +268,7 @@ object TransmissionContent {
     val tagItemInsulatedWire = ItemTags.bind(new ResourceLocation(MOD_ID, "insulated_wire"))
     val tagItemBundledWire = ItemTags.bind(new ResourceLocation(MOD_ID, "bundled_wire"))
     val tagItemInsulatedFramedWire = ItemTags.bind(new ResourceLocation(MOD_ID, "framed_insulated_wire"))
+    val tagItemBundledFramedWire = ItemTags.bind(new ResourceLocation(MOD_ID, "framed_bundled_wire"))
 
     private def itemPartWire(wireType: WireType): Supplier[ItemPartWire] = () => new ItemPartWire(wireType)
 
@@ -260,6 +312,7 @@ private class ItemModels(gen: DataGenerator, fileHelper:ExistingFileHelper) exte
         val framedWire = getExistingFile(new ResourceLocation(MOD_ID, "item/framed_wire"))
 
         getSimple(itemRedAlloyWire).texture(null).parent(wire)
+
         getSimple(itemInsulatedWhiteWire).texture(null).parent(wire)
         getSimple(itemInsulatedOrangeWire).texture(null).parent(wire)
         getSimple(itemInsulatedMagentaWire).texture(null).parent(wire)
@@ -276,6 +329,7 @@ private class ItemModels(gen: DataGenerator, fileHelper:ExistingFileHelper) exte
         getSimple(itemInsulatedGreenWire).texture(null).parent(wire)
         getSimple(itemInsulatedRedWire).texture(null).parent(wire)
         getSimple(itemInsulatedBlackWire).texture(null).parent(wire)
+
         getSimple(itemBundledNeutralWire).texture(null).parent(wire)
         getSimple(itemBundledWhiteWire).texture(null).parent(wire)
         getSimple(itemBundledOrangeWire).texture(null).parent(wire)
@@ -296,6 +350,7 @@ private class ItemModels(gen: DataGenerator, fileHelper:ExistingFileHelper) exte
         getSimple(itemPowerLowLoadWire).texture(null).parent(wire)
 
         getSimple(itemFramedRedAlloyWire).texture(null).parent(framedWire)
+
         getSimple(itemFramedInsulatedWhiteWire).texture(null).parent(framedWire)
         getSimple(itemFramedInsulatedOrangeWire).texture(null).parent(framedWire)
         getSimple(itemFramedInsulatedMagentaWire).texture(null).parent(framedWire)
@@ -312,7 +367,25 @@ private class ItemModels(gen: DataGenerator, fileHelper:ExistingFileHelper) exte
         getSimple(itemFramedInsulatedGreenWire).texture(null).parent(framedWire)
         getSimple(itemFramedInsulatedRedWire).texture(null).parent(framedWire)
         getSimple(itemFramedInsulatedBlackWire).texture(null).parent(framedWire)
+
         getSimple(itemFramedBundledNeutralWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledWhiteWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledOrangeWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledMagentaWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledLightBlueWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledYellowWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledLimeWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledPinkWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledGrayWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledLightGrayWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledCyanWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledPurpleWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledBlueWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledBrownWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledGreenWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledRedWire).texture(null).parent(framedWire)
+        getSimple(itemFramedBundledBlackWire).texture(null).parent(framedWire)
+
         getSimple(itemFramedPowerLowLoadWire).texture(null).parent(framedWire)
     }
 }
@@ -374,6 +447,24 @@ private class ItemTags(gen: DataGenerator, fileHelper:ExistingFileHelper) extend
             .add(itemFramedInsulatedGreenWire)
             .add(itemFramedInsulatedRedWire)
             .add(itemFramedInsulatedBlackWire)
+
+        tag(tagItemBundledFramedWire)
+            .add(itemFramedBundledWhiteWire)
+            .add(itemFramedBundledOrangeWire)
+            .add(itemFramedBundledMagentaWire)
+            .add(itemFramedBundledLightBlueWire)
+            .add(itemFramedBundledYellowWire)
+            .add(itemFramedBundledLimeWire)
+            .add(itemFramedBundledPinkWire)
+            .add(itemFramedBundledGrayWire)
+            .add(itemFramedBundledLightGrayWire)
+            .add(itemFramedBundledCyanWire)
+            .add(itemFramedBundledPurpleWire)
+            .add(itemFramedBundledBlueWire)
+            .add(itemFramedBundledBrownWire)
+            .add(itemFramedBundledGreenWire)
+            .add(itemFramedBundledRedWire)
+            .add(itemFramedBundledBlackWire)
     }
 }
 
@@ -451,6 +542,20 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             shapelessRecipe(w, 1, new ResourceLocation(w.getRegistryName + "_re_color"))
                 .addIngredient(tagItemInsulatedFramedWire)
                 .addIngredient(ItemTags.bind(w.wireType.getColour.getDyeTagName))
+        }
+
+        for (i <- bundledWires.indices) {
+            val w = framedBundledWires(i);
+            shapedRecipe(w)
+                    .key('S', ForgeItemTags.RODS_WOODEN)
+                    .key('I', bundledWires(i))
+                    .patternLine("SSS")
+                    .patternLine("SIS")
+                    .patternLine("SSS")
+
+            shapelessRecipe(w, 1, new ResourceLocation(w.getRegistryName + "_re_color"))
+                    .addIngredient(tagItemBundledFramedWire)
+                    .addIngredient(ItemTags.bind(w.wireType.getColour.getDyeTagName))
         }
 
         shapedRecipe(itemPowerLowLoadWire, 12)

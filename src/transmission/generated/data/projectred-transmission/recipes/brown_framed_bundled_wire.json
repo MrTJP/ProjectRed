@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-transmission:brown_framed_bundled_wire"
+  },
+  "pattern": [
+    "SSS",
+    "SIS",
+    "SSS"
+  ],
+  "key": {
+    "I": {
+      "item": "projectred-transmission:brown_bundled_wire"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    }
+  }
+}

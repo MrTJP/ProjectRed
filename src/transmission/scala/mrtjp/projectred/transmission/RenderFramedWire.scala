@@ -6,13 +6,13 @@ import codechicken.lib.render._
 import codechicken.lib.render.lighting.LightModel
 import codechicken.lib.render.pipeline.{ColourMultiplier, IVertexOperation}
 import codechicken.lib.vec._
-import codechicken.lib.vec.uv.{IconTransformation, UVScale, UVTranslation}
+import codechicken.lib.vec.uv.{IconTransformation, UV, UVScale, UVTranslation}
 import codechicken.microblock.api.MicroMaterial
 import codechicken.microblock.{CommonMicroFactory, IMicroHighlightRenderer, MicroblockRender}
 import codechicken.multipart.block.BlockMultiPart
 import codechicken.multipart.util.PartRayTraceResult
 import com.mojang.blaze3d.matrix.MatrixStack
-import mrtjp.projectred.core.UVT
+import mrtjp.projectred.core.{PRLib, UVT}
 import mrtjp.projectred.transmission.WireBoxes.fOBounds
 import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
 import net.minecraft.entity.player.PlayerEntity
@@ -71,7 +71,7 @@ object RenderFramedWire extends IMicroHighlightRenderer
 
     def renderInv(thickness:Int, hue:Int, ccrs:CCRenderState, ops:IVertexOperation*)
     {
-        getOrGenerateWireModel(modelKey(thickness, 0x3F)).render(ccrs, ops :+ ColourMultiplier.instance(hue):_*)
+        getOrGenerateWireModel(modelKey(thickness, 0x3C)).render(ccrs, ops :+ ColourMultiplier.instance(hue):_*)
         renderWireFrame(modelKey(thickness, 0), ccrs, ops:_*)
     }
 
@@ -195,7 +195,10 @@ class FWireModelGen
     var connMap = 0
     var tw = 0
     var w = 0.0D
-    var connCount = 0
+    var connCount = 0 // Number of sided connections
+    var axisCount = 0 // Number of connection axis used
+    var fRotationMasks = new Array[Int](6) // Rotation masks for each face
+    var fAxisCounts = new Array[Int](6) // Axis count for each face
     var i = 0
     var model:CCModel = null
 
@@ -206,10 +209,35 @@ class FWireModelGen
         n
     }
 
+    private def countAxis(mask:Int):Int = {
+        var n = 0
+        for (a <- 0 until 3) if ((mask&0x3<<(a*2)) != 0) n += 1
+        n
+    }
+
+    private def calcFaceRotationMask(connMap:Int, s:Int):Int = {
+        var rMask = 0
+        for (r <- 0 until 4) {
+            val absSide = Rotation.rotateSide(s, (r+2)%4)
+            if ((connMap&1<<absSide) != 0) rMask |= 1<<r
+        }
+        rMask
+    }
+
+    private def countFaceAxis(fRotMask:Int):Int = {
+        var a = 0
+        if ((fRotMask&0x5) != 0) a += 1
+        if ((fRotMask&0xA) != 0) a += 1
+        a
+    }
+
     private def setup(key:Int)
     {
         connMap = key&0x3F
         connCount = countConnections(connMap)
+        axisCount = countAxis(connMap)
+        for (s <- 0 until 6) fRotationMasks(s) = calcFaceRotationMask(connMap, s)
+        for (s <- 0 until 6) fAxisCounts(s) = countFaceAxis(fRotationMasks(s))
         val thickness = key>>6
         tw = thickness+1
         w = tw/16D+0.004
@@ -219,32 +247,111 @@ class FWireModelGen
     def generateWireModel(key:Int) =
     {
         setup(key)
-        model = CCModel.quadModel(connCount*16+24)
-        for (s <- 0 until 6) generateSide(s)
+
+        val axisVertCount = axisCount * 16 // Each axis (up/down, north/south, west/east) require 4 faces each
+        val stubVertCount = fAxisCounts.count(_ == 0) * 4 // Stubs when no rotational conns on a face
+        val circleVertCount = fAxisCounts.count(_ == 2) * 4 // Circular cross texture on faces with both vertical and horizontal axis
+        val capVertCount = connCount * 4 // Cap at end of connections reaching out of the block
+
+        model = CCModel.quadModel(axisVertCount + stubVertCount + circleVertCount + capVertCount)
+        for (s <- 0 until 6) generateFace(s)
         finishModel()
         model
     }
 
-    private def generateSide(s:Int)
-    {
-        val verts = connCount match
-        {
-            case 0 => generateStub(s)
-            case 1  if (connMap&1<<(s^1)) != 0 => generateStub(s)
-            case _ => generateSideFromType(s)
+    private def generateFace(s:Int):Unit = {
+        val vb = Array.newBuilder[Vertex5]
+
+        vb ++= generateFaceAxisVerts(s) // Verts for conns perpendicular to 's' axis
+
+        fAxisCounts(s) match {
+            case 0 => vb ++= generateFaceStubVerts(s, 0.5-w) // caps at center
+            case 2 => vb ++= generateFaceCircleVerts(s) // circular texture showing crossed axis
+            case _ =>
         }
 
-        val t = AxisCycle.cycles(s/2).at(Vector3.CENTER)
-        for (vert <- verts) vert.apply(t)
+        if ((connMap&1<<(s^1)) != 0) // Verts for caps
+            vb ++= generateFaceStubVerts(s, 0)
+
+        val verts = vb.result()
+
+        val t = Rotation.sideOrientation(s, 0).at(Vector3.CENTER)
+        for (v <- verts) v.apply(t)
         i = addVerts(model, verts, i)
     }
 
-    private def generateStub(s:Int) =
-    {
-        val verts = faceVerts(s, 0.5-w)
-        val t = new UVTranslation(12, 12)
-        for (vert <- verts) vert.apply(t)
+    private def generateFaceAxisVerts(s:Int):Array[Vertex5] = {
+        val d = 0.5-w
+
+        val numAxis = fAxisCounts(s)
+        val fMask = fRotationMasks(s)
+
+        val verts = new Array[Vertex5](numAxis * 4)
+        var vi = 0
+
+        if ((fMask&0x5) != 0) { // Vertical axis looking at the face (i.e. looking down on face 0, north/south conns)
+            val aVerts = axisVerts(fMask, d)
+            reflectSide(aVerts, s, 0)
+            Array.copy(aVerts, 0, verts, vi, 4)
+            vi += 4
+        }
+
+        if ((fMask&0xA) != 0) { // Horizontal axis looking at the face (i.e. looking down on face 0, east/west conns)
+            val aVerts = axisVerts(fMask>>1, d)
+            reflectSide(aVerts, s, 1)
+            val t = Rotation.quarterRotations(1).at(Vector3.CENTER)
+            for (v <- aVerts) v.apply(t)
+            Array.copy(aVerts, 0, verts, vi, 4)
+            vi += 4
+        }
         verts
+    }
+
+    private def generateFaceStubVerts(s:Int, d:Double):Array[Vertex5] = {
+        val aVerts = axisVerts(0, d)
+        val t = new UVTranslation(12, 12)
+        for (vert <- aVerts) vert.apply(t)
+        if (s%2 == 1) { //Reflect the stub on opposite sides
+            val ft = new UVScale(-1, 1).at(new UV(20, 28))
+            for (vert <- aVerts) vert.apply(ft)
+        }
+        aVerts
+    }
+
+    private def generateFaceCircleVerts(s:Int):Array[Vertex5] = {
+        val d = 0.5-w
+        val aVerts = axisVerts(0, d - 0.002) //Offset for zfighting
+        rotateSide(aVerts, s)
+        val t = new UVTranslation(16, 0)
+        for (v <- aVerts) v.apply(t)
+        aVerts
+    }
+
+    private def axisVerts(mask:Int, d:Double):Array[Vertex5] = {
+        val tl = 8-tw
+        val l = tl/16D + 0.004
+        val zn = if ((mask&0x1) != 0) l else 0
+        val vn = if ((mask&0x1) != 0) tl else 0
+        val zp = if ((mask&0x4) != 0) l else 0
+        val vp = if ((mask&0x4) != 0) tl else 0
+
+        Array[Vertex5](
+            new Vertex5(0.5-w, 1-d, 0.5+w+zp, 8-tw, 16+tw+vp),
+            new Vertex5(0.5+w, 1-d, 0.5+w+zp, 8+tw, 16+tw+vp),
+            new Vertex5(0.5+w, 1-d, 0.5-w-zn, 8+tw, 16-tw-vn),
+            new Vertex5(0.5-w, 1-d, 0.5-w-zn, 8-tw, 16-tw-vn)
+        )
+    }
+
+    private val sideReflect = new UVT(Rotation.quarterRotations(2).at(new Vector3(8, 0, 16)))
+    private def reflectSide(verts:Array[Vertex5], s:Int, r:Int):Unit = {
+        if ((r+PRLib.bundledCableBaseRotationMap(s))%4 >= 2) for (vert <- verts) vert.apply(sideReflect)
+    }
+
+    private def rotateSide(verts:Array[Vertex5], s:Int):Unit = {
+        val r = PRLib.bundledCableBaseRotationMap(s)
+        val uvt = new UVT(Rotation.quarterRotations(r%4).at(new Vector3(8, 0, 16)))
+        for (vert <- verts) vert.apply(uvt)
     }
 
     private def faceVerts(s:Int, d:Double) =
@@ -262,72 +369,6 @@ class FWireModelGen
             for (vert <- verts) vert.apply(t)
             reverseOrder(verts)
         }
-        verts
-    }
-
-    private def generateSideFromType(s:Int) =
-    {
-        if ((connMap&1<<s) != 0) generateStraight(s)
-        else generateFlat(s)
-    }
-
-    private val uvReflect = new UVT(new Scale(-1, 1, 1).at(new Vector3(8, 0, 16)))
-    private def generateStraight(s:Int):Array[Vertex5] =
-    {
-        val verts = new Array[Vertex5](20)
-        Array.copy(faceVerts(s, 0), 0, verts, 0, 4)
-
-        if (s%2 == 0)
-        {
-            verts(4) = new Vertex5(0.5-w, 0, 0.5+w, 8-tw, 24)
-            verts(5) = new Vertex5(0.5+w, 0, 0.5+w, 8+tw, 24)
-            verts(6) = new Vertex5(0.5+w, 0.5-w, 0.5+w, 8+tw, 16+tw)
-            verts(7) = new Vertex5(0.5-w, 0.5-w, 0.5+w, 8-tw, 16+tw)
-        }
-        else
-        {
-            verts(4) = new Vertex5(0.5-w, 0.5+w, 0.5+w, 8-tw, 16-tw)
-            verts(5) = new Vertex5(0.5+w, 0.5+w, 0.5+w, 8+tw, 16-tw)
-            verts(6) = new Vertex5(0.5+w, 1, 0.5+w, 8+tw, 8)
-            verts(7) = new Vertex5(0.5-w, 1, 0.5+w, 8-tw, 8)
-        }
-        for (r <- 1 until 4)
-        {
-            val t = Rotation.quarterRotations(r).at(Vector3.CENTER)
-            for (i <- 0 until 4)
-            {
-                verts(i+r*4+4) = verts(i+4).copy.apply(t)
-                if (r >= 2) verts(i+r*4+4).apply(uvReflect)
-            }
-        }
-        val t = new UVTranslation(12, 12)
-        for (i <- 0 until 4) verts(i).apply(t)
-        verts
-    }
-
-    private def generateFlat(s:Int):Array[Vertex5] =
-    {
-        val verts = faceVerts(s, 0.5-w)
-        var fConnMask = 0
-        for (i <- 0 until 4)
-        {
-            val absSide = ((s&6)+i+2)%6
-            if ((connMap&1<<absSide) != 0) fConnMask |= 1<<i
-        }
-
-        val rot =
-            if ((fConnMask&0xC) == 0) 0
-            else if ((fConnMask&3) == 0) 1
-            else 2
-
-        val uvt = rot match
-        {
-            case 1 => new UVT(Rotation.quarterRotations(1).at(new Vector3(8, 0, 16)))
-            case 2 => new UVT(Rotation.quarterRotations(1).at(new Vector3(8, 0, 16)).`with`(new Translation(16, 0, 0)))
-            case _ => null
-        }
-
-        if (uvt != null) for (vert <- verts) vert.apply(uvt)
         verts
     }
 
