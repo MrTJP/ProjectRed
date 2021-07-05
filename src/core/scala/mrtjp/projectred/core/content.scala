@@ -9,6 +9,7 @@ import codechicken.microblock.handler.MicroblockModContent
 import codechicken.microblock.{EdgeMicroFactory, FaceMicroFactory, ItemMicroBlock, MicroMaterialRegistry}
 import mrtjp.projectred.ProjectRedCore.MOD_ID
 import mrtjp.projectred.core.CoreContent._
+import net.minecraft.block.Blocks
 import net.minecraft.data._
 import net.minecraft.item.{Item, ItemStack, Items}
 import net.minecraft.tags.ItemTags
@@ -346,7 +347,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     override protected def registerRecipes() {
         smelting(itemPlate, 2)
-            .ingredient(STONE)
+            .ingredient(Blocks.SMOOTH_STONE)
 
         smelting(itemSiliconBoule)
             .ingredient(itemSandCoalCompound)
