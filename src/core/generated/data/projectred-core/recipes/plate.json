@@ -5,7 +5,7 @@
     "count": 2
   },
   "ingredient": {
-    "tag": "forge:stone"
+    "item": "minecraft:smooth_stone"
   },
   "experience": 0.0,
   "cookingtime": 200
