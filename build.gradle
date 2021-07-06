@@ -265,17 +265,17 @@ curseforge {
     }
 
     // Expansion
-    project {
-        id = '229048'
-        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
-        changelogType = 'markdown'
-        changelog = file('CHANGELOG.md')
-        relations {
-            requiredDependency 'project-red-core'
-        }
-
-        mainArtifact expansionJar
-    }
+//    project {
+//        id = '229048'
+//        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
+//        changelogType = 'markdown'
+//        changelog = file('CHANGELOG.md')
+//        relations {
+//            requiredDependency 'project-red-core'
+//        }
+//
+//        mainArtifact expansionJar
+//    }
 
     // Exploration
     project {
