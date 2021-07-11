@@ -40,7 +40,7 @@ object GateItemRenderer extends IItemRenderer
                 ccrs.brightness = packedLight
                 ccrs.overlay = packedOverlay
                 ccrs.bind(RenderType.cutout(), getter, mStack)
-                RenderGate.renderInv(stack, new RedundantTransformation,gate.gateType, ccrs)
+                RenderGate.instance().renderInv(stack, new RedundantTransformation,gate.gateType, ccrs)
         }
     }
 
