@@ -173,7 +173,7 @@ class RenderOR extends GateRenderer[ComboGatePart]
     val wires = generateWireModels("or", 4)
     val torches = IndexedSeq(new RedstoneTorchModel(8, 9, 6), new RedstoneTorchModel(8, 2.5, 8))
 
-    override val coreModels = wires++torches:+new BaseComponentModel
+    override val coreModels = wires++torches:+BaseComponentModel
 
     override def prepareInv()
     {
@@ -207,7 +207,7 @@ class RenderNOR extends GateRenderer[ComboGatePart]
     var wires = generateWireModels("nor", 4)
     var torch = new RedstoneTorchModel(8, 9, 6)
 
-    override val coreModels = wires:+torch:+new BaseComponentModel
+    override val coreModels = wires:+torch:+BaseComponentModel
 
     override def prepareInv()
     {
@@ -239,7 +239,7 @@ class RenderNOT extends GateRenderer[ComboGatePart]
     val wires = generateWireModels("not", 4)
     val torch = new RedstoneTorchModel(8, 8, 6)
 
-    override val coreModels = wires:+torch:+new BaseComponentModel
+    override val coreModels = wires:+torch:+BaseComponentModel
 
     override def prepareInv()
     {
@@ -272,7 +272,7 @@ class RenderAND extends GateRenderer[ComboGatePart]
     val torches = IndexedSeq(new RedstoneTorchModel(4, 8, 6), new RedstoneTorchModel(12, 8, 6),
         new RedstoneTorchModel(8, 8, 6), new RedstoneTorchModel(8, 2, 8))
 
-    override val coreModels = wires++torches:+new BaseComponentModel
+    override val coreModels = wires++torches:+BaseComponentModel
 
     override def prepareInv()
     {
@@ -311,7 +311,7 @@ class RenderNAND extends GateRenderer[ComboGatePart]
     val torches = IndexedSeq(new RedstoneTorchModel(4, 8, 6), new RedstoneTorchModel(12, 8, 6),
         new RedstoneTorchModel(8, 8, 6))
 
-    override val coreModels = wires++torches:+new BaseComponentModel
+    override val coreModels = wires++torches:+BaseComponentModel
 
     override def prepareInv()
     {
@@ -348,7 +348,7 @@ class RenderXOR extends GateRenderer[ComboGatePart]
     val torches = IndexedSeq(new RedstoneTorchModel(4.5, 8, 6), new RedstoneTorchModel(11.5, 8, 6),
         new RedstoneTorchModel(8, 12, 6))
 
-    override val coreModels = wires++torches:+new BaseComponentModel
+    override val coreModels = wires++torches:+BaseComponentModel
 
     override def prepareInv()
     {
@@ -379,7 +379,7 @@ class RenderXNOR extends GateRenderer[ComboGatePart]
     val torches = IndexedSeq(new RedstoneTorchModel(8, 2, 8), new RedstoneTorchModel(4.5, 8, 6),
         new RedstoneTorchModel(11.5, 8, 6), new RedstoneTorchModel(8, 12, 6))
 
-    override val coreModels = wires++torches:+new BaseComponentModel
+    override val coreModels = wires++torches:+BaseComponentModel
 
     override def prepareInv()
     {
@@ -412,7 +412,7 @@ class RenderBuffer extends GateRenderer[ComboGatePart]
     val wires = generateWireModels("buffer", 4)
     val torches = IndexedSeq(new RedstoneTorchModel(8, 3.5, 8), new RedstoneTorchModel(8, 9, 6))
 
-    override val coreModels = wires++torches:+new BaseComponentModel
+    override val coreModels = wires++torches:+BaseComponentModel
 
     override def prepareInv()
     {
@@ -445,7 +445,7 @@ class RenderMultiplexer extends GateRenderer[ComboGatePart]
     val torches = IndexedSeq(new RedstoneTorchModel(8, 2, 8), new RedstoneTorchModel(9, 10.5, 6),
         new RedstoneTorchModel(4.5, 8, 6), new RedstoneTorchModel(11.5, 8, 6))
 
-    override val coreModels = wires++torches:+new BaseComponentModel
+    override val coreModels = wires++torches:+BaseComponentModel
 
     override def prepareInv()
     {
@@ -482,7 +482,7 @@ class RenderPulse extends GateRenderer[ComboGatePart]
     val torches = IndexedSeq(new RedstoneTorchModel(4, 9.5, 6), new RedstoneTorchModel(11, 9.5, 6),
         new RedstoneTorchModel(8, 3.5, 8))
 
-    override val coreModels = wires++torches:+new BaseComponentModel
+    override val coreModels = wires++torches:+BaseComponentModel
 
     override def prepareInv()
     {
@@ -516,7 +516,7 @@ class RenderRepeater extends GateRenderer[ComboGatePart]
 
     var shape = 0
 
-    override val coreModels = wires++Seq(endTorch, new BaseComponentModel)
+    override val coreModels = wires++Seq(endTorch, BaseComponentModel)
 
     override def switchModels = Seq(varTorches(shape))
     override def allSwitchModels = varTorches
@@ -545,7 +545,7 @@ class RenderRandomizer extends GateRenderer[ComboGatePart]
     val wires = generateWireModels("rand", 7)
     val chips = IndexedSeq(new YellowChipModel(8, 5.5), new YellowChipModel(11.5, 11.5), new YellowChipModel(4.5, 11.5))
 
-    override val coreModels = wires++chips:+new BaseComponentModel
+    override val coreModels = wires++chips:+BaseComponentModel
 
     override def prepareInv()
     {
@@ -596,7 +596,7 @@ class RenderSRLatch extends GateRenderer[SRLatch]
     val torches2 = IndexedSeq(new RedstoneTorchModel(9.5, 3, 6), new RedstoneTorchModel(6.5, 13, 6))
     var shape = 0
 
-    override val coreModels = Seq(new BaseComponentModel)
+    override val coreModels = Seq(BaseComponentModel)
     override def switchModels = if (shape == 0) wires1++torches1 else wires2++torches2
     override val allSwitchModels = wires1++wires2++torches1++torches2
 
@@ -641,7 +641,7 @@ class RenderToggleLatch extends GateRenderer[ToggleLatch]
     val torches = IndexedSeq(new RedstoneTorchModel(4, 4, 6), new RedstoneTorchModel(4, 12, 6))
     val lever = new LeverModel(11, 8)
 
-    override val coreModels = wires++torches++Seq(lever, new BaseComponentModel)
+    override val coreModels = wires++torches++Seq(lever, BaseComponentModel)
 
     override def prepareInv()
     {
@@ -668,7 +668,7 @@ class RenderTransparentLatch extends GateRenderer[ComboGatePart]
     val torches = IndexedSeq(new RedstoneTorchModel(4, 12.5, 6), new RedstoneTorchModel(4, 8, 6),
         new RedstoneTorchModel(8, 8, 6), new RedstoneTorchModel(8, 2, 8), new RedstoneTorchModel(14, 8, 8))
 
-    override val coreModels = wires++torches:+new BaseComponentModel
+    override val coreModels = wires++torches:+BaseComponentModel
 
     override def prepareInv()
     {
@@ -707,7 +707,7 @@ class RenderLightSensor extends GateRenderer[ComboGatePart]
     val wires = generateWireModels("lightsensor", 1)
     val solar = new SolarModel(8, 5.5)
 
-    override val coreModels = wires++Seq(solar, new BaseComponentModel)
+    override val coreModels = wires++Seq(solar, BaseComponentModel)
 
     override def prepareInv()
     {
@@ -727,7 +727,7 @@ class RenderRainSensor extends GateRenderer[ComboGatePart]
     val wires = generateWireModels("rainsensor", 1)
     val sensor = new RainSensorModel(8, 6)
 
-    override val coreModels = wires++Seq(sensor, new BaseComponentModel)
+    override val coreModels = wires++Seq(sensor, BaseComponentModel)
 
     override def prepareInv()
     {
@@ -746,7 +746,7 @@ class RenderTimer extends GateRenderer[Timer]
     val torches = IndexedSeq(new RedstoneTorchModel(8, 3, 6), new RedstoneTorchModel(8, 8, 12))
     val pointer = new PointerModel(8, 8, 8)
 
-    override val coreModels = wires++torches:+new BaseComponentModel
+    override val coreModels = wires++torches:+BaseComponentModel
 
     override def prepareInv()
     {
@@ -789,7 +789,7 @@ class RenderSequencer extends GateRenderer[Sequencer]
 
     torches(0).on = true
 
-    override val coreModels = torches:+new BaseComponentModel
+    override val coreModels = torches:+BaseComponentModel
 
     override def prepare(gate:Sequencer)
     {
@@ -835,7 +835,7 @@ class RenderCounter extends GateRenderer[Counter]
 
     torches(0).on = true
 
-    override val coreModels = wires++torches:+new BaseComponentModel
+    override val coreModels = wires++torches:+BaseComponentModel
 
     override def prepare(gate:Counter)
     {
@@ -882,7 +882,7 @@ class RenderStateCell extends GateRenderer[StateCell]
     val chip = new RedChipModel(6.5, 10)
     val pointer = new PointerModel(13, 8, 8)
 
-    override val coreModels = wires++torches++Seq(chip, new BaseComponentModel)
+    override val coreModels = wires++torches++Seq(chip, BaseComponentModel)
 
     override def prepareInv()
     {
@@ -937,7 +937,7 @@ class RenderSynchronizer extends GateRenderer[Synchronizer]
     val torch = new RedstoneTorchModel(8, 3, 6)
     val chips = IndexedSeq(new RedChipModel(4.5, 9), new RedChipModel(11.5, 9))
 
-    override val coreModels = wires++chips++Seq(torch, new BaseComponentModel)
+    override val coreModels = wires++chips++Seq(torch, BaseComponentModel)
 
     override def prepareInv()
     {
@@ -970,9 +970,8 @@ class RenderBusXcvr extends GateRenderer[BusTransceiver]
 {
     val wires = generateWireModels("busxcvr", 2)
     val panels = IndexedSeq(new SigLightPanelModel(4, 8, false), new SigLightPanelModel(12, 8, true))
-    val cable = new BusXcvrCableModel
 
-    override val coreModels = wires++panels++Seq(cable, new BaseComponentModel)
+    override val coreModels = wires++panels++Seq(BusXcvrCableModel, BaseComponentModel)
 
     override def prepareInv()
     {
@@ -1003,7 +1002,7 @@ class RenderComparator extends GateRenderer[Comparator]
     val torch = new RedstoneTorchModel(8, 2, 6)
     val chips = IndexedSeq(new MinusChipModel(5, 8), new PlusChipModel(11, 8))
 
-    override val coreModels = wires++Seq(torch, new BaseComponentModel)
+    override val coreModels = wires++Seq(torch, BaseComponentModel)
 
     override def prepareInv()
     {
@@ -1045,7 +1044,6 @@ class RenderComparator extends GateRenderer[Comparator]
 
 class RenderBusRandomizer extends GateRenderer[BusRandomizer]
 {
-    val cable = new BusRandCableModel
     val panel = new SigLightPanelModel(8, 8, true)
     val wires1 = generateWireModels("busrand1", 2)
     val wires2 = generateWireModels("busrand2", 2)
@@ -1055,7 +1053,7 @@ class RenderBusRandomizer extends GateRenderer[BusRandomizer]
     panel.offColour = 0x756900FF
     panel.onColour = 0xe1d600FF
 
-    override val coreModels = Seq(cable, panel, new BaseComponentModel)
+    override val coreModels = Seq(BusRandCableModel, panel, BaseComponentModel)
 
     override def switchModels = if (shape == 0) wires1 else wires2
     override def allSwitchModels = wires1++wires2
@@ -1088,10 +1086,9 @@ class RenderBusRandomizer extends GateRenderer[BusRandomizer]
 class RenderBusConverter extends GateRenderer[BusConverter]
 {
     val wires = generateWireModels("busconv", 3)
-    val cable = new BusConvCableModel
     val bar = new SignalBarModel(8, 8)
 
-    override val coreModels = wires++Seq(cable, bar, new BaseComponentModel)
+    override val coreModels = wires++Seq(BusConvCableModel, bar, BaseComponentModel)
 
     override def prepareInv()
     {
@@ -1116,9 +1113,8 @@ class RenderBusInputPanel extends GateRenderer[BusInputPanel]
 {
     val wires = generateWireModels("businput", 1)
     val buttons = new InputPanelButtonsModel
-    val cable = new BusInputPanelCableModel
 
-    override val coreModels = wires++Seq(buttons, cable, new BaseComponentModel)
+    override val coreModels = wires++Seq(buttons, BusInputPanelCableModel, BaseComponentModel)
 
     override def prepareInv()
     {
@@ -1162,7 +1158,7 @@ class RenderNullCell extends RenderArrayCell[NullCell]
 {
     override val topWire:CellTopWireModel = new NullCellTopWireModel
     override val bottomWire:CellBottomWireModel = new NullCellBottomWireModel
-    override val coreModels = Seq(bottomWire, topWire, new CellFrameModel, new NullCellBaseModel)
+    override val coreModels = Seq(bottomWire, topWire, CellFrameModel, NullCellBaseModel)
 }
 
 class RenderInvertCell extends RenderArrayCell[InvertCell]
@@ -1172,7 +1168,7 @@ class RenderInvertCell extends RenderArrayCell[InvertCell]
 
     override val topWire:CellTopWireModel = new NullCellTopWireModel
     override val bottomWire:CellBottomWireModel = new ExtendedCellBottompWireModel
-    override val coreModels = wires++Seq(torch, bottomWire, topWire, new CellFrameModel, new CellPlateModel, new ExtendedCellBaseModel)
+    override val coreModels = wires++Seq(torch, bottomWire, topWire, CellFrameModel, CellPlateModel, ExtendedCellBaseModel)
 
     override def prepareInv()
     {
@@ -1197,7 +1193,7 @@ class RenderBufferCell extends RenderArrayCell[BufferCell]
 
     override val topWire:CellTopWireModel = new NullCellTopWireModel
     override val bottomWire:CellBottomWireModel = new ExtendedCellBottompWireModel
-    override val coreModels = wires++torches++Seq(topWire, bottomWire, new CellFrameModel, new CellPlateModel, new ExtendedCellBaseModel)
+    override val coreModels = wires++torches++Seq(topWire, bottomWire, CellFrameModel, CellPlateModel, ExtendedCellBaseModel)
 
     override def prepareInv()
     {
@@ -1224,7 +1220,7 @@ class RenderANDCell extends GateRenderer[ANDCell]
     val torches = IndexedSeq(new RedstoneTorchModel(8, 13, 6), new RedstoneTorchModel(8, 2, 8), new FlippedRSTorchModel(8, 8))
     val topWire = new NullCellTopWireModel
 
-    override val coreModels = wires++torches++Seq(topWire, new CellFrameModel, new BaseComponentModel)
+    override val coreModels = wires++torches++Seq(topWire, CellFrameModel, BaseComponentModel)
 
     override def prepareInv()
     {
@@ -1257,7 +1253,7 @@ class RenderStackingLatch extends GateRenderer[StackingLatch]
         new RedstoneTorchModel(8, 8, 6), new RedstoneTorchModel(8, 2, 8))
 
     override val coreModels = wires++torches++Seq(clkwire, new StackLatchStandModel(3.5, 5),
-        new StackLatchStandModel(12.5, 5), new StackLatchBaseModel)
+        new StackLatchStandModel(12.5, 5), StackLatchBaseModel)
 
     override def prepareInv()
     {
@@ -1297,7 +1293,7 @@ class RenderSegmentDisplay extends GateRenderer[SegmentDisplay]
     val sixteenSeg = new SixteenSegModel(8, 8)
     var shape = 0
 
-    override val coreModels = Seq(new SegmentBusCableModel, new BaseComponentModel)
+    override val coreModels = Seq(SegmentBusCableModel, BaseComponentModel)
     override def switchModels = if (shape == 0) Seq(sevenSeg0, sevenSeg1) else Seq(sixteenSeg)
     override def allSwitchModels = Seq(sevenSeg0, sevenSeg1, sixteenSeg)
 
@@ -1307,7 +1303,7 @@ class RenderSegmentDisplay extends GateRenderer[SegmentDisplay]
         sevenSeg1.signal = 64
         sevenSeg0.signal = 64
         sixteenSeg.signal = 0
-        Seq(sevenSeg0, sevenSeg1, sixteenSeg).foreach(_.setColourOn(EnumColour.RED.ordinal.toByte))
+        Seq(sevenSeg0, sevenSeg1, sixteenSeg).foreach(_.setOnColourIndex(EnumColour.RED.ordinal.toByte))
     }
 
     override def prepare(gate:SegmentDisplay)
@@ -1318,7 +1314,7 @@ class RenderSegmentDisplay extends GateRenderer[SegmentDisplay]
         sevenSeg1.signal = sig1
         sevenSeg0.signal = sig0
         sixteenSeg.signal = sig1<<8|sig0
-        Seq(sevenSeg0, sevenSeg1, sixteenSeg).foreach(_.setColourOn(gate.colour))
+        Seq(sevenSeg0, sevenSeg1, sixteenSeg).foreach(_.setOnColourIndex(gate.colour))
     }
 }
 
@@ -1328,7 +1324,7 @@ class RenderDecodingRand extends GateRenderer[DecodingRand]
     val chips = IndexedSeq(new YellowChipModel(5, 13), new YellowChipModel(11, 13), new RedChipModel(5.5, 8))
     val torches = IndexedSeq(new RedstoneTorchModel(8, 2.5, 8), new RedstoneTorchModel(14, 8, 8), new RedstoneTorchModel(2, 8, 8), new RedstoneTorchModel(9, 8, 6))
 
-    override val coreModels = wires++chips++torches:+new BaseComponentModel
+    override val coreModels = wires++chips++torches:+BaseComponentModel
 
     override def prepareInv()
     {
