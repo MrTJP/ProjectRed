@@ -126,7 +126,7 @@ abstract class RedstoneGatePart(gateType:GateType) extends GatePart(gateType) wi
     }
 
     override def animateTick(random:Random):Unit = {
-        RenderGate.spawnParticles(this, random)
+        RenderGate.instance().spawnParticles(this, random)
     }
 
     def tickSound():Unit = {

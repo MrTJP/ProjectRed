@@ -19,7 +19,7 @@ import net.minecraft.particles.RedstoneParticleData
 
 import java.util.Random
 
-object RenderGate extends IIconRegister
+class RenderGate
 {
     var renderers = buildRenders()
 
@@ -60,12 +60,6 @@ object RenderGate extends IIconRegister
         new RenderDecodingRand,
     )
 
-    override def registerIcons(map:AtlasRegistrar)
-    {
-        ComponentStore.registerIcons(map)
-        for (r <- renderers) r.registerIcons(map)
-    }
-
     def renderStatic(gate:GatePart, pos:Vector3, ccrs:CCRenderState)
     {
         val r = renderers(gate.getGateType.ordinal).asInstanceOf[GateRenderer[GatePart]]
@@ -98,6 +92,20 @@ object RenderGate extends IIconRegister
     def spawnParticles(gate:GatePart, rand:Random)
     {
         renderers(gate.getGateType.ordinal).asInstanceOf[GateRenderer[GatePart]].spawnParticles(gate, rand)
+    }
+}
+
+object RenderGate extends IIconRegister
+{
+    private val instances = new ThreadLocal[RenderGate]() {
+        override def initialValue() = new RenderGate
+    }
+
+    def instance():RenderGate = instances.get()
+
+    override def registerIcons(map:AtlasRegistrar):Unit = {
+        ComponentStore.registerIcons(map)
+        for (m <- instance().renderers) m.registerIcons(map)
     }
 }
 
