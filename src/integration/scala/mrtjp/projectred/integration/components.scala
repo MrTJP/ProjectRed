@@ -16,13 +16,14 @@ import codechicken.lib.vec.uv._
 import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.core.vec.VecLib
 import mrtjp.projectred.core.{PRLib, RenderHalo, UVT}
+import mrtjp.projectred.integration.ComponentStore.{bakeCopy, bakeOrients}
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.math.BlockPos
 import org.lwjgl.opengl.GL11
 
 import java.util.function.Consumer
+import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 import scala.util.control.Breaks
 
@@ -30,8 +31,8 @@ object ComponentStore
 {
     val base = loadBase("base")
     val lightChip = loadCorrectedModel("chip")
-    val leverOn = loadCorrectedModel("leveron")
-    val leverOff = loadCorrectedModel("leveroff")
+    val leverOn = loadCorrectedModel("leveron").apply(new Translation(0, 2/16D, 0))
+    val leverOff = loadCorrectedModel("leveroff").apply(new Translation(0, 2/16D, 0))
     val solarArray = loadCorrectedModel("solar")
     val rainSensor = loadCorrectedModel("rainsensor")
     val pointer = loadCorrectedModel("pointer")
@@ -53,15 +54,15 @@ object ComponentStore
     val cellPlate = loadCorrectedModel("array/cellplate").apply(new Translation(0.5, 0, 0.5))
 
     val stackLatchWireBottom = loadCorrectedModel("array/stacklatchwire").apply(new Translation(0.5, 0, 0.5))
-    val stackStand = loadCorrectedModel("array/latchstand")
+    val stackStand = loadCorrectedModel("array/latchstand").apply(new Translation(0, 2/16D, 0))
 
     val sevenSeg = loadCorrectedModels("array/7seg")
     val sixteenSeg = loadCorrectedModels("array/16seg")
     val segbus = loadCorrectedModel("array/segbus")
 
-    val icChip = loadCorrectedModel("icchip")
-    val icGlass = loadCorrectedModel("icglass")
-    val icHousing = loadCorrectedModel("ichousing")
+    val icChip = loadCorrectedModel("icchip").apply(new Translation(8/16D, 2/16D, 8/16D))
+    val icGlass = loadCorrectedModel("icglass").apply(new Translation(8/16D, 0, 8/16D))
+    val icHousing = loadCorrectedModel("ichousing").apply(new Translation(8/16D, 0, 8/16D))
 
     var baseIcon:TextureAtlasSprite = _
     var wireIcons:Array[TextureAtlasSprite] = new Array[TextureAtlasSprite](3)
@@ -208,6 +209,12 @@ object ComponentStore
 
     def bakeDynamic(base:CCModel) = Array(base.copy, reverseFacing(base.copy))
 
+    def bakeOrients(base:CCModel):Array[CCModel] = {
+        val models = new Array[CCModel](48)
+        for (i <- 0 until 48) models(i) = bakeCopy(base, i)
+        models
+    }
+
     private def reverseFacing(m:CCModel) =
     {
         for (i <- 0 until m.verts.length by 4)
@@ -236,7 +243,106 @@ object ComponentStore
 
 //        if (Configurator.logicwires3D) new WireModel3D(data)
 //        else new WireModel2D(data)
-        new WireModel3D(data)
+        new WireModel3D(name)
+    }
+
+    val lightChipModelBakery = new StaticStatelessSurfaceComponentBakery(lightChip)
+    val solarModelBakery = new StaticStatelessSurfaceComponentBakery(solarArray)
+    val rainSensorBakery = new StaticStatelessSurfaceComponentBakery(rainSensor)
+    val redstoneTorchModelBakery = new RedstoneTorchModelBakery
+    val leverModelBakery = new StaticSurfaceComponentBakery(Array(leverOn, leverOff))
+    val stackStandBakery = new StaticStatelessSurfaceComponentBakery(stackStand)
+    val sevenSegBaseBakery = new StaticStatelessSurfaceComponentBakery(sevenSeg("base"))
+    val sixteenSegBaseBakery = new StaticStatelessSurfaceComponentBakery(sixteenSeg("base"))
+}
+
+trait ComponentBakery
+{
+    private val cache = new Array[Array[CCModel]](cacheSize)
+
+    def cacheSize:Int
+
+    /**
+      * Obtains a model with unique `id` from the cache if it exists. If model is not found,
+      * the provided `generator` function will be used to create a new one, from which all
+      * transforms will be baked and stored.
+      *
+      * @param key Unique key for this model. Should be unique accross all permutations of all models.
+      * @param default A function to generate a new CCModel (side 0, rotation 0)
+      * @return An array of 48 CCModels, indexed by its orientation (see [[ComponentStore.orientT]])
+      */
+    def getOrCreateModel(key:Int, default: => CCModel):Array[CCModel] = {
+        var models = cache(key)
+        if (models == null || models.length == 0) {
+            models = new Array[CCModel](48)
+            val base = default
+            for (i <- 0 until 48) models(i) = createBakedCopy(base, i)
+            cache(key) = models
+        }
+        models
+    }
+
+    def createBakedCopy(base:CCModel, i:Int):CCModel = bakeCopy(base, i)
+
+    def clearCache():Unit = cache.mapInPlace(_ => null)
+}
+
+abstract class SurfaceComponentBakery extends ComponentBakery
+{
+    def stateBits:Int
+
+    override def cacheSize:Int = 32*32*(1<<stateBits)
+
+    def modelKey(x:Double, z:Double, state:Int):Int = {
+        if ((x/0.5) % 1 != 0 || (x/0.5 % 1 != 0))
+            throw new IllegalArgumentException(s"Position (x:$x, z:$z) is not divisible by 0.5")
+        val xi = (x/0.5).toInt
+        val zi = (z/0.5).toInt
+        val stateMask = (1<<stateBits) - 1
+        var k = state&stateMask
+        k = (k << stateBits) | zi&0x1F
+        k = (k << 5) | xi&0x1F
+        k
+    }
+
+    def getOrCreateModel(x:Double, z:Double, state:Int):Array[CCModel] =
+        getOrCreateModel(modelKey(x, z, state), generateBaseModel(x, z, state))
+
+    def generateBaseModel(x:Double, z:Double, state:Int):CCModel
+}
+
+abstract class StatelessSurfaceComponentBakery extends SurfaceComponentBakery
+{
+    override def stateBits = 0
+
+    def modelKey(x:Double, z:Double):Int = super.modelKey(x, z, 0)
+
+    def getOrCreateModel(x:Double, z:Double):Array[CCModel] = super.getOrCreateModel(x, z, 0)
+}
+
+class StaticStatelessSurfaceComponentBakery(base:CCModel) extends StatelessSurfaceComponentBakery
+{
+    override def generateBaseModel(x:Double, z:Double, state:Int) = {
+        val t = new Translation(x/16D, 0, z/16D)
+        base.copy.apply(t)
+    }
+}
+
+class StaticSurfaceComponentBakery(baseModels:Array[CCModel]) extends SurfaceComponentBakery
+{
+    override val stateBits:Int = {
+        var i = 0
+        var j = baseModels.length
+        while (j > 0) {
+            i += 1
+            j >>= 1
+        }
+        i
+    }
+
+    override def generateBaseModel(x:Double, z:Double, state:Int):CCModel = {
+        val t = new Translation(x/16D, 0, z/16D)
+        baseModels(state).copy.apply(t)
     }
 }
 
@@ -249,15 +355,9 @@ abstract class ComponentModel
     def registerIcons(reg:AtlasRegistrar){}
 }
 
-abstract class SingleComponentModel(m:CCModel, pos:Vector3 = Vector3.ZERO) extends ComponentModel
+abstract class SingleComponentModel extends ComponentModel
 {
-    val models =
-    {
-        val xs = new Array[CCModel](48)
-        val t = pos.copy.multiply(1/16D).translation
-        for (i <- 0 until 48) xs(i) = bakeCopy(m.copy.apply(t), i)
-        xs
-    }
+    def models:Array[CCModel]
 
     def getUVT:UVTransformation
 
@@ -267,18 +367,16 @@ abstract class SingleComponentModel(m:CCModel, pos:Vector3 = Vector3.ZERO) exten
     }
 }
 
-abstract class MultiComponentModel(m:Seq[CCModel], pos:Vector3 = Vector3.ZERO) extends ComponentModel
+abstract class StaticComponentModel(base:CCModel) extends SingleComponentModel
 {
-    val models =
-    {
-        val xs = Array.ofDim[CCModel](m.length, 48)
-        val t = pos.copy.multiply(1/16D).translation
-        for (i <- m.indices) for (j <- 0 until 48)
-            xs(i)(j) = bakeCopy(m.apply(i).copy.apply(t), j)
-        xs
-    }
+    override val models:Array[CCModel] = bakeOrients(base)
+}
 
+abstract class MultiComponentModel extends ComponentModel
+{
     var state = 0
+
+    def models(state:Int):Array[CCModel]
 
     def getUVT:UVTransformation
 
@@ -288,7 +386,7 @@ abstract class MultiComponentModel(m:Seq[CCModel], pos:Vector3 = Vector3.ZERO) e
     }
 }
 
-abstract class OnOffModel(m:CCModel, pos:Vector3 = Vector3.ZERO) extends SingleComponentModel(m, pos)
+trait OnOffModel extends SingleComponentModel
 {
     var on = false
 
@@ -297,7 +395,7 @@ abstract class OnOffModel(m:CCModel, pos:Vector3 = Vector3.ZERO) extends SingleC
     override def getUVT = new IconTransformation(getIcons(if (on) 1 else 0))
 }
 
-abstract class StateIconModel(m:CCModel, pos:Vector3 = Vector3.ZERO) extends SingleComponentModel(m, pos)
+abstract class StateIconModel extends SingleComponentModel
 {
     var state = 0
 
@@ -306,7 +404,7 @@ abstract class StateIconModel(m:CCModel, pos:Vector3 = Vector3.ZERO) extends Sin
     override def getUVT = new IconTransformation(getIcons(state))
 }
 
-class BaseComponentModel extends SingleComponentModel(base)
+object BaseComponentModel extends StaticComponentModel(base)
 {
     override def getUVT = new IconTransformation(baseIcon)
 }
@@ -385,9 +483,11 @@ object TWireModel
     }
 }
 
-class WireModel3D(data:Array[Colour]) extends SingleComponentModel(WireModel3D.generateModel(data)) with TWireModel
+class WireModel3D(texName:String) extends SingleComponentModel with TWireModel
 {
-    override def getUVT =
+    override def models = WireModel3D.getOrGenerateModels(texName)
+
+    def getUVT =
         if (disabled) new IconTransformation(wireIcons(0))
         else if (on) new MultiIconTransformation(wireIcons(0), wireIcons(2))
         else new MultiIconTransformation(wireIcons(0), wireIcons(1))
@@ -395,6 +495,16 @@ class WireModel3D(data:Array[Colour]) extends SingleComponentModel(WireModel3D.g
 
 object WireModel3D
 {
+    private val cache = mutable.HashMap[String, Array[CCModel]]()
+
+    def getOrGenerateModels(texName:String):Array[CCModel] =
+        cache.getOrElseUpdate(texName, {
+            val data = TextureUtils.loadTextureColours(new ResourceLocation(
+                "projectred-integration:textures/block/surface/"+texName+".png"))
+            val model = WireModel3D.generateModel(data)
+            bakeOrients(model)
+        })
+
     def generateModel(data:Array[Colour]) =
     {
         val wireRectangles = TWireModel.rectangulate(data)
@@ -496,16 +606,16 @@ trait TRedstoneTorchModel extends OnOffModel
     def getLightPos:Vector3
 }
 
-class RedstoneTorchModel(x:Double, z:Double, h:Int) extends OnOffModel(RedstoneTorchModel.genModel(x, z, h)) with TRedstoneTorchModel
+class RedstoneTorchModel(x:Double, z:Double, h:Int) extends OnOffModel with TRedstoneTorchModel
 {
+    override val models:Array[CCModel] = redstoneTorchModelBakery.getOrCreateModel(x, z, h)
+
     override val getLightPos = new Vector3(x, h-1, z).multiply(1/16D)
 
     override def getIcons = redstoneTorchIcons
 }
 
-class FlippedRSTorchModel(x:Double, z:Double) extends OnOffModel(RedstoneTorchModel.genModel(x, z, 4).apply(
-    new Rotation(180*MathHelper.torad, 0, 0, 1).at(Vector3.CENTER).`with`(new Translation(new Vector3(0, -6, 0).
-            multiply(1/16D))))) with TRedstoneTorchModel
+class FlippedRSTorchModel(x:Double, z:Double) extends StaticComponentModel(RedstoneTorchModel.genFlipped(x, z, 4, 6)) with TRedstoneTorchModel
 {
     override val getLightPos = new Vector3(x, 4+1, z).multiply(1/16D)
 
@@ -529,40 +639,63 @@ object RedstoneTorchModel
         m.apply(new Scale(1.0005))
         m
     }
+
+    def genFlipped(x:Double, z:Double, h:Int, elevation:Double):CCModel = genModel(x, z, h)
+            .apply(new Translation(0, elevation/16D, 0)).apply(Rotation.sideOrientation(1, 0).at(Vector3.CENTER))
 }
 
-class LeverModel(x:Double, z:Double) extends MultiComponentModel(Seq(leverOn, leverOff), new Vector3(x, 2, z))
+class RedstoneTorchModelBakery extends SurfaceComponentBakery
 {
+    override def stateBits:Int = 4 // 16 states, representing height
+
+    override def generateBaseModel(x:Double, z:Double, state:Int):CCModel = RedstoneTorchModel.genModel(x, z, state)
+}
+
+class LeverModel(x:Double, z:Double) extends MultiComponentModel
+{
+    private val bakedModels = Array(leverModelBakery.getOrCreateModel(x, z, 0), leverModelBakery.getOrCreateModel(x, z, 1))
+
+    override def models(state:Int):Array[CCModel] = bakedModels(state)
+
     override def getUVT = new IconTransformation(leverIcon)
 }
 
-class YellowChipModel(x:Double, z:Double) extends OnOffModel(lightChip, new Vector3(x, 0, z))
+abstract class LightChipModel(x:Double, z:Double) extends OnOffModel
+{
+    override val models:Array[CCModel] = lightChipModelBakery.getOrCreateModel(x, z)
+}
+
+class YellowChipModel(x:Double, z:Double) extends LightChipModel(x, z)
 {
     override def getIcons = yellowChipIcons
 }
 
-class RedChipModel(x:Double, z:Double) extends OnOffModel(lightChip, new Vector3(x, 0, z))
+class RedChipModel(x:Double, z:Double) extends LightChipModel(x, z)
 {
     override def getIcons = redChipIcons
 }
 
-class MinusChipModel(x:Double, z:Double) extends OnOffModel(lightChip, new Vector3(x, 0, z))
+class MinusChipModel(x:Double, z:Double) extends LightChipModel(x, z)
 {
     override def getIcons = minusChipIcons
 }
 
-class PlusChipModel(x:Double, z:Double) extends OnOffModel(lightChip, new Vector3(x, 0, z))
+class PlusChipModel(x:Double, z:Double) extends LightChipModel(x, z)
 {
     override def getIcons = plusChipIcons
 }
 
-class SolarModel(x:Double, z:Double) extends StateIconModel(solarArray, new Vector3(x, 0, z))
+class SolarModel(x:Double, z:Double) extends StateIconModel
 {
+    override val models:Array[CCModel] = solarModelBakery.getOrCreateModel(x, z)
+
     override def getIcons = solarIcons
 }
 
-class RainSensorModel(x:Double, z:Double) extends SingleComponentModel(rainSensor, new Vector3(x, 0, z))
+class RainSensorModel(x:Double, z:Double) extends SingleComponentModel//(rainSensor, new Vector3(x, 0, z))
 {
+    override val models:Array[CCModel] = rainSensorBakery.getOrCreateModel(x, z)
+
     override def getUVT = new IconTransformation(rainIcon)
 }
 
@@ -580,41 +713,46 @@ class PointerModel(x:Double, y:Double, z:Double, scale:Double = 1) extends Compo
     }
 }
 
-abstract class BundledCableModel(model:CCModel, pos:Vector3, uCenter:Double, vCenter:Double) extends SingleComponentModel(model, pos)
+abstract class BundledCableModel(model:CCModel, pos:Vector3, uCenter:Double, vCenter:Double) extends SingleComponentModel
 {
-    for (orient <- 0 until 48)
-    {
-        val side = orient%24>>2
-        val r = orient&3
-        val reflect = orient >= 24
-        val rotate = (r+PRLib.bundledCableBaseRotationMap(side))%4 >= 2
+    override val models:Array[CCModel] = {
+        val models = new Array[CCModel](48)
+        for (orient <- 0 until 48) {
+            val p = pos.copy.multiply(1/16D).translation()
+            models(orient) = bakeCopy(model.copy.apply(p), orient)
 
-        var t:Transformation = new RedundantTransformation
-        if (reflect) t = t.`with`(new Scale(-1, 0, 1))
-        if (rotate) t = t.`with`(Rotation.quarterRotations(2))
+            val side = orient%24>>2
+            val r = orient&3
+            val reflect = orient >= 24
+            val rotate = (r+PRLib.bundledCableBaseRotationMap(side))%4 >= 2
 
-        if (!t.isInstanceOf[RedundantTransformation])
-            models(orient).apply(new UVT(t.at(new Vector3(uCenter, 0, vCenter))))
+            var t:Transformation = new RedundantTransformation
+            if (reflect) t = t.`with`(new Scale(-1, 0, 1))
+            if (rotate) t = t.`with`(Rotation.quarterRotations(2))
+
+            if (!t.isInstanceOf[RedundantTransformation])
+                models(orient).apply(new UVT(t.at(new Vector3(uCenter, 0, vCenter))))
+        }
+        models
     }
 }
 
-class BusXcvrCableModel extends BundledCableModel(busXcvr, new Vector3(8, 0, 8), 10/32D, 14/32D)
+object BusXcvrCableModel extends BundledCableModel(busXcvr, new Vector3(8, 0, 8), 10/32D, 14/32D)
 {
     override def getUVT = new IconTransformation(busXcvrIcon)
 }
 
-class BusRandCableModel extends BundledCableModel(busRand, new Vector3(8, 0, 8), 7/32D, 12/32D)
+object BusRandCableModel extends BundledCableModel(busRand, new Vector3(8, 0, 8), 7/32D, 12/32D)
 {
     override def getUVT = new IconTransformation(busRandIcon)
 }
 
-class
-BusConvCableModel extends BundledCableModel(busConv, new Vector3(8, 0, 8), 7/32D, 12/32D)
+object BusConvCableModel extends BundledCableModel(busConv, new Vector3(8, 0, 8), 7/32D, 12/32D)
 {
     override def getUVT = new IconTransformation(busConvIcon)
 }
 
-class BusInputPanelCableModel extends BundledCableModel(busInput, new Vector3(8, 0, 8), 16/32D, 16/32D)
+object BusInputPanelCableModel extends BundledCableModel(busInput, new Vector3(8, 0, 8), 16/32D, 16/32D)
 {
     override def getUVT = new IconTransformation(busInputIcon)
 }
@@ -695,13 +833,13 @@ class SigLightPanelModel(pos:Vector3, rotY:Boolean) extends ComponentModel
 
 class SignalBarModel(x:Double, z:Double) extends ComponentModel
 {
-    val models = new Array[CCModel](48)
-    val bars = new Array[CCModel](16)
-    val barsInv = new Array[CCModel](16)
-    var barsBg:CCModel = _
-    var barsBgInv:CCModel = _
+    private val models = new Array[CCModel](48)
+    private val bars = new Array[CCModel](16)
+    private val barsInv = new Array[CCModel](16)
+    private var barsBg:CCModel = _
+    private var barsBgInv:CCModel = _
 
-    val pos = new Vector3(x, 0, z).multiply(1/16D)
+    private val pos = new Vector3(x, 0, z).multiply(1/16D)
 
     var signal = 0
     var inverted = false
@@ -754,9 +892,7 @@ class SignalBarModel(x:Double, z:Double) extends ComponentModel
 
 class InputPanelButtonsModel extends ComponentModel
 {
-    val unpressed = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 3, 13), new Vector3(-0.25, 0, -0.25))
-    val pressed = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25))
-    val lights = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25).add(0.2))
+    import InputPanelButtonsModel._
 
     var pressMask = 0
 
@@ -780,6 +916,13 @@ class InputPanelButtonsModel extends ComponentModel
     }
 }
 
+object InputPanelButtonsModel
+{
+    private val unpressed = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 3, 13), new Vector3(-0.25, 0, -0.25))
+    private val pressed = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25))
+    private val lights = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25).add(0.2))
+}
+
 abstract class CellWireModel extends ComponentModel
 {
     var signal:Byte = 0
@@ -791,8 +934,8 @@ abstract class CellWireModel extends ComponentModel
 
 object CellTopWireModel
 {
-    val left = new Array[CCModel](24)
-    val right = new Array[CCModel](24)
+    private val left = new Array[CCModel](24)
+    private val right = new Array[CCModel](24)
 
     {
         val cellWireLeft = cellWireSide.copy.apply(new Translation(-7.001/16D, 0, 0))
@@ -808,7 +951,8 @@ object CellTopWireModel
 
 abstract class CellTopWireModel(wireTop:CCModel) extends CellWireModel
 {
-    val top = new Array[CCModel](24)
+    private val top = new Array[CCModel](24)
+
     var conn = 0
 
     for (i <- 0 until 24) top(i) = bakeCopy(wireTop, i)
@@ -826,7 +970,7 @@ abstract class CellTopWireModel(wireTop:CCModel) extends CellWireModel
 
 abstract class CellBottomWireModel(wireBottom:CCModel) extends CellWireModel
 {
-    val bottom = new Array[CCModel](24)
+    private val bottom = new Array[CCModel](24)
 
     for (i <- 0 until 24) bottom(i) = bakeCopy(wireBottom, i)
 
@@ -838,17 +982,17 @@ abstract class CellBottomWireModel(wireBottom:CCModel) extends CellWireModel
     }
 }
 
-class CellFrameModel extends SingleComponentModel(cellFrame)
+object CellFrameModel extends StaticComponentModel(cellFrame)
 {
     override def getUVT = new IconTransformation(nullCellIcon)
 }
 
-class CellPlateModel extends SingleComponentModel(cellPlate)
+object CellPlateModel extends StaticComponentModel(cellPlate)
 {
     override def getUVT = new IconTransformation(logicCellIcon)
 }
 
-class NullCellBaseModel extends SingleComponentModel(cellBase)
+object NullCellBaseModel extends StaticComponentModel(cellBase)
 {
     override def getUVT = new IconTransformation(nullCellIcon)
 }
@@ -868,13 +1012,15 @@ class ExtendedCellBottompWireModel extends CellBottomWireModel(extendedCellWireB
     override def getUVT:IconTransformation = new IconTransformation(logicCellIcon)
 }
 
-class ExtendedCellBaseModel extends SingleComponentModel(cellBase)
+object ExtendedCellBaseModel extends StaticComponentModel(cellBase)
 {
     override def getUVT = new IconTransformation(logicCellIcon)
 }
 
-class StackLatchStandModel(x:Double, z:Double) extends SingleComponentModel(stackStand, new Vector3(x, 2, z))
+class StackLatchStandModel(x:Double, z:Double) extends SingleComponentModel
 {
+    override def models:Array[CCModel] = stackStandBakery.getOrCreateModel(x, z)
+
     override def getUVT = new IconTransformation(stackingLatchIcon)
 }
 
@@ -883,7 +1029,7 @@ class StackLatchWireModel extends CellBottomWireModel(stackLatchWireBottom)
     override def getUVT:IconTransformation = new IconTransformation(stackingLatchIcon)
 }
 
-class StackLatchBaseModel extends SingleComponentModel(cellBase)
+object StackLatchBaseModel extends StaticComponentModel(cellBase)
 {
     override def getUVT = new IconTransformation(stackingLatchIcon)
 }
@@ -891,19 +1037,21 @@ class StackLatchBaseModel extends SingleComponentModel(cellBase)
 trait SegModel
 {
     var signal = 0
-    var colour_on = EnumColour.RED.rgba
-    var colour_off = EnumColour.BLACK.rgba
+    var onColour = EnumColour.RED.rgba
+    var offColour = EnumColour.BLACK.rgba
 
-    def setColourOn(colour:Byte)
+    def setOnColourIndex(colour:Byte)
     {
-        colour_on = EnumColour.values()(colour&0xFF).rgba
+        onColour = EnumColour.values()(colour&0xFF).rgba
     }
 }
 
-class SevenSegModel(x:Double, z:Double) extends SingleComponentModel(sevenSeg("base"), new Vector3(x, 0, z)) with SegModel
+class SevenSegModel(x:Double, z:Double) extends SingleComponentModel with SegModel
 {
-    val segModels = (0 until 8).map(i => sevenSeg(i.toString))
-    val dPos = new Vector3(x, 0, z).multiply(1/16D).translation
+    private val segModels = (0 until 8).map(i => sevenSeg(i.toString))
+    private val dPos = new Vector3(x, 0, z).multiply(1/16D).translation
+
+    override val models = sevenSegBaseBakery.getOrCreateModel(x, z)
 
     override def getUVT = new IconTransformation(segment)
 
@@ -917,14 +1065,16 @@ class SevenSegModel(x:Double, z:Double) extends SingleComponentModel(sevenSeg("b
 
         for (i <- 0 until 8)
             segModels(i).render(ccrs, dispT, iconT, PlanarLightModel.standardLightModel, ColourMultiplier.instance(
-                if ((signal&1<<i) != 0) colour_on else colour_off))
+                if ((signal&1<<i) != 0) onColour else offColour))
     }
 }
 
-class SixteenSegModel(x:Double, z:Double) extends SingleComponentModel(sixteenSeg("base"), new Vector3(x, 0, z)) with SegModel
+class SixteenSegModel(x:Double, z:Double) extends SingleComponentModel with SegModel
 {
-    val segModels = (0 until 16).map(i => sixteenSeg(i.toString))
-    val dPos = new Vector3(x, 0, z).multiply(1/16D).translation
+    private val segModels = (0 until 16).map(i => sixteenSeg(i.toString))
+    private val dPos = new Vector3(x, 0, z).multiply(1/16D).translation
+
+    override val models = sixteenSegBaseBakery.getOrCreateModel(x, z)
 
     override def getUVT = new IconTransformation(segment)
 
@@ -937,57 +1087,11 @@ class SixteenSegModel(x:Double, z:Double) extends SingleComponentModel(sixteenSe
 
         for (i <- 0 until 16)
             segModels(i).render(ccrs, dispT, iconT, PlanarLightModel.standardLightModel, ColourMultiplier.instance(
-                if ((signal&1<<i) != 0) colour_on else colour_off))
+                if ((signal&1<<i) != 0) onColour else offColour))
     }
 }
 
-class SegmentBusCableModel extends BundledCableModel(segbus, new Vector3(8, 0, 8), 9/32D, 16.5/32D)
+object SegmentBusCableModel extends BundledCableModel(segbus, new Vector3(8, 0, 8), 9/32D, 16.5/32D)
 {
     override def getUVT = new IconTransformation(segment)
-}
-
-class SidedICBundledCableModel extends BundledCableModel(icBundled, new Vector3(8, 0, 8), 7/32D, 12/32D)
-{
-    var sidemask = 0
-
-    override def getUVT = new IconTransformation(busConvIcon)
-
-    override def renderModel(t: Transformation, orient: Int, ccrs: CCRenderState)
-    {
-        for (r <- 0 until 4) if ((sidemask&1<<r) != 0)
-            super.renderModel(t, orient&0xFC|((orient&3)+r)%4, ccrs)
-    }
-}
-
-class SidedWireModel(val wires:Seq[TWireModel]) extends ComponentModel
-{
-    var sidemask = 0
-
-    override def renderModel(t: Transformation, orient: Int, ccrs: CCRenderState)
-    {
-        for (r <- 0 until 4) if ((sidemask&1<<r) != 0)
-            wires(r).renderModel(t, orient, ccrs)
-    }
-
-    override def registerIcons(map:AtlasRegistrar)
-    {
-        wires.foreach(_.registerIcons(map))
-    }
-}
-
-class ICChipModel extends SingleComponentModel(icChip, new Vector3(8, 2, 8))
-{
-    override def getUVT = new IconTransformation(icChipIcon)
-}
-
-class ICChipHousingModel extends SingleComponentModel(icHousing, new Vector3(8, 0, 8))
-{
-    val glass = icGlass.copy.apply(new Vector3(8/16D, 0, 8/16D).translation())
-
-    override def getUVT = new IconTransformation(icHousingIcon)
-
-    def renderDynamic(t:Transformation, ccrs:CCRenderState)
-    {
-        glass.render(ccrs, t, getUVT)
-    }
 }
