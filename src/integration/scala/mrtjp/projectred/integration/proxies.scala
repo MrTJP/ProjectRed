@@ -6,6 +6,7 @@
 package mrtjp.projectred.integration
 
 import codechicken.lib.texture.{AtlasRegistrar, IIconRegister, SpriteRegistryHelper}
+import codechicken.lib.util.ResourceUtils
 import mrtjp.projectred.ProjectRedIntegration
 import mrtjp.projectred.core.IProxy
 import net.minecraft.util.ResourceLocation
@@ -43,6 +44,7 @@ class IntegrationProxyClient extends IntegrationProxy
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     override def clientSetup(event:FMLClientSetupEvent):Unit = {
+        ResourceUtils.registerReloadListener(RenderGate)
     }
 
     @OnlyIn(Dist.CLIENT)

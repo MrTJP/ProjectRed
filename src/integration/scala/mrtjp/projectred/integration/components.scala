@@ -505,6 +505,12 @@ object WireModel3D
             bakeOrients(model)
         })
 
+    def regenerateModels():Unit = {
+        val keys = cache.keySet.toSet //Copy old keyset
+        cache.clear()
+        for (k <- keys) getOrGenerateModels(k) //Regenerate all keys
+    }
+
     def generateModel(data:Array[Colour]) =
     {
         val wireRectangles = TWireModel.rectangulate(data)
