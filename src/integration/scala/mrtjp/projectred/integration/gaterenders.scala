@@ -16,8 +16,11 @@ import mrtjp.projectred.integration.ComponentStore._
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.item.ItemStack
 import net.minecraft.particles.RedstoneParticleData
+import net.minecraft.resources.IResourceManager
+import net.minecraftforge.resource.{IResourceType, ISelectiveResourceReloadListener, VanillaResourceType}
 
 import java.util.Random
+import java.util.function.Predicate
 
 class RenderGate
 {
@@ -95,7 +98,7 @@ class RenderGate
     }
 }
 
-object RenderGate extends IIconRegister
+object RenderGate extends IIconRegister with ISelectiveResourceReloadListener
 {
     private val instances = new ThreadLocal[RenderGate]() {
         override def initialValue() = new RenderGate
@@ -106,6 +109,11 @@ object RenderGate extends IIconRegister
     override def registerIcons(map:AtlasRegistrar):Unit = {
         ComponentStore.registerIcons(map)
         for (m <- instance().renderers) m.registerIcons(map)
+    }
+
+    override def onResourceManagerReload(resourceManager:IResourceManager, resourcePredicate:Predicate[IResourceType]):Unit = {
+        if (resourcePredicate.test(VanillaResourceType.TEXTURES))
+            WireModel3D.regenerateModels()
     }
 }
 
