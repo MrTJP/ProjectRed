@@ -39,25 +39,25 @@ object Configurator extends ModConfig("projectred-core") {
     //    var gen_Volcano = true
     //    var gen_Volcano_resistance = 0
     //    var gen_Volcano_retro = false
-    //    var gen_Ruby = true
+    var gen_Ruby = true
     //    var gen_Ruby_resistance = 0
     //    var gen_Ruby_retro = false
-    //    var gen_Sapphire = true
+    var gen_Sapphire = true
     //    var gen_Sapphire_resistance = 0
     //    var gen_Sapphire_retro = false
-    //    var gen_Peridot = true
+    var gen_Peridot = true
     //    var gen_Peridot_resistance = 0
     //    var gen_Peridot_retro = false
-    //    var gen_Copper = true
+    var gen_Copper = true
     //    var gen_Copper_resistance = 0
     //    var gen_Copper_retro = false
-    //    var gen_Tin = true
+    var gen_Tin = true
     //    var gen_Tin_resistance = 0
     //    var gen_Tin_retro = false
-    //    var gen_Silver = true
+    var gen_Silver = true
     //    var gen_Silver_resistance = 0
     //    var gen_Silver_retro = false
-    //    var gen_Electrotine = true
+    var gen_Electrotine = true
     //    var gen_Electrotine_resistance = 0
     //    var gen_Electrotine_retro = false
 
@@ -96,16 +96,16 @@ object Configurator extends ModConfig("projectred-core") {
         lightHaloMax = rendering.put("Light Halo Render Count", lightHaloMax, "Number of lights to render, -1 for unlimited")
         pipeRoutingFX = rendering.put("Routed Pipe FX", pipeRoutingFX, "If set to false, routed pipes will not render routing fx such as bubbles and lasers.")
 
-        //        val gen = new BaseCategory("World Gen", "Contains settings related to world gen. You can enable/disable each ore or strucure, change retro generation settings, and increase how rare something is by increasing the resistance value.")
-        //        gen_Ruby = gen.put("Ruby Ore", gen_Ruby)
+        val gen = new BaseCategory("World Gen", "Contains settings related to world gen. You can enable/disable each ore or strucure, change retro generation settings, and increase how rare something is by increasing the resistance value.")
+        gen_Ruby = gen.put("Ruby Ore", gen_Ruby)
         //        gen_Ruby_resistance = gen.put("Ruby Ore resistance", gen_Ruby_resistance)
         //        gen_Ruby_retro = gen.put("Ruby Ore retrogen", gen_Ruby_retro)
         //
-        //        gen_Sapphire = gen.put("Sapphire Ore", gen_Sapphire)
+        gen_Sapphire = gen.put("Sapphire Ore", gen_Sapphire)
         //        gen_Sapphire_resistance = gen.put("Sapphire Ore resistance", gen_Sapphire_resistance)
         //        gen_Sapphire_retro = gen.put("Sapphire Ore retrogen", gen_Sapphire_retro)
         //
-        //        gen_Peridot = gen.put("Peridot Ore", gen_Peridot)
+        gen_Peridot = gen.put("Peridot Ore", gen_Peridot)
         //        gen_Peridot_resistance = gen.put("Peridot Ore resistance", gen_Peridot_resistance)
         //        gen_Peridot_retro = gen.put("Peridot Ore retrogen", gen_Peridot_retro)
         //
@@ -117,19 +117,19 @@ object Configurator extends ModConfig("projectred-core") {
         //        gen_Volcano_resistance = gen.put("Volcano resistance", gen_Volcano_resistance)
         //        gen_Volcano_retro = gen.put("Volcano retrogen", gen_Volcano_retro)
         //
-        //        gen_Copper = gen.put("Copper Ore", gen_Copper)
+        gen_Copper = gen.put("Copper Ore", gen_Copper)
         //        gen_Copper_resistance = gen.put("Copper Ore resistance", gen_Copper_resistance)
         //        gen_Copper_retro = gen.put("Copper Ore retrogen", gen_Copper_retro)
         //
-        //        gen_Tin = gen.put("Tin Ore", gen_Tin)
+        gen_Tin = gen.put("Tin Ore", gen_Tin)
         //        gen_Tin_resistance = gen.put("Tin Ore resistance", gen_Tin_resistance)
         //        gen_Tin_retro = gen.put("Tin Ore retrogen", gen_Tin_retro)
         //
-        //        gen_Silver = gen.put("Silver Ore", gen_Silver)
+        gen_Silver = gen.put("Silver Ore", gen_Silver)
         //        gen_Silver_resistance = gen.put("Silver Ore resistance", gen_Silver_resistance)
         //        gen_Silver_retro = gen.put("Silver Ore retrogen", gen_Silver_retro)
         //
-        //        gen_Electrotine = gen.put("Electrotine Ore", gen_Electrotine)
+        gen_Electrotine = gen.put("Electrotine Ore", gen_Electrotine)
         //        gen_Electrotine_resistance = gen.put("Electrotine Ore resistance", gen_Electrotine_resistance)
         //        gen_Electrotine_retro = gen.put("Electrotine Ore retrogen", gen_Electrotine_retro)
 
