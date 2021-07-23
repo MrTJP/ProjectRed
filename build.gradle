@@ -15,8 +15,7 @@ buildscript {
         }
     }
     dependencies {
-        //classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
-        classpath 'com.github.CDAGaming:ForgeGradle:1c670759c5'
+        classpath 'com.github.GTNH2:ForgeGradle:FG_1.2-SNAPSHOT'
     }
 }
 
