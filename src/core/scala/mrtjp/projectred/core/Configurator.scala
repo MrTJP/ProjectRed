@@ -33,7 +33,7 @@ object Configurator extends ModConfig("projectred-core") {
     var pipeRoutingFX = true
 
     /** World Gen * */
-    //    var gen_MarbleCave = true
+    var gen_MarbleCave = true
     //    var gen_MarbleCave_resistance = 0
     //    var gen_MarbleCave_retro = false
     //    var gen_Volcano = true
@@ -109,7 +109,7 @@ object Configurator extends ModConfig("projectred-core") {
         //        gen_Peridot_resistance = gen.put("Peridot Ore resistance", gen_Peridot_resistance)
         //        gen_Peridot_retro = gen.put("Peridot Ore retrogen", gen_Peridot_retro)
         //
-        //        gen_MarbleCave = gen.put("Marble Caves", gen_MarbleCave)
+        gen_MarbleCave = gen.put("Marble Caves", gen_MarbleCave)
         //        gen_MarbleCave_resistance = gen.put("Marble Caves resistance", gen_MarbleCave_resistance)
         //        gen_MarbleCave_retro = gen.put("Marble Caves retrogen", gen_MarbleCave_retro)
         //

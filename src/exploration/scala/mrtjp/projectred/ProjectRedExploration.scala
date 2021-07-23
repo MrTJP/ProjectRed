@@ -14,8 +14,13 @@ object ProjectRedExploration {
 
 class ProjectRedExploration {
 
-    ScorgeModLoadingContext.get.getModEventBus.register(this)
-    ExplorationContent.register(ScorgeModLoadingContext.get.getModEventBus)
+    {
+        val modEventBus = ScorgeModLoadingContext.get.getModEventBus
+        modEventBus.register(this)
+
+        ExplorationContent.register(modEventBus)
+        ExplorationFeatures.register(modEventBus)
+    }
 
     @SubscribeEvent
     def onCommonSetup(event: FMLCommonSetupEvent) {
