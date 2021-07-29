@@ -46,7 +46,7 @@ class ItemBackpack extends Item(new Item.Properties().stacksTo(1).tab(Exploratio
     }
 
     def openGui(player: ServerPlayerEntity) {
-        val name = player.getMainHandItem.getDisplayName
+        val name = player.getMainHandItem.getHoverName
         ServerUtils.openContainer(player, new SimpleNamedContainerProvider((id, inv, _) => new ContainerBackpack(id, inv), name))
     }
 
@@ -278,7 +278,7 @@ class ItemAthame extends SwordItem(athameItemTier, 3, -2.4F, new Item.Properties
         damage = standardDamage
         b
     }
-    
+
     override def getAttributeModifiers(slot:EquipmentSlotType, stack:ItemStack) = {
         val modifiers = HashMultimap.create().asInstanceOf[Multimap[Attribute, AttributeModifier]]
         if (slot == EquipmentSlotType.MAINHAND) {

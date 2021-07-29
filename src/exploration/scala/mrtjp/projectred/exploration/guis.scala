@@ -20,8 +20,8 @@ class GuiBackpack(container: ContainerBackpack, playerInv: PlayerInventory, titl
 
     override def drawFront_Impl(stack:MatrixStack, mouse:Point, frame:Float)
     {
-        getFontRenderer.draw(stack, title, 8, 6, EnumColour.GRAY.rgb)
-        getFontRenderer.draw(stack, playerInv.getName, 8, 75, EnumColour.GRAY.rgb)
+        getFontRenderer.draw(stack, title, 8, 6, EnumColour.GRAY.argb)
+        getFontRenderer.draw(stack, playerInv.getName, 8, 75, EnumColour.GRAY.argb)
     }
 
     override def keyPressed_Impl(c:Char, keycode:Int, consumed:Boolean) =
