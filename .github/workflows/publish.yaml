@@ -30,22 +30,26 @@ jobs:
             "release")
               publish_maven=true
               publish_curse=true
+              publish_gh_release=true
               version_format="\${major}.\${minor}.\${patch}"
               ;;
             "beta")
               publish_maven=true
               publish_curse=true
+              publish_gh_release=false
               version_format="\${major}.\${minor}.\${patch}-beta-\${increment}"
               ;;
             "alpha")
               publish_maven=true
               publish_curse=false
+              publish_gh_release=false
               version_format="\${major}.\${minor}.\${patch}-alpha-\${increment}"
               ;;
             *)
               echo "::warning::Unknown release type: $release_type"
               publish_maven=false
               publish_curse=false
+              publish_gh_release=false
               version_format="\${major}.\${minor}.\${patch}-$release_type-\${increment}"
           esac
 
@@ -53,6 +57,7 @@ jobs:
           echo "::set-output name=release_type::$release_type"
           echo "::set-output name=publish_maven::$publish_maven"
           echo "::set-output name=publish_curse::$publish_curse"
+          echo "::set-output name=publish_gh_release::$publish_gh_release"
           echo "::set-output name=version_format::$version_format"
 
       - name: Generate version
@@ -121,6 +126,17 @@ jobs:
           AUTO_GENERATED_VERSION: ${{ steps.versioning.outputs.version }}
           CURSE_RELEASE_TYPE: ${{ steps.release_type.outputs.release_type }}
           CURSE_TOKEN: ${{ secrets.CURSE_TOKEN }}
+
+      - name: Tag and Release
+        if: ${{ steps.release_type.outputs.publish_gh_release == 'true' }}
+        uses: softprops/action-gh-release@v0.1.7
+        with:
+          body_path: CHANGELOG.md
+          tag_name: ${{ steps.versioning.outputs.version_tag }}
+          files: |
+            build/libs/*
+            CHANGELOG.md
+            CHANGELOG.txt
 
       - name: Update badge
         uses: schneegans/dynamic-badges-action@v1.0.0
