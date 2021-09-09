@@ -9,7 +9,7 @@ license="RPSL"
     entryClass="mrtjp.projectred.ProjectRedExpansion"
     version="${version}"
 
-    updateJSONURL="https://version-check.covers1624.net/check/?mod=ProjectRed&mc=${mc_version}"
+    #updateJSONURL="https://version-check.covers1624.net/check/?mod=ProjectRed&mc=${mc_version}"
     displayURL="https://github.com/MrTJP/ProjectRed"
     authors="MrTJP, Chicken Bones, covers1624"
     description='''
