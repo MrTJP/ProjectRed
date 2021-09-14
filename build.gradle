@@ -97,6 +97,7 @@ minecraft {
 repositories {
     mavenLocal()
     maven { url = "https://proxy-maven.covers1624.net/" }
+    maven { url = "https://squiddev.cc/maven/" }
 }
 
 configurations {
@@ -130,6 +131,8 @@ dependencies {
     coreCompileOnly fg.deobf("mezz.jei:jei-${config.mc_version}:${config.jei_version}:api")
     // at runtime, use the full JEI jar
     coreRuntimeOnly fg.deobf("mezz.jei:jei-${config.mc_version}:${config.jei_version}")
+
+    coreCompile fg.deobf("org.squiddev:cc-tweaked-${config.mc_version}:${config.cct_version}")
 }
 
 
@@ -189,7 +192,8 @@ sourceSets.findAll {it.name != "main" && it.name != "test" } each { set ->
                 spec.expand 'version': config.mod_version,
                         'mc_version': config.mc_version,
                         'ccl_version': resolve("CodeChickenLib"),
-                        'cbm_version': resolve("CBMultipart")
+                        'cbm_version': resolve("CBMultipart"),
+                        'cct_version': config.cct_version
             }
         }
     }

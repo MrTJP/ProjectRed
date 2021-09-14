@@ -1,7 +1,9 @@
 package mrtjp.projectred
 
+import mrtjp.projectred.compatibility.ComputerCraftCompatibility
 import mrtjp.projectred.core._
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.OptionalMod
 import net.minecraftforge.fml.event.lifecycle.{FMLClientSetupEvent, FMLCommonSetupEvent, FMLDedicatedServerSetupEvent, FMLLoadCompleteEvent}
 import net.minecraftforge.scorge.lang.ScorgeModLoadingContext
 
@@ -18,6 +20,9 @@ class ProjectRedCore {
     @SubscribeEvent
     def onCommonSetup(event: FMLCommonSetupEvent) {
         CoreProxy.commonSetup(event)
+
+        // Compatibility modules
+        OptionalMod.of[Any]("computercraft").ifPresent(_ => ComputerCraftCompatibility.init())
     }
 
     @SubscribeEvent

@@ -45,3 +45,9 @@ Redstone. The way it was meant to be.
     versionRange="[${cbm_version},)"
     ordering="AFTER"
     side="BOTH"
+[[dependencies.projectred-core]]
+    modId="computercraft"
+    mandatory=false
+    versionRange="[${cct_version},)"
+    ordering="AFTER"
+    side="BOTH"
