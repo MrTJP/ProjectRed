@@ -37,24 +37,17 @@ item.projectred.core.itemResource.illumar13.name=Зелёная светопыл
 item.projectred.core.itemResource.illumar14.name=Красная светопыль
 item.projectred.core.itemResource.illumar15.name=Чёрная светопыль
 
-item.projectred.core.itemResource.partcloth.name=Плетёная ткань
-item.projectred.core.itemResource.partsail.name=Парус
+item.projectred.core.itemResource.cloth.name=Плетёная ткань
+item.projectred.core.itemResource.sail.name=Парус
 item.projectred.core.itemResource.ruby.name=Рубин
 item.projectred.core.itemResource.sapphire.name=Сапфир
 item.projectred.core.itemResource.peridot.name=Перидот
-item.projectred.core.itemResource.partredironcomp.name=Смесь красного камня с железом
-item.projectred.core.itemResource.partsandcoalcomp.name=Смесь песка с углём
-item.projectred.core.itemResource.partredsiliconcomp.name=Смесь красного камня с кремнием
-item.projectred.core.itemResource.partglowsiliconcomp.name=Смесь светящегося камня с кремнием
+item.projectred.core.itemResource.red_iron_comp.name=Смесь красного камня с железом
+item.projectred.core.itemResource.sand_coal_comp.name=Смесь песка с углём
+item.projectred.core.itemResource.red_silicon_comp.name=Смесь красного камня с кремнием
+item.projectred.core.itemResource.glow_silicon_comp.name=Смесь светящегося камня с кремнием
+item.projectred.core.itemResource.null_chip.name=Нулевой чип маршрутизации
 
-item.projectred.core.itemResource.nullchip.name=Нулевой чип маршрутизации
-item.projectred.core.itemResource.nullupgrd.name=Нулевой чип улучшения
-item.projectred.core.itemResource.upgrd_lx.name=Улучшение LX
-item.projectred.core.itemResource.upgrd_ly.name=Улучшение LY
-item.projectred.core.itemResource.upgrd_lz.name=Улучшение LZ
-item.projectred.core.itemResource.upgrd_rx.name=Улучшение RX
-item.projectred.core.itemResource.upgrd_ry.name=Улучшение RY
-item.projectred.core.itemResource.upgrd_rz.name=Улучшение RZ
 
 item.projectred.core.itemResource.copper_ingot.name=Медный слиток
 item.projectred.core.itemResource.tin_ingot.name=Оловянный слиток
@@ -75,10 +68,29 @@ item.projectred.core.datacard.name=Карта памяти
 
 
 itemGroup.projectred.expansion=Project Red: Расширение
+item.projectred.expansion.batteryEmpty.name=Батарея
+item.projectred.expansion.battery.name=Батарея
+item.projectred.expansion.screwdriverElectric.name=Электрическая отвёртка
+item.projectred.expansion.jetpack.name=Реактивный ранец
+item.projectred.expansion.enderPearlInfused.name=Заряженный Эндер-жемчуг
+item.projectred.expansion.plan.name=План рецепта
+item.projectred.expansion.solarPanel.name=Солнечная панель
+tile.projectred.expansion.machine1|0.name=Индукционная печь
+tile.projectred.expansion.machine1|1.name=Электротиновый генератор
 tile.projectred.expansion.machine2|0.name=Разрушитель блоков
-tile.projectred.expansion.machine2|1.name=Импортер предметов
-tile.projectred.expansion.machine2|2.name=Установщик
+tile.projectred.expansion.machine2|1.name=Импортёр предметов
+tile.projectred.expansion.machine2|2.name=Установщик блоков
+tile.projectred.expansion.machine2|3.name=Фильтрующий импортёр предметов
+tile.projectred.expansion.machine2|4.name=Воспламенитель
+tile.projectred.expansion.machine2|5.name=Аккумуляторная батарея
+tile.projectred.expansion.machine2|6.name=Заряжающий стол
+tile.projectred.expansion.machine2|7.name=Телепортер
+tile.projectred.expansion.machine2|8.name=Двигатель фреймов
+tile.projectred.expansion.machine2|9.name=Линейный двигатель фреймов
+tile.projectred.expansion.machine2|10.name=Проектный верстак
+tile.projectred.expansion.machine2|11.name=Автоматический верстак
 tile.projectred.expansion.machine2|12.name=Алмазный разрушитель блоков
+enchantment.projectred.expansion.fuelEfficiency=Энергоэффективность
 
 
 itemGroup.projectred.transportation=Project Red: Транспортировка
@@ -91,18 +103,19 @@ item.projectred.transportation.routingChip|4.name=Чип "Извлекатель
 item.projectred.transportation.routingChip|5.name=Чип "Передатчик предметов"
 item.projectred.transportation.routingChip|6.name=Чип "Сберегатель предметов"
 item.projectred.transportation.routingChip|7.name=Чип "Создание предметов"
+item.projectred.transportation.routingChip|8.name=Чип-расширение "Создание предметов"
 
 item.projectred.transportation.routerUtility.name=Устройство маршрутизации
 
 item.projectred.transportation.pipe|0.name=Транспортная труба для предметов
 item.projectred.transportation.pipe|1.name=Маршрутизирующая перекрёстная труба
 item.projectred.transportation.pipe|2.name=Маршрутизирующая труба с интерфейсом
-item.projectred.transportation.pipe|3.name=Маршрутизирующая труба создания
-item.projectred.transportation.pipe|4.name=Маршрутизирующая труба запроса
-item.projectred.transportation.pipe|5.name=Маршрутизирующая труба расширения
-item.projectred.transportation.pipe|6.name=Маршрутизирующая труба-брандмауэр
-item.projectred.transportation.pipe|7.name=Труба под давлением
-item.projectred.transportation.pipe|8.name=Баростойкая труба
+item.projectred.transportation.pipe|3.name=Маршрутизирующая труба запроса
+item.projectred.transportation.pipe|4.name=Маршрутизирующая труба-брандмауэр
+item.projectred.transportation.pipe|32.name=Маршрутизирующая направляющая труба
+item.projectred.transportation.pipe|33.name=Маршрутизирующая труба задержки
+item.projectred.transportation.pipe|64.name=Вакуумная труба
+item.projectred.transportation.pipe|65.name=Вакуумная труба с сопротивлением 
 
 
 itemGroup.projectred.exploration=Project Red: Исследование
@@ -122,6 +135,7 @@ tile.projectred.exploration.stone|4.name=Базальтовый кирпич
 tile.projectred.exploration.stone|5.name=Рубиновый блок
 tile.projectred.exploration.stone|6.name=Сапфировый блок
 tile.projectred.exploration.stone|7.name=Перидотовый блок
+tile.projectred.exploration.stone|11.name=Электротиновый блок
 tile.projectred.exploration.barrel|0.name=Бочка для предметов
 item.projectred.exploration.woolGin.name=Чесалка
 item.projectred.exploration.backpack|0.name=Белый рюкзак
@@ -140,6 +154,7 @@ item.projectred.exploration.backpack|12.name=Коричневый рюкзак
 item.projectred.exploration.backpack|13.name=Зелёный рюкзак
 item.projectred.exploration.backpack|14.name=Красный рюкзак
 item.projectred.exploration.backpack|15.name=Чёрный рюкзак
+item.projectred.exploration.athame.name=Перочинный нож
 item.projectred.exploration.axeRuby.name=Рубиновый топор
 item.projectred.exploration.axeSapphire.name=Сапфировый топор
 item.projectred.exploration.axePeridot.name=Перидотовый топор
@@ -451,6 +466,7 @@ item.projectred.integration.gate|30.name=Панель ввода шины
 item.projectred.integration.gate|31.name=Регистр
 item.projectred.integration.gate|32.name=Гейт сегментного индикатора
 item.projectred.integration.gate|33.name=Декодирующий рандомизатор
+item.projectred.integration.gate|34.name=Печатная плата с микросхемой
 
 
 
@@ -531,3 +547,5 @@ item.projectred.fabrication.icChip|0.name=Микросхема
 item.projectred.fabrication.icChip|1.name=Микросхема (творческий режим)
 tile.projectred.fabrication.icMachine|0.name=Микросхемный верстак
 tile.projectred.fabrication.icMachine|1.name=Принтер микросхем
+
+tile.projectred.relocation.frame.name=Фрейм
