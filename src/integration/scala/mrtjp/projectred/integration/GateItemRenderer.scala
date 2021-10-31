@@ -41,6 +41,8 @@ object GateItemRenderer extends IItemRenderer
                 ccrs.overlay = packedOverlay
                 ccrs.bind(RenderType.cutout(), getter, mStack)
                 RenderGate.instance().renderInv(stack, new RedundantTransformation,gate.gateType, ccrs)
+            case _ =>
+                println(s"GateItemRenderer cannot render non-gate item: ${stack.toString}")
         }
     }
 
