@@ -1,22 +1,22 @@
 package mrtjp.projectred.transportation
 
-import java.util.{PriorityQueue => JPriorityQueue}
-
-import mrtjp.core.item.{ItemQueue, ItemEquality, ItemKey, ItemKeyStack}
-import mrtjp.core.util.HashPair2
+import mrtjp.core.item.{ItemEquality, ItemKey, ItemKeyStack, ItemQueue}
 import net.minecraft.item.ItemStack
 
-import scala.collection.immutable.{HashMap, TreeSet}
-import scala.collection.mutable.{HashMap => MHashMap, MultiMap => MMultiMap, Set => MSet, Map => MMap}
+import java.util.{PriorityQueue => JPriorityQueue}
+import scala.collection.JavaConverters.seqAsJavaListConverter
+import scala.collection.immutable.TreeSet
+import scala.collection.mutable.{HashMap => MHashMap, Map => MMap}
 
-object RequestFlags extends Enumeration
-{
+object RequestFlags extends Enumeration {
     type RequestFlags = Value
     val PULL, CRAFT, PARTIAL, SIMULATE = Value
 
-    def all = PULL+CRAFT+PARTIAL+SIMULATE
-    def full = PULL+CRAFT+PARTIAL
-    def default = PULL+CRAFT
+    def all = PULL + CRAFT + PARTIAL + SIMULATE
+
+    def full = PULL + CRAFT + PARTIAL
+
+    def default = PULL + CRAFT
 }
 
 class RequestBranchNode(parentCrafter:CraftingPromise, stack:ItemKeyStack, equality:ItemEquality, requester:IWorldRequester, parent:RequestBranchNode, opt:RequestFlags.ValueSet)
@@ -76,25 +76,36 @@ class RequestBranchNode(parentCrafter:CraftingPromise, stack:ItemKeyStack, equal
         root.promiseAdded(promise)
     }
 
-    def doPullReq() =
-    {
-        val allRouters = requester.getRouter
-            .getFilteredRoutesByCost(p => p.flagRouteFrom && p.allowBroadcast && p.allowItem(stack.key))
-            .sorted(PathOrdering.metric)
-        def search()
-        {
-            for (l <- allRouters) if (isDone) return else l.end.getParent match
-            {
-                case member:IWorldBroadcaster =>
-                    if (!LogisticPathFinder.sharesInventory(requester.getContainer, member.getContainer))
-                    {
-                        val prev = root.getExistingPromisesFor(member, stack.key)
-                        member.requestPromise(this, prev)
-                    }
-                case _ =>
+    def doPullReq() = {
+        val filteredRoutsByCost = requester.getRouter
+          .getFilteredRoutesByCost(p => p.flagRouteFrom && p.allowBroadcast && p.allowItem(stack.key))
+        try {
+            
+            val allRouters = filteredRoutsByCost
+              .sorted(PathOrdering.metric)
+
+            def search() {
+                for (l <- allRouters) if (isDone) return else l.end.getParent match {
+                    case member: IWorldBroadcaster =>
+                        if (!LogisticPathFinder.sharesInventory(requester.getContainer, member.getContainer)) {
+                            val prev = root.getExistingPromisesFor(member, stack.key)
+                            member.requestPromise(this, prev)
+                        }
+                    case _ =>
+                }
+            }
+
+            search()
+        } catch {
+            case exception: IllegalArgumentException => {
+                try {
+                    Comparators.verifyTransitivity(filteredRoutsByCost.toList.asJava)
+                } catch  {
+                    case any: Throwable => println(any.getMessage)
+                }
+                println(exception)
             }
         }
-        search()
         isDone
     }
 
