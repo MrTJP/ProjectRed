@@ -42,15 +42,15 @@ object ExplorationFeatures
     }
 
     def load():Unit = {
-        oreRuby = registerStandardOre("ruby_ore", blockRubyOre, 8, 12, 20, 1)
-        oreSapphire = registerStandardOre("sapphire_ore", blockSapphireOre, 8, 12, 20, 1)
-        orePeridot = registerStandardOre("peridot_dore", blockPeridotOre, 10, 18, 26, 1)
+        oreRuby = registerStandardOre("ruby_ore", blockRubyOre, Configurator.gen_RubyVeinSize, 12, 20, 1)
+        oreSapphire = registerStandardOre("sapphire_ore", blockSapphireOre, Configurator.gen_SapphireVeinSize, 12, 20, 1)
+        orePeridot = registerStandardOre("peridot_dore", blockPeridotOre, Configurator.gen_PeridotVeinSize, 18, 26, 1)
 
-        oreCopper = registerStandardOre("ore_copper", blockCopperOre, 8, 0, 64, 16)
-        oreTin = registerStandardOre("ore_tin", blockTinOre, 8, 0, 48, 10)
-        oreSilver = registerStandardOre("ore_silver", blockSilverOre, 9, 0, 32, 8)
+        oreCopper = registerStandardOre("ore_copper", blockCopperOre, Configurator.gen_CopperVeinSize, 0, 64, 16)
+        oreTin = registerStandardOre("ore_tin", blockTinOre, Configurator.gen_TinVeinSize, 0, 48, 10)
+        oreSilver = registerStandardOre("ore_silver", blockSilverOre, Configurator.gen_SilverVeinSize, 0, 32, 8)
 
-        oreElectrotine = registerStandardOre("ore_electrotine", blockElectrotineOre, 8, 0, 16, 4)
+        oreElectrotine = registerStandardOre("ore_electrotine", blockElectrotineOre, Configurator.gen_ElectrotineVeinSize, 0, 16, 4)
 
         marbleCave = registerMarbleCaveCarver("marble_cave", 0.02F)
 
