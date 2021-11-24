@@ -1,8 +1,8 @@
 package mrtjp.projectred.illumination
 
 import codechicken.lib.colour.EnumColour
-import codechicken.lib.datagen.ItemModelProvider
 import codechicken.lib.datagen.recipe.RecipeProvider
+import codechicken.lib.datagen.{ItemModelProvider, LootTableProvider}
 import codechicken.lib.gui.SimpleItemGroup
 import codechicken.lib.util.CrashLock
 import codechicken.microblock.api.MicroMaterial
@@ -119,6 +119,7 @@ private object DataGen {
             gen.addProvider(new BlockStates(gen, helper))
         }
         if (event.includeServer()) {
+            gen.addProvider(new BlockLootTables(gen))
             gen.addProvider(new Recipes(gen))
         }
     }
@@ -187,6 +188,19 @@ private class BlockStates(gen:DataGenerator, fileHelper:ExistingFileHelper) exte
                 .partialState().`with`(BlockStateProperties.LIT, Boolean.box(true)).modelForState().modelFile(onModel).addModel()
     }
 
+}
+
+private class BlockLootTables(gen: DataGenerator) extends LootTableProvider.BlockLootProvider(gen) {
+    override def getName = "ProjectRed-Illumination Block LootTables."
+
+    override protected def registerTables():Unit = {
+        import IlluminationContent._
+        import mrtjp.projectred.core.CoreContent._
+
+        // Lamps should drop themselves
+        for (b <- illumarLampBlocks ++ invertedIllumarLampBlocks)
+            this.register(b, singleItem(b))
+    }
 }
 
 private class Recipes(gen:DataGenerator) extends RecipeProvider(gen)
