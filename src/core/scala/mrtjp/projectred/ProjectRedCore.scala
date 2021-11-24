@@ -22,7 +22,8 @@ class ProjectRedCore {
         CoreProxy.commonSetup(event)
 
         // Compatibility modules
-        OptionalMod.of[Any]("computercraft").ifPresent(_ => ComputerCraftCompatibility.init())
+        if (Configurator.compat_CCBundledCable)
+            OptionalMod.of[Any]("computercraft").ifPresent(_ => ComputerCraftCompatibility.init())
     }
 
     @SubscribeEvent
