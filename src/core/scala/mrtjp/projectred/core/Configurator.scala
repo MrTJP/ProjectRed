@@ -41,25 +41,25 @@ object Configurator extends ModConfig("projectred-core") {
     //    var gen_Volcano_resistance = 0
     //    var gen_Volcano_retro = false
     var gen_Ruby = true
-    //    var gen_Ruby_resistance = 0
+    var gen_RubyVeinSize = 8
     //    var gen_Ruby_retro = false
     var gen_Sapphire = true
-    //    var gen_Sapphire_resistance = 0
+    var gen_SapphireVeinSize = 8
     //    var gen_Sapphire_retro = false
     var gen_Peridot = true
-    //    var gen_Peridot_resistance = 0
+    var gen_PeridotVeinSize = 10
     //    var gen_Peridot_retro = false
     var gen_Copper = true
-    //    var gen_Copper_resistance = 0
+    var gen_CopperVeinSize = 8
     //    var gen_Copper_retro = false
     var gen_Tin = true
-    //    var gen_Tin_resistance = 0
+    var gen_TinVeinSize = 8
     //    var gen_Tin_retro = false
     var gen_Silver = true
-    //    var gen_Silver_resistance = 0
+    var gen_SilverVeinSize = 9
     //    var gen_Silver_retro = false
     var gen_Electrotine = true
-    //    var gen_Electrotine_resistance = 0
+    var gen_ElectrotineVeinSize = 8
     //    var gen_Electrotine_retro = false
 
     /** Compatibility * */
@@ -100,15 +100,15 @@ object Configurator extends ModConfig("projectred-core") {
 
         val gen = new BaseCategory("World Gen", "Contains settings related to world gen. You can enable/disable each ore or strucure, change retro generation settings, and increase how rare something is by increasing the resistance value.")
         gen_Ruby = gen.put("Ruby Ore", gen_Ruby)
-        //        gen_Ruby_resistance = gen.put("Ruby Ore resistance", gen_Ruby_resistance)
+        gen_RubyVeinSize = gen.put("Ruby Ore vein size", gen_RubyVeinSize)
         //        gen_Ruby_retro = gen.put("Ruby Ore retrogen", gen_Ruby_retro)
         //
         gen_Sapphire = gen.put("Sapphire Ore", gen_Sapphire)
-        //        gen_Sapphire_resistance = gen.put("Sapphire Ore resistance", gen_Sapphire_resistance)
+        gen_SapphireVeinSize = gen.put("Sapphire Ore vein size", gen_SapphireVeinSize)
         //        gen_Sapphire_retro = gen.put("Sapphire Ore retrogen", gen_Sapphire_retro)
         //
         gen_Peridot = gen.put("Peridot Ore", gen_Peridot)
-        //        gen_Peridot_resistance = gen.put("Peridot Ore resistance", gen_Peridot_resistance)
+        gen_PeridotVeinSize = gen.put("Peridot Ore vein size", gen_PeridotVeinSize)
         //        gen_Peridot_retro = gen.put("Peridot Ore retrogen", gen_Peridot_retro)
         //
         gen_MarbleCave = gen.put("Marble Caves", gen_MarbleCave)
@@ -120,19 +120,19 @@ object Configurator extends ModConfig("projectred-core") {
         //        gen_Volcano_retro = gen.put("Volcano retrogen", gen_Volcano_retro)
         //
         gen_Copper = gen.put("Copper Ore", gen_Copper)
-        //        gen_Copper_resistance = gen.put("Copper Ore resistance", gen_Copper_resistance)
+        gen_CopperVeinSize = gen.put("Copper Ore vein size", gen_CopperVeinSize)
         //        gen_Copper_retro = gen.put("Copper Ore retrogen", gen_Copper_retro)
         //
         gen_Tin = gen.put("Tin Ore", gen_Tin)
-        //        gen_Tin_resistance = gen.put("Tin Ore resistance", gen_Tin_resistance)
+        gen_TinVeinSize = gen.put("Tin Ore vein size", gen_TinVeinSize)
         //        gen_Tin_retro = gen.put("Tin Ore retrogen", gen_Tin_retro)
         //
         gen_Silver = gen.put("Silver Ore", gen_Silver)
-        //        gen_Silver_resistance = gen.put("Silver Ore resistance", gen_Silver_resistance)
+        gen_SilverVeinSize = gen.put("Silver Ore vein size", gen_SilverVeinSize)
         //        gen_Silver_retro = gen.put("Silver Ore retrogen", gen_Silver_retro)
         //
         gen_Electrotine = gen.put("Electrotine Ore", gen_Electrotine)
-        //        gen_Electrotine_resistance = gen.put("Electrotine Ore resistance", gen_Electrotine_resistance)
+        gen_ElectrotineVeinSize = gen.put("Electrotine Ore vein size", gen_ElectrotineVeinSize)
         //        gen_Electrotine_retro = gen.put("Electrotine Ore retrogen", gen_Electrotine_retro)
 
         val compat = new BaseCategory("Compatibility", "Control the loading of various compatibility hooks. These settings are ignored unless the Compatibility module is installed.")
