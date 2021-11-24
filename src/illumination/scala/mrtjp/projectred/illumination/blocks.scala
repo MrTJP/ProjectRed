@@ -81,8 +81,11 @@ class IllumarLampTile(tileType:TileEntityType[IllumarLampTile], val colour:Int, 
 
 class IllumarLampTileRender(dispatcher:TileEntityRendererDispatcher) extends TileEntityRenderer[IllumarLampTile](dispatcher) {
     override def render(tile:IllumarLampTile, partialTicks:Float, mStack:MatrixStack, buffers:IRenderTypeBuffer, combinedLightIn:Int, combinedOverlayIn:Int):Unit = {
-        if (tile.isOn)
-            RenderHalo.renderHalo(CCRenderState.instance(), mStack, buffers, IllumarLampTileRender.glowBounds, tile.colour, Vector3.ZERO)
+        if (tile.getLevel != null) {
+            val state = tile.getLevel.getBlockState(tile.getBlockPos)
+            if (state.getBlock.isInstanceOf[IllumarLampBlock] && tile.isOn)
+                RenderHalo.renderHalo(CCRenderState.instance(), mStack, buffers, IllumarLampTileRender.glowBounds, tile.colour, Vector3.ZERO)
+        }
     }
 }
 
