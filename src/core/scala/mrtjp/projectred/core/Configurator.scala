@@ -13,6 +13,7 @@ object Configurator extends ModConfig("projectred-core") {
 
     /** General Settings * */
     var logicGateSounds = true
+    var logicGateLights = true
     var minTimerTicks = 4
     var simpleFramedWireRecipe = false
     var unbreakableScrewdriver = false
@@ -76,6 +77,7 @@ object Configurator extends ModConfig("projectred-core") {
         val general = new BaseCategory("General Settings", "Contains basic settings for the mod.")
 
         logicGateSounds = general.put("Logic Sounds", logicGateSounds, "If set to false, logic gates will not make sounds.")
+        logicGateLights = general.put("Logic Gate Lights", logicGateLights, "If set to false, logic gates will not emit light.")
         minTimerTicks = general.put("Minimum Timer Ticks", minTimerTicks, "Minimum amount of ticks the timer gates can be set to. Cannot be lower than 4.")
         simpleFramedWireRecipe = general.put("Simple Framed Wire Recipe", simpleFramedWireRecipe, "If set to true, sticks will be used instead of wood strips in framed wire recipes.")
         unbreakableScrewdriver = general.put("Unbreakable Screwdriver", unbreakableScrewdriver, "If set to true, the basic screwdriver will not take damage.")
