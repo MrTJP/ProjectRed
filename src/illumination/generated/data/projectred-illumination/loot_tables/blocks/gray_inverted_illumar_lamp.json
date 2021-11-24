@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "projectred-illumination:gray_inverted_illumar_lamp"
+        }
+      ]
+    }
+  ]
+}
