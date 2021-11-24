@@ -208,7 +208,7 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
 
     override def solid(side:Int) = false
 
-    override def getLightValue = 7
+    override def getLightValue:Int = if (Configurator.logicGateLights) 7 else 0
 
     override def activate(player:PlayerEntity, hit:PartRayTraceResult, held:ItemStack, hand:Hand):ActionResultType =
     {
