@@ -510,7 +510,7 @@
     "item.projectred-transmission.green_framed_bundled_wire": "프레임 초록색 묶음 전선",
     "item.projectred-transmission.red_framed_bundled_wire": "프레임 빨간색 묶음 전선",
     "item.projectred-transmission.black_framed_bundled_wire": "프레임 검은색 묶음 전선",
-    "item.projectred-transmission.low_load_framed_power_wire": "프레임 저전력 전력선",
+    "item.projectred-transmission.low_load_framed_power_wire": "프레임 저전력 전선",
 
     "item.projectred-fabrication.ic_blueprint": "IC 청사진",
     "item.projectred-fabrication.ic_chip": "IC 칩",
