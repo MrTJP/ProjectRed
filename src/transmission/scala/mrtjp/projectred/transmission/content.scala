@@ -128,7 +128,7 @@ object TransmissionContent {
         itemInsulatedBlackWire.get
     )
 
-    lazy val bundledWires = List(
+    lazy val colouredBundledWires = List(
         itemBundledWhiteWire.get,
         itemBundledOrangeWire.get,
         itemBundledMagentaWire.get,
@@ -166,7 +166,7 @@ object TransmissionContent {
         itemFramedInsulatedBlackWire.get
     )
 
-    lazy val framedBundledWires = List(
+    lazy val framedColouredBundledWires = List(
         itemFramedBundledWhiteWire.get,
         itemFramedBundledOrangeWire.get,
         itemFramedBundledMagentaWire.get,
@@ -413,6 +413,7 @@ private class ItemTags(gen: DataGenerator, fileHelper:ExistingFileHelper) extend
             .add(itemInsulatedBlackWire)
 
         tag(tagItemBundledWire)
+            .add(itemBundledNeutralWire)
             .add(itemBundledWhiteWire)
             .add(itemBundledOrangeWire)
             .add(itemBundledMagentaWire)
@@ -449,6 +450,7 @@ private class ItemTags(gen: DataGenerator, fileHelper:ExistingFileHelper) extend
             .add(itemFramedInsulatedBlackWire)
 
         tag(tagItemBundledFramedWire)
+            .add(itemFramedBundledNeutralWire)
             .add(itemFramedBundledWhiteWire)
             .add(itemFramedBundledOrangeWire)
             .add(itemFramedBundledMagentaWire)
@@ -502,7 +504,7 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
             .patternLine("WWW")
             .patternLine("SWS")
 
-        for (w <- bundledWires) {
+        for (w <- colouredBundledWires) {
             shapelessRecipe(w, 1, new ResourceLocation(w.getRegistryName + "_re_color"))
                 .addIngredient(tagItemBundledWire)
                 .addIngredient(ItemTags.bind(w.wireType.getColour.getDyeTagName))
@@ -544,11 +546,11 @@ private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
                 .addIngredient(ItemTags.bind(w.wireType.getColour.getDyeTagName))
         }
 
-        for (i <- bundledWires.indices) {
-            val w = framedBundledWires(i);
+        for (i <- colouredBundledWires.indices) {
+            val w = framedColouredBundledWires(i);
             shapedRecipe(w)
                     .key('S', ForgeItemTags.RODS_WOODEN)
-                    .key('I', bundledWires(i))
+                    .key('I', colouredBundledWires(i))
                     .patternLine("SSS")
                     .patternLine("SIS")
                     .patternLine("SSS")

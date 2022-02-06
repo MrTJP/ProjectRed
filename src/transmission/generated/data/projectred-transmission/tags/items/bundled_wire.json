@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "projectred-transmission:neutral_bundled_wire",
     "projectred-transmission:white_bundled_wire",
     "projectred-transmission:orange_bundled_wire",
     "projectred-transmission:magenta_bundled_wire",
