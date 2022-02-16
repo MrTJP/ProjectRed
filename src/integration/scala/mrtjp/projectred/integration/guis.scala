@@ -8,48 +8,43 @@ package mrtjp.projectred.integration
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.texture.TextureUtils
 import com.mojang.blaze3d.matrix.MatrixStack
-import mrtjp.core.gui.{MCButtonNode, NodeGui}
-import mrtjp.core.vec.{Point, Size}
+import mrtjp.core.vec.Point
 import mrtjp.projectred.ProjectRedIntegration
+import mrtjp.projectred.redui.{ButtonNode, RedUIScreen}
 import net.minecraft.entity.player.{PlayerEntity, ServerPlayerEntity}
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.StringTextComponent
 
-
-class GuiTimer(part:ITimerGuiLogic) extends NodeGui(w = 256, h = 55, title = new StringTextComponent(part.getType.getRegistryName.toString))
+class GuiTimer(part:ITimerGuiLogic) extends RedUIScreen(256, 55, new StringTextComponent(part.getType.getRegistryName.toString))
 {
-    {
-        def createButton(x:Int, y:Int, w:Int, h:Int, text:String, delta:Int) =
-        {
-            val b = new MCButtonNode
-            b.position = Point(x, y)
-            b.size = Size(w, h)
-            b.text = text
-            b.clickDelegate = {() =>
-                val packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.INCR_TIMER_FROM_CLIENT)
-                IntegrationNetwork.writePartIndex(packet, part)
-                packet.writeShort(delta)
-                packet.sendToServer()
-            }
-            addChild(b)
+    private def createButton(x:Int, y:Int, w:Int, h:Int, text:String, delta:Int):Unit = {
+        val b = new ButtonNode
+        b.setPosition(x, y)
+        b.setSize(w, h)
+        b.setButtonText(text)
+        b.setClickFunction { () =>
+            val packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.INCR_TIMER_FROM_CLIENT)
+            IntegrationNetwork.writePartIndex(packet, part)
+            packet.writeShort(delta)
+            packet.sendToServer()
         }
-
-        createButton(5, 25, 40, 20, "-10s", -200)
-        createButton(46, 25, 40, 20, "-1s", -20)
-        createButton(87, 25, 40, 20, "-50ms", -1)
-        createButton(129, 25, 40, 20, "+50ms", 1)
-        createButton(170, 25, 40, 20, "+1s", 20)
-        createButton(211, 25, 40, 20, "+10s", 200)
+        addChild(b)
     }
 
-    override def drawBack_Impl(stack:MatrixStack, mouse:Point, frame:Float)
-    {
+    createButton(5, 25, 40, 20, "-10s", -200)
+    createButton(46, 25, 40, 20, "-1s", -20)
+    createButton(87, 25, 40, 20, "-50ms", -1)
+    createButton(129, 25, 40, 20, "+50ms", 1)
+    createButton(170, 25, 40, 20, "+1s", 20)
+    createButton(211, 25, 40, 20, "+10s", 200)
+
+    override def drawBack(stack: MatrixStack, mouse: Point, partialFrame: Float): Unit = {
         TextureUtils.changeTexture(GuiTimer.background)
-        blit(stack, 0, 0, 0, 0, size.width, size.height)
+        blit(stack, getFrame.x, getFrame.y, 0, 0, getFrame.width, getFrame.height)
 
         val s = "Timer interval: "+"%.2f".format(part.getTimerMax*0.05)+"s"
         val sw = getFontRenderer.width(s)
-        getFontRenderer.draw(stack, s, (getXSize-sw)/2, 8, 0x404040)
+        getFontRenderer.draw(stack, s, getFrame.x + (getFrame.width-sw)/2, getFrame.y + 8, 0x404040)
     }
 }
 
@@ -63,77 +58,54 @@ object GuiTimer {
     }
 }
 
-//object GuiTimer extends TGuiFactory
-//{
-//    override def getID = IntegrationProxy.timerGui
-//
-//    def open(player:PlayerEntity, gate:GatePart)
-//    {
-//        open(player, null, IntegrationCPH.writePartIndex(_, gate))
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    override def buildGui(player:EntityPlayer, data:MCDataInput) =
-//    {
-//        val world = Minecraft.getMinecraft.world
-//        IntegrationCPH.readPartIndex(world, data) match
-//        {
-//            case gate:GatePart if gate.getLogic.isInstanceOf[ITimerGuiLogic] => new GuiTimer(gate)
-//            case _ => null
-//        }
-//    }
-//}
-
-class GuiCounter(part:ICounterGuiLogic) extends NodeGui(w = 256, h = 145, title = new StringTextComponent(part.getType.getRegistryName.toString))
+class GuiCounter(part:ICounterGuiLogic) extends RedUIScreen(256, 145, new StringTextComponent(part.getType.getRegistryName.toString))
 {
-    override def onAddedToParent_Impl()
-    {
-        def createButton(x:Int, y:Int, w:Int, h:Int, id:Int, delta:Int) =
-        {
-            val b = new MCButtonNode
-            b.position = Point(x, y)
-            b.size = Size(w, h)
-            b.text = (if (delta < 0) "" else "+")+delta
-            b.clickDelegate = {() =>
-                val packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.INCR_COUNTER_FROM_CLIENT)
-                IntegrationNetwork.writePartIndex(packet, part)
-                packet.writeByte(id)
-                packet.writeShort(delta)
-                packet.sendToServer()
-            }
-            addChild(b)
+    private def createButton(x:Int, y:Int, w:Int, h:Int, id:Int, delta:Int):Unit = {
+        val b = new ButtonNode
+        b.setPosition(x, y)
+        b.setSize(w, h)
+        b.setButtonText((if (delta < 0) "" else "+") + delta)
+        b.setClickFunction { () =>
+            val packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.INCR_COUNTER_FROM_CLIENT)
+            IntegrationNetwork.writePartIndex(packet, part)
+            packet.writeByte(id)
+            packet.writeShort(delta)
+            packet.sendToServer()
         }
-
-        for (row <- 0 until 3)
-        {
-            val y = 16+40*row
-            createButton(5, y, 40, 20, row, -10)
-            createButton(46, y, 40, 20, row, -5)
-            createButton(87, y, 40, 20, row, -1)
-            createButton(129, y, 40, 20, row, 1)
-            createButton(170, y, 40, 20, row, 5)
-            createButton(211, y, 40, 20, row, 10)
-        }
+        addChild(b)
     }
 
-    override def drawBack_Impl(stack:MatrixStack, mouse:Point, frame:Float) =
+    for (row <- 0 until 3)
     {
+        val y = 16+40*row
+        createButton(5, y, 40, 20, row, -10)
+        createButton(46, y, 40, 20, row, -5)
+        createButton(87, y, 40, 20, row, -1)
+        createButton(129, y, 40, 20, row, 1)
+        createButton(170, y, 40, 20, row, 5)
+        createButton(211, y, 40, 20, row, 10)
+    }
+
+    override def drawBack(stack: MatrixStack, mouse: Point, partialFrame: Float): Unit = {
         TextureUtils.changeTexture(GuiCounter.background)
-        blit(stack, 0, 0, 0, 0, size.width, size.height)
+        blit(stack, getFrame.x, getFrame.y, 0, 0, getFrame.width, getFrame.height)
+
+        val x = getFrame.x
+        val y = getFrame.y
+        val w = getFrame.width
 
         var s = "Maximum: "+part.getCounterMax
-        getFontRenderer.draw(stack, s, (getXSize-getFontRenderer.width(s))/2, 5, 0x404040)
+        getFontRenderer.draw(stack, s, x + (w-getFontRenderer.width(s))/2, y + 5, 0x404040)
         s = "Increment: "+part.getCounterIncr
-        getFontRenderer.draw(stack, s, (getXSize-getFontRenderer.width(s))/2, 45, 0x404040)
+        getFontRenderer.draw(stack, s, x + (w-getFontRenderer.width(s))/2, y + 45, 0x404040)
         s = "Decrement: "+part.getCounterDecr
-        getFontRenderer.draw(stack, s, (getXSize-getFontRenderer.width(s))/2, 85, 0x404040)
+        getFontRenderer.draw(stack, s, x + (w-getFontRenderer.width(s))/2, y + 85, 0x404040)
         s = "State: "+part.getCounterValue
-        getFontRenderer.draw(stack, s, (getXSize-getFontRenderer.width(s))/2, 125, 0x404040)
+        getFontRenderer.draw(stack, s, x + (w-getFontRenderer.width(s))/2, y + 125, 0x404040)
     }
 
-    override def update_Impl()
-    {
-        if (part.tile == null) mcInst.player.closeContainer()
+    override def update(): Unit = {
+        if (part.tile == null) getMinecraft.player.closeContainer()
     }
 }
 
@@ -146,24 +118,3 @@ object GuiCounter {
         packet.sendToPlayer(player.asInstanceOf[ServerPlayerEntity])
     }
 }
-
-//object GuiCounter extends TGuiFactory
-//{
-//    override def getID = IntegrationProxy.counterGui
-//
-//    def open(player:EntityPlayer, gate:GatePart)
-//    {
-//        open(player, null, IntegrationCPH.writePartIndex(_, gate))
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    override def buildGui(player:EntityPlayer, data:MCDataInput) =
-//    {
-//        val world = Minecraft.getMinecraft.world
-//        IntegrationCPH.readPartIndex(world, data) match
-//        {
-//            case gate:GatePart if gate.getLogic.isInstanceOf[ICounterGuiLogic] => new GuiCounter(gate)
-//            case _ => null
-//        }
-//    }
-//}
