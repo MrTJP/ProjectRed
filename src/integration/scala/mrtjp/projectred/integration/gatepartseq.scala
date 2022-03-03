@@ -11,7 +11,7 @@ import codechicken.multipart.api.part.INeighborTileChangePart
 import codechicken.multipart.util.PartRayTraceResult
 import com.google.common.base.Predicate
 import mrtjp.projectred.api.IScrewdriver
-import mrtjp.projectred.core.Configurator
+import mrtjp.projectred.core.{Configurator, IRedwireEmitter}
 import mrtjp.projectred.core.TFaceOrient._
 import net.minecraft.block.material.Material
 import net.minecraft.entity.Entity
@@ -666,23 +666,23 @@ class Synchronizer extends RedstoneGatePart(GateType.SYNCHRONIZER) with TExtraSt
     def pulsing:Boolean = (state2&4) != 0
 }
 
-class Comparator extends RedstoneGatePart(GateType.COMPARATOR) with INeighborTileChangePart
+class Comparator extends RedstoneGatePart(GateType.COMPARATOR) with INeighborTileChangePart with IRedwireEmitter
 {
-    var lState2:Short = 0
+    var lState2:Int = 0
 
-    def state2:Int = lState2&0xFFFF
-    def setState2(i:Int){ lState2 = i.toShort }
+    def state2:Int = lState2&0xFFFFFFFF
+    def setState2(i:Int){ lState2 = i }
 
     override def outputMask(shape:Int) = 1
     override def inputMask(shape:Int) = 0xE
 
     override def save(tag:CompoundNBT):Unit = {
         super.save(tag)
-        tag.putShort("state2", lState2)
+        tag.putInt("state2", lState2)
     }
     override def load(tag:CompoundNBT):Unit = {
         super.load(tag)
-        lState2 = tag.getShort("state2")
+        lState2 = tag.getInt("state2")
     }
 
     override def gateLogicCycleShape():Boolean = {
@@ -692,8 +692,10 @@ class Comparator extends RedstoneGatePart(GateType.COMPARATOR) with INeighborTil
 
     override def gateLogicCanConnect(r:Int) = true
 
+    override def getRedwireSignal(dir:Int):Int = getOutput(toInternal(dir))
+
     override def getOutput(r:Int):Int =
-        if (r == 0) state2&0xF
+        if (r == 0) state2&0xFF
         else 0
 
     def getAnalogInput(r:Int):Int = (getRedstoneInput(r)+16)/17
@@ -708,7 +710,7 @@ class Comparator extends RedstoneGatePart(GateType.COMPARATOR) with INeighborTil
         if (state.hasAnalogOutputSignal)
             return state.getAnalogOutputSignal(world, pos)
 
-        var i = getAnalogInput(2)
+        var i = getRedstoneInput(2)
 
         if (i < 15 && state.isRedstoneConductor(world, pos)) {
             pos = pos.relative(absDir)
@@ -736,37 +738,37 @@ class Comparator extends RedstoneGatePart(GateType.COMPARATOR) with INeighborTil
         if (list.size == 1) list.get(0) else null
     }
 
-    def calcInput:Int = getAnalogInput(1)<<4|calcInputA<<8|getAnalogInput(3)<<12
+    def calcInput:Int = getRedstoneInput(1)<<8|calcInputA<<16|getRedstoneInput(3)<<24
 
     def digitize(analog:Int):Int = {
         var digital = 0
-        for (i <- 0 until 4) if ((analog>>i*4&0xF) > 0) digital |= 1<<i
+        for (i <- 0 until 4) if ((analog>>i*8&0xFF) > 0) digital |= 1<<i
         digital
     }
 
     override def gateLogicOnChange():Unit = {
-        val oldInput = state2&0xFFF0
+        val oldInput = state2&0xFFFFFF00
         val newInput = calcInput
         if (oldInput != newInput) {
-            setState2(state2&0xF|newInput)
+            setState2(state2&0xFF|newInput)
             setState(digitize(newInput|calcOutput)|state&0xF0)
             onInputChange()
         }
-        if ((state2&0xF) != calcOutput) scheduleTick(2)
+        if ((state2&0xFF) != calcOutput) scheduleTick(2)
     }
 
     def calcOutput:Int =
         if (shape == 0) if (inputA >= inputB) inputA else 0
         else Math.max(inputA - inputB, 0)
 
-    def inputA:Int = state2>>8&0xF
-    def inputB:Int = Math.max(state2>>4&0xF, state2>>12&0xF)
+    def inputA:Int = state2>>16&0xFF
+    def inputB:Int = Math.max(state2>>8&0xFF, state2>>24&0xFF)
 
     override def gateLogicOnScheduledTick():Unit = {
-        val oldOutput = state2&0xF
+        val oldOutput = state2&0xFF
         val newOutput = calcOutput
         if (oldOutput != newOutput) {
-            setState2(state2&0xFFF0|newOutput)
+            setState2(state2&0xFFFFFF00|newOutput)
             setState(state&0xF|digitize(newOutput)<<4)
             onOutputChange(1)
         }
