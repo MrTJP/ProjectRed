@@ -119,6 +119,10 @@ abstract class RedstoneGatePart(gateType:GateType) extends GatePart(gateType) wi
         else calcMaxSignal(ar, true, false)
     }
 
+    def getAnalogRedstoneInput(r:Int):Int = {
+        (getRedstoneInput(r) + 16) / 17
+    }
+
     override def resolveSignal(part:Any, r:Int) = part match
     {
         case re:IRedwireEmitter => re.getRedwireSignal(r)

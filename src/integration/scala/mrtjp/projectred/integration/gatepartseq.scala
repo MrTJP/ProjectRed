@@ -696,8 +696,6 @@ class Comparator extends RedstoneGatePart(GateType.COMPARATOR) with INeighborTil
         if (r == 0) state2&0xF
         else 0
 
-    def getAnalogInput(r:Int):Int = (getRedstoneInput(r)+16)/17
-
     def calcInputA:Int = {
         //TODO comparator calculations may not be accurate anymore
 
@@ -708,7 +706,7 @@ class Comparator extends RedstoneGatePart(GateType.COMPARATOR) with INeighborTil
         if (state.hasAnalogOutputSignal)
             return state.getAnalogOutputSignal(world, pos)
 
-        var i = getAnalogInput(2)
+        var i = getAnalogRedstoneInput(2)
 
         if (i < 15 && state.isRedstoneConductor(world, pos)) {
             pos = pos.relative(absDir)
@@ -736,7 +734,7 @@ class Comparator extends RedstoneGatePart(GateType.COMPARATOR) with INeighborTil
         if (list.size == 1) list.get(0) else null
     }
 
-    def calcInput:Int = getAnalogInput(1)<<4|calcInputA<<8|getAnalogInput(3)<<12
+    def calcInput:Int = getAnalogRedstoneInput(1)<<4|calcInputA<<8|getAnalogRedstoneInput(3)<<12
 
     def digitize(analog:Int):Int = {
         var digital = 0

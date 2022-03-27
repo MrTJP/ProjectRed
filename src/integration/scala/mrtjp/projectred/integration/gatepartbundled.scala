@@ -380,7 +380,7 @@ class BusConverter extends BundledGatePart(GateType.BUS_CONVERTER)
         var changed = false
 
         val oldRSIn = rsIn
-        rsIn = if (shape == 0) getRedstoneInput(2)/17 else 0
+        rsIn = if (shape == 0) getAnalogRedstoneInput(2) else 0
         if (oldRSIn != rsIn) changed = true
 
         val oldBIn = bIn
