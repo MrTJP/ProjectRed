@@ -33,7 +33,7 @@ import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
 import java.util.{Collections, Collection => JCollection}
 
-abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclusionPart with TFaceConnectable with TSwitchPacket with ITickablePart with TIconHitEffectsPart
+abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclusionPart with TFaceConnectable with TSwitchPacket with ITickablePart with TIconHitEffectsPart with IGateRenderKey
 {
     private var gateShape:Byte = 0
 
@@ -262,7 +262,7 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
     override def renderStatic(layer:RenderType, ccrs:CCRenderState) = {
         if (layer == null || (layer == RenderType.cutout() && Configurator.staticGates)) {
             ccrs.setBrightness(world, this.pos)
-            RenderGate.instance().renderStatic(this, Vector3.ZERO, ccrs)
+            RenderGate.instance().renderStatic(this, ccrs)
             true
         } else
             false
@@ -276,8 +276,8 @@ abstract class GatePart(gateType:GateType) extends TMultiPart with TNormalOcclus
         ccrs.brightness = packedLight
         ccrs.overlay = packedOverlay
         ccrs.bind(new TransformingVertexBuilder(buffers.getBuffer(RenderType.cutout()), mStack), DefaultVertexFormats.BLOCK)
-        RenderGate.instance().renderDynamic(this, Vector3.ZERO, partialTicks, ccrs)
-        RenderGate.instance().renderCustomDynamic(this, Vector3.ZERO, mStack, buffers, packedLight, packedOverlay, partialTicks)
+        RenderGate.instance().renderDynamic(this, partialTicks, ccrs)
+        RenderGate.instance().renderCustomDynamic(this, mStack, buffers, packedLight, packedOverlay, partialTicks, ccrs)
     }
 
     override def getBounds:Cuboid6 = new Cuboid6(getShape(ISelectionContext.empty()).bounds())
