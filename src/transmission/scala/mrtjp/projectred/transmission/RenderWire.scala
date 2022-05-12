@@ -7,6 +7,8 @@ import codechicken.lib.render.pipeline.{ColourMultiplier, IVertexOperation}
 import codechicken.lib.vec._
 import codechicken.lib.vec.uv._
 import mrtjp.projectred.core.{PRLib, UVT}
+import mrtjp.projectred.transmission.RenderWire.modelKey
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
 
 import java.util
 
@@ -72,9 +74,21 @@ object RenderWire
             ColourMultiplier.instance(w.renderHue))
     }
 
+    def render(modelKey:Int, hue:Int, icon:TextureAtlasSprite, ccrs:CCRenderState, t:Transformation):Unit = {
+        render(modelKey, ccrs, Seq(ColourMultiplier.instance(hue), new IconTransformation(icon), t):_*)
+    }
+
+    def render(modelKey:Int, ccrs:CCRenderState, ops:IVertexOperation*):Unit = {
+        getOrGenerateModel(modelKey).render(ccrs, ops:_*)
+    }
+
     def renderInv(thickness:Int, hue:Int, ccrs:CCRenderState, ops:IVertexOperation*)
     {
         getOrGenerateInvModel(thickness).render(ccrs, ops :+ ColourMultiplier.instance(hue):_*)
+    }
+
+    def renderInv(thickness:Int, hue:Int, icon:TextureAtlasSprite, ccrs:CCRenderState, t:Transformation) = {
+        getOrGenerateInvModel(thickness).render(ccrs, ColourMultiplier.instance(hue), new IconTransformation(icon), t)
     }
 }
 

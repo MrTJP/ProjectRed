@@ -93,6 +93,7 @@ abstract class BundledGatePart(gateType:GateType) extends RedstoneGatePart(gateT
 class BusTransceiver extends BundledGatePart(GateType.BUS_TRANSCEIVER)
 {
     var input0, output0, input2, output2:Array[Byte] = null
+    var packedOutput:Int = 0
 
     override def bundledOutputMask(shape:Int) = 5
     override def bundledInputMask(shape:Int) = 5
@@ -137,9 +138,13 @@ class BusTransceiver extends BundledGatePart(GateType.BUS_TRANSCEIVER)
     def packClientData:Int = packDigital(output0)|packDigital(output2)<<16
 
     def unpackClientData(packed:Int):Unit = {
+        packedOutput = packed
         output0 = unpackDigital(output0, packed&0xFFFF)
         output2 = unpackDigital(output2, packed>>>16)
     }
+
+    override def bOutput0: Short = (packedOutput&0xFFFF).toShort
+    override def bOutput2: Short = (packedOutput>>>16).toShort
 
     override def getBundledOutput(r:Int):Array[Byte] = if (r == 0) output0 else output2
 
@@ -200,6 +205,8 @@ class BusTransceiver extends BundledGatePart(GateType.BUS_TRANSCEIVER)
     }
 
     override def getLightValue:Int = 0
+
+
 }
 
 class BusRandomizer extends BundledGatePart(GateType.BUS_RANDOMIZER)
@@ -252,6 +259,9 @@ class BusRandomizer extends BundledGatePart(GateType.BUS_RANDOMIZER)
     def sendMaskUpdate():Unit = {
         sendUpdate(12, _.writeShort(mask))
     }
+
+    override def bOutput0: Short = output.toShort
+    override def bInput2: Short = mask.toShort
 
     override def gateLogicOnChange():Unit = {
         var inputChanged = false
@@ -314,6 +324,8 @@ class BusConverter extends BundledGatePart(GateType.BUS_CONVERTER)
     var bIn, bOut = 0
     var rsIn, rsOut = 0
     var bOutUnpacked:Array[Byte] = null
+
+    override def rsIO: Int = rsIn | rsOut
 
     override def bundledOutputMask(shape:Int):Int = if (shape == 0) 1 else 0
     override def bundledInputMask(shape:Int):Int = if (shape == 0) 0 else 1
@@ -474,6 +486,9 @@ class BusInputPanel extends BundledGatePart(GateType.BUS_INPUT_PANEL)
     override def outputMask(shape:Int) = 0
     override def inputMask(shape:Int) = 1
 
+    override def bOutput2: Short = bOut.toShort
+    override def bInput0: Short = pressMask.toShort
+
     def setBOut(newBOut:Int):Unit = {
         if (bOut != newBOut) {
             bOut = newBOut
@@ -573,7 +588,7 @@ class BusInputPanel extends BundledGatePart(GateType.BUS_INPUT_PANEL)
 
 class SegmentDisplay extends BundledGatePart(GateType.SEGMENT_DISPLAY)
 {
-    var bInH = 0
+    var bInH = 0 //TODO move colour to state, and bInL to new short 'bInput0'
     var colour:Byte = EnumColour.RED.ordinal.toByte
 
     override def bundledInputMask(shape:Int) = 1
@@ -617,6 +632,9 @@ class SegmentDisplay extends BundledGatePart(GateType.SEGMENT_DISPLAY)
     def sendColourUpdate():Unit ={
         sendUpdate(12, _.writeByte(colour))
     }
+
+    override def bInHigh: Int = bInH
+    override def segmentColour: Byte = colour
 
     override def gateLogicCycleShape():Boolean = {
         setShape(shape^1)
