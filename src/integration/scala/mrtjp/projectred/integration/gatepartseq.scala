@@ -6,6 +6,7 @@
 package mrtjp.projectred.integration
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.math.MathHelper
 import codechicken.lib.vec.Rotation
 import codechicken.multipart.api.part.INeighborTileChangePart
 import codechicken.multipart.util.PartRayTraceResult
@@ -13,7 +14,6 @@ import com.google.common.base.Predicate
 import mrtjp.projectred.api.IScrewdriver
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.core.TFaceOrient._
-import net.minecraft.block.material.Material
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.ItemFrameEntity
 import net.minecraft.entity.player.PlayerEntity
@@ -29,7 +29,7 @@ trait TExtraStateGatePart extends RedstoneGatePart
 {
     private var lState2:Byte = 0
 
-    def state2 = lState2&0xFF
+    override def state2 = lState2&0xFF
     def setState2(state:Int){ lState2 = state.toByte }
 
     def clientState2 = false
@@ -260,7 +260,7 @@ trait TTimerGatePart extends RedstoneGatePart with ITimerGuiLogic
         if (pointer_start >= 0) pointer_start = world.getGameTime-pointer_start
     }
 
-    def pointerValue:Int =
+    override def pointerValue:Int =
         if (pointer_start < 0) 0
         else (world.getGameTime-pointer_start).toInt
 
@@ -303,7 +303,8 @@ trait TTimerGatePart extends RedstoneGatePart with ITimerGuiLogic
         }
     }
 
-    def interpPointer(f:Float):Float = if (pointer_start < 0) 0f else (pointerValue+f)/pointer_max
+    override def isPointerStarted:Boolean = pointer_start >= 0
+    override def pointerMax:Int = pointer_max
 
     override def gateLogicActivate(player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult):Boolean = {
         if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver]) {
@@ -396,6 +397,12 @@ class Sequencer extends RedstoneGatePart(GateType.SEQUENCER) with ITimerGuiLogic
     }
 
     def sendPointerMaxUpdate():Unit = { sendUpdate(12, _.writeInt(pointer_max)) }
+
+    override def isPointerStarted: Boolean = true
+
+    override def pointerValue: Int = (world.getDayTime%(pointer_max*4)).toInt
+
+    override def pointerMax: Int = pointer_max
 
     override def gateLogicOnTick():Unit = {
         if (!world.isClientSide) {
@@ -551,6 +558,10 @@ class Counter extends RedstoneGatePart(GateType.COUNTER) with ICounterGuiLogic
         if (newOutput != oldOutput) onOutputChange(5)
     }
 
+    override def isPointerStarted:Boolean = true
+    override def pointerValue:Int = value
+    override def pointerMax:Int = max
+
     override def gateLogicActivate(player:PlayerEntity, held:ItemStack, hit:PartRayTraceResult):Boolean = {
         if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver]) {
             if (!world.isClientSide) GuiCounter.open(player, this)
@@ -670,7 +681,7 @@ class Comparator extends RedstoneGatePart(GateType.COMPARATOR) with INeighborTil
 {
     var lState2:Short = 0
 
-    def state2:Int = lState2&0xFFFF
+    override def state2:Int = lState2&0xFFFF
     def setState2(i:Int){ lState2 = i.toShort }
 
     override def outputMask(shape:Int) = 1

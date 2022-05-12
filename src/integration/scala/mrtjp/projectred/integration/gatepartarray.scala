@@ -277,6 +277,13 @@ abstract class ArrayGatePartCrossing(gateType:GateType) extends ArrayGatePart(ga
 
     def sendSignalUpdate():Unit = { sendUpdate(11, _.writeByte(signal1).writeByte(signal2)) }
 
+    override def bottomSignal: Byte = signal1
+    override def topSignal: Byte = signal2
+
+    override def topSignalConnMask:Int = {
+        IGateWireRenderConnect.getConnsAtHeight(this, 10.0D)
+    }
+
     override def gateLogicOnChange():Unit = {
         val oldSignal = (state&1) != 0
         val newSignal = signal1 != 0
@@ -378,6 +385,10 @@ abstract class ArrayGatePartTopOnly(gateType:GateType) extends ArrayGatePart(gat
         super.onSignalUpdate()
         sendSignalUpdate()
     }
+
+
+    override def topSignal: Byte = signal
+    override def topSignalConnMask: Int = IGateWireRenderConnect.getConnsAtHeight(this, 10.0D)
 }
 
 class ANDCell extends ArrayGatePartTopOnly(GateType.AND_CELL) with TSimpleRSGatePart with IGateWireRenderConnect
