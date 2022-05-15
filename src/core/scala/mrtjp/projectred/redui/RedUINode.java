@@ -3,6 +3,9 @@ package mrtjp.projectred.redui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import mrtjp.core.vec.Point;
 import mrtjp.core.vec.Rect;
+import mrtjp.core.vec.Size;
+import net.minecraft.util.text.ITextProperties;
+import net.minecraftforge.fml.client.gui.GuiUtils;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
@@ -123,18 +126,18 @@ public interface RedUINode {
      * Builds a list of nodes in subtree rooted at this node, ignoring branches that do not pass
      * the filter. Filtered nodes are completely ignored, including all descendants.
      *
-     * @param filter   A predicate to filter branches
-     * @param reversed If true, subtree list will be sorted with leaves first rather than root
+     * @param filter      A predicate to filter branches
+     * @param leavesFirst If true, subtree list will be sorted with leaves first rather than root
      * @return A subtree containing only nodes that pass the filter
      */
-    default List<RedUINode> getSubTree(Predicate<RedUINode> filter, boolean reversed) {
+    default List<RedUINode> getSubTree(Predicate<RedUINode> filter, boolean leavesFirst) {
         LinkedList<RedUINode> subTree = new LinkedList<>();
         Queue<RedUINode> queue = new LinkedList<>();
         queue.add(this);
         while (!queue.isEmpty()) {
             RedUINode next = queue.poll();
             if (filter.test(next)) {
-                if (reversed) { subTree.addFirst(next); } else { subTree.add(next); }
+                if (leavesFirst) { subTree.addFirst(next); } else { subTree.add(next); }
                 queue.addAll(next.getOurChildren());
             }
         }
@@ -151,18 +154,19 @@ public interface RedUINode {
     }
 
     /**
-     * Builds a subtree list with nodes sorted in descending z order. Nodes at the front
+     * Builds a subtree list with nodes sorted in ascending or descending z order. Nodes at the front
      * of the list will have a larger Z position and should be rendered on top.
      * <p>
      * Nodes with equal Z positions will be ordered based on their location in the tree,
      * with nodes further from the root receiving priority.
      *
-     * @param filter Subtree branch filter
+     * @param filter   Subtree branch filter
+     * @param reversed If true, sort in ascending z order
      * @return Subtree in descending z position order
      */
-    default List<RedUINode> getZOrderedSubtree(Predicate<RedUINode> filter) {
-        List<RedUINode> subTree = getSubTree(filter, true);
-        subTree.sort(Comparator.comparingDouble(n -> n.getZPosition() * -1));
+    default List<RedUINode> getZOrderedSubtree(Predicate<RedUINode> filter, boolean reversed) {
+        List<RedUINode> subTree = getSubTree(filter, !reversed);
+        subTree.sort(Comparator.comparingDouble(n -> n.getZPosition() * (reversed ? 1 : -1)));
         return subTree;
     }
 
@@ -323,6 +327,28 @@ public interface RedUINode {
     default Rect convertScreenRectToParent(Rect r) { return new Rect(convertScreenPointToParent(r.origin()), r.size()); }
 
     /**
+     * Calculates the GL11 screen-space equivalent this node's frame.
+     *
+     * @return Bottom-left anchored frame in GL11 window space
+     */
+    default Rect calculateGL11Frame() {
+        // Convert frame to screen space anchored at bottom-left instead of top-left
+        Rect screenFrame = getRoot().getScreenFrame();
+        Rect frame = convertParentRectToScreen(getFrame());
+        Rect bottomLeftFrame = new Rect(
+                new Point(frame.x(), screenFrame.height() - frame.y() - frame.height()),
+                frame.size());
+
+        // Convert from GUI screen space to GL11 screen space using the Minecraft Gui Scale value
+        double glWScale = getRoot().getMinecraft().getWindow().getGuiScale();
+        double glHScale = getRoot().getMinecraft().getWindow().getGuiScale();
+        Rect gl11Rect = new Rect(new Point((int) Math.round(bottomLeftFrame.x() * glWScale), (int) Math.round(bottomLeftFrame.y() * glHScale)),
+                new Size((int) Math.round(bottomLeftFrame.width() * glWScale), (int) Math.round(bottomLeftFrame.height() * glHScale)));
+
+        return gl11Rect;
+    }
+
+    /**
      * Calculate a frame encompassing all frames in the entire subtree. Hidden nodes and all its
      * descendants are excluded.
      *
@@ -377,7 +403,7 @@ public interface RedUINode {
     /**
      * Checks if a node in the tree is the top-most hit at a given point
      *
-     * @param p The point to trace hits at, in the coordinate space of <code>node</code>'s parent
+     * @param p The point to trace hits at, in the coordinate space of this node's parent
      * @return True if <code>node</code> was the first node intersecting <code>point</code>.
      */
     default boolean isFirstHit(Point p) {
@@ -443,6 +469,8 @@ public interface RedUINode {
      *                 until one of the operations returns true, at which point it will stay true for all subsequent nodes.
      * @return True if any operation has consumed this event (or if it was initially true to begin with)
      * @see RedUINode#operateOnZOrderedSubtree(Point, SubtreeOp, boolean)
+     * <p>
+     * TODO Perhaps more practical to call all functions on subtree with screen-space point, and each node can convert if they care about the event
      */
     default boolean operateOnSubtree(Point p, SubtreeOp op, boolean consumed) {
         consumed |= op.operate(this, p, consumed);
@@ -456,7 +484,7 @@ public interface RedUINode {
     }
 
     /**
-     * Runs all nodes in the subtree through a given operation in Z position order, prioritizing
+     * Runs all nodes in the subtree through a given operation in descending Z order, prioritizing
      * nodes further from the root for equal Z positions. If order of operation is not important,
      * use {@link RedUINode#operateOnSubtree(Point, SubtreeOp, boolean)} to avoid unnecessary sorting.
      *
@@ -469,7 +497,7 @@ public interface RedUINode {
      */
     default boolean operateOnZOrderedSubtree(Point p, SubtreeOp op, boolean consumed) {
         Point screenPoint = convertParentPointToScreen(p);
-        for (RedUINode n : getZOrderedSubtree(n -> true)) {
+        for (RedUINode n : getZOrderedSubtree(n -> true, false)) {
             Point relativePoint = n.convertScreenPointToParent(screenPoint); // Push point into n's parent's coordinate system
             consumed |= op.operate(n, relativePoint, consumed);
         }
@@ -557,7 +585,7 @@ public interface RedUINode {
      *
      * @param glfwKeyCode  GLFW key code
      * @param glfwScanCode GLFW scan code
-     * @param glfwFlags    GLFW modifier flags
+     * @param glfwFlags    GLFW modifier flags TODO: Change to glfwModifierMask
      * @param consumed     True if another higher-ordered node consumed this event
      * @return True if this event was consumed
      * @see GLFW
@@ -589,6 +617,13 @@ public interface RedUINode {
     default boolean onCharTyped(char ch, int glfwFlags, boolean consumed) { return false; }
 
     /**
+     * Called before {@link RedUINode#drawBack(MatrixStack, Point, float)} or
+     * {@link RedUINode#drawFront(MatrixStack, Point, float)} is called on all children, but after
+     * the draw method on this node is called.
+     */
+    default void onNodesBelowPreDraw() { }
+
+    /**
      * Draw call for the background layer, typically used to render the background. Drawing is done
      * relative to the parent.
      *
@@ -608,6 +643,13 @@ public interface RedUINode {
     default void drawFront(MatrixStack stack, Point mouse, float partialFrame) { }
 
     /**
+     * Called after {@link RedUINode#drawBack(MatrixStack, Point, float)} or
+     * {@link RedUINode#drawFront(MatrixStack, Point, float)} is called on all nodes below, but after
+     * the draw method on this node is called.
+     */
+    default void onNodesBelowPostDraw() { }
+
+    /**
      * Node operation function that can be run over an entire graph
      *
      * @see RedUINode#operateOnSubtree(Point, SubtreeOp, boolean)
@@ -625,5 +667,24 @@ public interface RedUINode {
          * @return True to consume this event
          */
         boolean operate(RedUINode node, Point relativePoint, boolean consumed);
+    }
+
+    // Utility methods
+
+    default void renderTooltip(MatrixStack stack, Point mouse, List<ITextProperties> tooltip) {
+
+        if (tooltip.isEmpty()) return;
+
+        // Draw tooltip in screen-space to allow it to force-fit on screen
+
+        Point screenOffset = getParent().getScreenOffset();
+        Point mouseScreenSpace = screenOffset.add(mouse);
+
+        stack.pushPose();
+        stack.translate(-screenOffset.x(), -screenOffset.y(), 0);
+
+        GuiUtils.drawHoveringText(stack, tooltip, mouseScreenSpace.x(), mouseScreenSpace.y(), getRoot().getScreenFrame().width(), getRoot().getScreenFrame().height(), -1, getRoot().getFontRenderer());
+
+        stack.popPose();
     }
 }

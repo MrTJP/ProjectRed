@@ -1,6 +1,7 @@
 package mrtjp.projectred.redui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import mrtjp.core.vec.Point;
 import mrtjp.core.vec.Rect;
 import mrtjp.core.vec.Size;
@@ -11,6 +12,7 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Base Screen class that implements the UI Node system. This is for UIs that do not have containers.
@@ -34,6 +36,8 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
         // These frames are fully set during init() call, when the bounds of the entire screen are known
         this.frame = new Rect(Point.zeroPoint(), new Size(backgroundWidth, backgroundHeight));
         this.screenFrame = Rect.zeroRect();
+
+        this.onAddedToParent(); // No actual parent, so this is called once on construction
     }
 
     @Override
@@ -50,6 +54,8 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialFrame) {
         super.render(matrixStack, mouseX, mouseY, partialFrame);
 
+        RenderSystem.disableDepthTest(); // UI nodes are drawn in order, so depth test is not needed
+
         // Render semi-transparent grey background
         fillGradient(matrixStack, getScreenFrame().x(), getScreenFrame().y(), getScreenFrame().width(), getScreenFrame().height(), -1072689136, -804253680);
 
@@ -63,6 +69,8 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
         // Draw the UI
         drawBackForSubtree(this, matrixStack, mousePoint, partialFrame);
         drawFrontForSubtree(this, matrixStack, mousePoint, partialFrame);
+
+        RenderSystem.enableDepthTest();
     }
 
     @Override
@@ -71,40 +79,40 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
         getSubTree(n -> true).forEach(RedUINode::update);
     }
 
+    //TODO Move draw methods to RedUIRootNode as default implementation
     private static void drawBackForSubtree(RedUINode node, MatrixStack stack, Point mouse, float partialFrame) {
-        if (node.isHidden()) return;
-
-        node.drawBack(stack, mouse, partialFrame);
-        Point relativePos = node.getPosition(); // This node's position is already in parent space
-        Point relativeMousePos = mouse.subtract(relativePos);
-        double relativeZPos = node.getRelativeZPosition();
-
-        stack.pushPose();
-        stack.translate(relativePos.x(), relativePos.y(), relativeZPos);
-
-        for (RedUINode child : node.getOurChildren()) {
-            drawBackForSubtree(child, stack, relativeMousePos, partialFrame);
-        }
-
-        stack.popPose();
+        drawForSubtree(node, stack, mouse, partialFrame, RedUINode::drawBack);
     }
 
     private static void drawFrontForSubtree(RedUINode node, MatrixStack stack, Point mouse, float partialFrame) {
-        if (node.isHidden()) return;
+        drawForSubtree(node, stack, mouse, partialFrame, RedUINode::drawFront);
+    }
 
-        node.drawFront(stack, mouse, partialFrame);
-        Point relativePos = node.getPosition(); // This node's position is already in parent space
-        Point relativeMousePos = mouse.subtract(relativePos);
-        double relativeZPos = node.getRelativeZPosition();
+    private interface QuadConsumer<A, B, C, D> {
+        void accept(A a, B b, C c, D d);
+    }
 
-        stack.pushPose();
-        stack.translate(relativePos.x(), relativePos.y(), relativeZPos);
+    private static void drawForSubtree(RedUINode node, MatrixStack stack, Point mouse, float partialFrame, QuadConsumer<RedUINode, MatrixStack, Point, Float> drawFunction) {
+        List<RedUINode> nodes = node.getZOrderedSubtree(c -> !c.isHidden(), true);
+        ListIterator<RedUINode> it = nodes.listIterator(nodes.size());
 
-        for (RedUINode child : node.getOurChildren()) {
-            drawFrontForSubtree(child, stack, relativeMousePos, partialFrame);
+        // In reverse render order tell each node that nodes below it are about to be drawn
+        while (it.hasPrevious()) it.previous().onNodesBelowPreDraw();
+
+        // In render order, tell each node that under are done rendering, then draw the node
+        while (it.hasNext()) {
+            RedUINode n = it.next();
+            n.onNodesBelowPostDraw();
+
+            Point parentScreenPos = n.convertParentPointToScreen(Point.zeroPoint());
+            stack.pushPose();
+            stack.translate(parentScreenPos.x(), parentScreenPos.y(), 0); // Z pos is for sorting only
+
+            Point relativeMousePos = n.convertScreenPointToParent(mouse);
+            drawFunction.accept(n, stack, relativeMousePos, partialFrame);
+
+            stack.popPose();
         }
-
-        stack.popPose();
     }
 
     @Override

@@ -19,7 +19,7 @@ import static net.minecraft.client.gui.AbstractGui.drawCenteredString;
 public class ButtonNode extends AbstractGuiNode {
 
     private Runnable clickFunction = () -> { };
-    private Consumer<List<? extends ITextProperties>> tooltipBuilder = c -> { };
+    private Consumer<List<ITextProperties>> tooltipBuilder = c -> { };
 
     private String buttonText = "";
 
@@ -27,7 +27,7 @@ public class ButtonNode extends AbstractGuiNode {
         this.clickFunction = clickFunction;
     }
 
-    public void setTooltipBuilder(Consumer<List<? extends ITextProperties>> tooltipBuilder) {
+    public void setTooltipBuilder(Consumer<List<ITextProperties>> tooltipBuilder) {
         this.tooltipBuilder = tooltipBuilder;
     }
 
@@ -62,7 +62,7 @@ public class ButtonNode extends AbstractGuiNode {
         if (!isFirstHit(mouse))
             return;
 
-        List<? extends ITextProperties> tooltip = new LinkedList<>();
+        List<ITextProperties> tooltip = new LinkedList<>();
         tooltipBuilder.accept(tooltip);
 
         // Draw tooltip in screen-space to allow it to force-fit on screen

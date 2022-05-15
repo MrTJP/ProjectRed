@@ -13,9 +13,7 @@ public abstract class AbstractGuiNode implements RedUINode {
     private RedUIRootNode root;
     private RedUINode parent;
 
-    private Point pos = Point.zeroPoint();
-    private Size size = Size.zeroSize();
-    private Rect frame = new Rect(pos, size);
+    private Rect frame = new Rect(Point.zeroPoint(), Size.zeroSize());
     private double zPos = 0;
 
     private boolean isHidden = false;
@@ -23,13 +21,11 @@ public abstract class AbstractGuiNode implements RedUINode {
     private final List<RedUINode> children = new LinkedList<>();
 
     public void setPosition(int x, int y) {
-        pos = new Point(x, y);
-        frame = new Rect(pos, size);
+        frame = new Rect(new Point(x, y), frame.size());
     }
 
     public void setSize(int width, int height) {
-        size = new Size(width, height);
-        frame = new Rect(pos, size);
+        frame = new Rect(frame.origin(), new Size(width, height));
     }
 
     public void setHidden(boolean isHidden) {
@@ -68,7 +64,7 @@ public abstract class AbstractGuiNode implements RedUINode {
 
     @Override
     public Point getPosition() {
-        return pos;
+        return frame.origin();
     }
 
     @Override
@@ -78,7 +74,7 @@ public abstract class AbstractGuiNode implements RedUINode {
 
     @Override
     public double getRelativeZPosition() {
-        return getParent().getZPosition() - zPos;
+        return zPos - getParent().getZPosition();
     }
 
     @Override
