@@ -9,8 +9,10 @@ import codechicken.lib.render.CCRenderState
 import codechicken.lib.texture.TextureUtils
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
+import mrtjp.core.vec.Vec2
 import net.minecraft.client.gui.AbstractGui
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.renderer.{Tessellator, WorldVertexBufferUploader}
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 
@@ -186,5 +188,41 @@ object GuiLib
       */
     def drawVerticalTank(stack:MatrixStack, gui:AbstractGui, x:Int, y:Int, u:Int, v:Int, w:Int, h:Int, prog:Int):Unit = {
         gui.blit(stack, x, y+h-prog, u, v+h-prog, w, prog)
+    }
+
+    def drawLine(stack:MatrixStack, x1:Int, y1:Int, x2:Int, y2:Int, th:Int, argb:Int):Unit = {
+
+        // Two points to rect
+        val p1 = Vec2(x1, y1)
+        val p2 = Vec2(x2, y2)
+        val v = p2.subtract(p1)
+        val p = Vec2(v.dy, -v.dx)
+        val pnorm = p.normalize
+        val widthVec = pnorm.multiply(th / 2.0)
+
+        val r1 = p1.subtract(widthVec)
+        val r2 = p2.subtract(widthVec)
+        val r3 = p2.add(widthVec)
+        val r4 = p1.add(widthVec)
+
+        val p_238460_0_ = stack.last().pose()
+
+        val f3 = (argb >> 24 & 255).toFloat / 255.0F
+        val f = (argb >> 16 & 255).toFloat / 255.0F
+        val f1 = (argb >> 8 & 255).toFloat / 255.0F
+        val f2 = (argb & 255).toFloat / 255.0F
+        val bufferbuilder = Tessellator.getInstance.getBuilder
+        RenderSystem.enableBlend()
+        RenderSystem.disableTexture()
+        RenderSystem.defaultBlendFunc()
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR)
+        bufferbuilder.vertex(p_238460_0_, r1.dx.toFloat, r1.dy.toFloat, 0.0F).color(f, f1, f2, f3).endVertex()
+        bufferbuilder.vertex(p_238460_0_, r2.dx.toFloat, r2.dy.toFloat, 0.0F).color(f, f1, f2, f3).endVertex()
+        bufferbuilder.vertex(p_238460_0_, r3.dx.toFloat, r3.dy.toFloat, 0.0F).color(f, f1, f2, f3).endVertex()
+        bufferbuilder.vertex(p_238460_0_, r4.dx.toFloat, r4.dy.toFloat, 0.0F).color(f, f1, f2, f3).endVertex()
+        bufferbuilder.end()
+        WorldVertexBufferUploader.end(bufferbuilder)
+        RenderSystem.enableTexture()
+        RenderSystem.disableBlend()
     }
 }
