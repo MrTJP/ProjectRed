@@ -5,6 +5,8 @@
  */
 package mrtjp.core.vec
 
+import mrtjp.core.vec.Rect.zeroRect
+
 case class Rect(origin:Point, size:Size)
 {
     def this(x:Int, y:Int, width:Int, height:Int) = this(Point(x, y), Size(width, height))
@@ -37,7 +39,18 @@ case class Rect(origin:Point, size:Size)
     def intersects(r:Rect) = contains(r.origin) || contains(r.maxPoint) || r.contains(origin) || r.contains(maxPoint)
 
     def enclose(p:Point) = new Rect(Point(math.min(x, p.x), math.min(y, p.y)), Point(math.max(maxX, p.x), math.max(maxY, p.y)))
-    def union(r:Rect) = new Rect(Point(math.min(x, r.x), math.min(y, r.y)), Point(math.max(maxX, r.maxX), math.max(maxY, r.maxY)))
+
+    def union(r:Rect):Rect = {
+        if (this == zeroRect) return r
+        if (r == zeroRect) return this
+        new Rect(Point(math.min(x, r.x), math.min(y, r.y)), Point(math.max(maxX, r.maxX), math.max(maxY, r.maxY)))
+    }
+
+    def trap(r:Rect) = {
+        val dx = (if (r.x < x) x-r.x else 0) + (if (r.maxX > maxX) maxX-r.maxX else 0)
+        val dy = (if (r.y < y) y-r.y else 0) + (if (r.maxY > maxY) maxY-r.maxY else 0)
+        new Rect(r.x + dx, r.y + dy, r.width, r.height)
+    }
 }
 
 object Rect

@@ -1,6 +1,7 @@
 package mrtjp.projectred.redui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import mrtjp.core.vec.Point;
 import mrtjp.core.vec.Rect;
 import mrtjp.core.vec.Size;
@@ -11,6 +12,7 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Base Screen class that implements the UI Node system. This is for UIs that do not have containers.
@@ -34,6 +36,8 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
         // These frames are fully set during init() call, when the bounds of the entire screen are known
         this.frame = new Rect(Point.zeroPoint(), new Size(backgroundWidth, backgroundHeight));
         this.screenFrame = Rect.zeroRect();
+
+        this.onAddedToParent(); // No actual parent, so this is called once on construction
     }
 
     @Override
@@ -50,6 +54,8 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialFrame) {
         super.render(matrixStack, mouseX, mouseY, partialFrame);
 
+        RenderSystem.enableDepthTest(); // Nodes render out of order, so depth test is needed
+
         // Render semi-transparent grey background
         fillGradient(matrixStack, getScreenFrame().x(), getScreenFrame().y(), getScreenFrame().width(), getScreenFrame().height(), -1072689136, -804253680);
 
@@ -61,50 +67,14 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
         }, false);
 
         // Draw the UI
-        drawBackForSubtree(this, matrixStack, mousePoint, partialFrame);
-        drawFrontForSubtree(this, matrixStack, mousePoint, partialFrame);
+        drawBackForSubtree(matrixStack, mousePoint, partialFrame);
+        drawFrontForSubtree(matrixStack, mousePoint, partialFrame);
     }
 
     @Override
     public void tick() {
         super.tick();
         getSubTree(n -> true).forEach(RedUINode::update);
-    }
-
-    private static void drawBackForSubtree(RedUINode node, MatrixStack stack, Point mouse, float partialFrame) {
-        if (node.isHidden()) return;
-
-        node.drawBack(stack, mouse, partialFrame);
-        Point relativePos = node.getPosition(); // This node's position is already in parent space
-        Point relativeMousePos = mouse.subtract(relativePos);
-        double relativeZPos = node.getRelativeZPosition();
-
-        stack.pushPose();
-        stack.translate(relativePos.x(), relativePos.y(), relativeZPos);
-
-        for (RedUINode child : node.getOurChildren()) {
-            drawBackForSubtree(child, stack, relativeMousePos, partialFrame);
-        }
-
-        stack.popPose();
-    }
-
-    private static void drawFrontForSubtree(RedUINode node, MatrixStack stack, Point mouse, float partialFrame) {
-        if (node.isHidden()) return;
-
-        node.drawFront(stack, mouse, partialFrame);
-        Point relativePos = node.getPosition(); // This node's position is already in parent space
-        Point relativeMousePos = mouse.subtract(relativePos);
-        double relativeZPos = node.getRelativeZPosition();
-
-        stack.pushPose();
-        stack.translate(relativePos.x(), relativePos.y(), relativeZPos);
-
-        for (RedUINode child : node.getOurChildren()) {
-            drawFrontForSubtree(child, stack, relativeMousePos, partialFrame);
-        }
-
-        stack.popPose();
     }
 
     @Override
