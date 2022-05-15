@@ -1,5 +1,7 @@
 package mrtjp.projectred.redui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import mrtjp.core.vec.Point;
 import mrtjp.core.vec.Rect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -42,4 +44,11 @@ public interface RedUIRootNode extends RedUINode {
         return getZPosition(); // Assume screen's base z position is zero
     }
 
+    default void drawBackForSubtree(MatrixStack stack, Point mouse, float partialFrame) {
+        renderBackForSubtree(stack, mouse, partialFrame);
+    }
+
+    default void drawFrontForSubtree(MatrixStack stack, Point mouse, float partialFrame) {
+        renderFrontForSubtree(stack, mouse, partialFrame);
+    }
 }
