@@ -25,8 +25,8 @@ import java.util.function.Predicate
 
 class RenderGate
 {
-    private var partRenderers = createPartRenderers()
-    private var nonPartRenderers = createNonPartRenderers()
+    private val partRenderers = createPartRenderers()
+    private val nonPartRenderers = createNonPartRenderers()
 
     private def createPartRenderers():Array[GateRenderer] = Array(
         new RenderOR,
@@ -63,10 +63,11 @@ class RenderGate
         new RenderStackingLatch,
         new RenderSegmentDisplay,
         new RenderDecodingRand,
+        new RenderFabricatedGate
     )
 
     private def createNonPartRenderers():Array[GateRenderer] = Array(
-        new RenderBusConverter // TODO
+        new RenderIOGate
     )
 
     private def getRenderer(renderIndex:Int):GateRenderer = {
@@ -1444,5 +1445,112 @@ class RenderDecodingRand extends GateRenderer
         chips(0).on = (state>>4) == 2
         chips(1).on = (state>>4) == 1 || (state>>4) == 2
         chips(2).on = true
+    }
+}
+
+class RenderFabricatedGate extends GateRenderer
+{
+    var simp = new SidedWireModel(generateWireModels("ic1", 4))
+    var analog = new SidedWireModel(generateWireModels("ic2", 4))
+    var bundled = new SidedICBundledCableModel
+    var housing = new ICChipHousingModel
+
+    var name = "untitled"
+
+    override val coreModels = Seq(BaseComponentModel, simp, analog, bundled, new ICChipModel, housing)
+
+    override def prepareInv()
+    {
+//        if (hasICInside(stack)) {
+//            name = getICName(stack)
+//            val cm = getConnModes(stack)
+//            simp.sidemask = 0
+//            analog.sidemask = 0
+//            bundled.sidemask = 0xF
+//        } else {
+            name = "ERROR!"
+            simp.sidemask = 0
+            analog.sidemask = 0
+            bundled.sidemask = 0xF
+//        }
+
+        simp.wires.foreach(_.on = false)
+        analog.wires.foreach(_.on = false)
+    }
+
+    override def prepare(gate:IGateRenderKey)
+    {
+        simp.sidemask = 0//connTypeMask(Simple, gate.getLogicIC.connmodes)
+        analog.sidemask = 0//connTypeMask(Analog, gate.getLogicIC.connmodes)
+        bundled.sidemask = gate.state2 & 0xF | (gate.state2 >> 4) & 0xF
+
+        simp.wires(0).on = (gate.state&0x11) != 0
+        simp.wires(1).on = (gate.state&0x22) != 0
+        simp.wires(2).on = (gate.state&0x44) != 0
+        simp.wires(3).on = (gate.state&0x88) != 0
+        analog.wires.zipWithIndex.foreach(w => w._1.on = simp.wires(w._2).on)
+    }
+
+    def connTypeMask(c:Int, conns:Array[Int]) =
+    {
+        var m = 0
+        for (r <- 0 until 4)
+            if (conns(r) == c) m |= 1<<r
+        m
+    }
+
+    override def hasSpecials = true
+    override def prepareDynamic(gate:IGateRenderKey, frame:Float)
+    {
+//        name = gate.getLogicIC.name
+    }
+
+    override def renderDynamic(t:Transformation, ccrs:CCRenderState)
+    {
+//        disableLighting()
+//        enableBlend()
+//        blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+//        pushMatrix()
+
+//        val s = GuiDraw.getStringWidth(name) max 93
+//        val f = 9/16D*1.0/s
+//        (new Rotation(90.0.toRadians, 1, 0, 0) `with` new Translation(8/16D*1/f, 2.26/16D, 11.25/16D*1/f) `with`
+//            new Scale(f, 1, f) `with` t).glApply()
+//        GuiDraw.drawStringC(name, 0, 0, 0xFFFFFFFF, false)
+//
+//        popMatrix()
+//        enableLighting()
+//        disableBlend()
+//
+//        //glass
+//        enableBlend()
+//        blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+//        TextureUtils.bindBlockTexture()
+//        ccrs.startDrawing(0x7, DefaultVertexFormats.ITEM)
+//        ccrs.pullLightmap()
+        housing.renderDynamic(t, ccrs)
+//        ccrs.draw()
+//        disableBlend()
+    }
+}
+
+class RenderIOGate extends GateRenderer
+{
+    val wires = generateWireModels("fabio", 1)
+    val crimpWire = new IOCrimpWireModel
+    val colourBox = new IOCrimpColourBoxModel(3, 10.5)
+
+    override val coreModels:Seq[ComponentModel] = wires ++ Seq(crimpWire, colourBox, IOCrimpConnectorModel, BaseComponentModel)
+
+    override def prepareInv():Unit = {
+        crimpWire.signal = 0
+        colourBox.colour = 0
+    }
+
+    override def prepare(gate:IGateRenderKey):Unit = {
+        wires(0).on = (gate.state & 0x44) != 0
+        crimpWire.signal = if (wires(0).on) 255.toByte else 0
+        colourBox.colour = gate.state2 & 0xF
+        colourBox.isInput = gate.shape == 0
     }
 }

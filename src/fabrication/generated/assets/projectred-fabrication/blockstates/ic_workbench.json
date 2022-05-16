@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "blueprint=false": {
+      "model": "projectred-fabrication:block/ic_workbench_no_blueprint"
+    },
+    "blueprint=true": {
+      "model": "projectred-fabrication:block/ic_workbench_blueprint"
+    }
+  }
+}

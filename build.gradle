@@ -30,6 +30,7 @@ sourceSets {
     core
     expansion
     exploration
+    fabrication
     illumination
     integration
     transmission
@@ -60,6 +61,7 @@ minecraft {
                 'projectred-core' { source sourceSets.core }
                 'projectred-expansion' { source sourceSets.expansion }
                 'projectred-exploration' { source sourceSets.exploration }
+                'projectred-fabrication' { source sourceSets.fabrication }
                 'projectred-illumination' { source sourceSets.illumination }
                 'projectred-integration' { source sourceSets.integration }
                 'projectred-transmission' { source sourceSets.transmission }
@@ -71,6 +73,7 @@ minecraft {
                 'projectred-core' { source sourceSets.core }
                 'projectred-expansion' { source sourceSets.expansion }
                 'projectred-exploration' { source sourceSets.exploration }
+                'projectred-fabrication' { source sourceSets.fabrication }
                 'projectred-illumination' { source sourceSets.illumination }
                 'projectred-integration' { source sourceSets.integration }
                 'projectred-transmission' { source sourceSets.transmission }
@@ -85,6 +88,7 @@ minecraft {
                     'projectred-core' { source sourceSets.core }
                     'projectred-expansion' { source sourceSets.expansion }
                     'projectred-exploration' { source sourceSets.exploration }
+                    'projectred-fabrication' { source sourceSets.fabrication }
                     'projectred-illumination' { source sourceSets.illumination }
                     'projectred-integration' { source sourceSets.integration }
                     'projectred-transmission' { source sourceSets.transmission }
@@ -107,9 +111,14 @@ configurations {
 
     expansionCompile.extendsFrom moduleCompile
     explorationCompile.extendsFrom moduleCompile
+    fabricationCompile.extendsFrom moduleCompile
     illuminationCompile.extendsFrom moduleCompile
     integrationCompile.extendsFrom moduleCompile
     transmissionCompile.extendsFrom moduleCompile
+
+    // Shadow config for fabrication, containing libs to include whole-sale inside artifact
+    fabricationShadow
+    fabricationCompile.extendsFrom fabricationShadow
 }
 
 dependencies {
@@ -133,6 +142,10 @@ dependencies {
     coreRuntimeOnly fg.deobf("mezz.jei:jei-${config.mc_version}:${config.jei_version}")
 
     coreCompile fg.deobf("org.squiddev:cc-tweaked-${config.mc_version}:${config.cct_version}")
+
+    fabricationCompile sourceSets.integration.output
+    fabricationCompile sourceSets.transmission.output
+    fabricationShadow "io.github.mrtjp:fabrication-engine:0.1.0-alpha-14"
 }
 
 
@@ -142,6 +155,7 @@ reobf {
     coreJar { classpath += sourceSets.core.compileClasspath }
     expansionJar { classpath += sourceSets.expansion.compileClasspath }
     explorationJar { classpath += sourceSets.exploration.compileClasspath }
+    fabricationJar { classpath += sourceSets.fabrication.compileClasspath }
     illuminationJar { classpath += sourceSets.illumination.compileClasspath }
     integrationJar { classpath += sourceSets.integration.compileClasspath }
     transmissionJar { classpath += sourceSets.transmission.compileClasspath }
@@ -163,6 +177,15 @@ task explorationJar(type: Jar) {
     classifier "exploration"
     dependsOn compileExplorationScala, compileExplorationJava
     from sourceSets.exploration.output
+}
+
+task fabricationJar(type: Jar) {
+    classifier "fabrication"
+    dependsOn compileFabricationScala, compileFabricationJava
+    from sourceSets.fabrication.output
+    from(configurations.fabricationShadow.collect { zipTree(it) }) {
+        include "mrtjp/**"
+    }
 }
 
 task illuminationJar(type: Jar) {
@@ -217,6 +240,7 @@ publishing {
             artifact coreJar
             artifact expansionJar
             artifact explorationJar
+            artifact fabricationJar
             artifact illuminationJar
             artifact integrationJar
             artifact transmissionJar

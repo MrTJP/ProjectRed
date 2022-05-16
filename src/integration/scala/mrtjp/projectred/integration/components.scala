@@ -16,7 +16,7 @@ import codechicken.lib.vec.uv._
 import com.mojang.blaze3d.matrix.MatrixStack
 import mrtjp.core.vec.VecLib
 import mrtjp.projectred.core.{PRLib, RenderHalo, UVT}
-import mrtjp.projectred.integration.ComponentStore.{bakeCopy, bakeOrients}
+import mrtjp.projectred.integration.ComponentStore.{bakeCopy, bakeOrients, icHousing, loadCorrectedModels}
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.util.ResourceLocation
@@ -64,6 +64,9 @@ object ComponentStore
     val icGlass = loadCorrectedModel("icglass").apply(new Translation(8/16D, 0, 8/16D))
     val icHousing = loadCorrectedModel("ichousing").apply(new Translation(8/16D, 0, 8/16D))
 
+    val ioCrimp = loadCorrectedModels("io_crimp")
+    val ioColourBox = loadCorrectedModels("io_colour_box")
+
     var baseIcon:TextureAtlasSprite = _
     var wireIcons:Array[TextureAtlasSprite] = new Array[TextureAtlasSprite](3)
     var wireData:Array[Array[Colour]] = new Array[Array[Colour]](3)
@@ -88,6 +91,8 @@ object ComponentStore
     var icChipIcon:TextureAtlasSprite = _
     var icChipIconOff:TextureAtlasSprite = _
     var icHousingIcon:TextureAtlasSprite = _
+    var ioCrimpConnectorIcon:TextureAtlasSprite = _
+    var ioColourBoxIcon:TextureAtlasSprite = _
 
     def registerIcons(map:AtlasRegistrar)
     {
@@ -140,6 +145,8 @@ object ComponentStore
         register("ic_active", icChipIcon = _)
         register("ic_inert", icChipIconOff = _)
         register("ic_housing", icHousingIcon = _)
+        register("io_crimp", ioCrimpConnectorIcon = _)
+        register("io_colour_box", ioColourBoxIcon = _)
     }
 
     // Correct way to load models. Load them in without a coordinate transform.
@@ -1100,4 +1107,108 @@ class SixteenSegModel(x:Double, z:Double) extends SingleComponentModel with SegM
 object SegmentBusCableModel extends BundledCableModel(segbus, new Vector3(8, 0, 8), 9/32D, 16.5/32D)
 {
     override def getUVT = new IconTransformation(segment)
+}
+
+object IOCrimpConnectorModel extends SingleComponentModel {
+
+    private val crimpModel = ioCrimp("crimp").copy().apply(new Translation(0.5, 2/16D, 0.5))
+
+    override val models:Array[CCModel] = bakeOrients(crimpModel)
+
+    override def getUVT: UVTransformation = new IconTransformation(ioCrimpConnectorIcon)
+}
+
+class IOCrimpWireModel extends CellWireModel {
+
+    private val wires = new Array[CCModel](24)
+
+    private val wireModel = ioCrimp("redalloy").copy().apply(new Translation(0.5, 2/16D, 0.5))
+    for (i <- 0 until 24) wires(i) = bakeCopy(wireModel, i)
+
+    def getUVT:IconTransformation = new IconTransformation(ioCrimpConnectorIcon)
+
+    override def renderModel(t:Transformation, orient:Int, ccrs:CCRenderState)
+    {
+        wires(orient).render(ccrs, t, getUVT, colourMult)
+    }
+}
+
+class IOCrimpColourBoxModel(x:Double, z:Double) extends ComponentModel
+{
+    var colour:Int = EnumColour.WHITE.ordinal()
+    var isInput = true
+
+    private val boxModel:Array[CCModel] = {
+        val m = ioColourBox("box").copy().apply(new Translation(x/16D, 2/16D, z/16D))
+        bakeOrients(m)
+    }
+
+    private val inputArrowModels:Array[CCModel] = {
+        val m = ioColourBox("arrow").copy().apply(new Translation(x/16D, 2/16D, z/16D))
+        bakeOrients(m)
+    }
+
+    private val outputArrowModels:Array[CCModel] = {
+        val m = ioColourBox("arrow").copy()
+            .apply(new Rotation(180 * MathHelper.torad, 0, 1, 0))
+            .apply(new Translation(x/16D, 2/16D, z/16D))
+        bakeOrients(m)
+    }
+
+    private def getColourUVT:UVTransformation =
+        new UVTranslation((colour%2) * 4 / 32D, (colour/2) * 4 / 32D)
+            .`with`(new IconTransformation(ioColourBoxIcon))
+
+    private def getBoxUVT:UVTransformation = new IconTransformation(ioColourBoxIcon)
+
+    override def renderModel(t: Transformation, orient: Int, ccrs:CCRenderState): Unit = {
+        boxModel(orient).render(ccrs, t, getBoxUVT)
+        (if (isInput) inputArrowModels else outputArrowModels)(orient).render(ccrs, t, getColourUVT)
+    }
+}
+
+class SidedICBundledCableModel extends BundledCableModel(icBundled, new Vector3(8, 0, 8), 7/32D, 12/32D)
+{
+    var sidemask = 0
+
+    override def getUVT = new IconTransformation(busConvIcon)
+
+    override def renderModel(t: Transformation, orient: Int, ccrs: CCRenderState)
+    {
+        for (r <- 0 until 4) if ((sidemask&1<<r) != 0)
+            super.renderModel(t, orient&0xFC|((orient&3)+r)%4, ccrs)
+    }
+}
+
+class SidedWireModel(val wires:Seq[TWireModel]) extends ComponentModel
+{
+    var sidemask = 0
+
+    override def renderModel(t: Transformation, orient: Int, ccrs: CCRenderState)
+    {
+        for (r <- 0 until 4) if ((sidemask&1<<r) != 0)
+            wires(r).renderModel(t, orient, ccrs)
+    }
+
+    override def registerIcons(map:AtlasRegistrar)
+    {
+        wires.foreach(_.registerIcons(map))
+    }
+}
+
+class ICChipModel extends StaticComponentModel(icChip)
+{
+    override def getUVT = new IconTransformation(icChipIcon)
+}
+
+class ICChipHousingModel extends StaticComponentModel(icHousing)
+{
+    private val glass = icGlass.copy
+
+    override def getUVT = new IconTransformation(icHousingIcon)
+
+    def renderDynamic(t:Transformation, ccrs:CCRenderState)
+    {
+        glass.render(ccrs, t, getUVT)
+    }
 }

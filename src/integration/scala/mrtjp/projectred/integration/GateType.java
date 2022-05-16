@@ -40,10 +40,11 @@ public enum GateType
     BUS_INPUT_PANEL(IntegrationContent::itemBusInputPanelGate, IntegrationContent::partBusInputPanelGate),
     STACKING_LATCH(IntegrationContent::itemStackingLatchGate, IntegrationContent::partStackingLatchGate),
     SEGMENT_DISPLAY(IntegrationContent::itemSegmentDisplayGate, IntegrationContent::partSegmentDisplayGate),
-    DEC_RANDOMIZER(IntegrationContent::itemDecRandomizerGate, IntegrationContent::partDecRandomizerGate);
+    DEC_RANDOMIZER(IntegrationContent::itemDecRandomizerGate, IntegrationContent::partDecRandomizerGate),
+    FABRICATED_GATE(null, null); // Filled out if Fabrication is installed
 
-    private final Supplier<Supplier<? extends ItemPartGate>> itemSupplier;
-    private final Supplier<Supplier<MultiPartType<?>>> partSupplier;
+    private Supplier<Supplier<? extends ItemPartGate>> itemSupplier;
+    private Supplier<Supplier<MultiPartType<?>>> partSupplier;
 
     private ItemPartGate item;
     private MultiPartType<?> partType;
@@ -71,4 +72,12 @@ public enum GateType
         return new ItemStack(getItem());
     }
 
+    // TODO: Add proper gate registering mechanism
+    public void inject(Supplier<Supplier<? extends ItemPartGate>> itemSupplier, Supplier<Supplier<MultiPartType<?>>> partSupplier) {
+        if (this.itemSupplier != null || this.partSupplier != null) {
+            throw new RuntimeException("GateType " + name() + " already registered!");
+        }
+        this.itemSupplier = itemSupplier;
+        this.partSupplier = partSupplier;
+    }
 }

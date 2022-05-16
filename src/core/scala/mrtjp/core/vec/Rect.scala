@@ -38,6 +38,12 @@ case class Rect(origin:Point, size:Size)
 
     def enclose(p:Point) = new Rect(Point(math.min(x, p.x), math.min(y, p.y)), Point(math.max(maxX, p.x), math.max(maxY, p.y)))
     def union(r:Rect) = new Rect(Point(math.min(x, r.x), math.min(y, r.y)), Point(math.max(maxX, r.maxX), math.max(maxY, r.maxY)))
+
+    def ndc(p:Point):Vec2 = {
+        val dx = ((p.x - origin.x) / width.toDouble * 2D) - 1
+        val dy = ((p.y - origin.y) / height.toDouble * 2D) - 1
+        Vec2(dx, -dy)
+    }
 }
 
 object Rect
