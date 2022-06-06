@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - main-*
+      - feature/**
 
 jobs:
   style_check:
