@@ -71,7 +71,7 @@ def generateMarkdown(outputFile = './CHANGELOG.md',
                    [r'\bfix\b', "Bug fixes", r'## {category}', r'- {type}: {message} ({hash})'],
                    [r'\bperf\b', "Performance improvements", r'## {category}', r'- {type}: {message} ({hash})'],
                    [r'(\bbuild\b)|(\bci\b)|(\btest\b)', "Pipeline", r'## {category}', r'- {type}: {message} ({hash})'],
-                   [r'(\bdocs\b)|(\brefactor\b)|(\bstyle\b)', "Maintenence", r'## {category}', r'- {type}: {message} ({hash})'] ]):
+                   [r'(\bdocs\b)|(\brefactor\b)|(\bstyle\b)|(\binternal\b)', "Maintenance", r'## {category}', r'- {type}: {message} ({hash})'] ]):
 
     """
     Generates a changelog from commit messages between the last tag and now.

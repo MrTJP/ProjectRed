@@ -18,7 +18,9 @@ jobs:
         fetch-depth: 0
 
     - name: Commit Linter
-      uses: wagoid/commitlint-github-action@v2.0.3
+      uses: wagoid/commitlint-github-action@v4
+      with:
+        configFile: .github/commitlint.config.js
 
   build_test:
     name: Build and Test
