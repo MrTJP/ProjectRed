@@ -345,6 +345,12 @@ trait TNode extends AbstractGui
         operate2(consumed){keyPressed_Impl(ch, keycode, _)}{_.keyPressed(ch, keycode, _)}
     }
 
+    protected[gui] def keyReleased(ch:Char, keycode:Int, consumed:Boolean):Boolean =
+    {
+        if (hidden || !userInteractionEnabled) return false
+        operate2(consumed){keyReleased_Impl(ch, keycode, _)}{_.keyReleased(ch, keycode, _)}
+    }
+
     protected[gui] def drawBack(stack:MatrixStack, mouse:Point, rframe:Float)
     {
         if (!hidden)
@@ -498,6 +504,17 @@ trait TNode extends AbstractGui
       *         `consumed` flag set to true.
       */
     def keyPressed_Impl(c:Char, keycode:Int, consumed:Boolean) = false
+
+    /**
+     * Called when a key is released on the keyboard.
+     *
+     * @param c The character that was pressed.
+     * @param keycode The keycode for the button that was pressed.
+     * @param consumed Indicates if another node has consumed this event.
+     * @return Indicates this node has consumed this event. Nodes that receive this event after this one will have the
+     *         `consumed` flag set to true.
+     */
+    def keyReleased_Impl(c:Char, keycode:Int, consumed:Boolean) = false
 
     /**
       * Called to draw the background. All drawing is done relative to the parent, as GL11 is translated to the
