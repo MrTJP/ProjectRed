@@ -24,7 +24,7 @@ Redstone. The way it was meant to be.
 [[dependencies.projectred-illumination]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.4]"
+    versionRange="[1.16.5]"
     ordering="NONE"
     side="BOTH"
 [[dependencies.projectred-illumination]]
@@ -35,6 +35,12 @@ Redstone. The way it was meant to be.
     side="BOTH"
 [[dependencies.projectred-illumination]]
     modId="cb_multipart"
+    mandatory=true
+    versionRange="[${cbm_version},)"
+    ordering="AFTER"
+    side="BOTH"
+[[dependencies.projectred-illumination]]
+    modId="cb_microblock"
     mandatory=true
     versionRange="[${cbm_version},)"
     ordering="AFTER"
