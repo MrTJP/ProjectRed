@@ -145,12 +145,15 @@ class NodeGui[T <: NodeContainer](c:T = new NodeContainer(null, -1), w:Int, h:In
         scroll != 0 &&  mouseScrolled(new Point(x.toInt, y.toInt), if (scroll > 0) 1 else -1, super.mouseScrolled(x, y, scroll))
     }
 
-//    final override def keyTyped(c:Char, keycode:Int)
-//    {
-//        if (keyPressed(c, keycode, false)) return
-//
-//        super.keyTyped(c, keycode)
-//    }
+    override def keyPressed(glfwKeyCode: Int, glfwScanCode: Int, glfwFlags: Int): Boolean = {
+        val consumed = super.keyPressed(glfwKeyCode, glfwScanCode, glfwFlags)
+        keyPressed('\u0000', glfwKeyCode, consumed)
+    }
+
+    override def keyReleased(glfwKeyCode: Int, glfwScanCode: Int, glfwFlags: Int): Boolean = {
+        val consumed = super.keyReleased(glfwKeyCode, glfwScanCode, glfwFlags)
+        keyReleased('\u0000', glfwKeyCode, consumed)
+    }
 
     /**
       * Used to check if the `keycode` should close the GUI.

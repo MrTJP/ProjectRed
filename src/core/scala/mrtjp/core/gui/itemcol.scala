@@ -120,6 +120,8 @@ object ItemDisplayNode
 {
     val renderItem = Minecraft.getInstance().getItemRenderer
 
+    // TODO this doesnt work yet but the point is to render an item on the gui of a different size than the standard 16x16
+    //      that renders from the common ItemRenderer#renderGuiItem utility method
     def renderItem(mStack:MatrixStack, gui:AbstractGui, position:Point, size:Size, zPosition:Double, drawNumber:Boolean, stack:ItemStack)
     {
         val font = stack.getItem.getFontRenderer(stack) match {

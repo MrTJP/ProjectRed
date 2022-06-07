@@ -28,6 +28,7 @@ import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.{Direction, NonNullList, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraftforge.common.ForgeHooks
+import org.lwjgl.glfw.GLFW
 
 import scala.jdk.CollectionConverters._
 
@@ -450,6 +451,9 @@ object ContainerProjectBench extends ICCLContainerFactory[ContainerProjectBench]
 }
 
 class GuiProjectBench(c:ContainerProjectBench, playerInv:PlayerInventory, title:ITextComponent) extends NodeGui(c, 176, 208, playerInv, title) {
+
+    private var shiftKeyPressed = false
+
     {
         val write = new IconButtonNode {
             override def drawButton(stack:MatrixStack, mouseover: Boolean) {
@@ -490,7 +494,7 @@ class GuiProjectBench(c:ContainerProjectBench, playerInv:PlayerInventory, title:
                 val stack = inputs(i)
                 if (!stack.isEmpty) {
                     fillGradient(mStack, x, y, x+16, y+16, EnumColour.GRAY.argb, EnumColour.GRAY.argb)
-                    ItemDisplayNode.renderItem(mStack, this, Point(x, y), Size(16, 16), zPosition, false, stack)
+                    Minecraft.getInstance().getItemRenderer.renderGuiItem(stack, x, y)
                 }
             }
         }
@@ -500,7 +504,7 @@ class GuiProjectBench(c:ContainerProjectBench, playerInv:PlayerInventory, title:
     }
 
     override def drawFront_Impl(mStack:MatrixStack, mouse: Point, rframe: Float) {
-        if (Minecraft.getInstance().options.keyShift.isDown || true)
+        if (shiftKeyPressed)
             drawPlanOutputOverlay(mStack, c.slots.asScala)
     }
 
@@ -511,9 +515,26 @@ class GuiProjectBench(c:ContainerProjectBench, playerInv:PlayerInventory, title:
                 val output = PlanItem.loadPlanOutput(stack)
                 val colour = EnumColour.LIGHT_BLUE.argb(0xCC)
                 fillGradient(mStack, slot.x, slot.y, slot.x+16, slot.y+16, colour, colour)
-                ItemDisplayNode.renderItem(mStack, this, Point(slot.x+1, slot.y+1), Size(14, 14), 100, true, output)
+                Minecraft.getInstance().getItemRenderer.blitOffset += 200
+                Minecraft.getInstance().getItemRenderer.renderGuiItem(output, slot.x, slot.y)
+                Minecraft.getInstance().getItemRenderer.blitOffset -= 200
             }
         }
+    }
+
+    override def keyPressed_Impl(c: Char, keycode: Int, consumed: Boolean): Boolean = {
+        if (!consumed && keycode == GLFW.GLFW_KEY_LEFT_SHIFT) {
+            shiftKeyPressed = true
+            return true
+        }
+        false
+    }
+    override def keyReleased_Impl(c: Char, keycode: Int, consumed: Boolean): Boolean = {
+        if (keycode == GLFW.GLFW_KEY_LEFT_SHIFT) {
+            shiftKeyPressed = false
+            return true
+        }
+        false
     }
 }
 
