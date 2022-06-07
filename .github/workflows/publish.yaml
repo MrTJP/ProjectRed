@@ -74,12 +74,10 @@ jobs:
         with:
           python-version: 3.8
       - name: Cache PIP packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('.github/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
       - name: Install python deps
         run: |
           python -m pip install --upgrade pip
@@ -97,14 +95,12 @@ jobs:
           java-version: '8'
 
       - name: Cache Gradle packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/*.properties', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          key: ${{ runner.os }}-gradle2-${{ hashFiles('**/build.gradle', '**/build.properties', '**/gradle-wrapper.properties') }}
 
       - name: Build
         run: ./gradlew build
