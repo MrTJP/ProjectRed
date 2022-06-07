@@ -151,36 +151,42 @@ task coreJar(type: Jar) {
     classifier "core"
     dependsOn compileCoreScala, compileCoreJava
     from sourceSets.core.output
+    finalizedBy reobfCoreJar
 }
 
 task expansionJar(type: Jar) {
     classifier "expansion"
     dependsOn compileExpansionScala, compileExpansionJava
     from sourceSets.expansion.output
+    finalizedBy reobfExpansionJar
 }
 
 task explorationJar(type: Jar) {
     classifier "exploration"
     dependsOn compileExplorationScala, compileExplorationJava
     from sourceSets.exploration.output
+    finalizedBy reobfExplorationJar
 }
 
 task illuminationJar(type: Jar) {
     classifier "illumination"
     dependsOn compileIlluminationScala, compileIlluminationJava
     from sourceSets.illumination.output
+    finalizedBy reobfIlluminationJar
 }
 
 task integrationJar(type: Jar) {
     classifier "integration"
     dependsOn compileIntegrationScala, compileIntegrationJava
     from sourceSets.integration.output
+    finalizedBy reobfIntegrationJar
 }
 
 task transmissionJar(type: Jar) {
     classifier "transmission"
     dependsOn compileTransmissionScala, compileTransmissionJava
     from sourceSets.transmission.output
+    finalizedBy reobfTransmissionJar
 }
 
 sourceSets.findAll {it.name != "main" && it.name != "test" } each { set ->
