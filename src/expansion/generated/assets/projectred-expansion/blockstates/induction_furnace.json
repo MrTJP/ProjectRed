@@ -1,76 +1,64 @@
 {
   "variants": {
-    "rotation=0,side=0": {
+    "charged=false,rotation=0,working=false": {
       "model": "projectred-expansion:block/induction_furnace"
     },
-    "rotation=1,side=0": {
-      "model": "projectred-expansion:block/induction_furnace"
+    "charged=true,rotation=0,working=false": {
+      "model": "projectred-expansion:block/induction_furnace_state1"
     },
-    "rotation=2,side=0": {
-      "model": "projectred-expansion:block/induction_furnace"
+    "charged=false,rotation=1,working=false": {
+      "model": "projectred-expansion:block/induction_furnace",
+      "y": 90
     },
-    "rotation=3,side=0": {
-      "model": "projectred-expansion:block/induction_furnace"
+    "charged=true,rotation=1,working=false": {
+      "model": "projectred-expansion:block/induction_furnace_state1",
+      "y": 90
     },
-    "rotation=0,side=1": {
-      "model": "projectred-expansion:block/induction_furnace"
+    "charged=false,rotation=2,working=false": {
+      "model": "projectred-expansion:block/induction_furnace",
+      "y": 180
     },
-    "rotation=1,side=1": {
-      "model": "projectred-expansion:block/induction_furnace"
+    "charged=true,rotation=2,working=false": {
+      "model": "projectred-expansion:block/induction_furnace_state1",
+      "y": 180
     },
-    "rotation=2,side=1": {
-      "model": "projectred-expansion:block/induction_furnace"
+    "charged=false,rotation=3,working=false": {
+      "model": "projectred-expansion:block/induction_furnace",
+      "y": 270
     },
-    "rotation=3,side=1": {
-      "model": "projectred-expansion:block/induction_furnace"
+    "charged=true,rotation=3,working=false": {
+      "model": "projectred-expansion:block/induction_furnace_state1",
+      "y": 270
     },
-    "rotation=0,side=2": {
-      "model": "projectred-expansion:block/induction_furnace"
+    "charged=false,rotation=0,working=true": {
+      "model": "projectred-expansion:block/induction_furnace_state1"
     },
-    "rotation=1,side=2": {
-      "model": "projectred-expansion:block/induction_furnace"
+    "charged=true,rotation=0,working=true": {
+      "model": "projectred-expansion:block/induction_furnace_state3"
     },
-    "rotation=2,side=2": {
-      "model": "projectred-expansion:block/induction_furnace"
+    "charged=false,rotation=1,working=true": {
+      "model": "projectred-expansion:block/induction_furnace_state1",
+      "y": 90
     },
-    "rotation=3,side=2": {
-      "model": "projectred-expansion:block/induction_furnace"
+    "charged=true,rotation=1,working=true": {
+      "model": "projectred-expansion:block/induction_furnace_state3",
+      "y": 90
     },
-    "rotation=0,side=3": {
-      "model": "projectred-expansion:block/induction_furnace"
+    "charged=false,rotation=2,working=true": {
+      "model": "projectred-expansion:block/induction_furnace_state1",
+      "y": 180
     },
-    "rotation=1,side=3": {
-      "model": "projectred-expansion:block/induction_furnace"
+    "charged=true,rotation=2,working=true": {
+      "model": "projectred-expansion:block/induction_furnace_state3",
+      "y": 180
     },
-    "rotation=2,side=3": {
-      "model": "projectred-expansion:block/induction_furnace"
+    "charged=false,rotation=3,working=true": {
+      "model": "projectred-expansion:block/induction_furnace_state1",
+      "y": 270
     },
-    "rotation=3,side=3": {
-      "model": "projectred-expansion:block/induction_furnace"
-    },
-    "rotation=0,side=4": {
-      "model": "projectred-expansion:block/induction_furnace"
-    },
-    "rotation=1,side=4": {
-      "model": "projectred-expansion:block/induction_furnace"
-    },
-    "rotation=2,side=4": {
-      "model": "projectred-expansion:block/induction_furnace"
-    },
-    "rotation=3,side=4": {
-      "model": "projectred-expansion:block/induction_furnace"
-    },
-    "rotation=0,side=5": {
-      "model": "projectred-expansion:block/induction_furnace"
-    },
-    "rotation=1,side=5": {
-      "model": "projectred-expansion:block/induction_furnace"
-    },
-    "rotation=2,side=5": {
-      "model": "projectred-expansion:block/induction_furnace"
-    },
-    "rotation=3,side=5": {
-      "model": "projectred-expansion:block/induction_furnace"
+    "charged=true,rotation=3,working=true": {
+      "model": "projectred-expansion:block/induction_furnace_state3",
+      "y": 270
     }
   }
 }

@@ -1,76 +1,19 @@
 {
   "variants": {
-    "rotation=0,side=0": {
+    "rotation=0": {
       "model": "projectred-expansion:block/auto_crafting_bench"
     },
-    "rotation=1,side=0": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
+    "rotation=1": {
+      "model": "projectred-expansion:block/auto_crafting_bench",
+      "y": 90
     },
-    "rotation=2,side=0": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
+    "rotation=2": {
+      "model": "projectred-expansion:block/auto_crafting_bench",
+      "y": 180
     },
-    "rotation=3,side=0": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=0,side=1": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=1,side=1": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=2,side=1": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=3,side=1": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=0,side=2": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=1,side=2": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=2,side=2": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=3,side=2": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=0,side=3": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=1,side=3": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=2,side=3": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=3,side=3": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=0,side=4": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=1,side=4": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=2,side=4": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=3,side=4": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=0,side=5": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=1,side=5": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=2,side=5": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
-    },
-    "rotation=3,side=5": {
-      "model": "projectred-expansion:block/auto_crafting_bench"
+    "rotation=3": {
+      "model": "projectred-expansion:block/auto_crafting_bench",
+      "y": 270
     }
   }
 }

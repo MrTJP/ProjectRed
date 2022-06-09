@@ -15,7 +15,9 @@ import mrtjp.core.inventory.{TInventory, TInventoryCapablilityTile}
 import mrtjp.core.vec.Point
 import mrtjp.core.world.Messenger
 import mrtjp.projectred.ProjectRedExpansion
+import mrtjp.projectred.core.CoreTile
 import mrtjp.projectred.expansion.item.{IChargable, TChargableBatteryItem}
+import net.minecraft.block.BlockState
 import net.minecraft.client.gui.ScreenManager
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
@@ -120,8 +122,6 @@ class TileBatteryBox extends TileMachine(ExpansionContent.batteryBoxTile.get) wi
     override def canPlaceItem(slot:Int, item:ItemStack):Boolean =
         !item.isEmpty && item.getItem.isInstanceOf[IChargable]
 
-    override def doesRotate = false
-
     override def onBlockPlaced(player:LivingEntity, stack:ItemStack):Unit = {
         super.onBlockPlaced(player, stack)
         if (stack.hasTag) {
@@ -157,10 +157,14 @@ class TileBatteryBox extends TileMachine(ExpansionContent.batteryBoxTile.get) wi
     def updateRendersIfNeeded():Unit = {
         val s2 = getStorageScaled(8)
         if (s != s2) {
+            s = s2
             sendStorage()
             pushState()
         }
-        s = s2
+    }
+
+    override def covertToBlockState(state: BlockState): BlockState = {
+        state.setValue(BaseMachineBlock.CHARGE_LEVEL_PROPERTY, Int.box(s))
     }
 
     override def getMaxStorage = 8000

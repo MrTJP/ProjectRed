@@ -13,6 +13,7 @@ import mrtjp.core.fx.ParticleAction._
 import mrtjp.core.fx.particles.{BeamPulse2, SpriteParticle}
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.expansion.item.InfusedEnderPearlItem
+import net.minecraft.block.BlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.world.ClientWorld
 import net.minecraft.entity.item.{EnderPearlEntity, ItemEntity}
@@ -74,8 +75,6 @@ class TileTeleposer extends TileMachine(ExpansionContent.teleposerTile.get) with
         sendUpdate(3, _.writeBoolean(storage >= getTransportDraw))
     }
 
-    override def doesRotate = false
-
     def getMaxStorage = 16000
     def getDrawSpeed = 800
     def getDrawCeil = 600
@@ -121,6 +120,11 @@ class TileTeleposer extends TileMachine(ExpansionContent.teleposerTile.get) with
             pushState()
         }
         isCharged = ic2
+    }
+
+    override def covertToBlockState(state: BlockState): BlockState = {
+        super.covertToBlockState(state)
+            .setValue(BaseMachineBlock.CHARGED_PROPERTY, Boolean.box(isCharged))
     }
 
     def updateOrbits():Unit = {
