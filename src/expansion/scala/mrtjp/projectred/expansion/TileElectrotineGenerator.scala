@@ -15,6 +15,7 @@ import mrtjp.core.inventory.{TInventory, TInventoryCapablilityTile}
 import mrtjp.core.vec.Point
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.core.CoreContent
+import net.minecraft.block.BlockState
 import net.minecraft.client.gui.ScreenManager
 import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
 import net.minecraft.item.ItemStack
@@ -24,7 +25,7 @@ import net.minecraft.util.text.ITextComponent
 
 import scala.jdk.CollectionConverters._
 
-class TileElectrotineGenerator extends TileMachine(ExpansionContent.electrotineGeneratorTile.get) with TPoweredMachine with TGuiMachine with TInventory with TInventoryCapablilityTile
+class TileElectrotineGenerator extends TileMachine(ExpansionContent.electrotineGeneratorTile.get) with TPoweredOrientableMachine with TGuiMachine with TInventory with TInventoryCapablilityTile
 {
     var isBurning = false
     var isCharged = false
@@ -149,6 +150,18 @@ class TileElectrotineGenerator extends TileMachine(ExpansionContent.electrotineG
         }
         ib = isBurning
         ic = isCharged
+    }
+
+
+    override def loadBlockState(state: BlockState): Unit = {
+        setRotation(state.getValue(BaseMachineBlock.ROTATION_PROPERTY))
+    }
+
+    override def covertToBlockState(state: BlockState): BlockState = {
+        super.covertToBlockState(state)
+            .setValue(BaseMachineBlock.ROTATION_PROPERTY, Int.box(rotation))
+            .setValue(BaseMachineBlock.CHARGED_PROPERTY, Boolean.box(isCharged))
+            .setValue(BaseMachineBlock.WORKING_PROPERTY, Boolean.box(isBurning))
     }
 
     override def getLightValue:Int = if (isBurning) 13 else 0

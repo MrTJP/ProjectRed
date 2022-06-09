@@ -52,22 +52,22 @@ class TileProjectBench extends TileMachine(ExpansionContent.projectBenchTile.get
     }
 
     override def readUpdate(key:Int, in: MCDataInput):Unit = key match {
-        case 1 => in.readInt(); writePlan()
-        case 2 => clearGrid(in.readInt())
+        case 2 => in.readInt(); writePlan()
+        case 3 => clearGrid(in.readInt())
         case _ => super.readUpdate(key, in)
     }
 
     def sendWriteButtonAction():Unit = {
-        sendUpdate(1, _.writeInt(0))
+        sendUpdate(2, _.writeInt(0))
     }
 
     def sendClearGridAction(id: Int) {
-        sendUpdate(2, _.writeInt(id))
+        sendUpdate(3, _.writeInt(id))
     }
 
-    override def doesRotate = false
-
-    override def doesOrient = false
+//    override def doesRotate = false
+//
+//    override def doesOrient = false
 
     override def getMaxStackSize = 64
 

@@ -70,10 +70,6 @@ class TileAutoCrafter extends TileMachine(ExpansionContent.autoCraftingBenchTile
     def getPoweredCycleTimer = 10
     def getCraftsPerPowerCycle = 5
 
-    override def doesOrient = false
-    override def doesRotate = false
-
-
     override def getMaxStackSize = 64
     override def nbtSaveName = "auto_crafting_bench"
 

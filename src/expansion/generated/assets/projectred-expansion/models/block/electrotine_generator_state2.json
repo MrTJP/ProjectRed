@@ -2,7 +2,7 @@
   "parent": "minecraft:block/orientable_with_bottom",
   "textures": {
     "side": "projectred-expansion:block/electrotine_generator_side",
-    "front": "projectred-expansion:block/electrotine_generator_front_0",
+    "front": "projectred-expansion:block/electrotine_generator_front_2",
     "bottom": "projectred-expansion:block/electrotine_generator_bottom",
     "top": "projectred-expansion:block/electrotine_generator_top"
   }

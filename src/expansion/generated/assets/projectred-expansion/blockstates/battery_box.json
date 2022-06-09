@@ -1,76 +1,31 @@
 {
   "variants": {
-    "rotation=0,side=0": {
+    "charge_level=0": {
       "model": "projectred-expansion:block/battery_box"
     },
-    "rotation=1,side=0": {
-      "model": "projectred-expansion:block/battery_box"
+    "charge_level=1": {
+      "model": "projectred-expansion:block/battery_box_charge1"
     },
-    "rotation=2,side=0": {
-      "model": "projectred-expansion:block/battery_box"
+    "charge_level=2": {
+      "model": "projectred-expansion:block/battery_box_charge2"
     },
-    "rotation=3,side=0": {
-      "model": "projectred-expansion:block/battery_box"
+    "charge_level=3": {
+      "model": "projectred-expansion:block/battery_box_charge3"
     },
-    "rotation=0,side=1": {
-      "model": "projectred-expansion:block/battery_box"
+    "charge_level=4": {
+      "model": "projectred-expansion:block/battery_box_charge4"
     },
-    "rotation=1,side=1": {
-      "model": "projectred-expansion:block/battery_box"
+    "charge_level=5": {
+      "model": "projectred-expansion:block/battery_box_charge5"
     },
-    "rotation=2,side=1": {
-      "model": "projectred-expansion:block/battery_box"
+    "charge_level=6": {
+      "model": "projectred-expansion:block/battery_box_charge6"
     },
-    "rotation=3,side=1": {
-      "model": "projectred-expansion:block/battery_box"
+    "charge_level=7": {
+      "model": "projectred-expansion:block/battery_box_charge7"
     },
-    "rotation=0,side=2": {
-      "model": "projectred-expansion:block/battery_box"
-    },
-    "rotation=1,side=2": {
-      "model": "projectred-expansion:block/battery_box"
-    },
-    "rotation=2,side=2": {
-      "model": "projectred-expansion:block/battery_box"
-    },
-    "rotation=3,side=2": {
-      "model": "projectred-expansion:block/battery_box"
-    },
-    "rotation=0,side=3": {
-      "model": "projectred-expansion:block/battery_box"
-    },
-    "rotation=1,side=3": {
-      "model": "projectred-expansion:block/battery_box"
-    },
-    "rotation=2,side=3": {
-      "model": "projectred-expansion:block/battery_box"
-    },
-    "rotation=3,side=3": {
-      "model": "projectred-expansion:block/battery_box"
-    },
-    "rotation=0,side=4": {
-      "model": "projectred-expansion:block/battery_box"
-    },
-    "rotation=1,side=4": {
-      "model": "projectred-expansion:block/battery_box"
-    },
-    "rotation=2,side=4": {
-      "model": "projectred-expansion:block/battery_box"
-    },
-    "rotation=3,side=4": {
-      "model": "projectred-expansion:block/battery_box"
-    },
-    "rotation=0,side=5": {
-      "model": "projectred-expansion:block/battery_box"
-    },
-    "rotation=1,side=5": {
-      "model": "projectred-expansion:block/battery_box"
-    },
-    "rotation=2,side=5": {
-      "model": "projectred-expansion:block/battery_box"
-    },
-    "rotation=3,side=5": {
-      "model": "projectred-expansion:block/battery_box"
+    "charge_level=8": {
+      "model": "projectred-expansion:block/battery_box_charge8"
     }
   }
 }

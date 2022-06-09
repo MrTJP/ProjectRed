@@ -16,6 +16,7 @@ import mrtjp.core.item.ItemKey
 import mrtjp.core.vec.Point
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.expansion.item.IChargable
+import net.minecraft.block.BlockState
 import net.minecraft.client.gui.ScreenManager
 import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
 import net.minecraft.inventory.ISidedInventory
@@ -89,8 +90,6 @@ class TileChargingBench extends TileMachine(ExpansionContent.chargingBenchTile.g
     override def createMenu(windowId:Int, playerInv:PlayerInventory, player:PlayerEntity):ContainerChargingBench =
         new ContainerChargingBench(playerInv, this, windowId)
 
-    override def doesRotate = false
-
     def getStorageScaled(i:Int):Int = math.min(i, i*powerStorage/getMaxStorage)
 
     def getMaxStorage = 4000
@@ -159,6 +158,11 @@ class TileChargingBench extends TileMachine(ExpansionContent.chargingBenchTile.g
     override def onBlockRemoved():Unit = {
         super.onBlockRemoved()
         dropInvContents(level, getBlockPos)
+    }
+
+    override def covertToBlockState(state: BlockState): BlockState = {
+        super.covertToBlockState(state)
+            .setValue(BaseMachineBlock.CHARGED_PROPERTY, Boolean.box(isCharged))
     }
 }
 

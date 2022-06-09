@@ -70,35 +70,6 @@ class BaseMachineBlock(tileFactory:() => CoreTile) extends Block(AbstractBlock.P
         tile
     }
 
-    // Ideally this logic would be handled by the tile to keep this block generic,
-    // but there isn't a good way to get this `context` to the tile
-    override def getStateForPlacement(context:BlockItemUseContext):BlockState = {
-        val placementPos = context.getClickedPos.relative(context.getClickedFace)
-//        val placementSide = context.getFace.getOpposite
-
-        val side = calcFacing(context.getPlayer, placementPos)
-        val rot = Rotation.getSidedRotation(context.getPlayer, side)
-
-        defaultBlockState()
-                .setValue(BaseMachineBlock.SIDE_PROPERTY, Int.box(side))
-                .setValue(BaseMachineBlock.ROTATION_PROPERTY, Int.box(rot))
-    }
-
-    private def calcFacing(ent:PlayerEntity, blockPos:BlockPos):Int = {
-        val yawrx = Math.floor(ent.yRot*4.0F/360.0F+0.5D).toInt&0x3
-        if ((Math.abs(ent.getX-blockPos.getX) < 2.0D) && (Math.abs(ent.getZ-blockPos.getZ) < 2.0D)) {
-            val p = ent.getY+1.82D-blockPos.getY
-            if (p > 2.0D) return 0
-            if (p < 0.0D) return 1
-        }
-        yawrx match  {
-            case 0 => 3
-            case 1 => 4
-            case 2 => 2
-            case _ => 5
-        }
-    }
-
     override def neighborChanged(state:BlockState, world:World, pos:BlockPos, blockIn:Block, fromPos:BlockPos, isMoving:Boolean):Unit = {
         val tile = world.getBlockEntity(pos)
         if (tile != null && tile.isInstanceOf[CoreTile]) {
@@ -138,80 +109,72 @@ class BaseMachineBlock(tileFactory:() => CoreTile) extends Block(AbstractBlock.P
             tile.asInstanceOf[CoreTile].onBlockPlaced(player, stack)
         }
     }
-
-    override protected def createBlockStateDefinition(builder:StateContainer.Builder[Block, BlockState]):Unit = {
-        builder.add(BaseMachineBlock.SIDE_PROPERTY)
-        builder.add(BaseMachineBlock.ROTATION_PROPERTY)
-    }
 }
 
 object BaseMachineBlock {
     val SIDE_PROPERTY:IntegerProperty = IntegerProperty.create("side", 0, 5)
     val ROTATION_PROPERTY:IntegerProperty = IntegerProperty.create("rotation", 0, 3)
-    val WORKING_PROPERTY:BooleanProperty = BooleanProperty.create("isWorking")
-    val CHARGED_PROPERTY:BooleanProperty = BooleanProperty.create("isCharged")
-    val BURNING_PROPERTY:BooleanProperty = BooleanProperty.create("isBurning")
-    val POWERED_PROPERTY:BooleanProperty = BooleanProperty.create("isPowered")
-    val ACTIVE_PROPERTY:BooleanProperty = BooleanProperty.create("isActive")
-    val CHARGE_LEVEL_PROPERTY:IntegerProperty = IntegerProperty.create("chargeLevel", 0, 15)
+    val WORKING_PROPERTY:BooleanProperty = BooleanProperty.create("working")
+    val CHARGED_PROPERTY:BooleanProperty = BooleanProperty.create("charged")
+//    val BURNING_PROPERTY:BooleanProperty = BooleanProperty.create("isBurning")
+//    val POWERED_PROPERTY:BooleanProperty = BooleanProperty.create("isPowered")
+//    val ACTIVE_PROPERTY:BooleanProperty = BooleanProperty.create("isActive")
+    val CHARGE_LEVEL_PROPERTY:IntegerProperty = IntegerProperty.create("charge_level", 0, 8)
 }
 
+class RotatableMachineBlock(tileFactory:() => CoreTile) extends BaseMachineBlock(tileFactory) {
 
-abstract class TileMachine(tileType:TileEntityType[_]) extends CoreTile(tileType) with TTileOrient
+    // Ideally this logic would be handled by the tile to keep this block generic,
+    // but there isn't a good way to get this `context` to the tile
+    override def getStateForPlacement(context: BlockItemUseContext): BlockState = {
+        val rot = Rotation.rotationTo(0, context.getHorizontalDirection.ordinal())
+
+        defaultBlockState().setValue(BaseMachineBlock.ROTATION_PROPERTY, Int.box(rot))
+    }
+
+    override protected def createBlockStateDefinition(builder: StateContainer.Builder[Block, BlockState]): Unit = {
+        builder.add(BaseMachineBlock.ROTATION_PROPERTY)
+    }
+}
+
+abstract class TileMachine(tileType:TileEntityType[_]) extends CoreTile(tileType)
 {
-    override def onBlockPlaced(player:LivingEntity, stack:ItemStack):Unit = {
+}
 
-        //Pull side/rotation from block state
+trait TOrientableMachine extends TileMachine with TTileOrient {
 
-//        setSide(if (doesOrient) calcFacing(player) else 0)
-//        setRotation(if (doesRotate) (Rotation.getSidedRotation(player, side)+2)%4 else 0)
-    }
-
-
-    override def loadBlockState(state:BlockState):Unit = {
-        setSide(state.getValue(BaseMachineBlock.SIDE_PROPERTY))
-        setRotation(state.getValue(BaseMachineBlock.ROTATION_PROPERTY))
-    }
-
-    override def covertToBlockState(state:BlockState):BlockState = {
-        super.covertToBlockState(state)
-            .setValue(BaseMachineBlock.SIDE_PROPERTY, Int.box(side))
-            .setValue(BaseMachineBlock.ROTATION_PROPERTY, Int.box(rotation))
-    }
-
-    override def writeDesc(out:MCDataOutput):Unit = {
+    override def writeDesc(out: MCDataOutput): Unit = {
         super.writeDesc(out)
         out.writeByte(orientation)
     }
 
-    override def readDesc(in:MCDataInput):Unit = {
+    override def readDesc(in: MCDataInput): Unit = {
         super.readDesc(in)
         orientation = in.readByte
     }
 
-    override def saveToNBT(tag:CompoundNBT) = {
+    override def saveToNBT(tag: CompoundNBT) = {
         tag.putByte("rot", orientation)
     }
 
-    override def loadFromNBT(tag:CompoundNBT) = {
+    override def loadFromNBT(tag: CompoundNBT) = {
         orientation = tag.getByte("rot")
     }
 
-    override def readUpdate(key:Int, in:MCDataInput):Unit = key match {
+    override def readUpdate(key: Int, in: MCDataInput): Unit = key match {
         case 1 =>
             orientation = in.readByte()
-//            markRender()
+        //            markRender()
         case _ => super.readUpdate(key, in)
     }
 
-    override def onBlockActivated(player:PlayerEntity, hand:Hand, hit:BlockRayTraceResult):ActionResultType = {
+    override def onBlockActivated(player: PlayerEntity, hand: Hand, hit: BlockRayTraceResult): ActionResultType = {
         val held = player.getMainHandItem
         if ((doesRotate || doesOrient) && !held.isEmpty && held.getItem.isInstanceOf[IScrewdriver]
-                && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held))
-        {
+            && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held)) {
             def rotate() {
                 val old = rotation
-                do setRotation((rotation+1)%4) while (old != rotation && !isRotationAllowed(rotation))
+                do setRotation((rotation + 1) % 4) while (old != rotation && !isRotationAllowed(rotation))
                 if (old != rotation) {
                     sendOrientUpdate()
                     pushState()
@@ -220,9 +183,10 @@ abstract class TileMachine(tileType:TileEntityType[_]) extends CoreTile(tileType
                 onBlockRotated()
                 held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             }
+
             def orient() {
                 val old = side
-                do setSide((side+1)%6) while (old != side && !isSideAllowed(side))
+                do setSide((side + 1) % 6) while (old != side && !isSideAllowed(side))
                 if (old != side) {
                     sendOrientUpdate()
                     pushState()
@@ -244,19 +208,19 @@ abstract class TileMachine(tileType:TileEntityType[_]) extends CoreTile(tileType
             ActionResultType.PASS
     }
 
-    def isRotationAllowed(rot:Int) = true
+    def isRotationAllowed(rot: Int) = true
 
-    def isSideAllowed(s:Int) = true
+    def isSideAllowed(s: Int) = true
 
     def doesRotate = true
 
     def doesOrient = false
 
-    def sendOrientUpdate():Unit = {
+    def sendOrientUpdate(): Unit = {
         sendUpdate(1, _.writeByte(orientation))
     }
 
-    def onBlockRotated(){}
+    def onBlockRotated() {}
 }
 
 trait TGuiMachine extends TileMachine with INamedContainerProvider
@@ -305,15 +269,17 @@ trait TPoweredMachine extends TileMachine with TPowerTile with ILowLoadMachine {
         super.loadFromNBT(tag)
         cond.load(tag)
     }
+}
 
-    abstract override def onBlockRotated():Unit = {
+trait TPoweredOrientableMachine extends TPoweredMachine with TOrientableMachine {
+    abstract override def onBlockRotated(): Unit = {
         super.onBlockRotated()
         needsCache = true
     }
 }
 
 abstract class TileProcessingMachine(tileType:TileEntityType[_]) extends TileMachine(tileType)
-        with TPoweredMachine
+        with TPoweredOrientableMachine
         with TGuiMachine
         with TInventory
         with ISidedInventory
@@ -429,6 +395,18 @@ abstract class TileProcessingMachine(tileType:TileEntityType[_]) extends TileMac
         }
         oldW = isWorking
         oldCh = isCharged
+    }
+
+    override def loadBlockState(state: BlockState): Unit = {
+        super.loadBlockState(state)
+        setRotation(state.getValue(BaseMachineBlock.ROTATION_PROPERTY))
+    }
+
+    override def covertToBlockState(state: BlockState): BlockState = {
+        super.covertToBlockState(state)
+            .setValue(BaseMachineBlock.ROTATION_PROPERTY, Int.box(rotation))
+            .setValue(BaseMachineBlock.CHARGED_PROPERTY, Boolean.box(isCharged))
+            .setValue(BaseMachineBlock.WORKING_PROPERTY, Boolean.box(isWorking))
     }
 
     def hasLight:Boolean = true
