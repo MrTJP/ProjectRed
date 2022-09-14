@@ -6,17 +6,16 @@ import mrtjp.core.vec.Point;
 import mrtjp.core.vec.Rect;
 import mrtjp.core.vec.Size;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Base Screen class that implements the UI Node system. This is for UIs that do not have containers.
- */
-public class RedUIScreen extends Screen implements RedUIRootNode {
+public class RedUIContainerScreen<T extends Container> extends ContainerScreen<T> implements RedUIRootNode {
 
     private final List<RedUINode> children = new LinkedList<>();
 
@@ -29,14 +28,14 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
 
     private long lastClickTime = 0;
 
-    public RedUIScreen(int backgroundWidth, int backgroundHeight, ITextComponent title) {
-        super(title);
+    public RedUIContainerScreen(int backgroundWidth, int backgroundHeight, T container, PlayerInventory playerInventory, ITextComponent title) {
+        super(container, playerInventory, title);
+        this.imageWidth = backgroundWidth;
+        this.imageHeight = backgroundHeight;
 
         // These frames are fully set during init() call, when the bounds of the entire screen are known
         this.frame = new Rect(Point.zeroPoint(), new Size(backgroundWidth, backgroundHeight));
         this.screenFrame = Rect.zeroRect();
-
-        this.onAddedToParent(); // No actual parent, so this is called once on construction
     }
 
     @Override
@@ -50,13 +49,7 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialFrame) {
-        super.render(matrixStack, mouseX, mouseY, partialFrame);
-
-        RenderSystem.enableDepthTest(); // Nodes render out of order, so depth test is needed
-
-        // Render semi-transparent grey background
-        fillGradient(matrixStack, getScreenFrame().x(), getScreenFrame().y(), getScreenFrame().width(), getScreenFrame().height(), -1072689136, -804253680);
+    public void render(MatrixStack stack, int mouseX, int mouseY, float partialFrame) {
 
         // Call frame update function on all nodes
         Point mousePoint = new Point(mouseX, mouseY);
@@ -65,9 +58,23 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
             return false;
         }, false);
 
-        // Draw the UI
-        drawBackForSubtree(matrixStack, mousePoint, partialFrame);
-        drawFrontForSubtree(matrixStack, mousePoint, partialFrame);
+        RenderSystem.enableDepthTest(); // Nodes render out of order, so depth test is needed
+
+        // Render semi-transparent grey background
+        fillGradient(stack, getScreenFrame().x(), getScreenFrame().y(), getScreenFrame().width(), getScreenFrame().height(), -1072689136, -804253680);
+
+        // Render background
+        drawBackForSubtree(stack, new Point(mouseX, mouseY), partialFrame);
+        // Sandwich ContainerScreen's default rendering between RedUI's foreground and background rendering
+        super.render(stack, mouseX, mouseY, partialFrame);
+        renderTooltip(stack, mouseX, mouseY);
+        // Render foreground
+        drawFrontForSubtree(stack, new Point(mouseX, mouseY), partialFrame);
+    }
+
+    @Override
+    protected void renderBg(MatrixStack stack, float partialFrame, int mouseX, int mouseY) {
+        // We render through RedUI's render methods
     }
 
     @Override
@@ -81,7 +88,6 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
         return false;
     }
 
-    //region INestedGuiEventHandler overrides
     @Override
     public boolean mouseClicked(double x, double y, int glfwMouseButton) {
         lastClickTime = System.currentTimeMillis();
@@ -126,9 +132,9 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
         boolean consumed = super.keyReleased(glfwKeyCode, glfwScanCode, glfwFlags);
         return operateOnZOrderedSubtree(Point.zeroPoint(), (n, p, c) -> n.onKeyReleased(glfwKeyCode, glfwScanCode, glfwFlags, c), consumed);
     }
-    //endregion
 
     //region RedUINode overrides
+
     @Override
     public Rect getScreenFrame() {
         return screenFrame;
@@ -173,5 +179,6 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
     public FontRenderer getFontRenderer() {
         return font;
     }
+
     //endregion
 }
