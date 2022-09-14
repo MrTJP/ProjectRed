@@ -145,7 +145,7 @@ trait TTileConnectable extends CoreTile with TTileAcquisitions with IConnectable
     def discoverStraightOverride(s:Int):Boolean = {//TODO remove to discoverStraightCenterOverride
         val pos = posOfInternal.relative(Direction.values()(s))
         val t = getLevel.getBlockEntity(pos) match {
-            case t: TTileConnectable => t
+            case t: IConnectable => t
             case _ => null
         }
         if (t != null && canConnectPart(t, s, -1)) t.connectStraight(this, s^1, -1)
