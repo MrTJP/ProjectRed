@@ -106,7 +106,7 @@ public class BaseTileMap implements FETileMap {
         if (tile instanceof IIOConnectionTile) ioTiles.remove(tile);
     }
 
-    private byte calcBundledIOMask() {
+    public byte calcBundledIOMask() {
         // OOOO IIII
         int bmask = 0;
 
@@ -118,6 +118,10 @@ public class BaseTileMap implements FETileMap {
         }
 
         return (byte) bmask;
+    }
+
+    public byte calcRedstoneIOMask() {
+        return 0; //TODO
     }
 
     public void save(CompoundTag tag) {
@@ -133,9 +137,6 @@ public class BaseTileMap implements FETileMap {
             tileList.add(tileTag);
         }
         tag.put("tiles", tileList);
-
-        tag.putByte("rsmask", (byte) 0); //TODO
-        tag.putByte("bmask", calcBundledIOMask());
     }
 
     public void load(CompoundTag tag) {

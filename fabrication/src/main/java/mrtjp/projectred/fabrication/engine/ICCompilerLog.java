@@ -29,18 +29,16 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
     }
 
     public void save(CompoundTag tag) {
-        CompoundTag treeTag = new CompoundTag();
-        compileTree.save(treeTag);
-        tag.put("compile_tree", treeTag);
         tag.putInt("completed_steps", completedSteps);
         tag.putIntArray("current_path", currentPath);
+        compileTree.save(tag);
     }
 
     public void load(CompoundTag tag) {
-        compileTree.load(tag.getCompound("compile_tree"));
         completedSteps = tag.getInt("completed_steps");
         currentPath.clear();
         currentPath.addAll(Arrays.stream(tag.getIntArray("current_path")).boxed().collect(Collectors.toList()));
+        compileTree.load(tag);
     }
 
     public void writeDesc(MCDataOutput out) {
@@ -175,9 +173,9 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
             ListTag tileCoordsTag = new ListTag();
             for (TileCoord coord : tileCoords) {
                 CompoundTag coordTag = new CompoundTag();
-                coordTag.putInt("x", coord.x);
-                coordTag.putInt("y", coord.y);
-                coordTag.putInt("z", coord.z);
+                coordTag.putByte("x", (byte) coord.x);
+                coordTag.putByte("y", (byte) coord.y);
+                coordTag.putByte("z", (byte) coord.z);
                 tileCoordsTag.add(coordTag);
             }
             tag.put("tileCoords", tileCoordsTag);
@@ -206,13 +204,15 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
         public void load(CompoundTag tag) {
             step = ICStepThroughAssembler.AssemblerStepType.values()[tag.getByte("step")];
 
+            // Note: this is only called on fresh instance. No need to clear lists
+
             ListTag tileCoordsTag = tag.getList("tileCoords", Tag.TAG_COMPOUND);
             for (Tag coordTag : tileCoordsTag) {
                 CompoundTag coordTagCompound = (CompoundTag) coordTag;
                 tileCoords.add(new TileCoord(
-                        coordTagCompound.getInt("x"),
-                        coordTagCompound.getInt("y"),
-                        coordTagCompound.getInt("z")
+                        coordTagCompound.getByte("x"),
+                        coordTagCompound.getByte("y"),
+                        coordTagCompound.getByte("z")
                 ));
             }
 
@@ -379,6 +379,7 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
 
         public void load(CompoundTag tag) {
             size = tag.getInt("size");
+            rootNodes.clear();
             ListTag rootNodesTag = tag.getList("rootNodes", Tag.TAG_COMPOUND);
             for (Tag rootNodeTag : rootNodesTag) {
                 CompileTreeNode rootNode = new CompileTreeNode();

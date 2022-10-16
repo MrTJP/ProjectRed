@@ -8,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 
 public class ICSimulationContainer {
 
-    private String flatMap = PRFabricationEngine.EMPTY_FLAT_MAP_SERIALIZED; //TODO this does not really belong here
     private ICSimulation simulation = PRFabricationEngine.EMPTY_SIMULATION;
 
     /**
@@ -60,7 +59,6 @@ public class ICSimulationContainer {
     }
 
     public void setFlatMap(ICFlatMap flatMap) {
-        this.flatMap = PRFabricationEngine.instance.serializeFlatMap(flatMap);
         this.simulation = new ICSimulation(flatMap);
 
         pushInputs(0xF);
@@ -70,7 +68,6 @@ public class ICSimulationContainer {
     }
 
     public void save(CompoundTag tag) {
-        tag.putString("flatMap", flatMap);
         tag.putString("simulation", PRFabricationEngine.instance.serializeSimulation(simulation));
         for (int i = 0; i < 4; i++) {
             tag.putShort("in" + i, inputs[i]);
@@ -80,7 +77,6 @@ public class ICSimulationContainer {
     }
 
     public void load(CompoundTag tag) {
-        this.flatMap = tag.getString("flatMap");
         ICSimulation simulation = PRFabricationEngine.instance.deserializeSimulation(tag.getString("simulation"));
         if (simulation != null) {
             this.simulation = simulation;

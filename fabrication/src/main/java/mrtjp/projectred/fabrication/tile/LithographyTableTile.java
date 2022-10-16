@@ -147,8 +147,7 @@ public class LithographyTableTile extends FabricationMachineTile {
 
         // Set the output stacks
         if (totalValidDies > 0) {
-            ItemStack validDieStack = new ItemStack(FabricationReferences.VALID_DIE_ITEM, totalValidDies);
-            PhotomaskSetItem.transferNBTToDieItem(inventory.getItem(0), validDieStack);
+            ItemStack validDieStack = PhotomaskSetItem.createDieStack(inventory.getItem(0), totalValidDies);
             inventory.setItem(2, validDieStack);
         }
         if (totalDefectiveDies > 0) {

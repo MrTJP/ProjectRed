@@ -129,8 +129,7 @@ public class PlottingTableTile extends FabricationMachineTile {
 
     @Override
     protected void finishWork() {
-        ItemStack output = new ItemStack(FabricationReferences.PHOTOMASK_SET_ITEM);
-        output.setTag(inventory.getItem(0).getTag().copy()); // copy the blueprint tag
+        ItemStack output = ICBlueprintItem.createPhotomaskStack(inventory.getItem(0));
         inventory.setItem(2, output);
         inventory.removeItem(1, 1); // delete 1 blank photomask
     }

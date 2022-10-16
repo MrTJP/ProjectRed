@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.function.Function;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
+import static mrtjp.projectred.fabrication.editor.EditorDataUtils.*;
 
 public class ICEditorStateMachine {
 
@@ -43,6 +44,8 @@ public class ICEditorStateMachine {
     private final ICSimulationContainer simulationContainer = new ICSimulationContainer();
     private final ICCompilerLog compilerLog = new ICCompilerLog(this);
 
+    private String lastCompiledFlatMap = PRFabricationEngine.EMPTY_FLAT_MAP_SERIALIZED;
+
     private boolean autoCompileOnChange = false; //TODO client-side toggle
 
     public ICEditorStateMachine(ICWorkbenchEditor editor, StateMachineCallback callback) {
@@ -55,15 +58,23 @@ public class ICEditorStateMachine {
     }
 
     public void save(CompoundTag tag) {
-        tag.putByte("comp_state", (byte) currentState);
-        simulationContainer.save(tag);
-        compilerLog.save(tag);
+        tag.putByte(KEY_COMP_STATE, (byte) currentState);
+        tag.putString(KEY_FLAT_MAP, lastCompiledFlatMap);
+
+        CompoundTag simTag = new CompoundTag();
+        simulationContainer.save(simTag);
+        tag.put(KEY_SIMULATION, simTag);
+
+        CompoundTag logTag = new CompoundTag();
+        compilerLog.save(logTag);
+        tag.put(KEY_COMPILER_LOG, logTag);
     }
 
     public void load(CompoundTag tag) {
-        currentState = tag.getByte("comp_state") & 0xFF;
-        simulationContainer.load(tag);
-        compilerLog.load(tag);
+        currentState = tag.getByte(KEY_COMP_STATE) & 0xFF;
+        lastCompiledFlatMap = tag.getString(KEY_FLAT_MAP);
+        simulationContainer.load(tag.getCompound(KEY_SIMULATION));
+        compilerLog.load(tag.getCompound(KEY_COMPILER_LOG));
     }
 
     public void writeDesc(MCDataOutput out) {
@@ -131,6 +142,9 @@ public class ICEditorStateMachine {
     }
     public boolean isCompiling() {
         return currentState == STATE_COMPILING;
+    }
+    public boolean isSimulating() {
+        return currentState == STATE_SIMULATING;
     }
     //endregion
 
@@ -263,6 +277,7 @@ public class ICEditorStateMachine {
             if (assembler.isDone()) {
                 ICFlatMap map = assembler.result();
                 assembler = null; //TODO make assemblers clearable
+                lastCompiledFlatMap = PRFabricationEngine.instance.serializeFlatMap(map);
                 simulationContainer.setFlatMap(map);
                 enterStateAndSend(STATE_SIMULATING);
                 if (callback != null) callback.onCompileComplete();

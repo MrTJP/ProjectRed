@@ -14,8 +14,11 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
+import static mrtjp.projectred.fabrication.editor.EditorDataUtils.*;
 
 public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallback {
+
+    public static final int EDITOR_FORMAT = 1;
 
     private static final int STREAM_ID_GENERAL = 0;
     private static final int STREAM_ID_TILE_UPDATES = 1;
@@ -59,17 +62,22 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
     //region ICWorkbenchTile utilities
     public void save(CompoundTag tag) {
         LOGGER.info("ICWorkbenchEditor: saving to NBT");
-        tag.putBoolean("active", isActive);
-        tag.putString("ic_name", icName);
-        tileMap.save(tag);
+        tag.putInt(KEY_FORMAT, EDITOR_FORMAT);
+        tag.putBoolean(KEY_ACTIVE, isActive);
+        tag.putString(KEY_IC_NAME, icName);
+
+        CompoundTag tileMapTag = new CompoundTag();
+        tileMap.save(tileMapTag);
+        tag.put(KEY_TILE_MAP, tileMapTag);
+
         stateMachine.save(tag);
     }
 
     public void load(CompoundTag tag) {
         LOGGER.info("ICWorkbenchEditor: reading form NBT");
-        isActive = tag.getBoolean("active");
-        icName = tag.getString("ic_name");
-        tileMap.load(tag);
+        isActive = tag.getBoolean(KEY_ACTIVE);
+        icName = tag.getString(KEY_IC_NAME);
+        tileMap.load(tag.getCompound(KEY_TILE_MAP));
         stateMachine.load(tag);
     }
 
@@ -96,27 +104,28 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
     }
 
     public void readBlueprintTagAndActivate(@Nullable CompoundTag tag) {
-
+        // Clear the session
         clear();
-        isActive = true;
-        if (tag == null) {
-            LOGGER.info("ICWorkbenchEditor: No blueprint tag found. Activating fresh session");
-            return;
-        }
 
-        LOGGER.info("ICWorkbenchEditor: Reading blueprint tag");
-        icName = tag.getString("ic_name");
-        tileMap.load(tag);
-        stateMachine.load(tag);
+        // Save editor contents
+        if (tag != null) load(tag);
+
+        // Activate editor
+        isActive = true;
     }
 
     public void writeBlueprintTagAndDeactivate(CompoundTag tag) {
-        LOGGER.info("ICWorkbenchEditor: Writing blueprint tag");
+        // Save all editor contents
+        save(tag);
+
+        // Save additional metadata for blueprints
+        tag.putByte(KEY_IO_RS, tileMap.calcRedstoneIOMask());
+        tag.putByte(KEY_IO_BUNDLED, tileMap.calcBundledIOMask());
+        tag.putInt(KEY_TILE_COUNT, tileMap.getTileCount());
+        tag.putBoolean(KEY_IS_BUILT, stateMachine.isSimulating());
+
+        // Deactivate editor
         isActive = false;
-        tag.putString("ic_name", icName);
-        tileMap.save(tag);
-        stateMachine.save(tag);
-        tag.putInt("tilecount", tileMap.getTileCount()); //TODO better tooltips
         clear();
     }
     //endregion
