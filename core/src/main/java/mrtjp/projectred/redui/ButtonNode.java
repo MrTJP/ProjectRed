@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static net.minecraft.client.gui.GuiComponent.drawCenteredString;
 
@@ -15,6 +16,8 @@ public class ButtonNode extends AbstractButtonNode {
 
     private Runnable clickFunction = () -> { };
     private Consumer<List<Component>> tooltipBuilder = c -> { };
+    private Supplier<Boolean> isSelectedFunction = () -> false;
+    private Supplier<Boolean> isEnabledFunction = () -> true;
 
     private String buttonText = "";
 
@@ -24,6 +27,14 @@ public class ButtonNode extends AbstractButtonNode {
 
     public void setTooltipBuilder(Consumer<List<Component>> tooltipBuilder) {
         this.tooltipBuilder = tooltipBuilder;
+    }
+
+    public void setIsSelectedFunction(Supplier<Boolean> isSelectedFunction) {
+        this.isSelectedFunction = isSelectedFunction;
+    }
+
+    public void setIsEnabledFunction(Supplier<Boolean> isEnabledFunction) {
+        this.isEnabledFunction = isEnabledFunction;
     }
 
     public void setButtonText(String buttonText) {
@@ -37,7 +48,14 @@ public class ButtonNode extends AbstractButtonNode {
 
     @Override
     protected boolean isButtonDisabled() {
-        return false;
+        return !isEnabledFunction.get();
+    }
+
+    @Override
+    protected int getButtonState(boolean mouseover) {
+        if (isSelectedFunction.get())
+            return BUTTON_STATE_HIGHLIGHT;
+        return super.getButtonState(mouseover);
     }
 
     @Override

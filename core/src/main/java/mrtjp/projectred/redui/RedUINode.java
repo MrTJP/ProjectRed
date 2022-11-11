@@ -222,6 +222,14 @@ public interface RedUINode {
         return p.add(difference);
     }
 
+    default Point convertPointToParent(Point p) {
+        return p.add(getPosition());
+    }
+
+    default Point convertPointFromParent(Point p) {
+        return p.subtract(getPosition());
+    }
+
     /**
      * Convert a given point <code>p</code> in this node's coordinate system to screen space
      *
@@ -269,6 +277,14 @@ public interface RedUINode {
      * @return The converted rectangle
      */
     default Rect convertRectTo(Rect r, RedUINode to) { return new Rect(convertPointTo(r.origin, to), r.size); }
+
+    default Rect convertRectToParent(Rect r) {
+        return new Rect(convertPointToParent(r.origin), r.size);
+    }
+
+    default Rect convertRectFromParent(Rect r) {
+        return new Rect(convertPointFromParent(r.origin), r.size);
+    }
 
     /**
      * Converts a rectangle from this node's coordinate system to screen space
@@ -361,26 +377,25 @@ public interface RedUINode {
     }
 
     /**
-     * Calculate a frame encompassing all frames in the entire subtree. Hidden nodes and all its
-     * descendants are excluded.
+     * Combines frame encompassing all children with frame of this node.
      *
      * @return Rect in the coordinate system of this node's parent
      */
     default Rect calculateAccumulatedFrame() {
-        Rect screenSpaceFrame = getSubTree(n -> !n.isHidden()).stream()
-                .map(n -> n.convertParentRectToScreen(n.getFrame()))
-                .reduce(Rect.ZERO, Rect::union);
-        return convertScreenRectToParent(screenSpaceFrame);
+        return getFrame().union(calculateChildrenFrame());
     }
 
+    /**
+     * Calculate a frame encompassing all visible children and their subtrees.
+     *
+     * @return Rect in the coordinate system of this node's parent
+     */
     default Rect calculateChildrenFrame() {
-        List<RedUINode> subTree = getSubTree(n -> !n.isHidden());
-        subTree.remove(0); // drop this node
-
-        Rect screenSpaceFrame = subTree.stream()
-                .map(n -> n.convertParentRectToScreen(n.getFrame()))
+        Rect childrenFrame = getOurChildren().stream()
+                .filter(n -> !n.isHidden())
+                .map(RedUINode::calculateAccumulatedFrame)
                 .reduce(Rect.ZERO, Rect::union);
-        return convertScreenRectToParent(screenSpaceFrame);
+        return convertRectToParent(childrenFrame);
     }
 
     /**
