@@ -131,12 +131,14 @@ public class LithographyTableTile extends FabricationMachineTile {
 
         WaferType waferType = wafer.getWaferType();
         ProcessNode processNode = ProcessNode.PROCESS_64NM;
-        int dieLen = processNode.getTileLen() * 16; //TODO Source from photomask itemstack instead of assuming 16x16
-        int gridLen = waferType.getWaferLen() / dieLen;
-        double defectChancePerDie = dieLen * waferType.getDefectChancePerLen();
+        int dieWidth = processNode.getTileWidth() * 16; //TODO Source from photomask itemstack instead of assuming 16x16
+        int dieHeight = processNode.getTileHeight() * 16;
+        int gridWidth = waferType.getWaferWidth() / dieWidth;
+        int gridHeight = waferType.getWaferHeight() / dieHeight;
+        double defectChancePerDie = dieWidth * dieHeight * waferType.getDefectRatePerUnitArea();
 
         // Calculate number of good and bad dies
-        int totalDesigns = gridLen * gridLen;
+        int totalDesigns = gridWidth * gridHeight;
         int totalDefectiveDies = 0;
         for (int i = 0; i < totalDesigns; i++) {
             if (Math.random() < defectChancePerDie) {

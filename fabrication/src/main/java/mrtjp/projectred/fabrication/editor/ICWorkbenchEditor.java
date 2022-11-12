@@ -24,9 +24,14 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
     private static final int STREAM_ID_TILE_UPDATES = 1;
     private static final int STREAM_ID_FSM = 2;
 
+    // Server to client keys
     private static final int KEY_ADD_TILE = 1;
     private static final int KEY_REMOVE_TILE = 2;
+    private static final int KEY_SET_IC_NAME = 3;
+
+    // Client to server keys
     private static final int KEY_TOOL = 10;
+    private static final int KEY_CLIENT_SEND_IC_NAME = 11;
 
     private final IICWorkbenchEditorNetwork network;
     private final BaseTileMap tileMap = new BaseTileMap(this);
@@ -41,6 +46,10 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
     public ICWorkbenchEditor(IICWorkbenchEditorNetwork network) {
         this.network = network;
         for (IICEditorTool t : toolList) t.bindEditor(this);
+    }
+
+    public String getIcName() {
+        return icName;
     }
 
     public ArrayList<IICEditorTool> getToolList() {
@@ -101,6 +110,7 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
         LOGGER.info("ICWorkbenchEditor: Preparing load of initial data (Should be server only)");
         tileMap.removeAll();
         stateMachine.reset();
+        icName = "untitled";
     }
 
     public void readBlueprintTagAndActivate(@Nullable CompoundTag tag) {
@@ -174,8 +184,16 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
             case KEY_REMOVE_TILE:
                 tileMap.removeTile(new TileCoord(in.readByte(), in.readByte(), in.readByte())); //TODO check if removed?
                 break;
+            case KEY_SET_IC_NAME:
+                icName = in.readString();
+                break;
             case KEY_TOOL:
                 toolList.get(in.readUByte()).readPacket(in);
+                break;
+            case KEY_CLIENT_SEND_IC_NAME:
+                //TODO validate name
+                icName = in.readString();
+                network.getBufferedStream(STREAM_ID_GENERAL, KEY_SET_IC_NAME).writeString(icName);
                 break;
             default:
                 LOGGER.error("Unknown key " + frameKey + " in general stream");
@@ -223,6 +241,7 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
         return network.getBufferedStream(STREAM_ID_FSM, key);
     }
 
+    //region Server Utils
     public void addTile(BaseTile tile, TileCoord pos) {
         if (network.isClientSide()) throw new RuntimeException("Tiles can only be added server-side");
 
@@ -267,6 +286,14 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
         network.markSave();
         stateMachine.onTileMapChanged();
     }
+    //endregion
+
+    //region Client Utils
+    public void sendNewICName(String name) {
+        // Notifies server to set a new IC name
+        network.getBufferedStream(STREAM_ID_GENERAL, KEY_CLIENT_SEND_IC_NAME).writeString(name);
+    }
+    //endregion
 
     //region State Machine callbacks
     @Override

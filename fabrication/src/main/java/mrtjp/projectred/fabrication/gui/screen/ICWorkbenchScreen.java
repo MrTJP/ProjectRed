@@ -9,7 +9,6 @@ import mrtjp.projectred.fabrication.gui.TabControllerNode;
 import mrtjp.projectred.fabrication.tile.ICWorkbenchTile;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
-import mrtjp.projectred.redui.DebugRectNode;
 import mrtjp.projectred.redui.RedUIScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -37,6 +36,9 @@ public class ICWorkbenchScreen extends RedUIScreen {
     }
 
     private void initSubNodes() {
+        ICWorkbenchInfoTab infoTab = new ICWorkbenchInfoTab(editor);
+        addChild(infoTab);
+
         ICWorkbenchEditTab editTab = new ICWorkbenchEditTab(editor);
         addChild(editTab);
 
@@ -48,7 +50,7 @@ public class ICWorkbenchScreen extends RedUIScreen {
         tabControllerNode.setZPosition(0.1);
         addChild(tabControllerNode);
 
-        tabControllerNode.addButtonForTab(new SimpleUVTab(new DebugRectNode(), "Info", TabButtonNode.TabSide.LEFT, 420, 1));
+        tabControllerNode.addButtonForTab(new SimpleUVTab(infoTab, "Info", TabButtonNode.TabSide.LEFT, 420, 1));
         tabControllerNode.addButtonForTab(new SimpleUVTab(editTab, "Edit", TabButtonNode.TabSide.LEFT, 420, 16));
         tabControllerNode.addButtonForTab(new SimpleUVTab(compileTab, "Compile", TabButtonNode.TabSide.LEFT, 420, 31));
 

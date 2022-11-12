@@ -12,15 +12,21 @@ import net.minecraft.nbt.ListTag;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static mrtjp.projectred.fabrication.editor.EditorDataUtils.loadTileCoord;
+import static mrtjp.projectred.fabrication.editor.EditorDataUtils.saveTileCoord;
+
 public class BaseTileMap implements FETileMap {
+
+    private static final TileCoord defaultMinBounds = new TileCoord(-8, 0, -8);
+    private static final TileCoord defaultMaxBounds = new TileCoord(7, 0, 7);
 
     private final Map<TileCoord, BaseTile> tileMap = new HashMap<>();
     private final ICWorkbenchEditor editor;
 
     private final Set<IIOConnectionTile> ioTiles = new HashSet<>();
 
-    private TileCoord minBounds = new TileCoord(-8, -8, -8);
-    private TileCoord maxBounds = new TileCoord(7, 7, 7);
+    private TileCoord minBounds = defaultMinBounds;
+    private TileCoord maxBounds = defaultMaxBounds;
 
     public BaseTileMap(ICWorkbenchEditor editor) {
         this.editor = editor;
@@ -36,6 +42,10 @@ public class BaseTileMap implements FETileMap {
 
     public TileCoord getMaxBounds() {
         return maxBounds;
+    }
+
+    public TileCoord getDimensions() {
+        return maxBounds.subtract(minBounds).add(1, 1, 1);
     }
 
     public void setBounds(TileCoord minBounds, TileCoord maxBounds) {
@@ -96,6 +106,9 @@ public class BaseTileMap implements FETileMap {
 
         for (BaseTile t : tileMap.values()) t.unbindMap();
         tileMap.clear();
+
+        minBounds = defaultMinBounds;
+        maxBounds = defaultMaxBounds;
     }
 
     private void cacheType(BaseTile tile) {
@@ -137,6 +150,9 @@ public class BaseTileMap implements FETileMap {
             tileList.add(tileTag);
         }
         tag.put("tiles", tileList);
+
+        saveTileCoord(tag, "maxBounds", maxBounds);
+        saveTileCoord(tag, "minBounds", minBounds);
     }
 
     public void load(CompoundTag tag) {
@@ -153,9 +169,15 @@ public class BaseTileMap implements FETileMap {
             addTile(new TileCoord(x, y, z), tile);
             tile.load(tileTag);
         }
+
+        maxBounds = loadTileCoord(tag, "maxBounds");
+        minBounds = loadTileCoord(tag, "minBounds");
     }
 
     public void writeDesc(MCDataOutput out) {
+
+        out.writeByte(minBounds.x).writeByte(minBounds.y).writeByte(minBounds.z);
+        out.writeByte(maxBounds.x).writeByte(maxBounds.y).writeByte(maxBounds.z);
 
         for (Map.Entry<TileCoord, BaseTile> entry : tileMap.entrySet()) {
             out.writeByte(entry.getValue().getTileType().getID());
@@ -169,6 +191,9 @@ public class BaseTileMap implements FETileMap {
 
     public void readDesc(MCDataInput in) {
         removeAll();
+
+        minBounds = new TileCoord(in.readByte(), in.readByte(), in.readByte());
+        maxBounds = new TileCoord(in.readByte(), in.readByte(), in.readByte());
 
         int id = in.readUByte();
         while (id != 255) {

@@ -15,11 +15,19 @@ public enum ProcessNode {
         this.tileArea = tileLen * tileLen;
     }
 
-    public int getTileLen() {
+    public int getTileWidth() {
+        return tileLen;
+    }
+
+    public int getTileHeight() {
         return tileLen;
     }
 
     public int getTileArea() {
         return tileArea;
+    }
+
+    public String getDisplayName() {
+        return "" + tileLen + "nm";
     }
 }

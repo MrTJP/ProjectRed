@@ -91,6 +91,12 @@ public class Rect {
         return new Rect(x, y, w, h);
     }
 
+    public Rect expand(int x, int y) {
+        int dw = width() + x < 0 ? -width() : x;
+        int dh = height() + y < 0 ? -height() : y;
+        return new Rect(origin.subtract(dw / 2, dh / 2), new Size(width() + dw, height() + dh));
+    }
+
     public Rect trap(Rect rect) {
         int dx = (rect.x() < x() ? x() - rect.x() : 0) + (rect.maxX() > maxX() ? rect.maxX() - maxX() : 0);
         int dy = (rect.y() < y() ? y() - rect.y() : 0) + (rect.maxY() > maxY() ? rect.maxY() - maxY() : 0);

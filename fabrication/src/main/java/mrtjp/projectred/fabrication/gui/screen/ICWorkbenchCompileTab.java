@@ -1,5 +1,6 @@
 package mrtjp.projectred.fabrication.gui.screen;
 
+import codechicken.lib.colour.EnumColour;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Vector3;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -85,7 +86,12 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
         RenderSystem.setShaderTexture(0, TAB_BACKGROUND);
         GuiComponent.blit(stack, getFrame().x(), getFrame().y(), 0, 0, getFrame().width(), getFrame().height(), 512, 512);
 
+        if (editor.isActive()) {
+            getRoot().getFontRenderer().draw(stack, editor.getIcName(), getFrame().x() + 8, getFrame().y() + 6, EnumColour.GRAY.argb());
+        }
+
         // Progress bar
+        RenderSystem.setShaderTexture(0, TAB_BACKGROUND);
         int barWidth = 91;
         int progress = editor.getStateMachine().getCompilerLog().getProgressScaled(barWidth);
         GuiComponent.blit(stack, getFrame().x() + 208, getFrame().y() + 36, 304, 0, barWidth, 5, 512, 512);

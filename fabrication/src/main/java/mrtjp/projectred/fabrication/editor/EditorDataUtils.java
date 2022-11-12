@@ -1,5 +1,6 @@
 package mrtjp.projectred.fabrication.editor;
 
+import mrtjp.fengine.TileCoord;
 import net.minecraft.nbt.CompoundTag;
 
 public class EditorDataUtils {
@@ -54,5 +55,29 @@ public class EditorDataUtils {
         copy.putByte(KEY_IO_BUNDLED, editorTag.getByte(KEY_IO_BUNDLED));
         copy.putString(KEY_FLAT_MAP, editorTag.getString(KEY_FLAT_MAP));
         return copy;
+    }
+
+    public static void saveTileCoord(CompoundTag tag, String key, TileCoord coord) {
+        tag.putByte(key + "_x", (byte) coord.x);
+        tag.putByte(key + "_y", (byte) coord.y);
+        tag.putByte(key + "_z", (byte) coord.z);
+    }
+
+    public static TileCoord loadTileCoord(CompoundTag tag, String key) {
+        return new TileCoord(
+                tag.getByte(key + "_x"),
+                tag.getByte(key + "_y"),
+                tag.getByte(key + "_z")
+        );
+    }
+
+    public static CompoundTag tileCoordToNBT(TileCoord coord) {
+        CompoundTag tag = new CompoundTag();
+        saveTileCoord(tag, "", coord);
+        return tag;
+    }
+
+    public static TileCoord tileCoordFromNBT(CompoundTag tag) {
+        return loadTileCoord(tag, "");
     }
 }

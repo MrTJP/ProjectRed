@@ -33,7 +33,7 @@ public abstract class BaseICEditorTool implements IICEditorTool {
         TileCoord maxBounds = editor.getTileMap().getMaxBounds();
 
         return coord.x > minBounds.x && coord.x < maxBounds.x &&
-                coord.y > minBounds.y && coord.y < maxBounds.y &&
+                coord.y >= minBounds.y && coord.y <= maxBounds.y &&
                 coord.z > minBounds.z && coord.z < maxBounds.z;
     }
 
