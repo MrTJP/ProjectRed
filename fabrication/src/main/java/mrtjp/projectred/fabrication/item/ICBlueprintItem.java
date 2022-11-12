@@ -55,6 +55,8 @@ public class ICBlueprintItem extends Item {
 
     public static void buildTooltip(CompoundTag blueprintTag, List<Component> tooltipList) {
 
+        if (blueprintTag == null) return;
+
         if (!hasFabricationTarget(blueprintTag)) {
             tooltipList.add(new TextComponent("<!> ").withStyle(ChatFormatting.RED)
                     .append(new TextComponent("Corrupted NBT data, please discard").withStyle(ChatFormatting.GRAY)));

@@ -1,19 +1,26 @@
 package mrtjp.projectred.fabrication.gui.screen;
 
+import codechicken.lib.colour.EnumColour;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
 import mrtjp.projectred.fabrication.gui.SimpleUVTab;
 import mrtjp.projectred.fabrication.gui.TabButtonNode;
 import mrtjp.projectred.fabrication.gui.TabControllerNode;
+import mrtjp.projectred.fabrication.init.FabricationReferences;
 import mrtjp.projectred.fabrication.tile.ICWorkbenchTile;
 import mrtjp.projectred.lib.Point;
-import mrtjp.projectred.lib.Rect;
+import mrtjp.projectred.redui.AbstractGuiNode;
+import mrtjp.projectred.redui.ItemStackNode;
 import mrtjp.projectred.redui.RedUIScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 public class ICWorkbenchScreen extends RedUIScreen {
 
@@ -21,6 +28,9 @@ public class ICWorkbenchScreen extends RedUIScreen {
 
     private final ICWorkbenchTile tile;
     private final ICWorkbenchEditor editor;
+
+    private AbstractGuiNode contentNode;
+    private InactiveOverlayNode overlayNode;
 
     public ICWorkbenchScreen(ICWorkbenchTile tile) {
         super(304, 222, new TextComponent(tile.getType().getRegistryName().toString()));
@@ -36,19 +46,24 @@ public class ICWorkbenchScreen extends RedUIScreen {
     }
 
     private void initSubNodes() {
+
+        //organizational node to make hiding everything easy
+        contentNode = new AbstractGuiNode() { };
+        addChild(contentNode);
+
         ICWorkbenchInfoTab infoTab = new ICWorkbenchInfoTab(editor);
-        addChild(infoTab);
+        contentNode.addChild(infoTab);
 
         ICWorkbenchEditTab editTab = new ICWorkbenchEditTab(editor);
-        addChild(editTab);
+        contentNode.addChild(editTab);
 
         ICWorkbenchCompileTab compileTab = new ICWorkbenchCompileTab(editor);
-        addChild(compileTab);
+        contentNode.addChild(compileTab);
 
         TabControllerNode tabControllerNode = new TabControllerNode();
         tabControllerNode.setPosition(-19, 4);
         tabControllerNode.setZPosition(0.1);
-        addChild(tabControllerNode);
+        contentNode.addChild(tabControllerNode);
 
         tabControllerNode.addButtonForTab(new SimpleUVTab(infoTab, "Info", TabButtonNode.TabSide.LEFT, 420, 1));
         tabControllerNode.addButtonForTab(new SimpleUVTab(editTab, "Edit", TabButtonNode.TabSide.LEFT, 420, 16));
@@ -56,26 +71,20 @@ public class ICWorkbenchScreen extends RedUIScreen {
 
         tabControllerNode.selectInitialTab(1);
         tabControllerNode.spreadButtonsVertically(1);
+
+        // Overlay for no blueprint
+        overlayNode = new InactiveOverlayNode();
+        overlayNode.setPosition(
+                getFrame().midX() - overlayNode.getFrame().width() / 2,
+                getFrame().midY() - overlayNode.getFrame().height() / 2);
+        addChild(overlayNode);
+
+        refreshOverlay();
     }
 
     @Override
     public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
         super.drawBack(stack, mouse, partialFrame);
-
-        if (!editor.isActive()) { //TODO this has to be drawn by a node above viewport node
-            Rect frame = getFrame();
-            fillGradient(stack, frame.x(), frame.y(), frame.width(), frame.height(), -1072689136, -804253680);
-
-            Font fontRenderer = getFontRenderer();
-
-            String message = "Editor is not active";
-            int width = fontRenderer.width(message);
-            int height = fontRenderer.lineHeight;
-
-            getFontRenderer().draw(stack, message,
-                    frame.x() + frame.width() / 2F - width / 2F,
-                    frame.y() + frame.height() / 2F - height / 2F, 0xFFFFFFFF);
-        }
     }
 
     @Override
@@ -89,5 +98,48 @@ public class ICWorkbenchScreen extends RedUIScreen {
     public void onClose() {
         super.onClose();
         ProjectRedFabrication.LOGGER.info("ICWorkbenchScreen ONCLOSE");
+    }
+
+    @Override
+    public void update() {
+        refreshOverlay();
+    }
+
+    private void refreshOverlay() {
+        // If active, hide overlay and show every thing else. Otherwise, do opposite
+        boolean isActive = editor.isActive();
+        overlayNode.setHidden(isActive);
+        contentNode.setHidden(!isActive);
+    }
+
+    private static class InactiveOverlayNode extends AbstractGuiNode {
+
+        public InactiveOverlayNode() {
+            setSize(132, 92);
+            initSubNodes();
+        }
+
+        private void initSubNodes() {
+            ItemStackNode blueprintNode = new ItemStackNode(new ItemStack(FabricationReferences.IC_BLUEPRINT_ITEM));
+            blueprintNode.setPosition(58, 24);
+            addChild(blueprintNode);
+
+            ItemStackNode workbenchNode = new ItemStackNode(new ItemStack(FabricationReferences.IC_WORKBENCH_BLOCK));
+            workbenchNode.setPosition(58, 64);
+            addChild(workbenchNode);
+        }
+
+        @Override
+        public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
+            RenderSystem.setShaderTexture(0, BACKGROUND);
+            blit(stack, getFrame().x(), getFrame().y(), 0, 222, getFrame().width(), getFrame().height(), 512, 512);
+
+            Font fontRenderer = getRoot().getFontRenderer();
+            Component text = new TranslatableComponent("Place blueprint"); // TODO: localize
+
+            fontRenderer.draw(stack, text,
+                    getFrame().midX() - fontRenderer.width(text) / 2f,
+                    getFrame().y() + 6, EnumColour.GRAY.argb());
+        }
     }
 }
