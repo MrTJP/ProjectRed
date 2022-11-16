@@ -53,6 +53,10 @@ public class ICRenderNode extends ViewportRenderNode {
         eventReceiver.layerChanged(this, previousLayer, currentLayer);
     }
 
+    public int getLayer() {
+        return currentLayer;
+    }
+
     public void moveZoomAt(Vector3 zoomPos, double zoomDelta) {
 
         Vector3 zoomVec = zoomPos.copy().subtract(cameraPosition).normalize();
@@ -171,22 +175,6 @@ public class ICRenderNode extends ViewportRenderNode {
         eventReceiver.buildTooltip(this, mouseToWorld(mousePosition), isFirstHit, tooltip);
 
         return tooltip;
-    }
-
-    @Override
-    public boolean onKeyPressed(int glfwKeyCode, int glfwScanCode, int glfwFlags, boolean consumed) {
-        if (!consumed) {
-            if (glfwKeyCode == GLFW.GLFW_KEY_UP) {
-                setLayer(currentLayer + 1);
-                return true;
-            }
-
-            if (glfwKeyCode == GLFW.GLFW_KEY_DOWN) {
-                setLayer(currentLayer - 1);
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

@@ -34,6 +34,8 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
     private boolean rightPressed = false;
     private boolean downPressed = false;
     private boolean leftPressed = false;
+    private boolean layerUpPressed = false;
+    private boolean layerDownPressed = false;
 
     public ICWorkbenchCompileTab(ICWorkbenchEditor editor) {
         this.editor = editor;
@@ -117,6 +119,12 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
             case GLFW.GLFW_KEY_D:
                 rightPressed = true;
                 break;
+            case GLFW.GLFW_KEY_UP:
+                layerUpPressed = true;
+                break;
+            case GLFW.GLFW_KEY_DOWN:
+                layerDownPressed = true;
+                break;
             default:
                 return false;
         }
@@ -138,6 +146,12 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
             case GLFW.GLFW_KEY_D:
                 rightPressed = false;
                 break;
+            case GLFW.GLFW_KEY_UP:
+                layerUpPressed = false;
+                break;
+            case GLFW.GLFW_KEY_DOWN:
+                layerDownPressed = false;
+                break;
             default:
                 return false;
         }
@@ -155,13 +169,21 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
 
     @Override
     public void update(ICRenderNode renderNode) {
+        // Move camera
         Vector3 cameraDelta = new Vector3();
         double deltaPerTick =  0.5D;
-
         cameraDelta.z = (upPressed ? -deltaPerTick : 0) + (downPressed ? deltaPerTick : 0);
         cameraDelta.x = (leftPressed ? -deltaPerTick : 0) + (rightPressed ? deltaPerTick : 0);
-
         renderNode.applyCameraDelta(cameraDelta);
+
+        // Shift Layers
+        if (layerUpPressed) {
+            renderNode.setLayer(renderNode.getLayer() + 1);
+        } else if (layerDownPressed) {
+            renderNode.setLayer(renderNode.getLayer() - 1);
+        }
+        layerUpPressed = false;
+        layerDownPressed = false;
     }
 
     @Override

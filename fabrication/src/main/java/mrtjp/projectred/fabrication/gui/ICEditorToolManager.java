@@ -27,6 +27,8 @@ public class ICEditorToolManager implements ICRenderNode.IICRenderNodeEventRecei
     private boolean rightPressed = false;
     private boolean downPressed = false;
     private boolean leftPressed = false;
+    private boolean layerUpPressed = false;
+    private boolean layerDownPressed = false;
 
     public ICEditorToolManager(ArrayList<IICEditorTool> toolList) {
         this.toolList = toolList;
@@ -56,6 +58,12 @@ public class ICEditorToolManager implements ICRenderNode.IICRenderNodeEventRecei
             case GLFW.GLFW_KEY_D:
                 rightPressed = true;
                 break;
+            case GLFW.GLFW_KEY_UP:
+                layerUpPressed = true;
+                break;
+            case GLFW.GLFW_KEY_DOWN:
+                layerDownPressed = true;
+                break;
             default:
                 return false;
         }
@@ -76,20 +84,35 @@ public class ICEditorToolManager implements ICRenderNode.IICRenderNodeEventRecei
             case GLFW.GLFW_KEY_D:
                 rightPressed = false;
                 break;
+            case GLFW.GLFW_KEY_UP:
+                layerUpPressed = false;
+                break;
+            case GLFW.GLFW_KEY_DOWN:
+                layerDownPressed = false;
+                break;
             default:
                 return false;
         }
+
         return true;
     }
 
     public void update(ICRenderNode renderNode) {
+        // Move camera
         Vector3 cameraDelta = new Vector3();
         double deltaPerTick =  0.5D;
-
         cameraDelta.z = (upPressed ? -deltaPerTick : 0) + (downPressed ? deltaPerTick : 0);
         cameraDelta.x = (leftPressed ? -deltaPerTick : 0) + (rightPressed ? deltaPerTick : 0);
-
         renderNode.applyCameraDelta(cameraDelta);
+
+        // Shift Layers
+        if (layerUpPressed) {
+            renderNode.setLayer(renderNode.getLayer() + 1);
+        } else if (layerDownPressed) {
+            renderNode.setLayer(renderNode.getLayer() - 1);
+        }
+        layerUpPressed = false;
+        layerDownPressed = false;
     }
 
     @Override
