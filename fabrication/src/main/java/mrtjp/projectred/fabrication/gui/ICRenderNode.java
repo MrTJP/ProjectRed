@@ -26,6 +26,8 @@ public class ICRenderNode extends ViewportRenderNode {
     private static final int ZOOM_ANIMATION_TIME_MS = 100;
     private static final int LAYER_ANIMATION_TIME_MS = 200;
     private static final int CAMERA_ANIMATION_TIME_MS = 100;
+    private static final int ZOOM_DIST_MAX = 18;
+    private static final int ZOOM_DIST_MIN = 3;
 
     private final ICWorkbenchEditor editor;
     private final IICRenderNodeEventReceiver eventReceiver;
@@ -33,7 +35,7 @@ public class ICRenderNode extends ViewportRenderNode {
     private final Vector3 cameraPosition = new Vector3();
 
     private final LinearVectorAnimation cameraLayerAnimator = new LinearVectorAnimation();
-    private final LinearVectorAnimation cameraZoomAnimator = new LinearVectorAnimation(0, 3, 0);
+    private final LinearVectorAnimation cameraZoomAnimator = new LinearVectorAnimation(0, 5, 0);
 
     private int currentLayer = 0;
 
@@ -64,6 +66,18 @@ public class ICRenderNode extends ViewportRenderNode {
 
     @Override
     public void frameUpdate(Point mouse, float partialFrame) {
+
+        // Set camera location bounds
+        TileCoord minBounds = editor.getTileMap().getMinBounds();
+        TileCoord maxBounds = editor.getTileMap().getMaxBounds();
+        cameraZoomAnimator.setBounds(
+                minBounds.x,
+                cameraLayerAnimator.vector.y + ZOOM_DIST_MIN, // Y bounds follows zoom
+                minBounds.z,
+                maxBounds.x + 1,
+                cameraLayerAnimator.vector.y + ZOOM_DIST_MAX,
+                maxBounds.z + 1);
+
         long t = System.currentTimeMillis();
         cameraZoomAnimator.tick(t);
         cameraLayerAnimator.tick(t);
