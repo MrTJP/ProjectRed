@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-fabrication:ic_blueprint"
+  },
+  "pattern": [
+    "pbp",
+    "brb",
+    "pbp"
+  ],
+  "key": {
+    "r": {
+      "tag": "forge:dusts/redstone"
+    },
+    "p": {
+      "item": "minecraft:paper"
+    },
+    "b": {
+      "tag": "forge:dyes/blue"
+    }
+  }
+}

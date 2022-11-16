@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-fabrication:packaging_table"
+  },
+  "pattern": [
+    "gtg",
+    "ppp",
+    "wbw"
+  ],
+  "key": {
+    "g": {
+      "item": "minecraft:glass"
+    },
+    "t": {
+      "tag": "forge:dusts/redstone"
+    },
+    "w": {
+      "tag": "minecraft:planks"
+    },
+    "p": {
+      "item": "projectred-core:plate"
+    },
+    "b": {
+      "tag": "forge:ingots/electrotine_alloy"
+    }
+  }
+}

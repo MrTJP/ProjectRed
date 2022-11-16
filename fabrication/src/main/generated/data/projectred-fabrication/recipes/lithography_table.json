@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-fabrication:lithography_table"
+  },
+  "pattern": [
+    "gtg",
+    "oio",
+    "wbw"
+  ],
+  "key": {
+    "g": {
+      "item": "minecraft:glass"
+    },
+    "o": {
+      "tag": "forge:obsidian"
+    },
+    "t": {
+      "tag": "forge:gems/emerald"
+    },
+    "w": {
+      "tag": "minecraft:planks"
+    },
+    "b": {
+      "tag": "forge:ingots/electrotine_alloy"
+    },
+    "i": {
+      "tag": "forge:ingots/iron"
+    }
+  }
+}
