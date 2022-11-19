@@ -90,10 +90,15 @@ class ContainerBackpack(windowId: Int, inv: BagInventory, playerInv: PlayerInven
         // hotbar slot (corresponding to number pressed) if it can take the stack (which would be denied by the custom slot class's canTakeStack implemented above).
         // Additionally, if the target slot is empty, it calls that empty slot's canTakeStack. This is almost certainly
         // a bug. canTakeStack should be called on BOTH slots, and isItemValid should be called on BOTH slots with the other slots contents.
-        if (id == player.inventory.selected || (clickType == ClickType.SWAP && dragType == player.inventory.selected))
-            ItemStack.EMPTY
-        else
-            super.clicked(id, dragType, clickType, player)
+
+        if (id >= 0 && id < slots.size()) {
+            val slot = getSlot(id)
+            if (slot.container == player.inventory) {
+                if (slot.getSlotIndex == player.inventory.selected || (clickType == ClickType.SWAP && dragType == player.inventory.selected))
+                    return ItemStack.EMPTY
+            }
+        }
+        super.clicked(id, dragType, clickType, player)
     }
 }
 
