@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "result": {
-    "item": "projectred-fabrication:blank_photomask"
+    "item": "projectred_fabrication:blank_photomask"
   },
   "pattern": [
     "ggg",

@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "result": {
-    "item": "projectred-fabrication:ic_workbench"
+    "item": "projectred_fabrication:ic_workbench"
   },
   "pattern": [
     "sss",
@@ -16,7 +16,7 @@
       "item": "minecraft:stone"
     },
     "b": {
-      "item": "projectred-fabrication:ic_blueprint"
+      "item": "projectred_fabrication:ic_blueprint"
     }
   }
 }

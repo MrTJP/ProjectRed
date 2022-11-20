@@ -1,11 +1,11 @@
 {
   "type": "minecraft:crafting_shaped",
   "result": {
-    "item": "projectred-fabrication:packaging_table"
+    "item": "projectred_fabrication:plotting_table"
   },
   "pattern": [
     "gtg",
-    "ppp",
+    "sps",
     "wbw"
   ],
   "key": {
@@ -13,13 +13,16 @@
       "item": "minecraft:glass"
     },
     "t": {
-      "tag": "forge:dusts/redstone"
+      "tag": "forge:gems/sapphire"
     },
     "w": {
       "tag": "minecraft:planks"
     },
     "p": {
-      "item": "projectred-core:plate"
+      "item": "projectred_fabrication:blank_photomask"
+    },
+    "s": {
+      "item": "minecraft:stone"
     },
     "b": {
       "tag": "forge:ingots/electrotine_alloy"

@@ -30,31 +30,21 @@ public class FabricationBlockStateModelProvider extends BlockStateProvider {
     @Override
     protected void registerStatesAndModels() {
 
-        BlockModelBuilder noBP = models().cube(IC_WORKBENCH_BLOCK.getRegistryName().getPath() + "_no_blueprint",
-                new ResourceLocation(MOD_ID, "block/ic_workbench_bottom"),
-                new ResourceLocation(MOD_ID, "block/ic_workbench_top"),
-                new ResourceLocation(MOD_ID, "block/ic_workbench_front"),
-                new ResourceLocation(MOD_ID, "block/ic_workbench_front"),
-                new ResourceLocation(MOD_ID, "block/ic_workbench_side"),
-                new ResourceLocation(MOD_ID, "block/ic_workbench_side"));
-
-        BlockModelBuilder withBP = models().cube(IC_WORKBENCH_BLOCK.getRegistryName().getPath() + "_blueprint",
-                new ResourceLocation(MOD_ID, "block/ic_workbench_bottom"),
-                new ResourceLocation(MOD_ID, "block/ic_workbench_top_bp"),
-                new ResourceLocation(MOD_ID, "block/ic_workbench_front_bp"),
-                new ResourceLocation(MOD_ID, "block/ic_workbench_front_bp"),
-                new ResourceLocation(MOD_ID, "block/ic_workbench_side_bp"),
-                new ResourceLocation(MOD_ID, "block/ic_workbench_side_bp"));
-
-        getVariantBuilder(IC_WORKBENCH_BLOCK)
-                .partialState().with(ICWorkbenchBlock.BLUEPRINT_PROPERTY, false).modelForState().modelFile(noBP).addModel();
-
-        getVariantBuilder(IC_WORKBENCH_BLOCK)
-                .partialState().with(ICWorkbenchBlock.BLUEPRINT_PROPERTY, true).modelForState().modelFile(withBP).addModel();
+        addICWorkbenchVariants(IC_WORKBENCH_BLOCK);
 
         addFabricationMachineVariants(PLOTTING_TABLE_BLOCK);
         addFabricationMachineVariants(LITHOGRAPHY_TABLE_BLOCK);
         addFabricationMachineVariants(PACKAGING_TABLE_BLOCK);
+    }
+
+    private void addICWorkbenchVariants(Block block) {
+        getVariantBuilder(block)
+                .partialState().with(ICWorkbenchBlock.BLUEPRINT_PROPERTY, false)
+                .modelForState().modelFile(createICWorkbenchModel(block, false)).addModel();
+
+        getVariantBuilder(block)
+                .partialState().with(ICWorkbenchBlock.BLUEPRINT_PROPERTY, true)
+                .modelForState().modelFile(createICWorkbenchModel(block, true)).addModel();
     }
 
     private void addFabricationMachineVariants(Block block) {
@@ -82,13 +72,28 @@ public class FabricationBlockStateModelProvider extends BlockStateProvider {
 
     private BlockModelBuilder createDomedMachineModelFileForBlock(Block block, int chargeState) {
         String textureName = block.getRegistryName().getPath();
+        String modelName = textureName + (chargeState > 0 ? "_state" + chargeState : "");
         return models()
-                .withExistingParent(textureName + "_c" + chargeState, modLoc("block/domed_machine"))
+                .withExistingParent(modelName, modLoc("block/domed_machine"))
                 .texture("down",  modLoc("block/" + textureName + "_bottom"))
                 .texture("up",    modLoc("block/" + textureName + "_top"))
                 .texture("north", modLoc("block/" + textureName + "_front_" + chargeState))
                 .texture("south", modLoc("block/" + textureName + "_side"))
                 .texture("west",  modLoc("block/" + textureName + "_side"))
                 .texture("east",  modLoc("block/" + textureName + "_side"));
+    }
+
+    private BlockModelBuilder createICWorkbenchModel(Block block, boolean hasBlueprint) {
+        String textureName = block.getRegistryName().getPath();
+        String suffix = hasBlueprint ? "" : "_empty";
+        String modelName = textureName + suffix;
+        return models().cube(modelName,
+                modLoc("block/" + textureName + "_bottom"),
+                modLoc("block/" + textureName + "_top" + suffix),
+                modLoc("block/" + textureName + "_front" + suffix),
+                modLoc("block/" + textureName + "_front" + suffix),
+                modLoc("block/" + textureName + "_side" + suffix),
+                modLoc("block/" + textureName + "_side" + suffix))
+                .texture("particle", modLoc("block/" + textureName + "_front" + suffix));
     }
 }

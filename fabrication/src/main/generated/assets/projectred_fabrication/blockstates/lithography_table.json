@@ -1,63 +1,63 @@
 {
   "variants": {
     "charged=false,rotation=0,working=false": {
-      "model": "projectred_fabrication:block/lithography_table_c0"
+      "model": "projectred_fabrication:block/lithography_table"
     },
     "charged=true,rotation=0,working=false": {
-      "model": "projectred_fabrication:block/lithography_table_c1"
+      "model": "projectred_fabrication:block/lithography_table_state1"
     },
     "charged=false,rotation=1,working=false": {
-      "model": "projectred_fabrication:block/lithography_table_c0",
+      "model": "projectred_fabrication:block/lithography_table",
       "y": 90
     },
     "charged=true,rotation=1,working=false": {
-      "model": "projectred_fabrication:block/lithography_table_c1",
+      "model": "projectred_fabrication:block/lithography_table_state1",
       "y": 90
     },
     "charged=false,rotation=2,working=false": {
-      "model": "projectred_fabrication:block/lithography_table_c0",
+      "model": "projectred_fabrication:block/lithography_table",
       "y": 180
     },
     "charged=true,rotation=2,working=false": {
-      "model": "projectred_fabrication:block/lithography_table_c1",
+      "model": "projectred_fabrication:block/lithography_table_state1",
       "y": 180
     },
     "charged=false,rotation=3,working=false": {
-      "model": "projectred_fabrication:block/lithography_table_c0",
+      "model": "projectred_fabrication:block/lithography_table",
       "y": 270
     },
     "charged=true,rotation=3,working=false": {
-      "model": "projectred_fabrication:block/lithography_table_c1",
+      "model": "projectred_fabrication:block/lithography_table_state1",
       "y": 270
     },
     "charged=false,rotation=0,working=true": {
-      "model": "projectred_fabrication:block/lithography_table_c0"
+      "model": "projectred_fabrication:block/lithography_table"
     },
     "charged=true,rotation=0,working=true": {
-      "model": "projectred_fabrication:block/lithography_table_c2"
+      "model": "projectred_fabrication:block/lithography_table_state2"
     },
     "charged=false,rotation=1,working=true": {
-      "model": "projectred_fabrication:block/lithography_table_c0",
+      "model": "projectred_fabrication:block/lithography_table",
       "y": 90
     },
     "charged=true,rotation=1,working=true": {
-      "model": "projectred_fabrication:block/lithography_table_c2",
+      "model": "projectred_fabrication:block/lithography_table_state2",
       "y": 90
     },
     "charged=false,rotation=2,working=true": {
-      "model": "projectred_fabrication:block/lithography_table_c0",
+      "model": "projectred_fabrication:block/lithography_table",
       "y": 180
     },
     "charged=true,rotation=2,working=true": {
-      "model": "projectred_fabrication:block/lithography_table_c2",
+      "model": "projectred_fabrication:block/lithography_table_state2",
       "y": 180
     },
     "charged=false,rotation=3,working=true": {
-      "model": "projectred_fabrication:block/lithography_table_c0",
+      "model": "projectred_fabrication:block/lithography_table",
       "y": 270
     },
     "charged=true,rotation=3,working=true": {
-      "model": "projectred_fabrication:block/lithography_table_c2",
+      "model": "projectred_fabrication:block/lithography_table_state2",
       "y": 270
     }
   }

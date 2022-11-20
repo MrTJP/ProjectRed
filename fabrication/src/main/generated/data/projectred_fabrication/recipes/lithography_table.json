@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "result": {
-    "item": "projectred-fabrication:lithography_table"
+    "item": "projectred_fabrication:lithography_table"
   },
   "pattern": [
     "gtg",
