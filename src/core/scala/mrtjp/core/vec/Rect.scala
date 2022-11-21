@@ -51,6 +51,12 @@ case class Rect(origin:Point, size:Size)
         val dy = (if (r.y < y) y-r.y else 0) + (if (r.maxY > maxY) maxY-r.maxY else 0)
         new Rect(r.x + dx, r.y + dy, r.width, r.height)
     }
+
+    def ndc(p:Point):Vec2 = {
+        val dx = ((p.x - origin.x) / width.toDouble * 2D) - 1
+        val dy = ((p.y - origin.y) / height.toDouble * 2D) - 1
+        Vec2(dx, -dy)
+    }
 }
 
 object Rect
