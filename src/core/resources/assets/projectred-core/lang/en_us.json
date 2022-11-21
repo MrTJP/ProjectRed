@@ -10,7 +10,6 @@
     "itemGroup.projectred-compatibility": "Project Red: Compatibility",
     "itemGroup.projectred-relocation": "Project Red: Relocation",
 
-
     "item.projectred-core.plate": "Circuit Plate",
     "item.projectred-core.conductive_plate": "Conductive Plate",
     "item.projectred-core.wired_plate": "Wired Plate",
@@ -68,6 +67,7 @@
     "item.projectred-core.multimeter": "Multimeter",
     "item.projectred-core.screwdriver": "Screwdriver",
     "item.projectred-core.router_utility": "Router Utility",
+    "block.projectred-core.electrotine_generator": "Electrotine Generator",
 
 
     "item.projectred-expansion.empty_battery": "Battery",
@@ -78,7 +78,6 @@
     "item.projectred-expansion.plan": "Recipe Plan",
     "item.projectred-expansion.solar_panel": "Solar Panel",
     "block.projectred-expansion.induction_furnace": "Inductive Furnace",
-    "block.projectred-expansion.electrotine_generator": "Electrotine Generator",
     "block.projectred-expansion.block_breaker": "Block Breaker",
     "block.projectred-expansion.item_importer": "Item Importer",
     "block.projectred-expansion.block_placer": "Block Placer",

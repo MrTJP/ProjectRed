@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-core:electrotine_generator"
+  },
+  "pattern": [
+    "bbb",
+    "bdb",
+    "cec"
+  ],
+  "key": {
+    "c": {
+      "item": "minecraft:clay"
+    },
+    "e": {
+      "tag": "forge:ingots/electrotine_alloy"
+    },
+    "d": {
+      "tag": "forge:dusts/electrotine"
+    },
+    "b": {
+      "item": "minecraft:bricks"
+    }
+  }
+}

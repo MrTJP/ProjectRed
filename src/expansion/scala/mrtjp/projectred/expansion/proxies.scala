@@ -44,7 +44,6 @@ class ExpansionProxyClient extends ExpansionProxy {
         GuiBatteryBox.register()
         GuiChargingBench.register()
         GuiInductiveFurnace.register()
-        GuiElectrotineGenerator.register()
         GuiProjectBench.register()
         GuiAutoCrafter.register()
     }

@@ -7,7 +7,7 @@ import codechicken.lib.util.CrashLock
 import codechicken.multipart.api.part.TMultiPart
 import codechicken.multipart.api.{MultiPartType, SimpleMultiPartType}
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.expansion.block.{AutoCraftingBenchBlock, BatteryBoxBlock, ChargingBenchBlock, ElectrotineGeneratorBlock, InductionFurnaceBlock, ProjectBenchBlock, TeleposerBlock}
+import mrtjp.projectred.expansion.block._
 import mrtjp.projectred.expansion.item._
 import net.minecraft.block.{Block, Blocks}
 import net.minecraft.data.DataGenerator
@@ -50,11 +50,6 @@ object ExpansionContent
     val inductionFurnaceTile = TILES.register("induction_furnace", () => TileEntityType.Builder.of(() => new TileInductiveFurnace, inductionFurnaceBlock.get).build(null))
     val inductionFurnaceItem = ITEMS.register("induction_furnace", () => new BlockItem(inductionFurnaceBlock.get, new Item.Properties().tab(expansionItemGroup)))
     val inductionFurnaceContainer = CONTAINERS.register("induction_furnace", () => ICCLContainerType.create(ContainerInductiveFurnace))
-
-    val electrotineGeneratorBlock = BLOCKS.register("electrotine_generator", () => new ElectrotineGeneratorBlock)
-    val electrotineGeneratorTile = TILES.register("electrotine_generator", () => TileEntityType.Builder.of(() => new TileElectrotineGenerator, electrotineGeneratorBlock.get).build(null))
-    val electrotineGeneratorItem = ITEMS.register("electrotine_generator", () => new BlockItem(electrotineGeneratorBlock.get, new Item.Properties().tab(expansionItemGroup)))
-    val electrotineGeneratorContainer = CONTAINERS.register("electrotine_generator", () => ICCLContainerType.create(ContainerElectrotineGenerator))
 
     val autoCraftingBenchBlock = BLOCKS.register("auto_crafting_bench", () => new AutoCraftingBenchBlock)
     val autoCraftingBenchTile = TILES.register("auto_crafting_bench", () => TileEntityType.Builder.of(() => new TileAutoCrafter, autoCraftingBenchBlock.get).build(null))
@@ -114,7 +109,6 @@ private class ItemModels(gen: DataGenerator, fileHelper: ExistingFileHelper) ext
         simpleItemBlock(batteryBoxBlock.get)
         simpleItemBlock(chargingBenchBlock.get)
         simpleItemBlock(inductionFurnaceBlock.get)
-        simpleItemBlock(electrotineGeneratorBlock.get)
         simpleItemBlock(projectBenchBlock.get)
         simpleItemBlock(autoCraftingBenchBlock.get)
         simpleItemBlock(teleposerBlock.get)
@@ -141,7 +135,6 @@ private class BlockStates(gen:DataGenerator, fileHelper:ExistingFileHelper) exte
         batteryBoxModel(batteryBoxBlock.get)
         chargableTableModel(chargingBenchBlock.get)
         triStateFrontFacedPoweredMachineModel(inductionFurnaceBlock.get)
-        quadStateFrontFacedPoweredMachineModel(electrotineGeneratorBlock.get())
         rotatableOppositeMatchingFacesModel(autoCraftingBenchBlock.get)
         chargableTableModel(teleposerBlock.get)
     }

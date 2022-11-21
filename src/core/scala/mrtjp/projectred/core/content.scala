@@ -4,16 +4,22 @@ import codechicken.lib.colour.EnumColour
 import codechicken.lib.datagen.ItemModelProvider
 import codechicken.lib.datagen.recipe.RecipeProvider
 import codechicken.lib.gui.SimpleItemGroup
+import codechicken.lib.inventory.container.ICCLContainerType
 import codechicken.lib.util.CrashLock
 import codechicken.microblock.handler.MicroblockModContent
 import codechicken.microblock.{EdgeMicroFactory, FaceMicroFactory, ItemMicroBlock, MicroMaterialRegistry}
 import mrtjp.projectred.ProjectRedCore.MOD_ID
 import mrtjp.projectred.core.CoreContent._
-import net.minecraft.block.Blocks
+import mrtjp.projectred.core.block.{ElectrotineGeneratorBlock, ProjectRedBlock}
+import mrtjp.projectred.core.inventory.container.ElectrotineGeneratorContainer
+import mrtjp.projectred.core.tile.ElectrotineGeneratorTile
+import net.minecraft.block.{Block, Blocks}
 import net.minecraft.data._
-import net.minecraft.item.{Item, ItemStack, Items}
+import net.minecraft.item.{BlockItem, Item, ItemStack, Items}
 import net.minecraft.tags.ItemTags
+import net.minecraft.tileentity.TileEntityType
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.client.model.generators.{BlockModelBuilder, BlockStateProvider, ConfiguredModel, ModelFile}
 import net.minecraftforge.common.Tags
 import net.minecraftforge.common.Tags.Items._
 import net.minecraftforge.common.crafting.{NBTIngredient => ForgeNBTIngredient}
@@ -27,10 +33,20 @@ import java.util.function.Supplier
 object CoreContent {
 
     private val LOCK = new CrashLock("Already Initialized.")
+    private val BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID)
+    private val TILES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, MOD_ID)
+    private val CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MOD_ID)
     private val ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID)
     private val RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MOD_ID)
 
     val itemGroupCore = new SimpleItemGroup(MOD_ID, () => new ItemStack(itemScrewdriver.get()))
+
+    //region Blocks
+    val electrotineGeneratorBlock = BLOCKS.register("electrotine_generator", () => new ElectrotineGeneratorBlock)
+    val electrotineGeneratorTile = TILES.register("electrotine_generator", () => TileEntityType.Builder.of(() => new ElectrotineGeneratorTile, electrotineGeneratorBlock.get).build(null))
+    val electrotineGeneratorItem = ITEMS.register("electrotine_generator", () => new BlockItem(electrotineGeneratorBlock.get(), new Item.Properties().tab(itemGroupCore)))
+    val electrotineGeneratorContainer = CONTAINERS.register("electrotine_generator", () => ICCLContainerType.create(ElectrotineGeneratorContainer.FACTORY))
+    //endregion
 
     //region Items
     /** Gate Parts * */
@@ -173,6 +189,9 @@ object CoreContent {
 
     def register(bus: IEventBus) {
         LOCK.lock()
+        BLOCKS.register(bus)
+        TILES.register(bus)
+        CONTAINERS.register(bus)
         ITEMS.register(bus)
         RECIPE_SERIALIZERS.register(bus)
         bus.register(DataGen)
@@ -194,15 +213,66 @@ private object DataGen {
             gen.addProvider(new ItemModels(gen, helper))
         }
         if (event.includeServer) {
+            gen.addProvider(new BlockStates(gen, helper))
             gen.addProvider(new ItemTags(gen, helper))
             gen.addProvider(new Recipes(gen))
         }
     }
 }
 
+private class BlockStates(gen:DataGenerator, fileHelper:ExistingFileHelper) extends BlockStateProvider(gen, MOD_ID, fileHelper) {
+
+    override def getName:String = "ProjectRed-Core Block Models"
+
+    override protected def registerStatesAndModels(): Unit = {
+        quadStateFrontFacedPoweredMachineModel(electrotineGeneratorBlock.get())
+    }
+
+    private def quadStateFrontFacedPoweredMachineModel(block: Block): Unit = {
+        addRotatablePoweredMachineVariants(block,
+            createFrontFacedPoweredMachineModel(block, 0),
+            createFrontFacedPoweredMachineModel(block, 1),
+            createFrontFacedPoweredMachineModel(block, 2),
+            createFrontFacedPoweredMachineModel(block, 3))
+    }
+
+    private def addRotatablePoweredMachineVariants(block: Block, idleModel: ModelFile, chargedModel: ModelFile, workingModel: ModelFile, chargedWorkingModel: ModelFile): Unit = {
+        getVariantBuilder(block).forAllStates { state =>
+            val r = state.getValue(ProjectRedBlock.ROTATION)
+            val isWorking: Boolean = state.getValue(ProjectRedBlock.WORKING)
+            val isCharged: Boolean = state.getValue(ProjectRedBlock.CHARGED)
+
+            val model = (isWorking, isCharged) match {
+                case (false, false) => idleModel
+                case (false, true) => chargedModel
+                case (true, false) => workingModel
+                case (true, true) => chargedWorkingModel
+            }
+
+            ConfiguredModel.builder()
+                .modelFile(model)
+                .rotationY(r * 90)
+                .build()
+        }
+    }
+
+    private def createFrontFacedPoweredMachineModel(block: Block, state: Int): BlockModelBuilder = {
+        val texture = block.getRegistryName.getPath
+        // Minecraft convention: default model name == block name
+        val modelName = texture + (if (state > 0) "_state" + state else "")
+        models().orientableWithBottom(modelName,
+            modLoc("block/" + texture + "_side"),
+            modLoc("block/" + texture + "_front_" + state),
+            modLoc("block/" + texture + "_bottom"),
+            modLoc("block/" + texture + "_top"))
+    }
+}
 
 private class ItemModels(gen: DataGenerator, helper:ExistingFileHelper) extends ItemModelProvider(gen, MOD_ID, helper) {
     override protected def registerModels() {
+
+        simpleItemBlock(electrotineGeneratorBlock)
+
         generated(itemPlate)
         generated(itemConductivePlate)
         generated(itemWiredPlate)
@@ -346,6 +416,16 @@ private class ItemTags(gen:DataGenerator, helper:ExistingFileHelper) extends Ite
 private class Recipes(gen: DataGenerator) extends RecipeProvider(gen) {
 
     override protected def registerRecipes() {
+
+        shapedRecipe(electrotineGeneratorBlock)
+            .patternLine("bbb")
+            .patternLine("bdb")
+            .patternLine("cec")
+            .key('b', Blocks.BRICKS)
+            .key('d', tagDustsElectrotine )
+            .key('c', Blocks.CLAY)
+            .key('e', tagIngotsElectrotineAlloy)
+
         smelting(itemPlate, 2)
             .ingredient(Blocks.SMOOTH_STONE)
 

@@ -1,10 +1,10 @@
 package mrtjp.projectred.core
 
-import codechicken.lib.packet.PacketCustom
+import mrtjp.projectred.core.gui.screen.inventory.ElectrotineGeneratorScreen
+import mrtjp.projectred.core.inventory.container.ElectrotineGeneratorContainer
+import net.minecraft.client.gui.ScreenManager
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
-import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.event.lifecycle.{FMLClientSetupEvent, FMLCommonSetupEvent}
 
 class CoreProxy_server extends IProxy {
@@ -43,6 +43,12 @@ class CoreProxy_client extends CoreProxy_server {
     override def clientSetup(event:FMLClientSetupEvent):Unit = {
         super.clientSetup(event)
         MinecraftForge.EVENT_BUS.register(RenderHalo)
+
+        // Register screens
+        ScreenManager.register(
+            CoreContent.electrotineGeneratorContainer.get,
+            (cont: ElectrotineGeneratorContainer, inv, text) => new ElectrotineGeneratorScreen(cont, inv, text)
+        )
     }
 }
 
