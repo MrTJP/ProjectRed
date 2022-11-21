@@ -1,22 +1,17 @@
 package mrtjp.projectred.redui;
 
-import codechicken.lib.texture.TextureUtils;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import mrtjp.core.gui.GuiLib;
-import mrtjp.core.vec.Point;
-import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextProperties;
-import net.minecraftforge.fml.client.gui.GuiUtils;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static net.minecraft.client.gui.AbstractGui.blit;
 import static net.minecraft.client.gui.AbstractGui.drawCenteredString;
 
-public class ButtonNode extends AbstractGuiNode {
+public class ButtonNode extends AbstractButtonNode {
+
+    public static final int BUTTON_TEXT_COLOR_IDLE = 0xFFE0E0E0;
+    public static final int BUTTON_TEXT_COLOR_HIGHLIGHT = 0xFFFFFFA0;
 
     private Runnable clickFunction = () -> { };
     private Consumer<List<ITextProperties>> tooltipBuilder = c -> { };
@@ -36,55 +31,30 @@ public class ButtonNode extends AbstractGuiNode {
     }
 
     @Override
-    public void drawBack(MatrixStack stack, Point mouse, float partialFrame) {
-
-        boolean mouseover = getFrame().contains(mouse) && isFirstHit(mouse);
-
-        TextureUtils.changeTexture(GuiLib.guiTex());
-        int state = mouseover ? 2 : 1;
-
-        int x = getPosition().x();
-        int y = getPosition().y();
-        int width = getFrame().width();
-        int height = getFrame().height();
-
-        blit(stack, x,              y,              0,                46 + state * 20,                    width / 2, height / 2, 256, 256);
-        blit(stack, x + width / 2,  y,              200 - width / 2f, 46 + state * 20,                    width / 2, height / 2, 256, 256);
-        blit(stack, x,              y + height / 2, 0,                46 + state * 20 + 20 - height / 2f, width / 2, height / 2, 256, 256);
-        blit(stack, x + width / 2,  y + height / 2, 200 - width / 2f, 46 + state * 20 + 20 - height / 2f, width / 2, height / 2, 256, 256);
-
-        drawCenteredString(stack, getRoot().getFontRenderer(), buttonText, x+width/2, y+(height-8)/2, mouseover ? 0xFFFFFFA0 : 0xFFE0E0E0);
+    protected void onButtonClicked() {
+        clickFunction.run();
     }
 
     @Override
-    public void drawFront(MatrixStack stack, Point mouse, float partialFrame) {
-
-        if (!isFirstHit(mouse))
-            return;
-
-        List<ITextProperties> tooltip = new LinkedList<>();
-        tooltipBuilder.accept(tooltip);
-
-        // Draw tooltip in screen-space to allow it to force-fit on screen
-
-        Point screenOffset = getParent().getScreenOffset();
-        Point mouseScreenSpace = screenOffset.add(mouse);
-
-        stack.pushPose();
-        stack.translate(-screenOffset.x(), -screenOffset.y(), 0);
-
-        GuiUtils.drawHoveringText(stack, tooltip, mouseScreenSpace.x(), mouseScreenSpace.y(), getRoot().getScreenFrame().width(), getRoot().getScreenFrame().height(), -1, getRoot().getFontRenderer());
-
-        stack.popPose();
-    }
-
-    @Override
-    public boolean mouseClicked(Point p, int glfwMouseButton, boolean consumed) {
-        if (!consumed && isFirstHit(p)) {
-            getRoot().getMinecraft().getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1));
-            clickFunction.run();
-            return true;
-        }
+    protected boolean isButtonDisabled() {
         return false;
+    }
+
+    @Override
+    protected void buildTooltip(List<ITextProperties> tooltip) {
+        tooltipBuilder.accept(tooltip);
+    }
+
+    protected int getTextColor(boolean mouseover) {
+        return mouseover ? BUTTON_TEXT_COLOR_HIGHLIGHT : BUTTON_TEXT_COLOR_IDLE;
+    }
+
+    @Override
+    protected void drawButtonBody(MatrixStack stack, boolean mouseover) {
+
+        drawCenteredString(stack, getRoot().getFontRenderer(), buttonText,
+                getPosition().x() + getFrame().width()/2,
+                getPosition().y()+(getFrame().height()-8)/2,
+                getTextColor(mouseover));
     }
 }
