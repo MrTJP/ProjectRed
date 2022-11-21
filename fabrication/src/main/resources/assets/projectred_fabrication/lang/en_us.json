@@ -1,0 +1,11 @@
+{
+    "itemGroup.projectred-fabrication": "Project Red: Fabrication",
+
+    "item.projectred-fabrication.ic_blueprint": "IC Blueprint",
+    "item.projectred-fabrication.ic_chip": "IC Chip",
+    "item.projectred-fabrication.creative_mode_ic_chip": "Creative Mode IC Chip",
+    "block.projectred-fabrication.ic_workbench": "IC Workbench",
+    "block.projectred-fabrication.ic_printer": "IC Printer",
+
+    "block.projectred-relocation.frame": "Frame"
+}

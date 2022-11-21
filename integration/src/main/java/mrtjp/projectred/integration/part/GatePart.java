@@ -9,7 +9,6 @@ import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
 import codechicken.microblock.part.face.FaceMicroblockPart;
 import codechicken.multipart.api.MultipartType;
-import codechicken.multipart.api.NormalOcclusionTest;
 import codechicken.multipart.api.part.*;
 import codechicken.multipart.block.TileMultipart;
 import codechicken.multipart.util.PartRayTraceResult;
@@ -21,7 +20,6 @@ import mrtjp.projectred.core.PlacementLib;
 import mrtjp.projectred.core.part.IConnectableFacePart;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.client.GateComponentModels;
-import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,7 +29,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -357,12 +354,16 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
     //region Items and drops
     @Override
     public ItemStack getCloneStack(PartRayTraceResult hit) {
-        return getGateType().makeStack();
+        return getItem();
     }
 
     @Override
     public Iterable<ItemStack> getDrops() {
-        return Collections.singleton(getGateType().makeStack());
+        return Collections.singleton(getItem());
+    }
+
+    protected ItemStack getItem() {
+        return getGateType().makeStack();
     }
     //endregion
 

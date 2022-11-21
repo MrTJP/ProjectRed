@@ -18,6 +18,7 @@ minecraft {
                 'projectred_core' { source project(":core").sourceSets.main }
                 'projectred_expansion' { source project(":expansion").sourceSets.main }
                 'projectred_exploration' { source project(":exploration").sourceSets.main }
+                'projectred_fabrication' { source project(":fabrication").sourceSets.main }
                 'projectred_illumination' { source project(":illumination").sourceSets.main }
                 'projectred_integration' { source project(":integration").sourceSets.main }
                 'projectred_transmission' { source project(":transmission").sourceSets.main }
@@ -40,6 +41,7 @@ dependencies {
     runtimeOnly project(":core")
     runtimeOnly project(":expansion")
     runtimeOnly project(":exploration")
+    runtimeOnly project(":fabrication")
     runtimeOnly project(":illumination")
     runtimeOnly project(":integration")
     runtimeOnly project(":transmission")

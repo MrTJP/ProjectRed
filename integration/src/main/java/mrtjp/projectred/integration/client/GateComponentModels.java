@@ -56,9 +56,9 @@ public class GateComponentModels {
     public static Map<String, CCModel> sixteenSeg = loadModels("array/16seg");
     public static CCModel segbus = loadModel("array/segbus");
 
-    public static CCModel icChip = loadModel("icchip").apply(new Translation(8 / 16D, 2 / 16D, 8 / 16D));
-    public static CCModel icGlass = loadModel("icglass").apply(new Translation(8 / 16D, 0, 8 / 16D));
-    public static CCModel icHousing = loadModel("ichousing").apply(new Translation(8 / 16D, 0, 8 / 16D));
+    public static Map<String, CCModel> fabIC = loadModels("fab_ic", (k, v) -> v.apply(new Translation(0.5, 0, 0.5)));
+    public static Map<String, CCModel> ioCrimp = loadModels("io_crimp");
+    public static Map<String, CCModel> ioColourBox = loadModels("io_colour_box");
 
     public static IconTransformation baseIcon;
     public static IconTransformation wireBorderIcon;
@@ -93,6 +93,8 @@ public class GateComponentModels {
     public static IconTransformation icChipIcon;
     public static IconTransformation icChipIconOff;
     public static IconTransformation icHousingIcon;
+    public static IconTransformation ioCrimpConnectorIcon;
+    public static IconTransformation ioColourBoxIcon;
 
     public static void registerIcons(AtlasRegistrar registrar) {
         //@formatter:off
@@ -133,6 +135,8 @@ public class GateComponentModels {
         registrar.registerSprite(new ResourceLocation(MOD_ID, "block/ic_active"),               i -> icChipIcon = new IconTransformation(i));
         registrar.registerSprite(new ResourceLocation(MOD_ID, "block/ic_inert"),                i -> icChipIconOff = new IconTransformation(i));
         registrar.registerSprite(new ResourceLocation(MOD_ID, "block/ic_housing"),              i -> icHousingIcon = new IconTransformation(i));
+        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/io_crimp"),                i -> ioCrimpConnectorIcon = new IconTransformation(i));
+        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/io_colour_box"),           i -> ioColourBoxIcon = new IconTransformation(i));
         //@formatter:on
     }
 
@@ -1428,6 +1432,136 @@ public class GateComponentModels {
         }
     }
 
+    public static class SidedICBundledCableModel extends BundledCableModel {
+
+        public int sidemask = 0;
+
+        public SidedICBundledCableModel() {
+            super(icBundled, new Vector3(8, 0, 8), 7 / 32D, 12 / 32D);
+        }
+
+        @Override
+        protected UVTransformation getUVT() {
+            return busConvIcon;
+        }
+
+        @Override
+        public void renderModel(Transformation t, int orient, CCRenderState ccrs) {
+            for (int r = 0; r < 4; r++) {
+                if ((sidemask & 1 << r) != 0) {
+                    super.renderModel(t, orient & 0xFC | ((orient & 3) + r) % 4, ccrs);
+                }
+            }
+        }
+    }
+
+    public static class SidedWireModel extends ComponentModel {
+
+        public int sidemask = 0;
+
+        public final WireModel[] wires;
+
+        public SidedWireModel(WireModel[] wires) {
+            this.wires = wires;
+        }
+
+        @Override
+        public void renderModel(Transformation t, int orient, CCRenderState ccrs) {
+            for (int r = 0; r < 4; r++) {
+                if ((sidemask & 1 << r) != 0) {
+                    wires[r].renderModel(t, orient, ccrs);
+                }
+            }
+        }
+    }
+
+    public static class FabricatedICModel extends ComponentModel {
+
+        public static final FabricatedICModel INSTANCE = new FabricatedICModel();
+
+        private static final CCModel[] platformModel = bakeOrients(fabIC.get("platform"));
+        private static final CCModel[] icChipModel = bakeOrients(fabIC.get("ic"));
+
+        @Override
+        public void renderModel(Transformation t, int orient, CCRenderState ccrs) {
+            platformModel[orient].render(ccrs, t, icHousingIcon);
+            icChipModel[orient].render(ccrs, t, icChipIcon);
+        }
+
+        public void renderDynamic(Transformation t, CCRenderState ccrs) {
+            fabIC.get("glass").render(ccrs, t, icHousingIcon);
+        }
+    }
+
+    public static class IOCrimpConnectorModel extends StaticComponentModel {
+
+        public static final IOCrimpConnectorModel INSTANCE = new IOCrimpConnectorModel();
+
+        private IOCrimpConnectorModel() {
+            super(ioCrimp.get("crimp")
+                    .copy()
+                    .apply(new Translation(0.5, 2/16D, 0.5)));
+        }
+
+        @Override
+        protected UVTransformation getUVT() {
+            return ioCrimpConnectorIcon;
+        }
+    }
+
+    public static class IOCrimpWireModel extends CellWireModel {
+
+        private static final CCModel[] models = bakeOrients(ioCrimp.get("redalloy").copy().apply(new Translation(0.5, 2/16D, 0.5)));
+
+        private IconTransformation getUVT() {
+            return ioCrimpConnectorIcon;
+        }
+
+        @Override
+        public void renderModel(Transformation t, int orient, CCRenderState ccrs) {
+            models[orient].render(ccrs, t, getUVT(), colourMult());
+        }
+    }
+
+    public static class IOCrimpColourBoxModel extends ComponentModel {
+
+        public int colour = EnumColour.WHITE.ordinal();
+        public boolean isInput = true;
+
+        private final CCModel[] boxModels;
+        private final CCModel[] inputArrowModels;
+        private final CCModel[] outputArrowModels;
+
+        public IOCrimpColourBoxModel(double x, double z) {
+
+            CCModel m = ioColourBox.get("box").copy().apply(new Translation(x/16D, 2/16D, z/16D));
+            boxModels = bakeOrients(m);
+
+            m = ioColourBox.get("arrow").copy().apply(new Translation(x/16D, 2/16D, z/16D));
+            inputArrowModels = bakeOrients(m);
+
+            m = ioColourBox.get("arrow").copy()
+                    .apply(new Rotation(180 * MathHelper.torad, 0, 1, 0))
+                    .apply(new Translation(x/16D, 2/16D, z/16D));
+            outputArrowModels = bakeOrients(m);
+        }
+
+        private UVTransformation getColourUVT() {
+            return new UVTranslation((colour%2) * 4 / 32D, (colour/2) * 4 / 32D).with(ioColourBoxIcon);
+        }
+
+        private UVTransformation getBoxUVT() {
+            return ioColourBoxIcon;
+        }
+
+        @Override
+        public void renderModel(Transformation t, int orient, CCRenderState ccrs) {
+            boxModels[orient].render(ccrs, t, getBoxUVT());
+            (isInput ? inputArrowModels : outputArrowModels)[orient].render(ccrs, t, getColourUVT());
+        }
+    }
+
+
     private static class RedundantUVTransformation extends UVTransformation {
 
         public static final RedundantUVTransformation INSTANCE = new RedundantUVTransformation();
@@ -1469,5 +1603,4 @@ public class GateComponentModels {
             return this;
         }
     }
-
 }

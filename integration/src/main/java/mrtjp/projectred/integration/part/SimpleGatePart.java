@@ -548,7 +548,7 @@ public abstract class SimpleGatePart extends RedstoneGatePart {
         }
 
         @Override
-        int getOutput(int r) {
+        protected int getOutput(int r) {
             return r == 2 ? state() >> 4 : 0;
         }
 

@@ -66,6 +66,11 @@ public class GateModelRenderer {
             new RenderTransparentLatchCell(),
             new RenderSegmentDisplay(),
             new RenderDecodingRandomizer(),
+            new RenderFabricatedGate(),
+    };
+
+    private final GateRenderer[] nonPartRenderers = new GateRenderer[] {
+            new RenderIOGate(),
     };
 
     //region Static rendering
@@ -132,10 +137,17 @@ public class GateModelRenderer {
         r.spawnParticles(part, random);
     }
 
+    public static int getRenderIndex(GateType type) {
+        return type.ordinal();
+    }
+
+    public static int getNonPartRenderIndex(int i) {
+        return 0x100 | i;
+    }
+
     private GateRenderer getRenderer(int renderIndex) {
         if ((renderIndex & 0x100) != 0) {
-            //TODO return non-gate renders
-            return null;
+            return nonPartRenderers[renderIndex & 0xFF];
         } else {
             return renderers[renderIndex];
         }
@@ -1505,14 +1517,14 @@ public class GateModelRenderer {
 
         @Override
         protected void prepare(IGateRenderData gate) {
-            boolean on = (gate.state()&0x10) != 0;
+            boolean on = (gate.state() & 0x10) != 0;
             topWire.signal = gate.topSignal();
             topWire.conn = gate.topSignalConnMask() & ~0x2; // Always render left side
             wires[0].on = !on;
             wires[1].on = gate.topSignal() != 0;
             wires[2].on = gate.topSignal() == 0;
             wires[3].on = on;
-            wires[4].on = (gate.state()&4) != 0;
+            wires[4].on = (gate.state() & 4) != 0;
             torches[0].on = wires[2].on;
             torches[1].on = !wires[2].on && !wires[4].on;
             torches[2].on = !wires[1].on && !wires[3].on;
@@ -1829,6 +1841,110 @@ public class GateModelRenderer {
             chips[0].on = (state >> 4) == 2;
             chips[1].on = (state >> 4) == 1 || (state >> 4) == 2;
             chips[2].on = true;
+        }
+    }
+
+    public static class RenderFabricatedGate extends GateRenderer {
+
+        private final List<ComponentModel> models = new LinkedList<>();
+
+        private final SidedWireModel simpleWires = new SidedWireModel(generateWireModels("ic1", 4));
+        private final SidedWireModel analogWires = new SidedWireModel(generateWireModels("ic2", 4));
+        private final SidedICBundledCableModel bundledWires = new SidedICBundledCableModel();
+        private final FabricatedICModel icHousing = FabricatedICModel.INSTANCE;
+
+        private String name = "untitled";
+
+        public RenderFabricatedGate() {
+            models.add(BaseComponentModel.INSTANCE);
+            models.add(simpleWires);
+            models.add(analogWires);
+            models.add(bundledWires);
+            models.add(icHousing);
+        }
+
+        @Override
+        protected List<ComponentModel> getModels() {
+            return models;
+        }
+
+        @Override
+        protected void prepareInventory() {
+            //TODO load from stack
+            name = "ERROR!";
+            simpleWires.sidemask = 0;
+            analogWires.sidemask = 0;
+            bundledWires.sidemask = 0;
+        }
+
+        @Override
+        protected void prepare(IGateRenderData gate) {
+
+            //TODO
+            simpleWires.sidemask = 0;
+            analogWires.sidemask = 0;
+            bundledWires.sidemask = gate.state2() & 0xF | (gate.state2() >> 4) & 0xF;
+
+            simpleWires.wires[0].on = (gate.state() & 0x11) != 0;
+            simpleWires.wires[1].on = (gate.state() & 0x22) != 0;
+            simpleWires.wires[2].on = (gate.state() & 0x44) != 0;
+            simpleWires.wires[3].on = (gate.state() & 0x88) != 0;
+
+            analogWires.wires[0].on = simpleWires.wires[0].on;
+            analogWires.wires[1].on = simpleWires.wires[1].on;
+            analogWires.wires[2].on = simpleWires.wires[2].on;
+            analogWires.wires[3].on = simpleWires.wires[3].on;
+        }
+
+        @Override
+        public boolean hasSpecials() {
+            return true;
+        }
+
+        @Override
+        protected void prepareDynamic(IGateRenderData gate, float partialFrame) {
+            // TODO set name string
+        }
+
+        @Override
+        public void renderDynamic(CCRenderState ccrs, Transformation t) {
+            icHousing.renderDynamic(t, ccrs);
+        }
+    }
+
+    public static class RenderIOGate extends GateRenderer {
+
+        private final List<ComponentModel> models = new LinkedList<>();
+
+        private final WireModel[] wires = generateWireModels("fabio", 1);
+        private final IOCrimpWireModel crimpWire = new IOCrimpWireModel();
+        private final IOCrimpColourBoxModel colourBox = new IOCrimpColourBoxModel(3, 10.5);
+
+        public RenderIOGate() {
+            models.add(BaseComponentModel.INSTANCE);
+            models.addAll(Arrays.asList(wires));
+            models.add(IOCrimpConnectorModel.INSTANCE);
+            models.add(crimpWire);
+            models.add(colourBox);
+        }
+
+        @Override
+        protected List<ComponentModel> getModels() {
+            return models;
+        }
+
+        @Override
+        protected void prepareInventory() {
+            crimpWire.signal = 0;
+            colourBox.colour = 0;
+        }
+
+        @Override
+        protected void prepare(IGateRenderData gate) {
+            wires[0].on = (gate.state() & 0x44) != 0;
+            crimpWire.signal = (byte) (wires[0].on ? 255 : 0);
+            colourBox.colour = gate.state2() & 0xF;
+            colourBox.isInput = gate.shape() == 0;
         }
     }
 }

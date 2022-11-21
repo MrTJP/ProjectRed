@@ -2,6 +2,7 @@ import java.time.Instant
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'com.github.johnrengelman.shadow'
 }
 
 // Get mod version from CI, else suffix a timestamp (calculated here bc timestamp can change if done separately in each subproject)
@@ -61,6 +62,11 @@ subprojects { p ->
     }
 }
 
+// Defined explicitly so publishing can access shadowJar property
+project(':fabrication') {
+    apply plugin: 'com.github.johnrengelman.shadow'
+}
+
 publishing {
     repositories {
         maven {
@@ -76,6 +82,7 @@ publishing {
             artifact project(':core').jar
             artifact project(':expansion').jar
             artifact project(':exploration').jar
+            artifact project(':fabrication').shadowJar
             artifact project(':illumination').jar
             artifact project(':integration').jar
             artifact project(':transmission').jar

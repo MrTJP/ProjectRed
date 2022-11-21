@@ -49,10 +49,11 @@ public enum GateType
     TRANSPARENT_LATCH_CELL(ID_STACKING_LATCH,      ArrayGatePart.TransparentLatchCell::new),
     SEGMENT_DISPLAY    (ID_SEGMENT_DISPLAY,     BundledGatePart.SegmentDisplay::new),
     DEC_RANDOMIZER     (ID_DEC_RANDOMIZER,      SimpleGatePart.DecodingRandomizer::new),
+    FABRICATED_GATE    (null, null), // Will be injected if applicable
     ;
 
-    private final String unlocalName;
-    private final Function<GateType, GatePart> partFactory;
+    private String unlocalName;
+    private Function<GateType, GatePart> partFactory;
 
     private RegistryObject<Item> itemSupplier;
     private RegistryObject<MultipartType<GatePart>> partSupplier;
@@ -60,6 +61,10 @@ public enum GateType
     GateType(String unlocalName, Function<GateType, GatePart> partFactory) {
         this.unlocalName = unlocalName;
         this.partFactory = partFactory;
+    }
+
+    public boolean isEnabled() {
+        return partFactory != null;
     }
 
     public String getUnlocalizedName() {
@@ -85,5 +90,16 @@ public enum GateType
     public void registerParts(DeferredRegister<MultipartType<?>> partRegistry, DeferredRegister<Item> itemRegistry) {
         itemSupplier = itemRegistry.register(unlocalName, () -> new GatePartItem(this));
         partSupplier = partRegistry.register(unlocalName, () -> new SimpleMultipartType<>(isClient -> partFactory.apply(this)));
+    }
+
+    // TODO: Add proper gate registering mechanism
+    public void inject(String unlocalName, Function<GateType, GatePart> partFactory, RegistryObject<Item> itemSupplier, RegistryObject<MultipartType<GatePart>> partSupplier) {
+        if (this.itemSupplier != null || this.partSupplier != null) {
+            throw new RuntimeException("GateType " + name() + " already registered!");
+        }
+        this.unlocalName = unlocalName;
+        this.partFactory = partFactory;
+        this.itemSupplier = itemSupplier;
+        this.partSupplier = partSupplier;
     }
 }

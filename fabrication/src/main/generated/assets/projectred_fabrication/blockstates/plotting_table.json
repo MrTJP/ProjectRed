@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "charged=false,rotation=0,working=false": {
+      "model": "projectred_fabrication:block/plotting_table_c0"
+    },
+    "charged=true,rotation=0,working=false": {
+      "model": "projectred_fabrication:block/plotting_table_c1"
+    },
+    "charged=false,rotation=1,working=false": {
+      "model": "projectred_fabrication:block/plotting_table_c0",
+      "y": 90
+    },
+    "charged=true,rotation=1,working=false": {
+      "model": "projectred_fabrication:block/plotting_table_c1",
+      "y": 90
+    },
+    "charged=false,rotation=2,working=false": {
+      "model": "projectred_fabrication:block/plotting_table_c0",
+      "y": 180
+    },
+    "charged=true,rotation=2,working=false": {
+      "model": "projectred_fabrication:block/plotting_table_c1",
+      "y": 180
+    },
+    "charged=false,rotation=3,working=false": {
+      "model": "projectred_fabrication:block/plotting_table_c0",
+      "y": 270
+    },
+    "charged=true,rotation=3,working=false": {
+      "model": "projectred_fabrication:block/plotting_table_c1",
+      "y": 270
+    },
+    "charged=false,rotation=0,working=true": {
+      "model": "projectred_fabrication:block/plotting_table_c0"
+    },
+    "charged=true,rotation=0,working=true": {
+      "model": "projectred_fabrication:block/plotting_table_c2"
+    },
+    "charged=false,rotation=1,working=true": {
+      "model": "projectred_fabrication:block/plotting_table_c0",
+      "y": 90
+    },
+    "charged=true,rotation=1,working=true": {
+      "model": "projectred_fabrication:block/plotting_table_c2",
+      "y": 90
+    },
+    "charged=false,rotation=2,working=true": {
+      "model": "projectred_fabrication:block/plotting_table_c0",
+      "y": 180
+    },
+    "charged=true,rotation=2,working=true": {
+      "model": "projectred_fabrication:block/plotting_table_c2",
+      "y": 180
+    },
+    "charged=false,rotation=3,working=true": {
+      "model": "projectred_fabrication:block/plotting_table_c0",
+      "y": 270
+    },
+    "charged=true,rotation=3,working=true": {
+      "model": "projectred_fabrication:block/plotting_table_c2",
+      "y": 270
+    }
+  }
+}

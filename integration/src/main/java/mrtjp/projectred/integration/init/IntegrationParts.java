@@ -44,6 +44,7 @@ public class IntegrationParts {
 
     public static void register() {
         for (GateType type : GateType.values()) {
+            if (!type.isEnabled()) continue;
             type.registerParts(PARTS, ITEMS);
         }
     }

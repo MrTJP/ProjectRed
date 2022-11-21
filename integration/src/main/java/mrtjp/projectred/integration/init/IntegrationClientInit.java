@@ -49,6 +49,7 @@ public class IntegrationClientInit {
 
         // Register part item renderers
         for (GateType type : GateType.values()) {
+            if (!type.isEnabled()) continue;
             MultipartClientRegistry.register(type.getPartType(), GatePartRenderer.INSTANCE);
         }
 
