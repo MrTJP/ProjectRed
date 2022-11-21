@@ -3,9 +3,12 @@ package mrtjp.projectred.core.inventory.container;
 import mrtjp.projectred.core.JDrawPointPowerConductor;
 import mrtjp.projectred.core.tile.BasePoweredTile;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.IContainerListener;
+import net.minecraft.inventory.container.Slot;
 
 import javax.annotation.Nullable;
 
@@ -13,8 +16,8 @@ public class BasePoweredTileContainer extends Container {
 
     private final BasePoweredTile tile;
 
-    private int condCharge;
-    private int condFlow;
+    protected int condCharge;
+    protected int condFlow;
 
     public BasePoweredTileContainer(@Nullable ContainerType<?> containerType, int windowId, BasePoweredTile tile) {
         super(containerType, windowId);
@@ -83,4 +86,19 @@ public class BasePoweredTileContainer extends Container {
     public boolean isFlowFull() {
         return condFlow == -1; // TODO same as above
     }
+
+    //region Utils
+    protected void addPlayerInventory(PlayerInventory playerInventory, int x, int y) {
+        addInventory(playerInventory, 9, x, y, 9, 3); // Inventory (0 - 26)
+        addInventory(playerInventory, 0, x, y + 58, 9, 1); // Hotbar slots (27 - 35)
+    }
+
+    protected void addInventory(IInventory inventory, int i, int x, int y, int columns, int rows) {
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
+                addSlot(new Slot(inventory, i + (r * columns + c), x + c * 18, y + r * 18));
+            }
+        }
+    }
+    //endregion
 }
