@@ -4,7 +4,9 @@ import mrtjp.projectred.api.IConnectable
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.world.World
 
+import java.util
 import scala.collection.mutable.{Set => MSet}
+import scala.jdk.CollectionConverters._
 
 /**
  * Interface for things that wish to conduct/use electricity.
@@ -217,6 +219,10 @@ trait TPowerDrawPoint extends PowerConductor
         charge = tag.getInt("chg")
         flow = tag.getInt("flow")
     }
+}
+
+class JDrawPointPowerConductor(parent:IPowerConnectable, ids:util.Collection[Integer]) extends PowerConductor(parent, ids.asScala.map(Int.unbox).toSeq) with TPowerDrawPoint
+{
 }
 
 /**
