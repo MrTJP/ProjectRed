@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 
 import java.util.LinkedList;
@@ -66,7 +67,11 @@ public class ICEditorToolTab extends AbstractGuiNode implements TabControllerNod
         }
     }
 
-    protected void addGroup(String groupName) {
+    protected void addGroup(String unlocal) {
+        addGroup(new TranslatableComponent(unlocal));
+    }
+
+    protected void addGroup(Component groupName) {
 
         GroupHeaderNode header = new GroupHeaderNode(groupName);
         setAndIncrGridPos(header, 4);
@@ -136,9 +141,9 @@ public class ICEditorToolTab extends AbstractGuiNode implements TabControllerNod
 
     private static class GroupHeaderNode extends AbstractGuiNode {
 
-        private final String title;
+        private final Component title;
 
-        public GroupHeaderNode(String title) {
+        public GroupHeaderNode(Component title) {
             this.title = title;
             this.setSize(GROUP_WIDTH, GROUP_HEIGHT);
         }

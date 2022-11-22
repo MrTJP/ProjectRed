@@ -8,7 +8,7 @@ import mrtjp.fengine.simulate.ICGate;
 import mrtjp.fengine.simulate.ICSimulation;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -18,6 +18,8 @@ import java.util.List;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
 import static mrtjp.projectred.fabrication.engine.PRFabricationEngine.*;
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_TOGGLE_DELAY;
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_UNIT_TICKS;
 
 public class RepeaterGateTile extends TimedStateGateTile {
 
@@ -42,8 +44,8 @@ public class RepeaterGateTile extends TimedStateGateTile {
     @OnlyIn(Dist.CLIENT)
     public void buildInteractionToolTip(List<Component> toolTip, int i) {
 
-        toolTip.add(new TextComponent("Toggle delay"));
-        toolTip.add(new TextComponent(DELAYS[getShape()] + " ticks").withStyle(ChatFormatting.GRAY)); //TODO localize
+        toolTip.add(new TranslatableComponent(UL_TOGGLE_DELAY));
+        toolTip.add(new TranslatableComponent(UL_UNIT_TICKS, DELAYS[getShape()]).withStyle(ChatFormatting.GRAY));
     }
 
     @Override

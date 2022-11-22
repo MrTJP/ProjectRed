@@ -1,6 +1,11 @@
 package mrtjp.projectred.fabrication.lithography;
 
 import mrtjp.projectred.lib.Size;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class YieldCalculator {
 
@@ -67,25 +72,25 @@ public class YieldCalculator {
         return Math.pow(getSingleLayerYield(), tileMapLayers);
     }
 
-    public String getDieSizeString() {
+    public Component getDieDimensionsText() {
         Size dieSize = getDieSize();
-        return String.format("%d nm x %d nm", dieSize.width, dieSize.height);
+        return new TranslatableComponent(UL_DIMENSIONS_DIES, dieSize.width, dieSize.height);
     }
 
-    public String getWaferSizeString() {
-        return String.format("%d nm x %d nm", waferType.getWaferWidth(), waferType.getWaferHeight());
+    public Component getWaferDimensionsText() {
+        return new TranslatableComponent(UL_DIMENSIONS_NM, waferType.getWaferWidth(), waferType.getWaferHeight());
     }
 
-    public String getDiesPerWaferString() {
+    public Component getDieCountDimensionsText() {
         Size dieCount = getDieCount();
-        return String.format("%d dies x %d dies (%d total)", dieCount.width, dieCount.height, dieCount.width * dieCount.height);
+        return new TranslatableComponent(UL_DIMENSIONS_DIES_TOTAL, dieCount.width, dieCount.height, dieCount.width * dieCount.height);
     }
 
-    public String getSingleLayerYieldString() {
-        return String.format("%.2f%%", getSingleLayerYield() * 100);
+    public Component getSingleLayerYieldText() {
+        return new TextComponent(String.format("%.2f%%", getSingleLayerYield() * 100));
     }
 
-    public String getYieldString() {
-        return String.format("%.2f%%", getMultiLayerYield() * 100);
+    public Component getYieldText() {
+        return new TextComponent(String.format("%.2f%%", getMultiLayerYield() * 100));
     }
 }

@@ -7,6 +7,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +20,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static mrtjp.projectred.fabrication.editor.EditorDataUtils.*;
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class ICBlueprintItem extends Item {
 
@@ -59,29 +61,29 @@ public class ICBlueprintItem extends Item {
 
         if (!hasFabricationTarget(blueprintTag)) {
             tooltipList.add(new TextComponent("<!> ").withStyle(ChatFormatting.RED)
-                    .append(new TextComponent("Corrupted NBT data, please discard").withStyle(ChatFormatting.GRAY)));
+                    .append(new TranslatableComponent(UL_CORRUPTED_DISCARD).withStyle(ChatFormatting.GRAY)));
             return;
         }
 
-        //TODO localize
-        tooltipList.add(new TextComponent("Name: " + blueprintTag.getString(KEY_IC_NAME)).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(new TextComponent("Tile count: " + blueprintTag.getInt(KEY_TILE_COUNT)).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(new TextComponent("IO Types: ").withStyle(ChatFormatting.GRAY));
+        tooltipList.add(new TranslatableComponent(UL_NAME).append(": " + blueprintTag.getString(KEY_IC_NAME)).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(new TranslatableComponent(UL_TILE_COUNT).append(": " + blueprintTag.getInt(KEY_TILE_COUNT)).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(new TranslatableComponent(UL_IO_TYPES).append(": ").withStyle(ChatFormatting.GRAY));
 
         //TODO handle other types of IO
         byte bmask = blueprintTag.getByte(KEY_IO_BUNDLED);
-        tooltipList.add(new TextComponent("  Top: " + getBundledIOString(bmask, 0)).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(new TextComponent("  Right: " + getBundledIOString(bmask, 1)).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(new TextComponent("  Bottom: " + getBundledIOString(bmask, 2)).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(new TextComponent("  Left: " + getBundledIOString(bmask, 3)).withStyle(ChatFormatting.GRAY));
+        TextComponent indent = new TextComponent("  ");
+        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_TOP)).append(": ").append(getBundledIOTextComponent(bmask, 0)).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_RIGHT)).append(": ").append(getBundledIOTextComponent(bmask, 1)).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_BOTTOM)).append(": ").append(getBundledIOTextComponent(bmask, 2)).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_LEFT)).append(": ").append(getBundledIOTextComponent(bmask, 3)).withStyle(ChatFormatting.GRAY));
 
         //TODO errors
     }
 
-    private static String getBundledIOString(byte bmask, int r) {
+    private static TranslatableComponent getBundledIOTextComponent(byte bmask, int r) {
         int i = 0x01 << r;
         int o = 0x10 << r;
-        return ((bmask & i) != 0 ? "Bundled input" : (bmask & o) != 0 ? "Bundled output" : "None");
+        return new TranslatableComponent((bmask & i) != 0 ? UL_BUNDLED_INPUT : (bmask & o) != 0 ? UL_BUNDLED_OUTPUT : UL_IO_NONE);
     }
 
     public static ItemStack createPhotomaskStack(ItemStack blueprintStack) {

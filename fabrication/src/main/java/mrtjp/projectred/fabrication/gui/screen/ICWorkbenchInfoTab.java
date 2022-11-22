@@ -24,6 +24,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class ICWorkbenchInfoTab extends AbstractGuiNode {
 
@@ -52,36 +53,33 @@ public class ICWorkbenchInfoTab extends AbstractGuiNode {
         NameTextBox nameTextBox = new NameTextBox();
         nameTextBox.setSize(80, 18);
 
-        //TODO localize
-        listNode.addTitleRow(new TranslatableComponent("Info"));
-        listNode.addTextWithNodeRow(new TranslatableComponent("Name"), nameTextBox);
-        listNode.addKeyValueRow(new TranslatableComponent("Owner"), () -> new TranslatableComponent("//TODO"));
+        listNode.addTitleRow(new TranslatableComponent(UL_BLUEPRINT_INFO));
+        listNode.addTextWithNodeRow(new TranslatableComponent(UL_BLUEPRINT_NAME), nameTextBox);
+        listNode.addKeyValueRow(new TranslatableComponent(UL_BLUEPRINT_OWNER), () -> new TranslatableComponent("//TODO"));
 
-        listNode.addKeyValueRow(new TranslatableComponent("Dimensions"), () -> {
+        listNode.addKeyValueRow(new TranslatableComponent(UL_BLUEPRINT_DIM), () -> {
             TileCoord dimensions = editor.getTileMap().getDimensions();
-            Component tilesWord = new TranslatableComponent("tiles");
-            Component byWord = new TranslatableComponent("by");
-            return new TextComponent("" + dimensions.x).append(" ").append(tilesWord).append(" ").append(byWord).append(" ").append("" + dimensions.z).append(" ").append(tilesWord);
+            return new TranslatableComponent(UL_DIMENSIONS_TILES, dimensions.x, dimensions.z);
         });
 
-        listNode.addKeyValueRow(new TranslatableComponent("Layers"), () -> {
+        listNode.addKeyValueRow(new TranslatableComponent(UL_BLUEPRINT_LAYERS), () -> {
             TileCoord dimensions = editor.getTileMap().getDimensions();
             return new TextComponent("" + dimensions.y);
         });
 
-        listNode.addTitleRow(new TranslatableComponent("Yield Calculator"));
+        listNode.addTitleRow(new TranslatableComponent(UL_YIELD_CALCULATOR));
 
         ButtonArrayNode pipelineButtonGrid = createPipelineButtons();
         pipelineButtonGrid.setGridSize(128, 18);
-        listNode.addTextWithNodeRow(new TranslatableComponent("Lithography Pipeline"), pipelineButtonGrid);
+        listNode.addTextWithNodeRow(new TranslatableComponent(UL_LITHOGRAPHY_PIPELINE), pipelineButtonGrid);
 
         ButtonArrayNode processNodeButtonGrid = createProcessNodeButtons();
         processNodeButtonGrid.setGridSize(128, 18);
-        listNode.addTextWithNodeRow(new TranslatableComponent("Process Node"), processNodeButtonGrid);
+        listNode.addTextWithNodeRow(new TranslatableComponent(UL_PROCESS_NODE), processNodeButtonGrid);
 
         ButtonArrayNode waferTypeButtonGrid = createWaferTypeButtons();
         waferTypeButtonGrid.setGridSize(128, 18);
-        listNode.addTextWithNodeRow(new TranslatableComponent("Wafer Type"), waferTypeButtonGrid);
+        listNode.addTextWithNodeRow(new TranslatableComponent(UL_WAFER_TYPE), waferTypeButtonGrid);
 
         PipelineDiagramNode diagramNode = new PipelineDiagramNode(yieldCalculator);
         listNode.addSingleNodeRow(diagramNode);
@@ -99,11 +97,11 @@ public class ICWorkbenchInfoTab extends AbstractGuiNode {
             }
         };
 
-        listNode.addKeyValueRow(new TranslatableComponent("Die size"), () -> new TextComponent(yieldCalculator.getDieSizeString()));
-        listNode.addKeyValueRow(new TranslatableComponent("Wafer size"), () -> new TextComponent(yieldCalculator.getWaferSizeString()));
-        listNode.addKeyValueRow(new TranslatableComponent("Dies per wafer"), () -> new TextComponent(yieldCalculator.getDiesPerWaferString()));
-        listNode.addKeyValueRow(new TranslatableComponent("Single layer yield"), () -> new TextComponent(yieldCalculator.getSingleLayerYieldString()));
-        listNode.addKeyValueRow(new TranslatableComponent("Yield"), () -> new TextComponent(yieldCalculator.getYieldString()));
+        listNode.addKeyValueRow(new TranslatableComponent(UL_DIE_SIZE), yieldCalculator::getDieDimensionsText);
+        listNode.addKeyValueRow(new TranslatableComponent(UL_WAFER_SIZE), yieldCalculator::getWaferDimensionsText);
+        listNode.addKeyValueRow(new TranslatableComponent(UL_DIES_PER_WAFER), yieldCalculator::getDieCountDimensionsText);
+        listNode.addKeyValueRow(new TranslatableComponent(UL_SINGLE_LAYER_YIELD), yieldCalculator::getSingleLayerYieldText);
+        listNode.addKeyValueRow(new TranslatableComponent(UL_YIELD), yieldCalculator::getYieldText);
 
         scrollBarNode.setPosition(290, 17);
         scrollBarNode.setSize(8, 198);

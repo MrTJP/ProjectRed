@@ -20,8 +20,11 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.List;
+
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class WirePlacerToolTab extends ICEditorToolTab {
 
@@ -35,7 +38,7 @@ public class WirePlacerToolTab extends ICEditorToolTab {
 
     private void addWireButton(ICWireTileType type, boolean fullRow) {
         ButtonController buttonController = new ButtonController() {
-            @Override public void getTooltip(List<Component> tooltip) { tooltip.add(new TextComponent(type.toString())); }
+            @Override public void getTooltip(List<Component> tooltip) { tooltip.add(new TranslatableComponent(type.tileType.getUnlocalizedName())); }
             @Override public void onClick() { tool.setWireType(type); }
             @Override public boolean isSelected() { return tool.getWireType() == type; }
 
@@ -70,7 +73,7 @@ public class WirePlacerToolTab extends ICEditorToolTab {
 
     private void construct() {
 
-        addGroup("Redwire");
+        addGroup(UL_TILEGROUP_REDWIRE);
 
         // Alloy wire
         addWireButton(ICWireTileType.RED_ALLOY, true);
@@ -79,7 +82,7 @@ public class WirePlacerToolTab extends ICEditorToolTab {
         for (ICWireTileType type : ICWireTileType.INSULATED)
             addWireButton(type, false);
 
-        addGroup("Bundled");
+        addGroup(UL_TILEGROUP_BUNDLED);
 
         // Bundled neutral wire
         addWireButton(ICWireTileType.BUNDLED_NEUTRAL, true);
@@ -102,7 +105,7 @@ public class WirePlacerToolTab extends ICEditorToolTab {
 
             @Override
             public void buildTooltip(List<Component> tooltip) {
-                tooltip.add(new TextComponent("Wires")); //TODO Localize
+                tooltip.add(new TextComponent(UL_WIRE_TOOL));
             }
         };
     }

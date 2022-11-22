@@ -10,7 +10,7 @@ import mrtjp.fengine.tiles.FETile;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -95,7 +95,7 @@ public abstract class BaseTile implements FETile {
 
     @OnlyIn(Dist.CLIENT)
     public void buildToolTip(List<Component> toolTip) {
-        toolTip.add(new TextComponent(tileType.getName()));
+        toolTip.add(new TranslatableComponent(tileType.getUnlocalizedName()));
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -7,9 +7,11 @@ import mrtjp.projectred.fabrication.gui.screen.ICWorkbenchScreen;
 import mrtjp.projectred.lib.Point;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.List;
+
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_ERASER_TOOL;
 
 public class EraserToolTab extends ICEditorToolTab {
 
@@ -36,7 +38,7 @@ public class EraserToolTab extends ICEditorToolTab {
 
             @Override
             public void buildTooltip(List<Component> tooltip) {
-                tooltip.add(new TextComponent("Eraser")); //TODO Localize
+                tooltip.add(new TranslatableComponent(UL_ERASER_TOOL));
             }
 
             @Override

@@ -19,9 +19,11 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.List;
+
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class GatePlacerToolTab extends ICEditorToolTab {
 
@@ -35,7 +37,7 @@ public class GatePlacerToolTab extends ICEditorToolTab {
 
     private void addGateButton(ICGateTileType type) {
         ButtonController buttonController = new ButtonController() {
-            @Override public void getTooltip(List<Component> tooltip) { tooltip.add(new TextComponent(type.toString())); }
+            @Override public void getTooltip(List<Component> tooltip) { tooltip.add(new TranslatableComponent(type.tileType.getUnlocalizedName())); }
             @Override public void onClick() { tool.setGateType(type); }
             @Override public boolean isSelected() { return tool.getGateType() == type; }
 
@@ -67,10 +69,10 @@ public class GatePlacerToolTab extends ICEditorToolTab {
 
     private void construct() {
 
-        addGroup("IO");
+        addGroup(UL_TILEGROUP_IO);
         addGateButton(ICGateTileType.IO);
 
-        addGroup("Basic");
+        addGroup(UL_TILEGROUP_BASIC);
         addGateButton(ICGateTileType.OR);
         addGateButton(ICGateTileType.NOR);
         addGateButton(ICGateTileType.NOT);
@@ -81,12 +83,12 @@ public class GatePlacerToolTab extends ICEditorToolTab {
         addGateButton(ICGateTileType.BUFFER);
         addGateButton(ICGateTileType.MULTIPLEXER);
 
-        addGroup("Timing");
+        addGroup(UL_TILEGROUP_TIMING);
         addGateButton(ICGateTileType.PULSE);
         addGateButton(ICGateTileType.REPEATER);
         addGateButton(ICGateTileType.RANDOMIZER);
 
-        addGroup("Latches");
+        addGroup(UL_TILEGROUP_MEMORY);
         addGateButton(ICGateTileType.SR_LATCH);
         addGateButton(ICGateTileType.TOGGLE_LATCH);
         addGateButton(ICGateTileType.TRANSPARENT_LATCH);
@@ -103,7 +105,7 @@ public class GatePlacerToolTab extends ICEditorToolTab {
 
             @Override
             public void buildTooltip(List<Component> tooltip) {
-                tooltip.add(new TextComponent("Logic")); //TODO Localize
+                tooltip.add(new TranslatableComponent(UL_GATE_TOOL));
             }
         };
     }

@@ -22,6 +22,8 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
+
 public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNode.IICRenderNodeEventReceiver {
 
     public static final ResourceLocation TAB_BACKGROUND = new ResourceLocation(ProjectRedFabrication.MOD_ID, "textures/gui/compile_tab.png");
@@ -75,9 +77,9 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
         tabControllerNode.setZPosition(0.1);
         addChild(tabControllerNode);
 
-        tabControllerNode.addButtonForTab(new SimpleUVTab(compileStackTab, "Stack", TabButtonNode.TabSide.BOTTOM, 350, 11, TAB_BACKGROUND));
-        tabControllerNode.addButtonForTab(new SimpleUVTab(compileTreeTab, "Tree", TabButtonNode.TabSide.BOTTOM, 365, 11, TAB_BACKGROUND));
-        tabControllerNode.addButtonForTab(new SimpleUVTab(compileProblemsTab, "Problems", TabButtonNode.TabSide.BOTTOM, 380, 11, TAB_BACKGROUND));
+        tabControllerNode.addButtonForTab(new SimpleUVTab(compileStackTab, UL_TAB_STACK, TabButtonNode.TabSide.BOTTOM, 350, 11, TAB_BACKGROUND));
+        tabControllerNode.addButtonForTab(new SimpleUVTab(compileTreeTab, UL_TAB_TREE, TabButtonNode.TabSide.BOTTOM, 365, 11, TAB_BACKGROUND));
+        tabControllerNode.addButtonForTab(new SimpleUVTab(compileProblemsTab, UL_TAB_PROBLEMS, TabButtonNode.TabSide.BOTTOM, 380, 11, TAB_BACKGROUND));
 
         tabControllerNode.selectInitialTab(0);
         tabControllerNode.spreadButtonsHorizontally(1);
