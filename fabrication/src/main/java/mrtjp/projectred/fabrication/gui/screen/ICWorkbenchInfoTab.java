@@ -21,6 +21,7 @@ import mrtjp.projectred.redui.ScrollBarNode;
 import mrtjp.projectred.redui.TextBoxNode;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -121,9 +122,8 @@ public class ICWorkbenchInfoTab extends AbstractGuiNode {
         RenderSystem.setShaderTexture(0, TAB_BACKGROUND);
         GuiComponent.blit(stack, getFrame().x(), getFrame().y(), 0, 0, getFrame().width(), getFrame().height(), 512, 512);
 
-        if (editor.isActive()) {
-            getRoot().getFontRenderer().draw(stack, editor.getIcName(), getFrame().x() + 8, getFrame().y() + 6, EnumColour.GRAY.argb());
-        }
+        // Blueprint name in top left corner
+        getRoot().getFontRenderer().draw(stack, editor.getIcName(), getFrame().x() + 8, getFrame().y() + 6, EnumColour.GRAY.argb());
     }
 
     private ButtonArrayNode createPipelineButtons() {

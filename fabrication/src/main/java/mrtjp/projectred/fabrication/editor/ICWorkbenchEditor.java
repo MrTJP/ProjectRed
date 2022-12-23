@@ -8,7 +8,10 @@ import mrtjp.projectred.fabrication.engine.BaseTile;
 import mrtjp.projectred.fabrication.engine.BaseTileMap;
 import mrtjp.projectred.fabrication.engine.ICSimulationContainer;
 import mrtjp.projectred.fabrication.engine.ICTileType;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -17,6 +20,12 @@ import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
 import static mrtjp.projectred.fabrication.editor.EditorDataUtils.*;
 
 public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallback {
+
+    public static final Style UNIFORM = Style.EMPTY.withFont(new ResourceLocation("minecraft", "uniform"));
+    public static final Style UNIFORM_DARK_GRAY = UNIFORM.withColor(ChatFormatting.DARK_GRAY);
+    public static final Style UNIFORM_GRAY = UNIFORM.withColor(ChatFormatting.GRAY);
+    public static final Style UNIFORM_RED = UNIFORM.withColor(ChatFormatting.RED);
+    public static final Style UNIFORM_YELLOW = UNIFORM.withColor(ChatFormatting.YELLOW);
 
     public static final int EDITOR_FORMAT = 1;
 
@@ -286,6 +295,10 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
         network.markSave();
         stateMachine.onTileMapChanged();
     }
+
+    public void markDirty() {
+        network.markSave();
+    }
     //endregion
 
     //region Client Utils
@@ -304,6 +317,11 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
     @Override
     public void onCompileComplete() {
         LOGGER.info("Compilation complete");
+    }
+
+    @Override
+    public void onCompileFailed() {
+        LOGGER.info("Compilation failed");
     }
 
     @Override

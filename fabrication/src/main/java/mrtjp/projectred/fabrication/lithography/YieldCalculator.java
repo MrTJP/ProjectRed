@@ -5,7 +5,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 
-import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_DIMENSIONS_DIES_TOTAL;
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_DIMENSIONS_NM;
 
 public class YieldCalculator {
 
@@ -74,7 +75,7 @@ public class YieldCalculator {
 
     public Component getDieDimensionsText() {
         Size dieSize = getDieSize();
-        return new TranslatableComponent(UL_DIMENSIONS_DIES, dieSize.width, dieSize.height);
+        return new TranslatableComponent(UL_DIMENSIONS_NM, dieSize.width, dieSize.height);
     }
 
     public Component getWaferDimensionsText() {

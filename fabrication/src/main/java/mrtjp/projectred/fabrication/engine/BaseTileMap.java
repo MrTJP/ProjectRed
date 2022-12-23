@@ -101,6 +101,10 @@ public class BaseTileMap implements FETileMap {
                 .collect(Collectors.toList());
     }
 
+    public Collection<IIOConnectionTile> getIOTiles() {
+        return ioTiles;
+    }
+
     public void removeAll() {
         ioTiles.clear();
 

@@ -4,6 +4,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.ServerUtils;
 import mrtjp.projectred.core.inventory.BaseInventory;
+import mrtjp.projectred.fabrication.editor.EditorDataUtils;
 import mrtjp.projectred.fabrication.init.FabricationReferences;
 import mrtjp.projectred.fabrication.inventory.container.PlottingTableContainer;
 import mrtjp.projectred.fabrication.item.BlankPhotomaskItem;
@@ -109,6 +110,8 @@ public class PlottingTableTile extends FabricationMachineTile {
         if (!(slot0.getItem() instanceof ICBlueprintItem)) return false;
 
         if (!(slot1.getItem() instanceof BlankPhotomaskItem)) return false;
+
+        if (!EditorDataUtils.canFabricate(slot1.getTag())) return false;
 
         return inventory.getItem(2).isEmpty();
     }

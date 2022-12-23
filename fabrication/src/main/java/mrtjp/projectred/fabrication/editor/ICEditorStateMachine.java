@@ -2,14 +2,22 @@ package mrtjp.projectred.fabrication.editor;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import mrtjp.fengine.TileCoord;
 import mrtjp.fengine.api.ICFlatMap;
 import mrtjp.fengine.api.ICStepThroughAssembler;
-import mrtjp.projectred.fabrication.engine.ICCompilerLog;
+import mrtjp.projectred.fabrication.engine.BaseTile;
 import mrtjp.projectred.fabrication.engine.ICSimulationContainer;
+import mrtjp.projectred.fabrication.engine.IIOConnectionTile;
 import mrtjp.projectred.fabrication.engine.PRFabricationEngine;
+import mrtjp.projectred.fabrication.engine.log.ICCompilerLog;
+import mrtjp.projectred.fabrication.engine.log.IODirectionMismatchError;
+import mrtjp.projectred.fabrication.engine.log.NoInputsError;
+import mrtjp.projectred.fabrication.engine.log.NoOutputsError;
 import net.minecraft.nbt.CompoundTag;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
@@ -18,8 +26,10 @@ import static mrtjp.projectred.fabrication.editor.EditorDataUtils.*;
 public class ICEditorStateMachine {
 
     public static final int KEY_STATE_CHANGED = 0;
-    public static final int KEY_COMPILER_LOG_NODE_ADDED = 1;
-    public static final int KEY_COMPILER_LOG_NODE_EXECUTED = 2;
+    public static final int KEY_COMPILER_LOG_CLEARED = 1;
+    public static final int KEY_COMPILER_LOG_NODE_ADDED = 2;
+    public static final int KEY_COMPILER_LOG_NODE_EXECUTED = 3;
+    public static final int KEY_COMPILER_LOG_PROBLEM_ADDED = 4;
 
     public static final int KEY_CLIENT_COMPILE_CLICKED = 10;
 
@@ -29,12 +39,14 @@ public class ICEditorStateMachine {
     private static final int STATE_AWAITING_COMPILE = 1;
     private static final int STATE_COMPILING = 2;
     private static final int STATE_SIMULATING = 3;
+    private static final int STATE_COMPILE_FAILED = 4;
 
     private final State[] states = {
             new StateInitial(),
             new StateAwaitingCompile(),
             new StateCompiling(),
-            new StateSimulating()
+            new StateSimulating(),
+            new CompileFailed(),
     };
 
     private int currentState = STATE_INITIAL;
@@ -98,8 +110,10 @@ public class ICEditorStateMachine {
             case KEY_STATE_CHANGED:
                 enterStateOnClient(in.readUByte());
                 break;
+            case KEY_COMPILER_LOG_CLEARED:
             case KEY_COMPILER_LOG_NODE_ADDED:
             case KEY_COMPILER_LOG_NODE_EXECUTED:
+            case KEY_COMPILER_LOG_PROBLEM_ADDED:
                 compilerLog.readLogStream(in, key);
                 break;
             case KEY_CLIENT_COMPILE_CLICKED:
@@ -146,6 +160,9 @@ public class ICEditorStateMachine {
     public boolean isSimulating() {
         return currentState == STATE_SIMULATING;
     }
+    public boolean didLastCompileFailed() {
+        return getCompilerLog().getErrorCount() > 0;
+    }
     //endregion
 
     private void enterState(int id, boolean force) {
@@ -161,6 +178,7 @@ public class ICEditorStateMachine {
         states[currentState].onStateEntered(oldState);
 
         LOGGER.info("State transition: " + oldState + " -> " + currentState);
+        editor.markDirty();
     }
 
     private void enterStateAndSend(int id) {
@@ -186,6 +204,8 @@ public class ICEditorStateMachine {
         void onCompileStart();
 
         void onCompileComplete();
+
+        void onCompileFailed();
 
         void onSimulationComplete(int changeMask, ICSimulationContainer container);
     }
@@ -229,12 +249,7 @@ public class ICEditorStateMachine {
 
         @Override
         public void onStateEntered(int previousStateId) {
-            compilerLog.clear();
-        }
-
-        @Override
-        public void onClientStateEntered(int previousStateId) {
-            compilerLog.clear();
+            compilerLog.clearAndSend();
         }
     }
 
@@ -271,7 +286,12 @@ public class ICEditorStateMachine {
             }
 
             if (!assembler.isDone()) {
-                assembler.stepIn();
+                long nanoTime = System.nanoTime();
+                long elapsedTime;
+                do {
+                    assembler.stepIn();
+                    elapsedTime = System.nanoTime() - nanoTime;
+                } while (elapsedTime < 500000L && !assembler.isDone()); // Use up to 0.5ms to compile
             }
 
             if (assembler.isDone()) {
@@ -279,8 +299,14 @@ public class ICEditorStateMachine {
                 assembler = null; //TODO make assemblers clearable
                 lastCompiledFlatMap = PRFabricationEngine.instance.serializeFlatMap(map);
                 simulationContainer.setFlatMap(map);
-                enterStateAndSend(STATE_SIMULATING);
-                if (callback != null) callback.onCompileComplete();
+
+                if (compilerLog.getErrorCount() > 0) {
+                    enterStateAndSend(STATE_COMPILE_FAILED);
+                    if (callback != null) callback.onCompileFailed();
+                } else {
+                    enterStateAndSend(STATE_SIMULATING);
+                    if (callback != null) callback.onCompileComplete();
+                }
             }
         }
 
@@ -291,7 +317,7 @@ public class ICEditorStateMachine {
 
         @Override
         public boolean canTransitionTo(int id) {
-            return id == STATE_SIMULATING;
+            return id == STATE_SIMULATING || id == STATE_COMPILE_FAILED;
         }
 
         @Override
@@ -304,18 +330,45 @@ public class ICEditorStateMachine {
             assembler = null;
         }
 
-        @Override
-        public void onClientStateEntered(int previousStateId) {
-            compilerLog.clear();
-        }
-
         private void restartAssembly() {
             assembler = PRFabricationEngine.instance.newStepThroughAssembler();
             assembler.setEventReceiver(compilerLog);
-            compilerLog.clear();
+            compilerLog.clearAndSend();
 
             assembler.addTileMap(editor.getTileMap(), Collections.emptyMap());
             if (callback != null) callback.onCompileStart();
+
+            // Check for problems detectable before compilation
+
+            int ioMask = 0; // 2 bits per side, 0x1 = input, 0x2 = output, lookup with 0x3 << side*2
+            Collection<IIOConnectionTile> ioTiles = editor.getTileMap().getIOTiles();
+            for (var io : ioTiles) {
+                int s = io.getIOSide();
+                int m = io.isInputIOMode() ? 0x1 : 0x2;
+                ioMask |= m << s*2;
+            }
+
+            // Check for sides marked as both input and output
+            for (int r = 0; r < 4; r++) {
+                int m = ioMask >> r*2 & 0x3;
+                if (m == 0x3) {
+                    int finalR = r;
+                    List<TileCoord> coordList = ioTiles.stream()
+                            .filter(io -> io.getIOSide() == finalR)
+                            .map(io -> ((BaseTile)io).getPos())
+                            .toList();
+
+                    compilerLog.addProblem(new IODirectionMismatchError(coordList));
+                }
+            }
+
+            if ((ioMask & 0x55) == 0) {
+                compilerLog.addProblem(new NoInputsError());
+            }
+
+            if ((ioMask & 0xAA) == 0) {
+                compilerLog.addProblem(new NoOutputsError());
+            }
         }
     }
 
@@ -374,6 +427,19 @@ public class ICEditorStateMachine {
         @Override
         public void onStateEntered(int previousStateId) {
             lastTime = -1;
+        }
+    }
+
+    private class CompileFailed implements State {
+
+        @Override
+        public boolean canTransitionTo(int id) {
+            return id == STATE_AWAITING_COMPILE;
+        }
+
+        @Override
+        public void onTileMapChanged() {
+            enterStateAndSend(STATE_AWAITING_COMPILE);
         }
     }
 }

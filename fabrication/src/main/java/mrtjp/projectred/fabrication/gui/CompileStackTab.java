@@ -7,7 +7,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.fengine.TileCoord;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
-import mrtjp.projectred.fabrication.engine.ICCompilerLog;
+import mrtjp.projectred.fabrication.engine.log.ICCompilerLog;
 import mrtjp.projectred.fabrication.gui.screen.ICWorkbenchCompileTab;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
@@ -58,6 +58,7 @@ public class CompileStackTab extends AbstractGuiNode implements ICompileOverlayR
     @Override
     public void update() {
         if (!isHidden()) {
+            // TODO only do this when the stack changes
             List<ICCompilerLog.CompileTreeNode> execStack = editor.getStateMachine().getCompilerLog().getCurrentStack();
             ctnListNode.setNodeList(execStack);
         }

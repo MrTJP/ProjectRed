@@ -39,6 +39,17 @@ public class SimpleUVTab implements TabControllerNode.IToolbarTab {
         return tabBodyNode;
     }
 
+    //region Customization
+    protected StatusDot getStatusDot() {
+        return StatusDot.NONE;
+    }
+
+    protected void buildTooltip(List<Component> tooltip) {
+        tooltip.add(tabName);
+    }
+    //endregion
+
+    //region TabControllerNode.IToolbarTab
     @Override
     public void onTabClosed() {
         tabBodyNode.setHidden(true);
@@ -61,12 +72,35 @@ public class SimpleUVTab implements TabControllerNode.IToolbarTab {
             public void renderIcon(PoseStack stack, Point mouse, float partialFrame) {
                 RenderSystem.setShaderTexture(0, texture);
                 GuiComponent.blit(stack, getFrame().x() + 3, getFrame().y() + 3, u, v, 14, 14, 512, 512);
+
+                StatusDot statusDot = SimpleUVTab.this.getStatusDot();
+                if (statusDot != StatusDot.NONE) {
+                    RenderSystem.setShaderTexture(0, ICWorkbenchScreen.BACKGROUND);
+                    GuiComponent.blit(stack, getFrame().x() + 3 + 7, getFrame().y() + 3, 7, 7, statusDot.u, statusDot.v, 14, 14, 512, 512);
+                }
             }
 
             @Override
             public void buildTooltip(List<Component> tooltip) {
-                tooltip.add(tabName);
+                SimpleUVTab.this.buildTooltip(tooltip);
             }
         };
+    }
+    //endregion
+
+    public enum StatusDot {
+        NONE(0, 0),
+        GREEN(435, 1),
+        YELLOW(450, 1),
+        RED(465, 1)
+        ;
+
+        public final int u;
+        public final int v;
+
+        StatusDot(int u, int v) {
+            this.u = u;
+            this.v = v;
+        }
     }
 }

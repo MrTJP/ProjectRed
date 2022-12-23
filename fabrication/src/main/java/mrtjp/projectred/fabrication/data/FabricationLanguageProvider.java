@@ -14,6 +14,11 @@ public class FabricationLanguageProvider extends LanguageProvider {
     }
 
     @Override
+    public String getName() {
+        return "ProjectRed-Fabrication Languages: en_us";
+    }
+
+    @Override
     protected void addTranslations() {
 
         // Creative tab
@@ -54,13 +59,34 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_TOGGLE_DELAY, "Toggle delay");
         add(UL_SIDE_ENABLED, "Side enabled");
         add(UL_SIDE_DISABLED, "Side disabled");
-        add(UL_PLACE_BLUEPRINT, "Place blueprint");
 
+        add(UL_MULTIPLE_DRIVERS_TITLE, "Multiple drivers");
+        add(UL_MULTIPLE_DRIVERS_DESC, "Multiple registers connected to an input:");
+        add(UL_DEAD_WIRE_TITLE, "Dead wire");
+        add(UL_DEAD_WIRE_DESC, "No signals pass through this wire");
+        add(UL_DEAD_GATE_TITLE, "Dead gate");
+        add(UL_DEAD_GATE_DESC, "No signals drive this gate");
+        add(UL_IO_DIR_MISMATCH_TITLE, "IO direction mismatch");
+        add(UL_IO_DIR_MISMATCH_DESC, "Side has IO gates with conflicting directions");
+        add(UL_NO_INPUTS_TITLE, "No inputs");
+        add(UL_NO_INPUTS_DESC, "Design has no inputs");
+        add(UL_NO_OUTPUTS_TITLE, "No outputs");
+        add(UL_NO_OUTPUTS_DESC, "Design has no outputs");
+        add(UL_NO_ERRORS, "No errors");
+        add(UL_NO_WARNINGS, "No warnings");
+
+        add(UL_PLACE_BLUEPRINT, "Place blueprint");
         add(UL_BLUEPRINT_INFO, "Blueprint Info");
         add(UL_BLUEPRINT_NAME, "Name");
         add(UL_BLUEPRINT_OWNER, "Owner");
         add(UL_BLUEPRINT_DIM, "Dimensions");
         add(UL_BLUEPRINT_LAYERS, "Layers");
+        add(UL_COMPILE, "Compile");
+        add(UL_COMPILE_PROGRESS, "Compiling (%d/%d)");
+        add(UL_COMPILE_DONE, "Done (%d/%d)");
+        add(UL_COMPILE_READY, "Ready to compile");
+        add(UL_COMPILE_FAILED, "Compile failed");
+        add(UL_SIM_RUNNING, "Simulation running");
 
         add(UL_YIELD_CALCULATOR, "Yield Calculator");
         add(UL_LITHOGRAPHY_PIPELINE, "Lithography pipeline");
@@ -85,6 +111,7 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_BUNDLED_INPUT, "Bundled input");
         add(UL_BUNDLED_OUTPUT, "Bundled output");
         add(UL_IO_NONE, "None");
+        add(UL_CANNOT_FABRICATE, "Cannot fabricate");
 
         add(UL_IO_GATE_TILE, "IO Gate");
 
@@ -95,6 +122,8 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_TILEGROUP_TIMING, "Timing");
         add(UL_TILEGROUP_MEMORY, "Memory");
 
+        add(UL_UNIT_WARNINGS, "%d warnings");
+        add(UL_UNIT_ERRORS, "%d errors");
         add(UL_UNIT_TICKS, "%d ticks");
         add(UL_DIMENSIONS_NM, "%d nm x %d nm");
         add(UL_DIMENSIONS_TILES, "%d tiles x %d tiles");

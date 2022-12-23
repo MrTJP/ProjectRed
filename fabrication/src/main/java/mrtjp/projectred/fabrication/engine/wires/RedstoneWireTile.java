@@ -7,6 +7,7 @@ import mrtjp.projectred.fabrication.engine.ICSimulationContainer;
 import mrtjp.projectred.fabrication.engine.ICTileType;
 import mrtjp.projectred.fabrication.engine.IConnectableICTile;
 import mrtjp.projectred.fabrication.engine.IRedstoneConnectableICTile;
+import mrtjp.projectred.fabrication.engine.log.DeadWireWarning;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.nbt.CompoundTag;
 
@@ -98,6 +99,10 @@ public abstract class RedstoneWireTile extends WireTile implements IRedstoneConn
     public void searchManifest(IPathFinderManifest manifest) {
         inputRegisters.clear();
         inputRegisters.addAll(manifest.getOutputRegisters());
+
+        if (inputRegisters.isEmpty()) {
+            getEditor().getStateMachine().getCompilerLog().addProblem(new DeadWireWarning(getPos()));
+        }
     }
 
     @Override

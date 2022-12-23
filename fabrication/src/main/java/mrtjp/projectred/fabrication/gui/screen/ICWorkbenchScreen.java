@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
+import mrtjp.projectred.fabrication.engine.log.ICCompilerLog;
 import mrtjp.projectred.fabrication.gui.SimpleUVTab;
 import mrtjp.projectred.fabrication.gui.TabButtonNode;
 import mrtjp.projectred.fabrication.gui.TabControllerNode;
@@ -14,6 +15,7 @@ import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractGuiNode;
 import mrtjp.projectred.redui.ItemStackNode;
 import mrtjp.projectred.redui.RedUIScreen;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
@@ -22,6 +24,9 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.List;
+
+import static mrtjp.projectred.fabrication.editor.ICWorkbenchEditor.*;
 import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class ICWorkbenchScreen extends RedUIScreen {
@@ -68,8 +73,8 @@ public class ICWorkbenchScreen extends RedUIScreen {
         contentNode.addChild(tabControllerNode);
 
         tabControllerNode.addButtonForTab(new SimpleUVTab(infoTab, UL_TAB_INFO, TabButtonNode.TabSide.LEFT, 420, 1));
-        tabControllerNode.addButtonForTab(new SimpleUVTab(editTab, UL_TAB_EDIT, TabButtonNode.TabSide.LEFT, 420, 16));
-        tabControllerNode.addButtonForTab(new SimpleUVTab(compileTab, UL_TAB_COMPILE, TabButtonNode.TabSide.LEFT, 420, 31));
+        tabControllerNode.addButtonForTab(new EditTab(editTab, UL_TAB_EDIT, TabButtonNode.TabSide.LEFT, 420, 16));
+        tabControllerNode.addButtonForTab(new CompileTab(compileTab, UL_TAB_COMPILE, TabButtonNode.TabSide.LEFT, 420, 31));
 
         tabControllerNode.selectInitialTab(1);
         tabControllerNode.spreadButtonsVertically(1);
@@ -142,6 +147,70 @@ public class ICWorkbenchScreen extends RedUIScreen {
             fontRenderer.draw(stack, text,
                     getFrame().midX() - fontRenderer.width(text) / 2f,
                     getFrame().y() + 6, EnumColour.GRAY.argb());
+        }
+    }
+
+    private class EditTab extends SimpleUVTab {
+
+        public EditTab(AbstractGuiNode tabBodyNode, String unlocalTabName, TabButtonNode.TabSide side, int u, int v) {
+            super(tabBodyNode, unlocalTabName, side, u, v);
+        }
+
+        @Override
+        protected StatusDot getStatusDot() {
+            if (editor.getStateMachine().isSimulating()) {
+                return StatusDot.GREEN;
+            }
+            return StatusDot.NONE;
+        }
+
+        @Override
+        protected void buildTooltip(List<Component> tooltip) {
+            super.buildTooltip(tooltip);
+            if (editor.getStateMachine().isSimulating()) {
+                tooltip.add(new TranslatableComponent(UL_SIM_RUNNING).withStyle(UNIFORM_GRAY));
+            }
+        }
+    }
+
+    private class CompileTab extends SimpleUVTab {
+
+        public CompileTab(AbstractGuiNode tabBodyNode, String unlocalTabName, TabButtonNode.TabSide side, int u, int v) {
+            super(tabBodyNode, unlocalTabName, side, u, v);
+        }
+
+        @Override
+        protected StatusDot getStatusDot() {
+            if (editor.getStateMachine().isCompiling()) {
+                return StatusDot.GREEN;
+            }
+            if (editor.getStateMachine().didLastCompileFailed()) {
+                return StatusDot.RED;
+            }
+            if (editor.getStateMachine().canTriggerCompile()) {
+                return StatusDot.YELLOW;
+            }
+            return StatusDot.NONE;
+        }
+
+        @Override
+        protected void buildTooltip(List<Component> tooltip) {
+            super.buildTooltip(tooltip);
+
+            ICCompilerLog log = editor.getStateMachine().getCompilerLog();
+            if (editor.getStateMachine().canTriggerCompile()) {
+                tooltip.add(new TranslatableComponent(UL_COMPILE_READY).withStyle(UNIFORM_GRAY));
+            }
+
+            if (editor.getStateMachine().isCompiling()) {
+                tooltip.add(new TranslatableComponent(UL_COMPILE_PROGRESS, log.getCompletedSteps(), log.getTotalSteps()).withStyle(UNIFORM_GRAY));
+            }
+
+            if (editor.getStateMachine().didLastCompileFailed()) {
+                tooltip.add(new TranslatableComponent(UL_COMPILE_FAILED).withStyle(UNIFORM_RED));
+            }
+
+            ICWorkbenchCompileTab.appendProblemsInfo(log, tooltip);
         }
     }
 }

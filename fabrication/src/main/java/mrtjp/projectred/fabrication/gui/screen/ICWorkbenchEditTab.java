@@ -76,9 +76,8 @@ public class ICWorkbenchEditTab extends AbstractGuiNode {
 
         GuiComponent.blit(stack, frame.x(), frame.y(), 0, 0, frame.width(), frame.height(), 512, 512);
 
-        if (editor.isActive()) {
-            fontRenderer.draw(stack, editor.getIcName(), frame.x() + 8, frame.y() + 6, EnumColour.GRAY.argb());
-        }
+        // Blueprint name in top left corner
+        fontRenderer.draw(stack, editor.getIcName(), frame.x() + 8, frame.y() + 6, EnumColour.GRAY.argb());
     }
 
     @Override

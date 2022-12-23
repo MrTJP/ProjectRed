@@ -4,7 +4,7 @@ import mrtjp.projectred.fabrication.ProjectRedFabrication;
 import mrtjp.projectred.fabrication.lithography.WaferType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -30,8 +30,8 @@ public class BaseSiliconWaferItem extends Item {
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltipList, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, world, tooltipList, tooltipFlag);
 
-        tooltipList.add(new TextComponent(UL_SIZE).append(": " + waferType.getWaferWidth() + "nm x " + waferType.getWaferHeight() + "nm").withStyle(ChatFormatting.GRAY));
-        tooltipList.add(new TextComponent(UL_DEFECT_CHANCE).append(": " + waferType.getDefectRatePerUnitArea()*100 + "% / nm^2").withStyle(ChatFormatting.GRAY));
+        tooltipList.add(new TranslatableComponent(UL_SIZE).append(": " + waferType.getWaferWidth() + "nm x " + waferType.getWaferHeight() + "nm").withStyle(ChatFormatting.GRAY));
+        tooltipList.add(new TranslatableComponent(UL_DEFECT_CHANCE).append(": " + waferType.getDefectRatePerUnitArea()*100 + "% / nm^2").withStyle(ChatFormatting.GRAY));
     }
 
     public WaferType getWaferType() {

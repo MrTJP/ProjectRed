@@ -2,6 +2,10 @@ package mrtjp.projectred.fabrication.editor;
 
 import mrtjp.fengine.TileCoord;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
+import java.util.List;
 
 public class EditorDataUtils {
 
@@ -20,6 +24,13 @@ public class EditorDataUtils {
     public static final String KEY_FLAT_MAP = "flat_map"; // String
     public static final String KEY_SIMULATION = "sim_cont"; // CompoundTag
     public static final String KEY_COMPILER_LOG = "compiler_log"; // CompoundTag
+
+    // ICIssuesLog
+    public static final String KEY_COMPLETED_STEPS = "completed_steps"; // int
+    public static final String KEY_CURRENT_PATH = "current_path"; // int array
+    public static final String KEY_PROBLEMS_LIST = "problems"; // ListTag
+    public static final String KEY_ERROR_COUNT = "error_count"; // int
+    public static final String KEY_WARNING_COUNT = "warning_count"; // int
 
     public static int getFormat(CompoundTag tag) {
         return tag.getInt(KEY_FORMAT);
@@ -40,9 +51,15 @@ public class EditorDataUtils {
     }
 
     public static boolean canFabricate(CompoundTag tag) {
-        return hasFabricationTarget(tag) && tag.getBoolean(KEY_IS_BUILT);
+        return hasFabricationTarget(tag) && tag.getBoolean(KEY_IS_BUILT) && getErrorCount(tag) == 0;
+    }
 
-        //TODO check errors
+    public static int getErrorCount(CompoundTag tag) {
+        return tag.getCompound(KEY_COMPILER_LOG).getInt(KEY_ERROR_COUNT);
+    }
+
+    public static int getWarningCount(CompoundTag tag) {
+        return tag.getCompound(KEY_COMPILER_LOG).getInt(KEY_WARNING_COUNT);
     }
 
     // Creates copy of editor tag with only the data required to fabricate a gate
@@ -69,6 +86,21 @@ public class EditorDataUtils {
                 tag.getByte(key + "_y"),
                 tag.getByte(key + "_z")
         );
+    }
+
+    public static void saveTileCoordList(CompoundTag tag, String key, Iterable<TileCoord> coordList) {
+        ListTag list = new ListTag();
+        for (TileCoord coord : coordList) {
+            list.add(tileCoordToNBT(coord));
+        }
+        tag.put(key, list);
+    }
+
+    public static void loadTileCoordList(CompoundTag tag, String key, List<TileCoord> coordList) {
+        ListTag list = tag.getList(key, Tag.TAG_COMPOUND);
+        for (int i = 0; i < list.size(); i++) {
+            coordList.add(tileCoordFromNBT(list.getCompound(i)));
+        }
     }
 
     public static CompoundTag tileCoordToNBT(TileCoord coord) {

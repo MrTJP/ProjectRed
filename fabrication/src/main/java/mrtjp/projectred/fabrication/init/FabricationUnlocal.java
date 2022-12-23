@@ -1,8 +1,10 @@
 package mrtjp.projectred.fabrication.init;
 
+import static mrtjp.projectred.fabrication.ProjectRedFabrication.MOD_ID;
+
 public class FabricationUnlocal {
 
-    private static final String PREFIX = "projectred-fabrication.";
+    private static final String PREFIX = MOD_ID + ".";
 
     // ICWorkbench tabs
     public static final String UL_TAB_INFO      = PREFIX + "tab.info";
@@ -28,6 +30,22 @@ public class FabricationUnlocal {
     public static final String UL_SIDE_ENABLED      = PREFIX + "interact.side_enabled";
     public static final String UL_SIDE_DISABLED     = PREFIX + "interact.side_disabled";
 
+    // Problems
+    public static final String UL_MULTIPLE_DRIVERS_TITLE =  PREFIX + "problems.multiple_drivers.title";
+    public static final String UL_MULTIPLE_DRIVERS_DESC  =  PREFIX + "problems.multiple_drivers.desc";
+    public static final String UL_DEAD_WIRE_TITLE        =  PREFIX + "problems.dead_wire.title";
+    public static final String UL_DEAD_WIRE_DESC         =  PREFIX + "problems.dead_wire.desc";
+    public static final String UL_DEAD_GATE_TITLE        =  PREFIX + "problems.dead_gate.title";
+    public static final String UL_DEAD_GATE_DESC         =  PREFIX + "problems.dead_gate.desc";
+    public static final String UL_IO_DIR_MISMATCH_TITLE  =  PREFIX + "problems.io_dir_mismatch.title";
+    public static final String UL_IO_DIR_MISMATCH_DESC   =  PREFIX + "problems.io_dir_mismatch.desc";
+    public static final String UL_NO_INPUTS_TITLE        =  PREFIX + "problems.no_inputs.title";
+    public static final String UL_NO_INPUTS_DESC         =  PREFIX + "problems.no_inputs.desc";
+    public static final String UL_NO_OUTPUTS_TITLE       =  PREFIX + "problems.no_outputs.title";
+    public static final String UL_NO_OUTPUTS_DESC        =  PREFIX + "problems.no_outputs.desc";
+    public static final String UL_NO_ERRORS              =  PREFIX + "problems.no_errors";
+    public static final String UL_NO_WARNINGS            =  PREFIX + "problems.no_warnings";
+
     // General workbench UI
     public static final String UL_PLACE_BLUEPRINT   = PREFIX + "ui.place_blueprint";
     public static final String UL_BLUEPRINT_INFO    = PREFIX + "ui.blueprint_info";
@@ -35,6 +53,12 @@ public class FabricationUnlocal {
     public static final String UL_BLUEPRINT_OWNER   = PREFIX + "ui.blueprint_owner";
     public static final String UL_BLUEPRINT_DIM     = PREFIX + "ui.blueprint_dim";
     public static final String UL_BLUEPRINT_LAYERS  = PREFIX + "ui.blueprint_layers";
+    public static final String UL_COMPILE           = PREFIX + "ui.compile";
+    public static final String UL_COMPILE_PROGRESS  = PREFIX + "ui.compile_progress";
+    public static final String UL_COMPILE_DONE      = PREFIX + "ui.compile_done";
+    public static final String UL_COMPILE_READY     = PREFIX + "ui.compile_ready";
+    public static final String UL_COMPILE_FAILED    = PREFIX + "ui.compile_failed";
+    public static final String UL_SIM_RUNNING       = PREFIX + "ui.sim_running";
 
     public static final String UL_YIELD_CALCULATOR      = PREFIX + "ui.yield_calculator";
     public static final String UL_LITHOGRAPHY_PIPELINE  = PREFIX + "ui.lithography_pipeline";
@@ -71,8 +95,11 @@ public class FabricationUnlocal {
     public static final String UL_BUNDLED_INPUT      = PREFIX + "tooltip.bundled_input";
     public static final String UL_BUNDLED_OUTPUT     = PREFIX + "tooltip.bundled_output";
     public static final String UL_IO_NONE            = PREFIX + "tooltip.io_none";
+    public static final String UL_CANNOT_FABRICATE   = PREFIX + "tooltip.cannot_fabricate";
 
     // Numbers and measurements
+    public static final String UL_UNIT_WARNINGS          = PREFIX + "unit.warnings";
+    public static final String UL_UNIT_ERRORS            = PREFIX + "unit.errors";
     public static final String UL_UNIT_TICKS             = PREFIX + "unit.ticks";
     public static final String UL_DIMENSIONS_NM          = PREFIX + "dimensions.nm";
     public static final String UL_DIMENSIONS_TILES       = PREFIX + "dimensions.tiles";

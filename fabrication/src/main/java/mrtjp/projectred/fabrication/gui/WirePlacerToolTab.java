@@ -105,7 +105,7 @@ public class WirePlacerToolTab extends ICEditorToolTab {
 
             @Override
             public void buildTooltip(List<Component> tooltip) {
-                tooltip.add(new TextComponent(UL_WIRE_TOOL));
+                tooltip.add(new TranslatableComponent(UL_WIRE_TOOL));
             }
         };
     }

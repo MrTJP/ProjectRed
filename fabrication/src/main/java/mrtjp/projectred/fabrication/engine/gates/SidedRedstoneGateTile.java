@@ -5,6 +5,8 @@ import mrtjp.fengine.assemble.PathFinderResult;
 import mrtjp.fengine.simulate.ByteRegister;
 import mrtjp.projectred.fabrication.engine.ICSimulationContainer;
 import mrtjp.projectred.fabrication.engine.IRotatableICTile;
+import mrtjp.projectred.fabrication.engine.log.DeadGateWarning;
+import mrtjp.projectred.fabrication.engine.log.MultipleDriversError;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.Arrays;
@@ -90,10 +92,18 @@ public abstract class SidedRedstoneGateTile extends RedstoneGateTile {
     @Override
     public void locate(IPathFinder pathFinder) {
 
+        int req = 0;
+        int found = 0;
         for (int r = 0; r < 4; r++) {
             if (canInputRedstone(r)) {
+                req++;
                 inputRegisters[r] = searchInputRegister(r, pathFinder);
+                if (inputRegisters[r] != REG_ZERO) found++;
             }
+        }
+
+        if (req > 0 && found == 0) {
+            getEditor().getStateMachine().getCompilerLog().addProblem(new DeadGateWarning(getPos()));
         }
     }
 
@@ -146,8 +156,7 @@ public abstract class SidedRedstoneGateTile extends RedstoneGateTile {
         int absDir = IRotatableICTile.rotationToDir(absR);
         PathFinderResult pfr = pathFinder.doPathFinding((d, p) -> d == absDir);
         if (pfr.outputRegisters.size() > 1) {
-            // TODO log this somewhere
-            System.out.println("ERR: Unexpected multiple drivers: " + pfr.outputRegisters);
+            getEditor().getStateMachine().getCompilerLog().addProblem(new MultipleDriversError(getPos(), pfr.outputRegisters));
         }
         if (!pfr.outputRegisters.isEmpty()) {
             return pfr.outputRegisters.get(0);

@@ -9,6 +9,7 @@ import mrtjp.fengine.TileCoord;
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
 import mrtjp.projectred.fabrication.editor.tools.IICEditorTool;
+import mrtjp.projectred.fabrication.engine.log.ICCompilerLog;
 import mrtjp.projectred.fabrication.gui.*;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractButtonNode;
@@ -17,11 +18,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.LinkedList;
 import java.util.List;
 
+import static mrtjp.projectred.fabrication.editor.ICWorkbenchEditor.*;
+import static mrtjp.projectred.fabrication.editor.ICWorkbenchEditor.UNIFORM_DARK_GRAY;
 import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNode.IICRenderNodeEventReceiver {
@@ -30,7 +36,7 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
 
     private final ICWorkbenchEditor editor;
 
-    private TabControllerNode tabControllerNode;
+    private List<ICompileOverlayRenderer> overlays = new LinkedList<>();
 
     private boolean upPressed = false;
     private boolean rightPressed = false;
@@ -71,15 +77,20 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
         compileProblemsTab.setPosition(208, 77);
         addChild(compileProblemsTab);
 
+        // Keep track of overlays
+        overlays.add(compileStackTab);
+        overlays.add(compileTreeTab);
+        overlays.add(compileProblemsTab);
+
         // Bottom tabs
-        tabControllerNode = new TabControllerNode();
+        TabControllerNode tabControllerNode = new TabControllerNode();
         tabControllerNode.setPosition(212, 210);
         tabControllerNode.setZPosition(0.1);
         addChild(tabControllerNode);
 
         tabControllerNode.addButtonForTab(new SimpleUVTab(compileStackTab, UL_TAB_STACK, TabButtonNode.TabSide.BOTTOM, 350, 11, TAB_BACKGROUND));
         tabControllerNode.addButtonForTab(new SimpleUVTab(compileTreeTab, UL_TAB_TREE, TabButtonNode.TabSide.BOTTOM, 365, 11, TAB_BACKGROUND));
-        tabControllerNode.addButtonForTab(new SimpleUVTab(compileProblemsTab, UL_TAB_PROBLEMS, TabButtonNode.TabSide.BOTTOM, 380, 11, TAB_BACKGROUND));
+        tabControllerNode.addButtonForTab(new ProblemsTab(compileProblemsTab, UL_TAB_PROBLEMS, TabButtonNode.TabSide.BOTTOM, 380, 11, TAB_BACKGROUND));
 
         tabControllerNode.selectInitialTab(0);
         tabControllerNode.spreadButtonsHorizontally(1);
@@ -90,9 +101,8 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
         RenderSystem.setShaderTexture(0, TAB_BACKGROUND);
         GuiComponent.blit(stack, getFrame().x(), getFrame().y(), 0, 0, getFrame().width(), getFrame().height(), 512, 512);
 
-        if (editor.isActive()) {
-            getRoot().getFontRenderer().draw(stack, editor.getIcName(), getFrame().x() + 8, getFrame().y() + 6, EnumColour.GRAY.argb());
-        }
+        // Blueprint name in top left corner
+        getRoot().getFontRenderer().draw(stack, editor.getIcName(), getFrame().x() + 8, getFrame().y() + 6, EnumColour.GRAY.argb());
 
         // Progress bar
         RenderSystem.setShaderTexture(0, TAB_BACKGROUND);
@@ -100,6 +110,35 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
         int progress = editor.getStateMachine().getCompilerLog().getProgressScaled(barWidth);
         GuiComponent.blit(stack, getFrame().x() + 208, getFrame().y() + 36, 304, 0, barWidth, 5, 512, 512);
         GuiComponent.blit(stack, getFrame().x() + 208, getFrame().y() + 36, 304, 5, progress, 5, 512, 512);
+
+        // Progress text
+        ICCompilerLog log = editor.getStateMachine().getCompilerLog();
+        getRoot().getFontRenderer().draw(stack,
+                new TranslatableComponent(editor.getStateMachine().isCompiling() ? UL_COMPILE_PROGRESS : UL_COMPILE_DONE, log.getCompletedSteps(), log.getTotalSteps())
+                        .withStyle(UNIFORM_DARK_GRAY),
+                getFrame().x() + 208, getFrame().y() + 42, EnumColour.GRAY.argb());
+
+        // Error Count
+        Component errorText = log.getErrorCount() == 0 ?
+                new TextComponent("<!> ")
+                        .append(new TranslatableComponent(UL_NO_ERRORS))
+                        .withStyle(UNIFORM_DARK_GRAY) :
+                new TextComponent("<!> ")
+                        .withStyle(ICWorkbenchEditor.UNIFORM_RED)
+                        .append(new TranslatableComponent(UL_UNIT_ERRORS, log.getErrorCount())
+                                .withStyle(UNIFORM_DARK_GRAY));
+
+        Component warningText = log.getWarningCount() == 0 ?
+                new TextComponent("<!> ")
+                        .append(new TranslatableComponent(UL_NO_WARNINGS))
+                        .withStyle(UNIFORM_DARK_GRAY) :
+                new TextComponent("<!> ")
+                        .withStyle(ICWorkbenchEditor.UNIFORM_YELLOW)
+                        .append(new TranslatableComponent(UL_UNIT_WARNINGS, log.getWarningCount())
+                                .withStyle(UNIFORM_DARK_GRAY));
+
+        getRoot().getFontRenderer().draw(stack, errorText, getFrame().x() + 208, getFrame().y() + 52, EnumColour.GRAY.argb());
+        getRoot().getFontRenderer().draw(stack, warningText, getFrame().x() + 208, getFrame().y() + 60, EnumColour.GRAY.argb());
     }
 
     //TODO Reduce this reused code (ICEditorToolManager)
@@ -160,13 +199,6 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
         return true;
     }
 
-    protected ICompileOverlayRenderer getOverlayRenderer() {
-
-        // Overlay rendering is handled by the currently open tab
-        SimpleUVTab tab = (SimpleUVTab) tabControllerNode.getSelectedTab().orElse(tabControllerNode.getTab(0));
-        return (ICompileOverlayRenderer) tab.getTabBodyNode();
-    }
-
     //region ICRenderNode.IICRenderNodeEventReceiver
 
     @Override
@@ -200,14 +232,43 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
         TileCoord pos = IICEditorTool.toNearestPosition(mousePosition);
         editor.getTileMap().getBaseTile(pos).ifPresent(tile -> tile.buildToolTip(tooltip));
 
-        getOverlayRenderer().buildTooltip(renderNode, mousePosition, tooltip);
+        for (ICompileOverlayRenderer overlay : overlays) {
+            overlay.buildTooltip(renderNode, mousePosition, tooltip);
+        }
     }
 
     @Override
     public void onRenderOverlay(ICRenderNode renderNode, Vector3 mousePosition, boolean isFirstHit, CCRenderState ccrs, MultiBufferSource getter, PoseStack matrixStack) {
-        getOverlayRenderer().renderOverlay(renderNode, mousePosition, isFirstHit, ccrs, getter, matrixStack);
+        for (ICompileOverlayRenderer overlay : overlays) {
+            overlay.renderOverlay(renderNode, mousePosition, isFirstHit, ccrs, getter, matrixStack);
+        }
     }
 
+    //endregion
+
+    //region Utilities
+    public static void appendProblemsInfo(ICCompilerLog log, List<Component> tooltip) {
+        Component errorText = log.getErrorCount() == 0 ?
+                new TextComponent("<!> ")
+                        .append(new TranslatableComponent(UL_NO_ERRORS))
+                        .withStyle(UNIFORM_GRAY) :
+                new TextComponent("<!> ")
+                        .withStyle(UNIFORM_RED)
+                        .append(new TranslatableComponent(UL_UNIT_ERRORS, log.getErrorCount())
+                                .withStyle(UNIFORM_GRAY));
+
+        Component warningText = log.getWarningCount() == 0 ?
+                new TextComponent("<!> ")
+                        .append(new TranslatableComponent(UL_NO_WARNINGS))
+                        .withStyle(UNIFORM_GRAY) :
+                new TextComponent("<!> ")
+                        .withStyle(ICWorkbenchEditor.UNIFORM_YELLOW)
+                        .append(new TranslatableComponent(UL_UNIT_WARNINGS, log.getWarningCount())
+                                .withStyle(UNIFORM_GRAY));
+
+        tooltip.add(errorText);
+        tooltip.add(warningText);
+    }
     //endregion
 
     public class CompileButton extends AbstractButtonNode {
@@ -243,6 +304,39 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
                     getFrame().x() + (getFrame().width() - width) / 2,
                     getFrame().y() + (getFrame().height() - height) / 2, u, v,
                     width, height, 512, 512);
+        }
+
+        @Override
+        protected void buildTooltip(List<Component> tooltip) {
+            tooltip.add(new TranslatableComponent(UL_COMPILE));
+            if (editor.getStateMachine().canTriggerCompile()) {
+                tooltip.add(new TranslatableComponent(UL_COMPILE_READY).withStyle(UNIFORM_GRAY));
+            }
+        }
+    }
+
+    private class ProblemsTab extends SimpleUVTab {
+
+        public ProblemsTab(AbstractGuiNode tabBodyNode, String unlocalTabName, TabButtonNode.TabSide side, int u, int v, ResourceLocation texture) {
+            super(tabBodyNode, unlocalTabName, side, u, v, texture);
+        }
+
+        @Override
+        protected StatusDot getStatusDot() {
+            if (editor.getStateMachine().getCompilerLog().getErrorCount() > 0) {
+                return StatusDot.RED;
+            } else if (editor.getStateMachine().getCompilerLog().getWarningCount() > 0) {
+                return StatusDot.YELLOW;
+            } else {
+                return StatusDot.NONE;
+            }
+        }
+
+        @Override
+        protected void buildTooltip(List<Component> tooltip) {
+            super.buildTooltip(tooltip);
+            ICCompilerLog log = editor.getStateMachine().getCompilerLog();
+            appendProblemsInfo(log, tooltip);
         }
     }
 }

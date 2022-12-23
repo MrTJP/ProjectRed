@@ -1,4 +1,4 @@
-package mrtjp.projectred.fabrication.engine;
+package mrtjp.projectred.fabrication.engine.log;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
@@ -12,33 +12,57 @@ import net.minecraft.nbt.Tag;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static mrtjp.projectred.fabrication.editor.ICEditorStateMachine.KEY_COMPILER_LOG_NODE_ADDED;
-import static mrtjp.projectred.fabrication.editor.ICEditorStateMachine.KEY_COMPILER_LOG_NODE_EXECUTED;
+import static mrtjp.projectred.fabrication.editor.EditorDataUtils.*;
+import static mrtjp.projectred.fabrication.editor.ICEditorStateMachine.*;
 
 public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
 
     private final ICEditorStateMachine stateMachine;
 
+    // Compile steps tracking
     private final CompileTree compileTree = new CompileTree();
-
     private final List<Integer> currentPath = new LinkedList<>();
     private int completedSteps = 0; //TODO ideally this would be a feature in the compile tree object
+
+    // Compile problems
+    private final List<CompileProblem> problems = new ArrayList<>();
+    private int warningCount = 0;
+    private int errorCount = 0;
 
     public ICCompilerLog(ICEditorStateMachine stateMachine) {
         this.stateMachine = stateMachine;
     }
 
     public void save(CompoundTag tag) {
-        tag.putInt("completed_steps", completedSteps);
-        tag.putIntArray("current_path", currentPath);
+        tag.putInt(KEY_COMPLETED_STEPS, completedSteps);
+        tag.putIntArray(KEY_CURRENT_PATH, currentPath);
         compileTree.save(tag);
+
+        ListTag list = new ListTag();
+        for (CompileProblem problem : problems) {
+            CompoundTag problemTag = new CompoundTag();
+            problemTag.putByte("_type", (byte) problem.type.getID());
+            problem.save(problemTag);
+            list.add(problemTag);
+        }
+        tag.put(KEY_PROBLEMS_LIST, list);
+        tag.putInt(KEY_WARNING_COUNT, warningCount);
+        tag.putInt(KEY_ERROR_COUNT, errorCount);
     }
 
     public void load(CompoundTag tag) {
-        completedSteps = tag.getInt("completed_steps");
+        completedSteps = tag.getInt(KEY_COMPLETED_STEPS);
         currentPath.clear();
-        currentPath.addAll(Arrays.stream(tag.getIntArray("current_path")).boxed().collect(Collectors.toList()));
+        currentPath.addAll(Arrays.stream(tag.getIntArray(KEY_CURRENT_PATH)).boxed().toList());
         compileTree.load(tag);
+
+        ListTag list = tag.getList(KEY_PROBLEMS_LIST, 10);
+        for (int i = 0; i < list.size(); i++) {
+            CompoundTag problemTag = list.getCompound(i);
+            CompileProblem problem = CompileProblemType.createById(problemTag.getByte("_type") & 0xFF);
+            problem.load(problemTag);
+            addProblemInternal(problem);
+        }
     }
 
     public void writeDesc(MCDataOutput out) {
@@ -46,20 +70,56 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
         out.writeInt(completedSteps);
         out.writeInt(currentPath.size());
         for (int i : currentPath) out.writeInt(i);
+
+        out.writeVarInt(problems.size());
+        for (CompileProblem problem : problems) {
+            out.writeByte(problem.type.getID());
+            problem.writeDesc(out);
+        }
     }
 
     public void readDesc(MCDataInput in) {
+        clear();
         compileTree.readDesc(in);
         completedSteps = in.readInt();
-        currentPath.clear();
         int size = in.readInt();
         for (int i = 0; i < size; i++) currentPath.add(in.readInt());
+
+        size = in.readVarInt();
+        for (int i = 0; i < size; i++) {
+            CompileProblem problem = CompileProblemType.createById(in.readUByte());
+            problem.readDesc(in);
+            addProblemInternal(problem);
+        }
     }
 
     public void clear() {
         compileTree.clear();
         currentPath.clear();
         completedSteps = 0;
+        problems.clear();
+        warningCount = 0;
+        errorCount = 0;
+    }
+
+    public int getTotalSteps() {
+        return compileTree.size();
+    }
+
+    public int getCompletedSteps() {
+        return completedSteps;
+    }
+
+    public List<CompileProblem> getProblems() {
+        return problems;
+    }
+
+    public int getErrorCount() {
+        return errorCount;
+    }
+
+    public int getWarningCount() {
+        return warningCount;
     }
 
     //region ICStepThroughAssembler.EventReceiver
@@ -87,14 +147,32 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
     }
     //endregion
 
+    //region Compile-time logging
+    public void clearAndSend() {
+        clear();
+        sendClear();
+    }
+
+    public void addProblem(CompileProblem problem) {
+        addProblemInternal(problem);
+        sendProblemAdded(problem);
+    }
+    //endregion
+
     //region Packet handling
     public void readLogStream(MCDataInput in, int key) {
         switch (key) {
+            case KEY_COMPILER_LOG_CLEARED:
+                clear();
+                break;
             case KEY_COMPILER_LOG_NODE_ADDED:
                 readNodeAdded(in);
                 break;
             case KEY_COMPILER_LOG_NODE_EXECUTED:
                 readNodeExecuted(in);
+                break;
+            case KEY_COMPILER_LOG_PROBLEM_ADDED:
+                readProblemAdded(in);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown compiler stream key: " + key);
@@ -103,6 +181,10 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
     //endregion
 
     //region Server-side utilities
+    private void sendClear() {
+        stateMachine.getStateMachineStream(KEY_COMPILER_LOG_CLEARED);
+    }
+
     private void sendNodeAdded(CompileTreeNode node, List<Integer> treePath) {
         MCDataOutput out = stateMachine.getStateMachineStream(KEY_COMPILER_LOG_NODE_ADDED);
         out.writeByte(treePath.size());
@@ -119,6 +201,20 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
             out.writeByte(i);
         }
         node.write(out);
+    }
+
+    private void sendProblemAdded(CompileProblem problem) {
+        MCDataOutput out = stateMachine.getStateMachineStream(KEY_COMPILER_LOG_PROBLEM_ADDED);
+        out.writeByte(problem.type.ordinal());
+        problem.writeDesc(out);
+    }
+
+    private void addProblemInternal(CompileProblem problem) {
+        problems.add(problem);
+        switch (problem.severity) {
+            case WARNING -> warningCount++;
+            case ERROR -> errorCount++;
+        }
     }
     //endregion
 
@@ -145,6 +241,12 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
         currentPath.clear();
         currentPath.addAll(path);
         completedSteps++;
+    }
+
+    private void readProblemAdded(MCDataInput in) {
+        CompileProblem problem = CompileProblemType.createById(in.readUByte());
+        problem.readDesc(in);
+        addProblemInternal(problem);
     }
 
     public List<CompileTreeNode> getCurrentStack() {
