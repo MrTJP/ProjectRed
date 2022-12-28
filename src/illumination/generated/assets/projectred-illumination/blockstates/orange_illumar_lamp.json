@@ -1,7 +1,7 @@
 {
   "variants": {
     "lit=false": {
-      "model": "projectred-illumination:block/orange_illumar_lamp_off"
+      "model": "projectred-illumination:block/orange_illumar_lamp"
     },
     "lit=true": {
       "model": "projectred-illumination:block/orange_illumar_lamp_on"

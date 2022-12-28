@@ -2,10 +2,8 @@ package mrtjp.projectred.core
 
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.render.{BlockRenderer, CCRenderState}
-import codechicken.lib.util.SneakyUtils
 import codechicken.lib.vec._
 import com.mojang.blaze3d.matrix.MatrixStack
-import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderState, RenderType}
@@ -19,11 +17,10 @@ object RenderHalo
     val RenderTypeLamp:RenderType = RenderType.create("pr:lamp",
         DefaultVertexFormats.POSITION_COLOR, 7, 8192, false, true,
         RenderType.State.builder().setTransparencyState(RenderState.LIGHTNING_TRANSPARENCY)
-                .setTextureState(RenderState.NO_TEXTURE)
-                .setTexturingState(new RenderState.TexturingState("disable_lighting", () => RenderSystem.disableLighting(), SneakyUtils.none))
-                .setCullState(RenderState.NO_CULL)
-//                .writeMask(RenderState.DEPTH_WRITE)
-                .createCompositeState(false))
+            .setTextureState(RenderState.NO_TEXTURE)
+            .setCullState(RenderState.CULL)
+            .setOutputState(RenderState.TRANSLUCENT_TARGET)
+            .createCompositeState(false))
 
     private var renderList = Vector[LightCache]()
     private val renderEntityPos = new Vector3
