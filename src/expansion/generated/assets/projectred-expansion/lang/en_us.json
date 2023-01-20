@@ -1,0 +1,12 @@
+{
+  "block.projectred-expansion.auto_crafter": "Auto Crafter",
+  "block.projectred-expansion.battery_box": "Battery Box",
+  "block.projectred-expansion.charging_bench": "Charging Bench",
+  "block.projectred-expansion.fire_starter": "Fire Starter",
+  "block.projectred-expansion.project_bench": "Project Bench",
+  "item.projectred-expansion.battery": "Battery",
+  "item.projectred-expansion.empty_battery": "Empty Battery",
+  "item.projectred-expansion.recipe_plan": "Recipe Plan",
+  "projectred-expansion.tooltip.charge_level": "Stored power",
+  "projectred-expansion.tooltip.plan_result": "Result"
+}

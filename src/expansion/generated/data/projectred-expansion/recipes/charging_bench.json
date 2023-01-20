@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred-expansion:charging_bench"
+  },
+  "pattern": [
+    "SCS",
+    "WBW",
+    "IEI"
+  ],
+  "key": {
+    "B": {
+      "item": "projectred-expansion:battery"
+    },
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "C": {
+      "item": "projectred-core:copper_coil"
+    },
+    "E": {
+      "tag": "forge:ingots/electrotine_alloy"
+    },
+    "S": {
+      "tag": "forge:stone"
+    },
+    "W": {
+      "tag": "minecraft:planks"
+    }
+  }
+}

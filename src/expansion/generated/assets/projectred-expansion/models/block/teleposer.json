@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/cube_bottom_top",
-  "textures": {
-    "side": "projectred-expansion:block/teleposer_side_0",
-    "bottom": "projectred-expansion:block/teleposer_bottom",
-    "top": "projectred-expansion:block/teleposer_top_0"
-  }
-}

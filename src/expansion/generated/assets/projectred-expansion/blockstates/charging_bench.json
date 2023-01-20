@@ -4,7 +4,7 @@
       "model": "projectred-expansion:block/charging_bench"
     },
     "charged=true": {
-      "model": "projectred-expansion:block/charging_bench_charged"
+      "model": "projectred-expansion:block/charging_bench_state1"
     }
   }
 }
