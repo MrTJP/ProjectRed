@@ -3,10 +3,10 @@
   "textures": {
     "down": "projectred-expansion:block/project_bench_bottom",
     "up": "projectred-expansion:block/project_bench_top",
-    "north": "projectred-expansion:block/project_bench_side_0",
-    "south": "projectred-expansion:block/project_bench_side_0",
-    "east": "projectred-expansion:block/project_bench_side_1",
-    "west": "projectred-expansion:block/project_bench_side_1",
-    "particle": "projectred-expansion:block/project_bench_side_0"
+    "north": "projectred-expansion:block/project_bench_front_back",
+    "south": "projectred-expansion:block/project_bench_front_back",
+    "east": "projectred-expansion:block/project_bench_left_right",
+    "west": "projectred-expansion:block/project_bench_left_right",
+    "particle": "projectred-expansion:block/project_bench_front_back"
   }
 }

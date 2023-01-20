@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "side": "projectred-expansion:block/auto_crafter_side",
+    "front": "projectred-expansion:block/auto_crafter_front_0",
+    "bottom": "projectred-expansion:block/auto_crafter_bottom",
+    "top": "projectred-expansion:block/auto_crafter_top"
+  }
+}
