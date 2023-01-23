@@ -4,6 +4,8 @@ import mrtjp.projectred.core.tile.IBlockEventTile;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -26,6 +28,10 @@ public abstract class ProjectRedBlock extends Block {
     public static final IntegerProperty ROTATION = IntegerProperty.create("rotation", 0, 3);
     public static final BooleanProperty CHARGED = BooleanProperty.create("charged");
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
+    public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
+
+    public static final AbstractBlock.Properties WOODEN_PROPERTIES = AbstractBlock.Properties.of(Material.WOOD).strength(2.0F, 3.0F).sound(SoundType.WOOD);
+    public static final AbstractBlock.Properties STONE_PROPERTIES = AbstractBlock.Properties.of(Material.STONE).requiresCorrectToolForDrops().strength(3.0F, 3.0F).sound(SoundType.STONE);
 
     public ProjectRedBlock(AbstractBlock.Properties properties) {
         super(properties);

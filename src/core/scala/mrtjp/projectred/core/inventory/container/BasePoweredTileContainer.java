@@ -94,11 +94,20 @@ public class BasePoweredTileContainer extends Container {
     }
 
     protected void addInventory(IInventory inventory, int i, int x, int y, int columns, int rows) {
+        addInventory(inventory, i, x, y, columns, rows, Slot::new);
+    }
+
+    protected void addInventory(IInventory inventory, int i, int x, int y, int columns, int rows, SlotFactory slotFactory) {
         for (int c = 0; c < columns; c++) {
             for (int r = 0; r < rows; r++) {
-                addSlot(new Slot(inventory, i + (r * columns + c), x + c * 18, y + r * 18));
+                addSlot(slotFactory.createSlot(inventory, i + (r * columns + c), x + c * 18, y + r * 18));
             }
         }
+    }
+
+    @FunctionalInterface
+    protected interface SlotFactory {
+        Slot createSlot(IInventory inventory, int index, int x, int y);
     }
     //endregion
 }

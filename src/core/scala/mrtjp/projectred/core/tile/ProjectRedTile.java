@@ -1,7 +1,11 @@
 package mrtjp.projectred.core.tile;
 
 import codechicken.lib.data.MCDataByteBuf;
+import codechicken.lib.vec.Vector3;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -15,20 +19,20 @@ public abstract class ProjectRedTile extends TileEntity implements IBlockEventTi
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
+    public final CompoundNBT save(CompoundNBT tag) {
         super.save(tag);
         saveToNBT(tag);
         return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
+    public final void load(BlockState state, CompoundNBT tag) {
         super.load(state, tag);
         loadFromNBT(tag);
     }
 
     @Override
-    public CompoundNBT getUpdateTag() {
+    public final CompoundNBT getUpdateTag() {
         CompoundNBT tag = super.getUpdateTag();
         MCDataByteBuf out = new MCDataByteBuf();
         writeDesc(out);
@@ -37,7 +41,7 @@ public abstract class ProjectRedTile extends TileEntity implements IBlockEventTi
     }
 
     @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
+    public final void handleUpdateTag(BlockState state, CompoundNBT tag) {
         super.handleUpdateTag(state, tag);
         MCDataByteBuf in = MCDataByteBuf.readFromNBT(tag, "descpkt");
         readDesc(in);
@@ -61,5 +65,22 @@ public abstract class ProjectRedTile extends TileEntity implements IBlockEventTi
     @Override
     public BlockPos getBlockPosition() {
         return getBlockPos();
+    }
+
+    public static void dropItem(ItemStack stack, World world, Vector3 pos) {
+        ItemEntity item = new ItemEntity(world, pos.x, pos.y, pos.z, stack);
+        item.setDeltaMovement(world.random.nextGaussian() * 0.05, world.random.nextGaussian() * 0.05 + 0.2, world.random.nextGaussian() * 0.05);
+        item.setPickUpDelay(10);
+        world.addFreshEntity(item);
+    }
+
+    public static void dropInventory(IInventory inventory, World world, Vector3 pos) {
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            ItemStack stack = inventory.getItem(i);
+            if (!stack.isEmpty()) {
+                dropItem(stack, world, pos);
+                inventory.setItem(i, ItemStack.EMPTY);
+            }
+        }
     }
 }
