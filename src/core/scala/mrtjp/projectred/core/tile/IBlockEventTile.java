@@ -42,6 +42,8 @@ public interface IBlockEventTile {
 
     default int getLightValue() { return 0; }
 
+    default boolean isFireSource(int side) { return false; }
+
 //    default List<ItemStack> getDrops() { return Collections.emptyList(); }
 //    ItemStack getPickBlock();
 
