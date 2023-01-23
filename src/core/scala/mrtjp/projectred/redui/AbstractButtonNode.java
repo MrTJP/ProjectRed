@@ -21,7 +21,9 @@ public abstract class AbstractButtonNode extends AbstractGuiNode {
 
     protected abstract void onButtonClicked();
 
-    protected abstract boolean isButtonDisabled();
+    protected boolean isButtonDisabled() {
+        return false;
+    }
 
     protected void buildTooltip(List<ITextProperties> tooltip) {
     }

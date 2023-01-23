@@ -91,7 +91,9 @@ public class RedUIContainerScreen<T extends Container> extends ContainerScreen<T
     @Override
     public boolean mouseClicked(double x, double y, int glfwMouseButton) {
         lastClickTime = System.currentTimeMillis();
-        boolean consumed = super.mouseClicked(x, y, glfwMouseButton);
+//        boolean consumed = super.mouseClicked(x, y, glfwMouseButton); //TODO Check consumption somehow. This always returns true
+        super.mouseClicked(x, y, glfwMouseButton);
+        boolean consumed = false;
         return operateOnZOrderedSubtree(new Point((int) x, (int) y), (n, p, c) -> n.mouseClicked(p, glfwMouseButton, c), consumed);
     }
 
