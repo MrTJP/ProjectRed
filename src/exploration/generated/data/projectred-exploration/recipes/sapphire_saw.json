@@ -1,8 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "result": {
-    "item": "projectred-exploration:sapphire_saw",
-    "nbt": "{Damage:0}"
+    "item": "projectred-exploration:sapphire_saw"
   },
   "pattern": [
     "SRR",

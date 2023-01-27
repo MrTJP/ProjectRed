@@ -4,7 +4,7 @@
     "item": "projectred-core:electrotine_dust"
   },
   "ingredient": {
-    "tag": "forge:ores/electrotine"
+    "item": "projectred-exploration:electrotine_ore"
   },
   "experience": 0.7,
   "cookingtime": 200

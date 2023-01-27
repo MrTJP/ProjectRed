@@ -4,7 +4,7 @@
     "item": "projectred-core:peridot"
   },
   "ingredient": {
-    "tag": "forge:ores/peridot"
+    "item": "projectred-exploration:peridot_ore"
   },
   "experience": 1.0,
   "cookingtime": 200

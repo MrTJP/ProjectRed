@@ -1,8 +1,6 @@
 {
   "replace": false,
   "values": [
-    "#forge:stone/marble",
-    "#forge:stone/basalt",
     "#forge:storage_blocks/ruby",
     "#forge:storage_blocks/sapphire",
     "#forge:storage_blocks/peridot",
