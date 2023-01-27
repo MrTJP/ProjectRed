@@ -1,8 +1,12 @@
 package mrtjp.projectred.lib;
 
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+
+import java.util.function.Consumer;
 
 public class InventoryLib {
 
@@ -65,5 +69,44 @@ public class InventoryLib {
 
     public static boolean areStackable(ItemStack a, ItemStack b) {
         return ItemStack.isSame(a, b) && ItemStack.tagMatches(a, b) && a.getMaxStackSize() > 1 && b.getMaxStackSize() > 1;
+    }
+
+    public static void addPlayerInventory(PlayerInventory playerInventory, int x, int y, Consumer<Slot> slotConsumer) {
+        addInventory(playerInventory, 9, x, y, 9, 3, slotConsumer); // Inventory (0 - 26)
+        addInventory(playerInventory, 0, x, y + 58, 9, 1, slotConsumer); // Hotbar slots (27 - 35)
+    }
+
+    public static void addPlayerInventory(PlayerInventory playerInventory, int x, int y, SlotFactory slotFactory, Consumer<Slot> slotConsumer) {
+        addInventory(playerInventory, 9, x, y, 9, 3, slotFactory, slotConsumer); // Inventory (0 - 26)
+        addInventory(playerInventory, 0, x, y + 58, 9, 1, slotFactory, slotConsumer); // Hotbar slots (27 - 35)
+    }
+
+    public static void addInventory(IInventory inventory, int i, int x, int y, int columns, int rows, Consumer<Slot> slotConsumer) {
+        addInventory(inventory, i, x, y, columns, rows, Slot::new, slotConsumer);
+    }
+
+    /**
+     * Creates a grid of slots for a container with standard spacing.
+     *
+     * @param inventory The inventory backing the slots
+     * @param i Inventory index of the first slot
+     * @param x X position of the top left slot
+     * @param y Y position of the top left slot
+     * @param columns Number of columns in the grid
+     * @param rows Number of rows in the grid
+     * @param slotFactory Factory for creating the slots
+     * @param slotConsumer Consumer for the slots (typically Container.addSlot(...))
+     */
+    public static void addInventory(IInventory inventory, int i, int x, int y, int columns, int rows, SlotFactory slotFactory, Consumer<Slot> slotConsumer) {
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
+                slotConsumer.accept(slotFactory.createSlot(inventory, i + (r * columns + c), x + c * 18, y + r * 18));
+            }
+        }
+    }
+
+    @FunctionalInterface
+    public interface SlotFactory {
+        Slot createSlot(IInventory inventory, int index, int x, int y);
     }
 }
