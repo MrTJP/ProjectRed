@@ -10,7 +10,7 @@
   ],
   "key": {
     "S": {
-      "item": "projectred-exploration:electrotine_block"
+      "tag": "forge:storage_blocks/electrotine"
     }
   }
 }

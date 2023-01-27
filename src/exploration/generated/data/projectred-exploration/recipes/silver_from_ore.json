@@ -4,8 +4,8 @@
     "item": "projectred-core:silver_ingot"
   },
   "ingredient": {
-    "tag": "forge:ores/silver"
+    "item": "projectred-exploration:silver_ore"
   },
-  "experience": 0.8,
+  "experience": 0.7,
   "cookingtime": 200
 }

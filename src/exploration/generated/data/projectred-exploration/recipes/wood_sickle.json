@@ -11,7 +11,7 @@
   ],
   "key": {
     "M": {
-      "tag": "minecraft:planks"
+      "tag": "forge:rods/wooden"
     },
     "S": {
       "tag": "forge:rods/wooden"

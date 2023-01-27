@@ -1,8 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "result": {
-    "item": "projectred-exploration:peridot_saw",
-    "nbt": "{Damage:0}"
+    "item": "projectred-exploration:peridot_saw"
   },
   "pattern": [
     "SRR",

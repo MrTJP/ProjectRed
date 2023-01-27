@@ -10,7 +10,7 @@
   ],
   "key": {
     "S": {
-      "item": "projectred-exploration:peridot_block"
+      "tag": "forge:storage_blocks/peridot"
     }
   }
 }

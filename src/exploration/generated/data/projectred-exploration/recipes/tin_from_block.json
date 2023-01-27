@@ -6,7 +6,7 @@
   },
   "ingredients": [
     {
-      "tag": "forge:storage_blocks/tin"
+      "tag": "forge:ores/tin"
     }
   ]
 }

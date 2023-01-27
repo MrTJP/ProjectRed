@@ -1,5 +1,5 @@
-modLoader="scorge"
-loaderVersion="[3.1,)"
+modLoader="javafml"
+loaderVersion="[28,)"
 issueTrackerURL="https://github.com/MrTJP/ProjectRed"
 license="RPSL"
 
@@ -25,7 +25,7 @@ Redstone. The way it was meant to be.
     modId="minecraft"
     mandatory=true
     versionRange="[1.16.5]"
-    ordering="NONE"
+    ordering="AFTER"
     side="BOTH"
 [[dependencies.projectred-exploration]]
     modId="codechickenlib"

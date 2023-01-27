@@ -1,8 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "result": {
-    "item": "projectred-exploration:ruby_saw",
-    "nbt": "{Damage:0}"
+    "item": "projectred-exploration:ruby_saw"
   },
   "pattern": [
     "SRR",

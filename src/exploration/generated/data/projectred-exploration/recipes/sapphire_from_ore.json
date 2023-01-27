@@ -4,7 +4,7 @@
     "item": "projectred-core:sapphire"
   },
   "ingredient": {
-    "tag": "forge:ores/sapphire"
+    "item": "projectred-exploration:sapphire_ore"
   },
   "experience": 1.0,
   "cookingtime": 200

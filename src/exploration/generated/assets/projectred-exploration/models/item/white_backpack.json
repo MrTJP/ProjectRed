@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "projectred-exploration:item/backpack/white_backpack"
+    "layer0": "projectred-exploration:item/white_backpack"
   }
 }

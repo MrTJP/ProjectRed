@@ -4,7 +4,7 @@
     "item": "projectred-core:ruby"
   },
   "ingredient": {
-    "tag": "forge:ores/ruby"
+    "item": "projectred-exploration:ruby_ore"
   },
   "experience": 1.0,
   "cookingtime": 200

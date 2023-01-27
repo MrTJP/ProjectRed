@@ -5,9 +5,9 @@
     "nbt": "{Damage:0}"
   },
   "pattern": [
-    "MM ",
-    " S ",
-    " S "
+    "MM",
+    " S",
+    " S"
   ],
   "key": {
     "M": {

@@ -10,7 +10,7 @@
   ],
   "key": {
     "S": {
-      "item": "projectred-exploration:copper_block"
+      "tag": "forge:storage_blocks/copper"
     }
   }
 }

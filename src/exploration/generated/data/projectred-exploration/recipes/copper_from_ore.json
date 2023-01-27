@@ -4,7 +4,7 @@
     "item": "projectred-core:copper_ingot"
   },
   "ingredient": {
-    "tag": "forge:ores/copper"
+    "item": "projectred-exploration:copper_ore"
   },
   "experience": 0.7,
   "cookingtime": 200
