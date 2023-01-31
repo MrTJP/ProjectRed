@@ -101,7 +101,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .patternLine("SSS");
 
         shapelessRecipe(itemPeridot().get(), 9, new ResourceLocation(MOD_ID, "peridot_from_block"))
-                .addIngredient(tagGemsPeridot());
+                .addIngredient(PERIDOT_STORAGE_BLOCK_ITEM_TAG);
 
         shapedRecipe(COPPER_BLOCK)
                 .key('S', tagIngotsCopper())

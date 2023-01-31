@@ -6,7 +6,7 @@
   },
   "ingredients": [
     {
-      "tag": "forge:gems/peridot"
+      "tag": "forge:storage_blocks/peridot"
     }
   ]
 }
