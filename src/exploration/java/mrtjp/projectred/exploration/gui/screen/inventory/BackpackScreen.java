@@ -16,11 +16,10 @@ public class BackpackScreen extends RedUIContainerScreen<BackpackContainer> {
     public static final ResourceLocation BACKGROUND = new ResourceLocation(MOD_ID, "textures/gui/backpack.png");
 
     public BackpackScreen(BackpackContainer container, PlayerInventory playerInventory, ITextComponent title) {
-        super(176, 68, container, playerInventory, title);
+        super(176, 168, container, playerInventory, title);
 
         inventoryLabelX = 8;
         inventoryLabelY = 75;
-
     }
 
     @Override
