@@ -1,5 +1,6 @@
 package mrtjp.projectred.exploration.init;
 
+import mrtjp.projectred.exploration.block.ElectrotineOreBlock;
 import mrtjp.projectred.exploration.block.OreBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -62,7 +63,7 @@ public class ExplorationBlocks {
         BLOCKS.register(ID_COPPER_ORE,      () -> new OreBlock(1, 0, 0));
         BLOCKS.register(ID_TIN_ORE,         () -> new OreBlock(1, 0, 0));
         BLOCKS.register(ID_SILVER_ORE,      () -> new OreBlock(2, 0, 0));
-        BLOCKS.register(ID_ELECTROTINE_ORE, () -> new OreBlock(2, 1, 5));
+        BLOCKS.register(ID_ELECTROTINE_ORE, () -> new ElectrotineOreBlock(2, 1, 5));
 
         // Decorative blocks
         RegistryObject<Block> marbleBlock       = BLOCKS.register(ID_MARBLE,          () -> createDecorativeStoneBlock(2, 1F, 14F));
