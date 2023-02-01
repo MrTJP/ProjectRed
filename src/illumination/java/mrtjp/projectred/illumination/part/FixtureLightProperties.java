@@ -9,6 +9,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Map;
 
@@ -39,11 +41,13 @@ public class FixtureLightProperties extends MultipartLightProperties {
 
     //region Rendering
     @Override
+    @OnlyIn(Dist.CLIENT)
     public void registerIcons(AtlasRegistrar registrar) {
         registrar.registerSprite(new ResourceLocation(MOD_ID, "block/fixture"), i -> icon = i);
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public TextureAtlasSprite getIcon(int color) {
         return icon;
     }

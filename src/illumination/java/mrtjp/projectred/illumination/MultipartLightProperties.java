@@ -28,6 +28,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,10 +55,12 @@ public abstract class MultipartLightProperties {
     //endregion
 
     //region Client Registration
+    @OnlyIn(Dist.CLIENT)
     public abstract void registerIcons(AtlasRegistrar registrar);
     //endregion
 
     //region Rendering
+    @OnlyIn(Dist.CLIENT)
     public abstract TextureAtlasSprite getIcon(int color);
     public abstract CCModel getBulbModel(int side);
     public abstract CCModel getChasisModel(int side);
@@ -71,6 +75,7 @@ public abstract class MultipartLightProperties {
         return getGlowBounds(0);
     }
 
+    @OnlyIn(Dist.CLIENT)
     public void render(MultipartLightPart part, Vector3 pos, CCRenderState ccrs) {
         IconTransformation icon = new IconTransformation(getIcon(part.getColor()));
         Translation t = pos.translation();
@@ -78,6 +83,7 @@ public abstract class MultipartLightProperties {
         getBulbModel(part.getSide()).render(ccrs, t, icon, getColourMultiplier(part.getColor(), part.isLightOn()));
     }
 
+    @OnlyIn(Dist.CLIENT)
     public void renderInventory(int colour, boolean inverted, Vector3 pos, CCRenderState ccrs) {
         IconTransformation icon = new IconTransformation(getIcon(colour));
         Translation t = pos.translation();
@@ -94,6 +100,7 @@ public abstract class MultipartLightProperties {
         return new ColourMultiplier(c.rgba());
     }
 
+    @OnlyIn(Dist.CLIENT)
     public IItemRenderer getItemRenderer() {
         return new IItemRenderer() {
             @Override
