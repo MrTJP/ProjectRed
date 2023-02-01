@@ -4,6 +4,7 @@ import codechicken.lib.inventory.container.ICCLContainerFactory;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.expansion.tile.ProjectBenchTile;
+import mrtjp.projectred.lib.InventoryLib;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
@@ -29,17 +30,17 @@ public class ProjectBenchContainer extends Container {
         this.playerInventory = playerInventory;
         this.tile = tile;
 
-        addPlayerInventory(playerInventory, 8, 126);
+        InventoryLib.addPlayerInventory(playerInventory, 8, 126, this::addSlot);
         addProjectBenchInventory();
     }
 
     private void addProjectBenchInventory() {
 
         // Storage slots
-        addInventory(tile.getStorageInventory(), 0, 8, 76, 9, 2);
+        InventoryLib.addInventory(tile.getStorageInventory(), 0, 8, 76, 9, 2, this::addSlot);
 
         // Crafting grid
-        addInventory(tile.getCraftingGridInventory(), 0, 48, 18, 3, 3);
+        InventoryLib.addInventory(tile.getCraftingGridInventory(), 0, 48, 18, 3, 3, this::addSlot);
 
         // Result slot
         addSlot(new ProjectBenchCraftingSlot(143, 36));
