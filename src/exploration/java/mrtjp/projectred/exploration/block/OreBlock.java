@@ -18,15 +18,19 @@ public class OreBlock extends Block {
     private final int minExp;
     private final int maxExp;
 
+    public OreBlock(AbstractBlock.Properties properties, int harvestLevel, int minExp, int maxExp) {
+        super(properties);
+        this.minExp = minExp;
+        this.maxExp = maxExp;
+    }
+
     public OreBlock(int harvestLevel, int minExp, int maxExp) {
-        super(AbstractBlock.Properties.of(Material.STONE)
-                .strength(4.0F, 5.0F)
+        this(AbstractBlock.Properties.of(Material.STONE)
+                .strength(3.0F, 3.0F)
                 .harvestLevel(harvestLevel)
                 .requiresCorrectToolForDrops()
                 .harvestTool(ToolType.PICKAXE)
-                .sound(SoundType.STONE));
-        this.minExp = minExp;
-        this.maxExp = maxExp;
+                .sound(SoundType.STONE), harvestLevel, minExp, maxExp);
     }
 
     @Override
