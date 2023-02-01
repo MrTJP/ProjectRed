@@ -98,8 +98,8 @@ public class InventoryLib {
      * @param slotConsumer Consumer for the slots (typically Container.addSlot(...))
      */
     public static void addInventory(IInventory inventory, int i, int x, int y, int columns, int rows, SlotFactory slotFactory, Consumer<Slot> slotConsumer) {
-        for (int c = 0; c < columns; c++) {
-            for (int r = 0; r < rows; r++) {
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < columns; c++) {
                 slotConsumer.accept(slotFactory.createSlot(inventory, i + (r * columns + c), x + c * 18, y + r * 18));
             }
         }

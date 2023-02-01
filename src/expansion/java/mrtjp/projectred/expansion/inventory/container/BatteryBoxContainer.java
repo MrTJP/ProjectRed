@@ -6,6 +6,7 @@ import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.item.IChargable;
 import mrtjp.projectred.expansion.item.IRechargableBattery;
 import mrtjp.projectred.expansion.tile.BatteryBoxTile;
+import mrtjp.projectred.lib.InventoryLib;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
@@ -33,7 +34,7 @@ public class BatteryBoxContainer extends BasePoweredTileContainer {
         this.playerInventory = inventory;
         this.tile = tile;
 
-        addPlayerInventory(inventory, 8, 89);
+        InventoryLib.addPlayerInventory(inventory, 8, 89, this::addSlot);
         addBatteryBoxInventory();
     }
 

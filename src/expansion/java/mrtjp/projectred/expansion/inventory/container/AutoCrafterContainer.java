@@ -4,9 +4,11 @@ import codechicken.lib.inventory.container.ICCLContainerFactory;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.expansion.tile.AutoCrafterTile;
+import mrtjp.projectred.lib.InventoryLib;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.IContainerListener;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
@@ -30,17 +32,17 @@ public class AutoCrafterContainer extends BaseMachineContainer {
         this.playerInventory = inventory;
         this.tile = tile;
 
-        addPlayerInventory(inventory, 8, 130);
+        InventoryLib.addPlayerInventory(inventory, 8, 130, this::addSlot);
         addAutoCrafterInventory();
     }
 
     private void addAutoCrafterInventory() {
 
         // Storage slot
-        addInventory(tile.getStorageInventory(), 0, 8, 80, 9, 2);
+        InventoryLib.addInventory(tile.getStorageInventory(), 0, 8, 80, 9, 2, this::addSlot);
 
         // Plan grid
-        addInventory(tile.getPlanInventory(), 0, 44, 22, 3, 3, PlanSlot::new);
+        InventoryLib.addInventory(tile.getPlanInventory(), 0, 44, 22, 3, 3, PlanSlot::new, this::addSlot);
     }
 
     public AutoCrafterTile getAutoCrafterTile() {

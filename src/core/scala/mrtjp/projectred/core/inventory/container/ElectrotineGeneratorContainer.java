@@ -3,7 +3,9 @@ package mrtjp.projectred.core.inventory.container;
 import codechicken.lib.inventory.container.ICCLContainerFactory;
 import mrtjp.projectred.core.CoreContent;
 import mrtjp.projectred.core.tile.ElectrotineGeneratorTile;
+import mrtjp.projectred.lib.InventoryLib;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.IContainerListener;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
@@ -30,7 +32,7 @@ public class ElectrotineGeneratorContainer extends BasePoweredTileContainer {
         this.playerInventory = playerInventory;
         this.tile = tile;
 
-        addPlayerInventory(playerInventory, 8, 89);
+        InventoryLib.addPlayerInventory(playerInventory, 8, 89, this::addSlot);
         addElectrotineGeneratorInventory();
     }
 

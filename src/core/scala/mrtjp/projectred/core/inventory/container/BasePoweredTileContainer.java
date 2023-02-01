@@ -86,28 +86,4 @@ public class BasePoweredTileContainer extends Container {
     public boolean isFlowFull() {
         return condFlow == -1; // TODO same as above
     }
-
-    //region Utils
-    protected void addPlayerInventory(PlayerInventory playerInventory, int x, int y) {
-        addInventory(playerInventory, 9, x, y, 9, 3); // Inventory (0 - 26)
-        addInventory(playerInventory, 0, x, y + 58, 9, 1); // Hotbar slots (27 - 35)
-    }
-
-    protected void addInventory(IInventory inventory, int i, int x, int y, int columns, int rows) {
-        addInventory(inventory, i, x, y, columns, rows, Slot::new);
-    }
-
-    protected void addInventory(IInventory inventory, int i, int x, int y, int columns, int rows, SlotFactory slotFactory) {
-        for (int c = 0; c < columns; c++) {
-            for (int r = 0; r < rows; r++) {
-                addSlot(slotFactory.createSlot(inventory, i + (r * columns + c), x + c * 18, y + r * 18));
-            }
-        }
-    }
-
-    @FunctionalInterface
-    protected interface SlotFactory {
-        Slot createSlot(IInventory inventory, int index, int x, int y);
-    }
-    //endregion
 }

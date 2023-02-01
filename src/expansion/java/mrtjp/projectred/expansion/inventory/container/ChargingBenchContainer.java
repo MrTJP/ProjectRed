@@ -5,6 +5,7 @@ import mrtjp.projectred.core.inventory.container.BasePoweredTileContainer;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.item.IChargable;
 import mrtjp.projectred.expansion.tile.ChargingBenchTile;
+import mrtjp.projectred.lib.InventoryLib;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
@@ -32,13 +33,13 @@ public class ChargingBenchContainer extends BasePoweredTileContainer {
         this.playerInventory = inventory;
         this.tile = tile;
 
-        addPlayerInventory(inventory, 8, 101);
+        InventoryLib.addPlayerInventory(inventory, 8, 101, this::addSlot);
         addChargingBenchInventory();
     }
 
     private void addChargingBenchInventory() {
-        addInventory(tile.getInventory(), 0, 88, 17, 4, 2, ChargeableItemSlot::new);
-        addInventory(tile.getInventory(), 8, 88, 57, 4, 2, ChargeableItemSlot::new);
+        InventoryLib.addInventory(tile.getInventory(), 0, 88, 17, 4, 2, ChargeableItemSlot::new, this::addSlot);
+        InventoryLib.addInventory(tile.getInventory(), 8, 88, 57, 4, 2, ChargeableItemSlot::new, this::addSlot);
     }
 
     @Override
