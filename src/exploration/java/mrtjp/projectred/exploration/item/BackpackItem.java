@@ -3,6 +3,7 @@ package mrtjp.projectred.exploration.item;
 import codechicken.lib.util.ServerUtils;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.inventory.BaseInventory;
+import mrtjp.projectred.exploration.init.ExplorationTags;
 import mrtjp.projectred.exploration.inventory.container.BackpackContainer;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,6 +18,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -58,12 +62,13 @@ public class BackpackItem extends Item {
     private void openGui(ServerPlayerEntity player) {
         ServerUtils.openContainer(player,
                 new SimpleNamedContainerProvider((windowId, playerInventory, playerEntity) -> new BackpackContainer(windowId, playerInventory),
-                        getDescription()));
+                        new TranslationTextComponent(this.getDescriptionId())));
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
-        super.appendHoverText(stack, world, tooltip, flag);
+        int itemCount = getBackpackItemCount(stack);
+        tooltip.add(new StringTextComponent(itemCount + " / 27").withStyle(TextFormatting.GRAY));
     }
 
     public DyeColor getDyeColor() {
@@ -100,5 +105,9 @@ public class BackpackItem extends Item {
         if (hasBackpackInventory(stack)) {
             stack.getTag().remove(TAG_INVENTORY);
         }
+    }
+
+    public static boolean isItemAllowedInBackpack(ItemStack stack) {
+        return !ExplorationTags.BACKPACKS_DISALLOWED_TAG.contains(stack.getItem());
     }
 }

@@ -31,4 +31,9 @@ public class BackpackInventory extends BaseInventory {
             BackpackItem.saveBackpackInventory(backpack, inventoryTag);
         }
     }
+
+    @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        return BackpackItem.isItemAllowedInBackpack(stack);
+    }
 }
