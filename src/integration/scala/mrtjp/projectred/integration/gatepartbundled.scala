@@ -343,16 +343,16 @@ class BusConverter extends BundledGatePart(GateType.BUS_CONVERTER)
         super.save(tag)
         tag.putByte("in", rsIn.toByte)
         tag.putByte("out", rsOut.toByte)
-        tag.putByte("in0", bIn.toByte)
-        tag.putByte("out0", bOut.toByte)
+        tag.putShort("in0", bIn.toShort)
+        tag.putShort("out0", bOut.toShort)
     }
 
     override def load(tag:CompoundNBT):Unit = {
         super.load(tag)
         rsIn = tag.getByte("in")
         rsOut = tag.getByte("out")
-        bIn = tag.getByte("in0")
-        setBOut(tag.getByte("out0"))
+        bIn = tag.getShort("in0")
+        setBOut(tag.getShort("out0"))
     }
 
     override def writeDesc(packet:MCDataOutput):Unit = {
