@@ -325,6 +325,9 @@ class BusConverter extends BundledGatePart(GateType.BUS_CONVERTER)
     var rsIn, rsOut = 0
     var bOutUnpacked:Array[Byte] = null
 
+    // for updating old NBT where bundled state wasn't stored properly
+    var forceBInUpdate, forceBOutUpdate = false
+
     override def rsIO: Int = rsIn | rsOut
 
     override def bundledOutputMask(shape:Int):Int = if (shape == 0) 1 else 0
@@ -343,16 +346,25 @@ class BusConverter extends BundledGatePart(GateType.BUS_CONVERTER)
         super.save(tag)
         tag.putByte("in", rsIn.toByte)
         tag.putByte("out", rsOut.toByte)
-        tag.putByte("in0", bIn.toByte)
-        tag.putByte("out0", bOut.toByte)
+        tag.putShort("in0", bIn.toShort)
+        tag.putShort("out0", bOut.toShort)
+        tag.putByte("revised", 1) 
+        // Revised values store in0 and out0 as shorts.
     }
 
     override def load(tag:CompoundNBT):Unit = {
         super.load(tag)
         rsIn = tag.getByte("in")
         rsOut = tag.getByte("out")
-        bIn = tag.getByte("in0")
-        setBOut(tag.getByte("out0"))
+        if (tag.getByte("revised") == true) {
+            bIn = tag.getShort("in0")
+            setBOut(tag.getShort("out0"))
+        } else {
+            bIn = tag.getByte("in0").toShort
+            setBOut(tag.getByte("out0").toShort)
+            forceBOutUpdate = true
+            forceBInUpdate = true
+        }
     }
 
     override def writeDesc(packet:MCDataOutput):Unit = {
@@ -399,7 +411,8 @@ class BusConverter extends BundledGatePart(GateType.BUS_CONVERTER)
         bIn = if (shape == 0) 0 else packDigital(getBundledInput(0))
         if (oldBIn != bIn) changed = true
 
-        if (changed) {
+        if (changed | forceBInUpdate) {
+            forceBInUpdate = false
             onInputChange()
             scheduleTick(2)
             sendClientUpdate()
@@ -411,7 +424,10 @@ class BusConverter extends BundledGatePart(GateType.BUS_CONVERTER)
 
         val oldBOut = bOut
         setBOut(if (shape == 0) 1<<rsIn else 0)
-        if (oldBOut != bOut) changeMask |= 1
+        if (oldBOut != bOut | forceBOutUpdate) {
+            forceBOutUpdate = false
+            changeMask |= 1
+        }
 
         val oldRSOut = rsOut
         rsOut = if (shape == 0) 0 else mostSignificantBit(bIn)
