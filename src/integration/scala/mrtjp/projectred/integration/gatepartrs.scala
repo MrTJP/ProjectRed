@@ -9,7 +9,8 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.multipart.api.part.AnimateTickPart
 import codechicken.multipart.init.CBMultipartModContent
 import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core.{Configurator, IRedwireEmitter, TFaceRSAcquisitions}
+import mrtjp.projectred.core.part.IRedwireEmitter
+import mrtjp.projectred.core.{Configurator, TFaceRSAcquisitions}
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.{Direction, SoundCategory, SoundEvents}
 

@@ -225,6 +225,10 @@ class JDrawPointPowerConductor(parent:IPowerConnectable, ids:util.Collection[Int
 {
 }
 
+class JPowerConductor(parent:IPowerConnectable, ids:util.Collection[Integer]) extends PowerConductor(parent, ids.asScala.map(Int.unbox).toSeq)
+{
+}
+
 /**
  * Interfaces used by low-load power wires and machines
  */

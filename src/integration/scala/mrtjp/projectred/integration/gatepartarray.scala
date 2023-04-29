@@ -13,6 +13,7 @@ import codechicken.multipart.block.BlockMultiPart
 import com.google.common.collect.ImmutableSet
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
+import mrtjp.projectred.core.part.{IPropagationPart, IRedwirePart}
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.Direction
@@ -24,8 +25,8 @@ abstract class ArrayGatePart(gateType:GateType) extends RedstoneGatePart(gateTyp
     override def getSignal:Int = getSignal(toInternalMask(propagationMask))
     override def setSignal(signal:Int):Unit = setSignal(toInternalMask(propagationMask), signal)
 
-    override def updateAndPropagate(prev:TMultiPart, mode:Int):Unit = {
-        val rd = sideDiff(prev)
+    override def updateAndPropagate(prev:IPropagationPart, mode:Int):Unit = {
+        val rd = sideDiff(prev.asInstanceOf[TMultiPart])
         var uMask = 0
         for (r <- 0 until 4) if ((rd&1<<r) != 0) {
             val pMask = propogationMask(toInternal(r))
@@ -35,7 +36,7 @@ abstract class ArrayGatePart(gateType:GateType) extends RedstoneGatePart(gateTyp
                 uMask |= pMask
             }
         }
-        if (uMask == 0) WirePropagator.addNeighborChange(pos)
+        if (uMask == 0) RedstonePropagator.addNeighborChange(world, pos)
         propagationMask = 0xF
     }
 
@@ -71,8 +72,8 @@ abstract class ArrayGatePart(gateType:GateType) extends RedstoneGatePart(gateTyp
         if (overrideSignal(ipmask))
             return calculateSignal(ipmask)
 
-        WirePropagator.setDustProvidePower(false)
-        WirePropagator.redwiresProvidePower = false
+        RedstonePropagator.setDustProvidesPower(false)
+        RedstonePropagator.setRedwiresProvidePower(false)
         var s = 0
         def raise(sig:Int){ if (sig > s) s = sig }
 
@@ -82,14 +83,14 @@ abstract class ArrayGatePart(gateType:GateType) extends RedstoneGatePart(gateTyp
             else if (maskConnectsInside(r)) raise(calcInternalSignal(r))
             else raise(calcMaxSignal(r, true, true))
 
-        WirePropagator.setDustProvidePower(true)
-        WirePropagator.redwiresProvidePower = true
+        RedstonePropagator.setDustProvidesPower(true)
+        RedstonePropagator.setRedwiresProvidePower(true)
         s
     }
 
     override def onChange():Unit = {
         super.onChange()
-        WirePropagator.propagateTo(this, IWirePart.RISING)
+        RedstonePropagator.propagateTo(this, RedstonePropagator.RISING)
     }
 
     override def onSignalUpdate():Unit = {
@@ -116,7 +117,7 @@ abstract class ArrayGatePart(gateType:GateType) extends RedstoneGatePart(gateTyp
     }
 
     def rsLevel(i:Int):Int =
-        if (WirePropagator.redwiresProvidePower) (i+16)/17
+        if (RedstonePropagator.canRedwiresProvidePower) (i+16)/17
         else 0
 
     override def weakPowerLevel(side:Int):Int = {
