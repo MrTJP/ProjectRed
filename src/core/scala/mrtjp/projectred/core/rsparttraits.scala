@@ -3,7 +3,8 @@ package mrtjp.projectred.core
 import codechicken.multipart.api.RedstoneInteractions
 import codechicken.multipart.api.part.TMultiPart
 import codechicken.multipart.api.part.redstone.{IFaceRedstonePart, IRedstonePart}
-import mrtjp.projectred.core.IWirePart._
+import mrtjp.projectred.core.RedstonePropagator._
+import mrtjp.projectred.core.part.IPropagationPart
 import net.minecraft.block.{Blocks, RedstoneWireBlock}
 import net.minecraft.util.Direction
 import net.minecraft.util.math.BlockPos
@@ -81,7 +82,7 @@ trait TCenterRSAcquisitions extends TRSAcquisitionsCommons with TCenterAcquisiti
     }
 }
 
-trait TPropagationCommons extends TMultiPart with IWirePart
+trait TPropagationCommons extends TMultiPart with IPropagationPart
 {
     var propagationMask:Int
 
@@ -95,7 +96,7 @@ trait TPropagationCommons extends TMultiPart with IWirePart
             if (to == from) return
             if (propagateTo(to, mode)) return
         }
-        WirePropagator.addNeighborChange(at)
+        RedstonePropagator.addNeighborChange(world, at)
     }
 
     def propagateInternal(to:TMultiPart, from:TMultiPart, mode:Int)
@@ -106,8 +107,8 @@ trait TPropagationCommons extends TMultiPart with IWirePart
 
     def propagateTo(part:TMultiPart, mode:Int) = part match
     {
-        case w:IWirePart =>
-            WirePropagator.propagateTo(w, this, mode)
+        case w:IPropagationPart =>
+            RedstonePropagator.propagateTo(w, this, mode)
             true
         case _ => false
     }
@@ -119,7 +120,7 @@ trait TFacePropagation extends TPropagationCommons with TFaceConnectable
 
     override def propagate(prev:TMultiPart, mode:Int)
     {
-        if (mode != FORCED) WirePropagator.addPartChange(this)
+        if (mode != FORCED) RedstonePropagator.addPartChange(this)
         for (r <- 0 until 4) if ((propagationMask&1<<r) != 0) {
             if (maskConnectsInside(r)) propagateInternal(getInternal(r), prev, mode)
             else if (maskConnectsStraight(r)) propagateExternal(getStraight(r), posOfStraight(r), prev, mode)
@@ -137,7 +138,7 @@ trait TCenterPropagation extends TPropagationCommons with TCenterConnectable
 
     override def propagate(prev:TMultiPart, mode:Int)
     {
-        if (mode != FORCED) WirePropagator.addPartChange(this)
+        if (mode != FORCED) RedstonePropagator.addPartChange(this)
         for (s <- 0 until 6) if ((propagationMask&1<<s) != 0) {
             if (maskConnectsIn(s)) propagateInternal(getInternal(s), prev, mode)
             else if (maskConnectsOut(s)) propagateExternal(getStraight(s), posOfStraight(s), prev, mode)
@@ -153,24 +154,24 @@ trait TRSPropagationCommons extends TPropagationCommons
     def getSignal:Int
     def setSignal(signal:Int)
 
-    override def updateAndPropagate(prev:TMultiPart, mode:Int)
+    override def updateAndPropagate(prev:IPropagationPart, mode:Int)
     {
         if (mode == DROPPING && getSignal == 0) return
         val newSignal = calculateSignal
         if (newSignal < getSignal)
         {
-            if (newSignal > 0) WirePropagator.propagateAnalogDrop(this)
+            if (newSignal > 0) RedstonePropagator.propagateAnalogDrop(this)
             setSignal(0)
-            propagate(prev, DROPPING)
+            propagate(prev.asInstanceOf[TMultiPart], DROPPING)
         }
         else if (newSignal > getSignal)
         {
             setSignal(newSignal)
             if (mode == DROPPING) propagate(null, RISING)
-            else propagate(prev, RISING)
+            else propagate(prev.asInstanceOf[TMultiPart], RISING)
         }
-        else if (mode == DROPPING) propagateTo(prev, RISING)
-        else if (mode == FORCE) propagate(prev, FORCED)
+        else if (mode == DROPPING) propagateTo(prev.asInstanceOf[TMultiPart], RISING)
+        else if (mode == FORCE) propagate(prev.asInstanceOf[TMultiPart], FORCED)
     }
 }
 
@@ -178,23 +179,23 @@ trait TFaceRSPropagation extends TFacePropagation with TRSPropagationCommons
 
 trait TCenterRSPropagation extends TCenterPropagation with TRSPropagationCommons
 
-trait IRedwirePart extends IWirePart with IRedwireEmitter
+//trait IRedwirePart extends IWirePart with IRedwireEmitter
+//
+///**
+//  * Implemented by parts that emit a full-strength red alloy signal.
+//  */
+//trait IRedwireEmitter
+//{
+//    /**
+//      * For face parts, dir is a rotation. For center parts, it is a forge
+//      * direction.
+//      *
+//      * @return Signal strength from 0 to 255.
+//      */
+//    def getRedwireSignal(dir:Int):Int
+//}
 
-/**
-  * Implemented by parts that emit a full-strength red alloy signal.
-  */
-trait IRedwireEmitter
-{
-    /**
-      * For face parts, dir is a rotation. For center parts, it is a forge
-      * direction.
-      *
-      * @return Signal strength from 0 to 255.
-      */
-    def getRedwireSignal(dir:Int):Int
-}
-
-trait IInsulatedRedwirePart extends IRedwirePart
-{
-    def getInsulatedColour:Int
-}
+//trait IInsulatedRedwirePart extends IRedwirePart
+//{
+//    def getInsulatedColour:Int
+//}

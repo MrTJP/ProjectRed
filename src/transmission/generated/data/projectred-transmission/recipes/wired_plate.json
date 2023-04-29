@@ -4,14 +4,14 @@
     "item": "projectred-core:wired_plate"
   },
   "pattern": [
-    "R",
+    "W",
     "P"
   ],
   "key": {
     "P": {
       "item": "projectred-core:plate"
     },
-    "R": {
+    "W": {
       "item": "projectred-transmission:red_alloy_wire"
     }
   }

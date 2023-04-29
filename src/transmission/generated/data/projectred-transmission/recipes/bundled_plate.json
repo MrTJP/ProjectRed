@@ -4,15 +4,15 @@
     "item": "projectred-core:bundled_plate"
   },
   "pattern": [
-    "R",
+    "W",
     "P"
   ],
   "key": {
     "P": {
       "item": "projectred-core:plate"
     },
-    "R": {
-      "item": "projectred-transmission:neutral_bundled_wire"
+    "W": {
+      "tag": "projectred-transmission:bundled_wire"
     }
   }
 }
