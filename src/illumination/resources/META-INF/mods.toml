@@ -1,7 +1,7 @@
 modLoader="javafml"
 loaderVersion="[28,)"
 issueTrackerURL="https://github.com/MrTJP/ProjectRed"
-license="RPSL"
+license="MIT"
 
 [[mods]]
     modId="projectred-illumination"
