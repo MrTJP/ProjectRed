@@ -17,9 +17,9 @@ import codechicken.lib.vec.*;
 import codechicken.lib.vec.uv.*;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import mrtjp.core.vec.VecLib;
-import mrtjp.projectred.core.PRLib;
-import mrtjp.projectred.core.RenderHalo;
+import mrtjp.projectred.core.BundledSignalsLib;
+import mrtjp.projectred.core.client.HaloRenderer;
+import mrtjp.projectred.lib.VecLib;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
@@ -834,7 +834,7 @@ public class GateComponentModels {
                 int side = orient % 24 >> 2;
                 int r = orient & 3;
                 boolean reflect = orient >= 24;
-                boolean rotate = (r + PRLib.bundledCableBaseRotationMap()[side]) % 4 >= 2;
+                boolean rotate = (r + BundledSignalsLib.bundledCableBaseRotationMap[side]) % 4 >= 2;
 
                 UVTransformation t = new RedundantUVTransformation();
                 if (reflect) {
@@ -1065,8 +1065,8 @@ public class GateComponentModels {
         public void renderLights(CCRenderState ccrs, MatrixStack mStack, IRenderTypeBuffer buffers, Transformation t) {
             for (int i = 0; i < 16; i++) {
                 if ((pressMask & 1 << i) != 0) {
-                    RenderHalo.prepareRenderState(ccrs, mStack, buffers);
-                    RenderHalo.renderToCCRS(ccrs, LIGHT_BOXES[i], i, t);
+                    HaloRenderer.prepareRenderState(ccrs, mStack, buffers);
+                    HaloRenderer.renderToCCRS(ccrs, LIGHT_BOXES[i], i, t);
                 }
             }
         }

@@ -3,10 +3,10 @@ package mrtjp.projectred.expansion.gui.screen.inventory;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.texture.TextureUtils;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import mrtjp.core.gui.GuiLib$;
-import mrtjp.core.vec.Point;
 import mrtjp.projectred.expansion.inventory.container.AutoCrafterContainer;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
+import mrtjp.projectred.lib.GuiLib;
+import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractButtonNode;
 import mrtjp.projectred.redui.RedUIContainerScreen;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -44,7 +44,7 @@ public class AutoCrafterScreen extends RedUIContainerScreen<AutoCrafterContainer
             @Override
             protected void drawButtonBody(MatrixStack stack, boolean mouseover) {
                 TextureUtils.changeTexture(BACKGROUND);
-                blit(stack, getPosition().x(), getPosition().y(), 176, 0, 14, 14);
+                blit(stack, getPosition().x, getPosition().y, 176, 0, 14, 14);
             }
         };
         cyclePlanButton.setPosition(126, 23);
@@ -65,12 +65,12 @@ public class AutoCrafterScreen extends RedUIContainerScreen<AutoCrafterContainer
         if (getMenu().canConductorWork())
             blit(stack, x + 16, y + 16, 177, 18, 7, 9);
 
-        GuiLib$.MODULE$.drawVerticalTank(stack, this, x + 16, y + 26, 177, 27, 7, 48, getMenu().getChargeScaled(48));
+        GuiLib.drawVerticalTank(stack, this, x + 16, y + 26, 177, 27, 7, 48, getMenu().getChargeScaled(48));
 
         if (getMenu().isFlowFull())
             blit(stack, x + 27, y + 16, 185, 18, 7, 9);
 
-        GuiLib$.MODULE$.drawVerticalTank(stack, this, x + 27, y + 26, 185, 27, 7, 48, getMenu().getFlowScaled(48));
+        GuiLib.drawVerticalTank(stack, this, x + 27, y + 26, 185, 27, 7, 48, getMenu().getFlowScaled(48));
 
         // Draw progress bar
         int s = getMenu().getProgressScaled(22);

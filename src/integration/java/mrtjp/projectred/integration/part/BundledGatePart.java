@@ -14,11 +14,11 @@ import codechicken.lib.vec.Vector3;
 import codechicken.microblock.FaceMicroFactory;
 import codechicken.multipart.util.PartRayTraceResult;
 import com.google.common.collect.ImmutableSet;
-import mrtjp.core.vec.VecLib;
 import mrtjp.projectred.api.*;
 import mrtjp.projectred.core.BundledSignalsLib;
 import mrtjp.projectred.core.FaceLookup;
 import mrtjp.projectred.integration.GateType;
+import mrtjp.projectred.lib.VecLib;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -30,7 +30,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 
 import java.util.*;
 
-import static mrtjp.projectred.core.BundledCommons.*;
+import static mrtjp.projectred.core.BundledSignalsLib.*;
 import static mrtjp.projectred.core.part.IOrientableFacePart.flipMaskZ;
 
 public abstract class BundledGatePart extends RedstoneGatePart implements IBundledEmitter {

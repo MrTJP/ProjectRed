@@ -33,7 +33,7 @@ public class ProjectRedIntegration {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
     public static final DeferredRegister<MultiPartType<?>> PARTS = DeferredRegister.create(SneakyUtils.<Class<MultiPartType<?>>>unsafeCast(MultiPartType.class), MOD_ID);
 
-    public static final SimpleItemGroup INTEGRATION_GROUP = new SimpleItemGroup(MOD_ID, GateType.OR::makeStack); //TODO: Add icon
+    public static final SimpleItemGroup INTEGRATION_GROUP = new SimpleItemGroup(MOD_ID, GateType.OR::makeStack);
 
     static {
         IntegrationParts.register();

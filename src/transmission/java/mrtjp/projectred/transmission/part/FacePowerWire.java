@@ -1,74 +1,89 @@
 package mrtjp.projectred.transmission.part;
 
 import codechicken.lib.vec.Rotation;
-import mrtjp.projectred.core.IPowerConnectable;
-import mrtjp.projectred.core.PowerConductor;
-import mrtjp.projectred.core.power.ConductorCache;
+import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.FaceLookup;
+import mrtjp.projectred.core.power.IPowerConductorSource;
+import mrtjp.projectred.core.power.IPowerConnectable;
+import mrtjp.projectred.core.power.PowerConductor;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
-public abstract class FacePowerWire extends BaseFaceWirePart implements IPowerConnectable {
+import java.util.LinkedList;
+import java.util.List;
 
-    private final ConductorCache cache = new ConductorCache(this::getConductor, 5);
+public abstract class FacePowerWire extends BaseFaceWirePart implements IPowerConnectable, IPowerConductorSource {
+
+    private final List<PowerConductor> connectedConductors = new LinkedList<>();
+    private boolean cacheInvalid = true;
 
     public FacePowerWire(WireType wireType) {
         super(wireType);
     }
 
-    private PowerConductor getConductor(int i) {
-        FaceLookup lookup = null;
-
-        if (i > 0 && i <= 3) {
-            if (maskConnectsCorner(i)) {
-                lookup = FaceLookup.lookupCorner(world(), pos(), getSide(), i);
-            } else if (maskConnectsStraight(i)) {
-                lookup = FaceLookup.lookupStraight(world(), pos(), getSide(), i);
-            } else if (maskConnectsInside(i)) {
-                lookup = FaceLookup.lookupInsideFace(world(), pos(), getSide(), i);
-            } else {
-                return null;
-            }
-        }
-
-        if (i == 4 && maskConnectsCenter()) {
-            lookup = FaceLookup.lookupInsideCenter(world(), pos(), getSide());
-        }
-
-        if (lookup == null) return null;
-
-        if (lookup.part instanceof IPowerConnectable) {
-            return ((IPowerConnectable) lookup.part).conductor(lookup.otherRotation);
-        }
-
-        if (lookup.tile instanceof IPowerConnectable) {
-            return ((IPowerConnectable) lookup.tile).conductor(Rotation.rotateSide(lookup.otherSide, lookup.otherRotation));
-        }
-
-        return null;
+    @Override
+    public long getTime() {
+        return world().getGameTime();
     }
 
     @Override
-    public PowerConductor conductorOut(int id) {
-        return cache.getExternalConductor(id);
-    }
-
-    @Override
-    public World connWorld() {
-        return world();
+    public List<PowerConductor> getConnectedConductors() {
+        if (cacheInvalid) {
+            recacheConductors();
+            cacheInvalid = false;
+        }
+        return connectedConductors;
     }
 
     @Override
     public void onMaskChanged() {
         super.onMaskChanged();
-        cache.invalidateCache();
+        cacheInvalid = true;
     }
 
     @Override
     public void onNeighborBlockChanged(BlockPos from) {
         super.onNeighborBlockChanged(from);
-        cache.invalidateCache();
+        cacheInvalid = true;
+    }
+
+    private void recacheConductors() {
+        connectedConductors.clear();
+
+        FaceLookup lookup;
+        for (int r = 0; r < 4; r++) {
+            if (maskConnectsCorner(r)) {
+                lookup = FaceLookup.lookupCorner(world(), pos(), getSide(), r);
+            } else if (maskConnectsStraight(r)) {
+                lookup = FaceLookup.lookupStraight(world(), pos(), getSide(), r);
+            } else if (maskConnectsInside(r)) {
+                lookup = FaceLookup.lookupInsideFace(world(), pos(), getSide(), r);
+            } else {
+                continue;
+            }
+
+            PowerConductor c = retrieveConductor(lookup);
+            if (c != null) connectedConductors.add(c);
+        }
+
+        if (maskConnectsCenter()) {
+            lookup = FaceLookup.lookupInsideCenter(world(), pos(), getSide());
+            PowerConductor c = retrieveConductor(lookup);
+            if (c != null) connectedConductors.add(c);
+        }
+    }
+
+    private PowerConductor retrieveConductor(FaceLookup lookup) {
+
+        if (lookup.part instanceof IPowerConnectable) {
+            return ((IPowerConnectable) lookup.part).getConductor(lookup.otherRotation);
+        }
+
+        if (lookup.tile instanceof IPowerConnectable) {
+            return ((IPowerConnectable) lookup.tile).getConductor(Rotation.rotateSide(lookup.otherSide, lookup.otherRotation));
+        }
+
+        return null;
     }
 
     //region Connections
@@ -76,8 +91,8 @@ public abstract class FacePowerWire extends BaseFaceWirePart implements IPowerCo
     public boolean discoverCornerOverride(int absDir) {
         int r = absoluteRot(absDir);
         FaceLookup lookup = FaceLookup.lookupCorner(world(), pos(), getSide(), r);
-        if (lookup.tile instanceof IPowerConnectable) {
-            return ((IPowerConnectable) lookup.tile).connectStraight(this, getSide() ^ 1, Rotation.rotationTo(getSide(), absDir ^ 1));
+        if (lookup.tile instanceof IConnectable) {
+            return ((IConnectable) lookup.tile).connectCorner(this, getSide() ^ 1, Rotation.rotationTo(getSide(), absDir ^ 1));
         }
         return false;
     }
@@ -86,8 +101,8 @@ public abstract class FacePowerWire extends BaseFaceWirePart implements IPowerCo
     public boolean discoverStraightOverride(int absDir) {
         int r = absoluteRot(absDir);
         FaceLookup lookup = FaceLookup.lookupStraight(world(), pos(), getSide(), r);
-        if (lookup.tile instanceof IPowerConnectable) {
-            return ((IPowerConnectable) lookup.tile).connectStraight(this, absDir ^ 1, Rotation.rotationTo(absDir, getSide()));
+        if (lookup.tile instanceof IConnectable) {
+            return ((IConnectable) lookup.tile).connectStraight(this, absDir ^ 1, Rotation.rotationTo(absDir, getSide()));
         }
         return false;
     }

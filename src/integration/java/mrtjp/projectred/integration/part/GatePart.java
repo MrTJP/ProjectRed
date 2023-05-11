@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableSet;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.PRLib;
+import mrtjp.projectred.core.PlacementLib;
 import mrtjp.projectred.core.part.IConnectableFacePart;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.client.GateComponentModels;
@@ -210,13 +210,13 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
                 break;
             case KEY_ORIENTATION:
                 orientation = packet.readByte();
-                if (Configurator.staticGates()) {
+                if (Configurator.staticGates) {
                     tile().markRender();
                 }
                 break;
             case KEY_SHAPE:
                 gateShape = packet.readByte();
-                if (Configurator.staticGates()) {
+                if (Configurator.staticGates) {
                     tile().markRender();
                 }
                 break;
@@ -283,7 +283,7 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
     }
 
     private boolean dropIfCantStay() {
-        if (!PRLib.canPlaceGateOnSide(world(), pos().relative(Direction.values()[getSide()]), Direction.values()[getSide() ^ 1])) {
+        if (!PlacementLib.canPlaceGateOnSide(world(), pos().relative(Direction.values()[getSide()]), Direction.values()[getSide() ^ 1])) {
             TileMultiPart.dropItem(getGateType().makeStack(), world(), Vector3.fromTileCenter(tile()));
             tile().remPart(this);
             return true;
@@ -410,7 +410,7 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
 
     @Override
     public int getLightValue() {
-        return Configurator.logicGateLights() ? 7 : 0;
+        return Configurator.logicGateLights ? 7 : 0;
     }
 
     @Override

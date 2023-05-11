@@ -21,7 +21,7 @@ public class GatePartRenderer implements PartRenderer<GatePart> {
 
     @Override
     public boolean renderStatic(GatePart part, @Nullable RenderType layer, CCRenderState ccrs) {
-        if (layer == null || (layer == RenderType.cutout() && Configurator.staticGates())) {
+        if (layer == null || (layer == RenderType.cutout() && Configurator.staticGates)) {
             ccrs.setBrightness(part.world(), part.pos());
             GateModelRenderer.instance().renderStatic(ccrs, part);
             return true;

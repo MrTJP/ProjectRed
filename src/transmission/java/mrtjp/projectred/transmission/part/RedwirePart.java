@@ -10,10 +10,10 @@ import codechicken.multipart.api.part.redstone.IRedstonePart;
 import codechicken.multipart.trait.extern.IRedstoneTile;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.FaceLookup;
 import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.core.part.IPropagationFacePart;
 import mrtjp.projectred.core.part.IRedstonePropagationPart;
-import mrtjp.projectred.core.FaceLookup;
 import mrtjp.projectred.core.part.IRedwireEmitter;
 import mrtjp.projectred.core.part.IRedwirePart;
 import mrtjp.projectred.transmission.WireType;
@@ -65,7 +65,7 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
         switch (key) {
             case KEY_SIGNAL:
                 signal = packet.readByte();
-                if (Configurator.staticWires()) tile().markRender();
+                if (Configurator.staticWires) tile().markRender();
                 break;
             default:
                 super.read(packet, key);

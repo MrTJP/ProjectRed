@@ -15,7 +15,7 @@ import codechicken.multipart.util.PartMap;
 import codechicken.multipart.util.PartRayTraceResult;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.PRLib;
+import mrtjp.projectred.core.PlacementLib;
 import mrtjp.projectred.core.part.IConnectableFacePart;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.block.SoundType;
@@ -138,7 +138,7 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
         switch (key) {
             case KEY_CONN_MAP:
                 connMap = packet.readInt();
-                if (Configurator.staticWires()) {
+                if (Configurator.staticWires) {
                     tile().markRender();
                 }
                 break;
@@ -242,7 +242,7 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     }
 
     private boolean canStay() {
-        return PRLib.canPlaceWireOnSide(world(),
+        return PlacementLib.canPlaceWireOnSide(world(),
                 pos().relative(Direction.values()[getSide()]), Direction.values()[getSide()^1]);
     }
 

@@ -46,6 +46,6 @@ public class FaceWirePartRenderer implements PartRenderer<BaseFaceWirePart> {
             return true;
         }
 
-        return Configurator.staticWires();
+        return Configurator.staticWires;
     }
 }

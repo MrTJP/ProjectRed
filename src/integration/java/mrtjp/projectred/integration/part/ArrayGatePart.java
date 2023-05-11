@@ -429,7 +429,7 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
                 case KEY_SIGNAL:
                     signal1 = packet.readByte();
                     signal2 = packet.readByte();
-                    if (Configurator.staticGates()) tile().markRender();
+                    if (Configurator.staticGates) tile().markRender();
                     break;
                 default:
                     super.read(packet, key);
@@ -651,7 +651,7 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
             switch (key) {
                 case KEY_SIGNAL:
                     signal = packet.readByte();
-                    if (Configurator.staticGates()) tile().markRender();
+                    if (Configurator.staticGates) tile().markRender();
                     break;
                 default:
                     super.read(packet, key);

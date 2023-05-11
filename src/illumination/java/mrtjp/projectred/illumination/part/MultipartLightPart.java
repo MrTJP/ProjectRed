@@ -16,8 +16,8 @@ import codechicken.multipart.block.BlockMultiPart;
 import codechicken.multipart.block.TileMultiPart;
 import codechicken.multipart.util.PartRayTraceResult;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import mrtjp.projectred.core.PRLib;
-import mrtjp.projectred.core.RenderHalo;
+import mrtjp.projectred.core.PlacementLib;
+import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.illumination.MultipartLightProperties;
 import net.minecraft.block.SoundType;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -245,12 +245,12 @@ public class MultipartLightPart extends TMultiPart implements TSlottedPart, TNor
 //        if (isOn)
 //            RenderHalo.addLight(pos, getColor, getLightBounds) //TODO RenderWorldLastEvent rendering is broken
         if (isLightOn())
-            RenderHalo.renderHalo(CCRenderState.instance(), mStack, buffers, properties.getGlowBounds(getSide()), getColor(), Vector3.ZERO);
+            HaloRenderer.renderHalo(CCRenderState.instance(), mStack, buffers, properties.getGlowBounds(getSide()), getColor(), Vector3.ZERO);
     }
 
     public static boolean canPlaceLight(World world, BlockPos pos, Direction side) {
 
-        if (PRLib.canPlaceLight(world, pos, side)) return true;
+        if (PlacementLib.canPlaceLight(world, pos, side)) return true;
 
         TMultiPart part = BlockMultiPart.getPart(world, pos, side.ordinal());
         if (part instanceof HollowMicroblock) return true;

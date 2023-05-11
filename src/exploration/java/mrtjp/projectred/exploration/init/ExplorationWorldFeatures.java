@@ -52,15 +52,15 @@ public class ExplorationWorldFeatures {
     public static void load() {
         // Load configurations of Ore features and world carvers. Happens during common init because there is no Forge registry for this
 
-        RUBY_ORE_FEATURE        = registerOreConfiguration(RUBY_ORE_BLOCK,          Configurator.gen_RubyVeinSize(),        12, 20, 1);
-        SAPPHIRE_ORE_FEATURE    = registerOreConfiguration(SAPPHIRE_ORE_BLOCK,      Configurator.gen_SapphireVeinSize(),    12, 20, 1);
-        PERIDOT_ORE_FEATURE     = registerOreConfiguration(PERIDOT_ORE_BLOCK,       Configurator.gen_PeridotVeinSize(),     18, 26, 1);
+        RUBY_ORE_FEATURE        = registerOreConfiguration(RUBY_ORE_BLOCK,          Configurator.gen_RubyVeinSize,        12, 20, 1);
+        SAPPHIRE_ORE_FEATURE    = registerOreConfiguration(SAPPHIRE_ORE_BLOCK,      Configurator.gen_SapphireVeinSize,    12, 20, 1);
+        PERIDOT_ORE_FEATURE     = registerOreConfiguration(PERIDOT_ORE_BLOCK,       Configurator.gen_PeridotVeinSize,     18, 26, 1);
 
-        COPPER_ORE_FEATURE      = registerOreConfiguration(COPPER_ORE_BLOCK,        Configurator.gen_CopperVeinSize(),      0, 64, 16);
-        TIN_ORE_FEATURE         = registerOreConfiguration(TIN_ORE_BLOCK,           Configurator.gen_TinVeinSize(),         0, 48, 10);
-        SILVER_ORE_FEATURE      = registerOreConfiguration(SILVER_ORE_BLOCK,        Configurator.gen_SilverVeinSize(),      0, 32, 8);
+        COPPER_ORE_FEATURE      = registerOreConfiguration(COPPER_ORE_BLOCK,        Configurator.gen_CopperVeinSize,      0, 64, 16);
+        TIN_ORE_FEATURE         = registerOreConfiguration(TIN_ORE_BLOCK,           Configurator.gen_TinVeinSize,         0, 48, 10);
+        SILVER_ORE_FEATURE      = registerOreConfiguration(SILVER_ORE_BLOCK,        Configurator.gen_SilverVeinSize,      0, 32, 8);
 
-        ELECTROTINE_ORE_FEATURE = registerOreConfiguration(ELECTROTINE_ORE_BLOCK,   Configurator.gen_ElectrotineVeinSize(), 0, 16, 4);
+        ELECTROTINE_ORE_FEATURE = registerOreConfiguration(ELECTROTINE_ORE_BLOCK,   Configurator.gen_ElectrotineVeinSize, 0, 16, 4);
 
         MARBLE_CAVE_FEATURE = registerMarbleCaveCarverConfiguration(0.02F);
     }
@@ -71,15 +71,15 @@ public class ExplorationWorldFeatures {
 
         if (category != NONE && category != THEEND && category != NETHER) { // if overworld
 
-            if (Configurator.gen_Ruby())        builder.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, RUBY_ORE_FEATURE);
-            if (Configurator.gen_Sapphire())    builder.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, SAPPHIRE_ORE_FEATURE);
-            if (Configurator.gen_Peridot())     builder.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, PERIDOT_ORE_FEATURE);
-            if (Configurator.gen_Copper())      builder.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, COPPER_ORE_FEATURE);
-            if (Configurator.gen_Tin())         builder.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, TIN_ORE_FEATURE);
-            if (Configurator.gen_Silver())      builder.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, SILVER_ORE_FEATURE);
-            if (Configurator.gen_Electrotine()) builder.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, ELECTROTINE_ORE_FEATURE);
+            if (Configurator.gen_Ruby)        builder.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, RUBY_ORE_FEATURE);
+            if (Configurator.gen_Sapphire)    builder.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, SAPPHIRE_ORE_FEATURE);
+            if (Configurator.gen_Peridot)     builder.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, PERIDOT_ORE_FEATURE);
+            if (Configurator.gen_Copper)      builder.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, COPPER_ORE_FEATURE);
+            if (Configurator.gen_Tin)         builder.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, TIN_ORE_FEATURE);
+            if (Configurator.gen_Silver)      builder.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, SILVER_ORE_FEATURE);
+            if (Configurator.gen_Electrotine) builder.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, ELECTROTINE_ORE_FEATURE);
 
-            if (Configurator.gen_MarbleCave())  builder.addCarver(GenerationStage.Carving.AIR, MARBLE_CAVE_FEATURE);
+            if (Configurator.gen_MarbleCave)  builder.addCarver(GenerationStage.Carving.AIR, MARBLE_CAVE_FEATURE);
         }
     }
 

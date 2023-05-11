@@ -9,7 +9,7 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.SoundEvents;
 
 import static mrtjp.projectred.ProjectRedExploration.*;
-import static mrtjp.projectred.core.CoreContent.*;
+import static mrtjp.projectred.core.init.CoreTags.*;
 
 public class ExplorationItems {
 
@@ -86,7 +86,7 @@ public class ExplorationItems {
     public static final SimpleItemTier ATHAME_ITEM_TIER = SimpleItemTier.builder(ItemTier.DIAMOND)
             .maxUses(100)
             .enchantability(30)
-            .repairMaterial(() ->  Ingredient.of(tagIngotsSilver()))
+            .repairMaterial(() ->  Ingredient.of(SILVER_INGOT_TAG))
             .build();
 
     public static final SimpleItemTier RUBY_ITEM_TIER = SimpleItemTier.builder()
@@ -95,7 +95,7 @@ public class ExplorationItems {
             .attackDamage(3.00F)
             .harvestLevel(2)
             .enchantability(10)
-            .repairMaterial(() -> Ingredient.of(tagGemsRuby()))
+            .repairMaterial(() -> Ingredient.of(RUBY_GEM_TAG))
             .build();
 
     public static final SimpleItemTier SAPPHIRE_ITEM_TIER = SimpleItemTier.builder()
@@ -104,7 +104,7 @@ public class ExplorationItems {
             .attackDamage(3.00F)
             .harvestLevel(2)
             .enchantability(10)
-            .repairMaterial(() -> Ingredient.of(tagGemsSapphire()))
+            .repairMaterial(() -> Ingredient.of(SAPPHIRE_GEM_TAG))
             .build();
 
     public static final SimpleItemTier PERIDOT_ITEM_TIER = SimpleItemTier.builder()
@@ -113,7 +113,7 @@ public class ExplorationItems {
             .attackDamage(2.75F)
             .harvestLevel(2)
             .enchantability(14)
-            .repairMaterial(() -> Ingredient.of(tagGemsPeridot()))
+            .repairMaterial(() -> Ingredient.of(PERIDOT_GEM_TAG))
             .build();
 
     public static final SimpleArmorMaterial RUBY_ARMOR_MATERIAL = SimpleArmorMaterial.builder()
@@ -121,7 +121,7 @@ public class ExplorationItems {
             .damageReduction(new int[] { 3, 6, 8, 3 })
             .enchantability(10)
             .soundEvent(SoundEvents.ARMOR_EQUIP_DIAMOND)
-            .repairMaterial(() -> Ingredient.of(itemRuby().get()))
+            .repairMaterial(() -> Ingredient.of(RUBY_GEM_TAG))
             .textureName(MOD_ID + ":ruby")
             .toughness(1.25F)
             .build();
@@ -131,7 +131,7 @@ public class ExplorationItems {
             .damageReduction(new int[] { 3, 6, 8, 3 })
             .enchantability(10)
             .soundEvent(SoundEvents.ARMOR_EQUIP_DIAMOND)
-            .repairMaterial(() -> Ingredient.of(itemSapphire().get()))
+            .repairMaterial(() -> Ingredient.of(SAPPHIRE_GEM_TAG))
             .textureName(MOD_ID + ":sapphire")
             .toughness(1.25F)
             .build();
@@ -141,7 +141,7 @@ public class ExplorationItems {
             .damageReduction(new int[] { 3, 6, 8, 3 })
             .enchantability(14)
             .soundEvent(SoundEvents.ARMOR_EQUIP_DIAMOND)
-            .repairMaterial(() -> Ingredient.of(itemPeridot().get()))
+            .repairMaterial(() -> Ingredient.of(PERIDOT_GEM_TAG))
             .textureName(MOD_ID + ":peridot")
             .toughness(1.25F)
             .build();

@@ -14,7 +14,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
 
 import static mrtjp.projectred.ProjectRedExploration.MOD_ID;
-import static mrtjp.projectred.core.CoreContent.*;
+import static mrtjp.projectred.core.init.CoreReferences.*;
+import static mrtjp.projectred.core.init.CoreTags.*;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
 import static mrtjp.projectred.exploration.init.ExplorationTags.*;
 
@@ -37,31 +38,31 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .ingredient(BASALT_COBBLE_BLOCK)
                 .experience(0.1F);
 
-        smelting(itemRuby().get(), 1, new ResourceLocation(MOD_ID, "ruby_from_ore")) //Note: Special names for json bc multiple recipes here producing same item
+        smelting(RUBY_ITEM, 1, new ResourceLocation(MOD_ID, "ruby_from_ore")) //Note: Special names for json bc multiple recipes here producing same item
                 .ingredient(RUBY_ORE_BLOCK)
                 .experience(1F);
 
-        smelting(itemSapphire().get(), 1, new ResourceLocation(MOD_ID, "sapphire_from_ore"))
+        smelting(SAPPHIRE_ITEM, 1, new ResourceLocation(MOD_ID, "sapphire_from_ore"))
                 .ingredient(SAPPHIRE_ORE_BLOCK)
                 .experience(1F);
 
-        smelting(itemPeridot().get(), 1, new ResourceLocation(MOD_ID, "peridot_from_ore"))
+        smelting(PERIDOT_ITEM, 1, new ResourceLocation(MOD_ID, "peridot_from_ore"))
                 .ingredient(PERIDOT_ORE_BLOCK)
                 .experience(1F);
 
-        smelting(itemCopperIngot().get(), 1, new ResourceLocation(MOD_ID, "copper_from_ore"))
+        smelting(COPPER_INGOT_ITEM, 1, new ResourceLocation(MOD_ID, "copper_from_ore"))
                 .ingredient(COPPER_ORE_BLOCK)
                 .experience(0.7F);
 
-        smelting(itemTinIngot().get(), 1, new ResourceLocation(MOD_ID, "tin_from_ore"))
+        smelting(TIN_INGOT_ITEM, 1, new ResourceLocation(MOD_ID, "tin_from_ore"))
                 .ingredient(TIN_ORE_BLOCK)
                 .experience(0.7F);
 
-        smelting(itemSilverIngot().get(), 1, new ResourceLocation(MOD_ID, "silver_from_ore"))
+        smelting(SILVER_INGOT_ITEM, 1, new ResourceLocation(MOD_ID, "silver_from_ore"))
                 .ingredient(SILVER_ORE_BLOCK)
                 .experience(0.7F);
 
-        smelting(itemElectrotineDust().get(), 1, new ResourceLocation(MOD_ID, "electrotine_from_ore"))
+        smelting(ELECTROTINE_DUST_ITEM, 1, new ResourceLocation(MOD_ID, "electrotine_from_ore"))
                 .ingredient(ELECTROTINE_ORE_BLOCK)
                 .experience(0.7F);
 
@@ -77,66 +78,66 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .patternLine("BB");
 
         shapedRecipe(RUBY_BLOCK)
-                .key('S', tagGemsRuby())
+                .key('S', RUBY_GEM_TAG)
                 .patternLine("SSS")
                 .patternLine("SSS")
                 .patternLine("SSS");
 
-        shapelessRecipe(itemRuby().get(), 9, new ResourceLocation(MOD_ID, "ruby_from_block"))
+        shapelessRecipe(RUBY_ITEM, 9, new ResourceLocation(MOD_ID, "ruby_from_block"))
                 .addIngredient(RUBY_STORAGE_BLOCK_ITEM_TAG);
 
         shapedRecipe(SAPPHIRE_BLOCK)
-                .key('S', tagGemsSapphire())
+                .key('S', SAPPHIRE_GEM_TAG)
                 .patternLine("SSS")
                 .patternLine("SSS")
                 .patternLine("SSS");
 
-        shapelessRecipe(itemSapphire().get(), 9, new ResourceLocation(MOD_ID, "sapphire_from_block"))
+        shapelessRecipe(SAPPHIRE_ITEM, 9, new ResourceLocation(MOD_ID, "sapphire_from_block"))
                 .addIngredient(SAPPHIRE_STORAGE_BLOCK_ITEM_TAG);
 
         shapedRecipe(PERIDOT_BLOCK)
-                .key('S', tagGemsPeridot())
+                .key('S', PERIDOT_GEM_TAG)
                 .patternLine("SSS")
                 .patternLine("SSS")
                 .patternLine("SSS");
 
-        shapelessRecipe(itemPeridot().get(), 9, new ResourceLocation(MOD_ID, "peridot_from_block"))
+        shapelessRecipe(PERIDOT_ITEM, 9, new ResourceLocation(MOD_ID, "peridot_from_block"))
                 .addIngredient(PERIDOT_STORAGE_BLOCK_ITEM_TAG);
 
         shapedRecipe(COPPER_BLOCK)
-                .key('S', tagIngotsCopper())
+                .key('S', COPPER_INGOT_TAG)
                 .patternLine("SSS")
                 .patternLine("SSS")
                 .patternLine("SSS");
 
-        shapelessRecipe(itemCopperIngot().get(), 9, new ResourceLocation(MOD_ID, "copper_from_block"))
+        shapelessRecipe(COPPER_INGOT_ITEM, 9, new ResourceLocation(MOD_ID, "copper_from_block"))
                 .addIngredient(COPPER_STORAGE_BLOCK_ITEM_TAG);
 
         shapedRecipe(TIN_BLOCK)
-                .key('S', tagIngotsTin())
+                .key('S', TIN_INGOT_TAG)
                 .patternLine("SSS")
                 .patternLine("SSS")
                 .patternLine("SSS");
 
-        shapelessRecipe(itemTinIngot().get(), 9, new ResourceLocation(MOD_ID, "tin_from_block"))
+        shapelessRecipe(TIN_INGOT_ITEM, 9, new ResourceLocation(MOD_ID, "tin_from_block"))
                 .addIngredient(TIN_ORE_BLOCK_ITEM_TAG);
 
         shapedRecipe(SILVER_BLOCK)
-                .key('S', tagIngotsSilver())
+                .key('S', SILVER_INGOT_TAG)
                 .patternLine("SSS")
                 .patternLine("SSS")
                 .patternLine("SSS");
 
-        shapelessRecipe(itemSilverIngot().get(), 9, new ResourceLocation(MOD_ID, "silver_from_block"))
+        shapelessRecipe(SILVER_INGOT_ITEM, 9, new ResourceLocation(MOD_ID, "silver_from_block"))
                 .addIngredient(SILVER_STORAGE_BLOCK_ITEM_TAG);
 
         shapedRecipe(ELECTROTINE_BLOCK)
-                .key('S', tagDustsElectrotine())
+                .key('S', ELECTROTINE_DUST_TAG)
                 .patternLine("SSS")
                 .patternLine("SSS")
                 .patternLine("SSS");
 
-        shapelessRecipe(itemElectrotineDust().get(), 9, new ResourceLocation(MOD_ID, "electrotine_from_block"))
+        shapelessRecipe(ELECTROTINE_DUST_ITEM, 9, new ResourceLocation(MOD_ID, "electrotine_from_block"))
                 .addIngredient(ELECTROTINE_STORAGE_BLOCK_ITEM_TAG);
 
         // Walls
@@ -204,7 +205,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
 
         shapedRecipe(WOOL_GIN)
                 .key('S', Tags.Items.RODS_WOODEN)
-                .key('I', itemIronCoil().get())
+                .key('I', IRON_COIL_ITEM)
                 .patternLine("SIS")
                 .patternLine("SSS")
                 .patternLine(" S ");
@@ -218,61 +219,61 @@ public class ExplorationRecipeProvider extends RecipeProvider {
 
         shapedRecipe(ATHAME)
                 .key('W', Tags.Items.RODS_WOODEN)
-                .key('S', tagIngotsSilver())
+                .key('S', SILVER_INGOT_TAG)
                 .patternLine("S")
                 .patternLine("W");
 
-        axeRecipe(RUBY_AXE, tagGemsRuby());
-        axeRecipe(SAPPHIRE_AXE, tagGemsSapphire());
-        axeRecipe(PERIDOT_AXE, tagGemsPeridot());
+        axeRecipe(RUBY_AXE, RUBY_GEM_TAG);
+        axeRecipe(SAPPHIRE_AXE, SAPPHIRE_GEM_TAG);
+        axeRecipe(PERIDOT_AXE, PERIDOT_GEM_TAG);
 
-        pickaxeRecipe(RUBY_PICKAXE, tagGemsRuby());
-        pickaxeRecipe(SAPPHIRE_PICKAXE, tagGemsSapphire());
-        pickaxeRecipe(PERIDOT_PICKAXE, tagGemsPeridot());
+        pickaxeRecipe(RUBY_PICKAXE, RUBY_GEM_TAG);
+        pickaxeRecipe(SAPPHIRE_PICKAXE, SAPPHIRE_GEM_TAG);
+        pickaxeRecipe(PERIDOT_PICKAXE, PERIDOT_GEM_TAG);
 
-        shovelRecipe(RUBY_SHOVEL, tagGemsRuby());
-        shovelRecipe(SAPPHIRE_SHOVEL, tagGemsSapphire());
-        shovelRecipe(PERIDOT_SHOVEL, tagGemsPeridot());
+        shovelRecipe(RUBY_SHOVEL, RUBY_GEM_TAG);
+        shovelRecipe(SAPPHIRE_SHOVEL, SAPPHIRE_GEM_TAG);
+        shovelRecipe(PERIDOT_SHOVEL, PERIDOT_GEM_TAG);
 
-        hoeRecipe(RUBY_HOE, tagGemsRuby());
-        hoeRecipe(SAPPHIRE_HOE, tagGemsSapphire());
-        hoeRecipe(PERIDOT_HOE, tagGemsPeridot());
+        hoeRecipe(RUBY_HOE, RUBY_GEM_TAG);
+        hoeRecipe(SAPPHIRE_HOE, SAPPHIRE_GEM_TAG);
+        hoeRecipe(PERIDOT_HOE, PERIDOT_GEM_TAG);
 
-        swordRecipe(RUBY_SWORD, tagGemsRuby());
-        swordRecipe(SAPPHIRE_SWORD, tagGemsSapphire());
-        swordRecipe(PERIDOT_SWORD, tagGemsPeridot());
+        swordRecipe(RUBY_SWORD, RUBY_GEM_TAG);
+        swordRecipe(SAPPHIRE_SWORD, SAPPHIRE_GEM_TAG);
+        swordRecipe(PERIDOT_SWORD, PERIDOT_GEM_TAG);
 
         sawRecipe(GOLD_SAW, Tags.Items.INGOTS_GOLD);
-        sawRecipe(RUBY_SAW, tagGemsRuby());
-        sawRecipe(SAPPHIRE_SAW, tagGemsSapphire());
-        sawRecipe(PERIDOT_SAW, tagGemsPeridot());
+        sawRecipe(RUBY_SAW, RUBY_GEM_TAG);
+        sawRecipe(SAPPHIRE_SAW, SAPPHIRE_GEM_TAG);
+        sawRecipe(PERIDOT_SAW, PERIDOT_GEM_TAG);
 
         sickleRecipe(WOOD_SICKLE, Tags.Items.RODS_WOODEN);
         sickleRecipe(STONE_SICKLE, Tags.Items.COBBLESTONE);
         sickleRecipe(IRON_SICKLE, Tags.Items.INGOTS_IRON);
         sickleRecipe(GOLD_SICKLE, Tags.Items.INGOTS_GOLD);
         sickleRecipe(DIAMOND_SICKLE, Tags.Items.GEMS_DIAMOND);
-        sickleRecipe(RUBY_SICKLE, tagGemsRuby());
-        sickleRecipe(SAPPHIRE_SICKLE, tagGemsSapphire());
-        sickleRecipe(PERIDOT_SICKLE, tagGemsPeridot());
+        sickleRecipe(RUBY_SICKLE, RUBY_GEM_TAG);
+        sickleRecipe(SAPPHIRE_SICKLE, SAPPHIRE_GEM_TAG);
+        sickleRecipe(PERIDOT_SICKLE, PERIDOT_GEM_TAG);
 
         // Armor
 
-        helmetRecipe(RUBY_HELMET, tagGemsRuby());
-        helmetRecipe(SAPPHIRE_HELMET, tagGemsSapphire());
-        helmetRecipe(PERIDOT_HELMET, tagGemsPeridot());
+        helmetRecipe(RUBY_HELMET, RUBY_GEM_TAG);
+        helmetRecipe(SAPPHIRE_HELMET, SAPPHIRE_GEM_TAG);
+        helmetRecipe(PERIDOT_HELMET, PERIDOT_GEM_TAG);
 
-        chestplateRecipe(RUBY_CHESTPLATE, tagGemsRuby());
-        chestplateRecipe(SAPPHIRE_CHESTPLATE, tagGemsSapphire());
-        chestplateRecipe(PERIDOT_CHESTPLATE, tagGemsPeridot());
+        chestplateRecipe(RUBY_CHESTPLATE, RUBY_GEM_TAG);
+        chestplateRecipe(SAPPHIRE_CHESTPLATE, SAPPHIRE_GEM_TAG);
+        chestplateRecipe(PERIDOT_CHESTPLATE, PERIDOT_GEM_TAG);
 
-        leggingsRecipe(RUBY_LEGGINGS, tagGemsRuby());
-        leggingsRecipe(SAPPHIRE_LEGGINGS, tagGemsSapphire());
-        leggingsRecipe(PERIDOT_LEGGINGS, tagGemsPeridot());
+        leggingsRecipe(RUBY_LEGGINGS, RUBY_GEM_TAG);
+        leggingsRecipe(SAPPHIRE_LEGGINGS, SAPPHIRE_GEM_TAG);
+        leggingsRecipe(PERIDOT_LEGGINGS, PERIDOT_GEM_TAG);
 
-        bootsRecipe(RUBY_BOOTS, tagGemsRuby());
-        bootsRecipe(SAPPHIRE_BOOTS, tagGemsSapphire());
-        bootsRecipe(PERIDOT_BOOTS, tagGemsPeridot());
+        bootsRecipe(RUBY_BOOTS, RUBY_GEM_TAG);
+        bootsRecipe(SAPPHIRE_BOOTS, SAPPHIRE_GEM_TAG);
+        bootsRecipe(PERIDOT_BOOTS, PERIDOT_GEM_TAG);
 
         // Backpacks
         for (int i = 0; i < 15; i++) {
@@ -380,7 +381,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
         DyeColor color = ((BackpackItem) backpack).getDyeColor();
 
         ShapedRecipeBuilder builder = shapedRecipe(backpack)
-                .key('C', itemWovenCloth().get());
+                .key('C', WOVEN_CLOTH_ITEM);
 
         if (color != DyeColor.WHITE) { // White is default and doesn't need a dye
             builder.patternLine("CCC")

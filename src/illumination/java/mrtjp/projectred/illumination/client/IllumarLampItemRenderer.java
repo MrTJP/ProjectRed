@@ -9,7 +9,7 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Vector3;
 import codechicken.lib.vec.uv.IconTransformation;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import mrtjp.projectred.core.RenderHalo;
+import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.illumination.block.IllumarLampBlock;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
@@ -67,7 +67,7 @@ public class IllumarLampItemRenderer extends WrappedItemModel implements IItemRe
         BlockRenderer.renderCuboid(ccrs, BLOCK_BOUNDS, 0);
 
         // Render halo
-        RenderHalo.renderHalo(ccrs, mStack, getter, GLOW_BOUNDS, block.getColor(), Vector3.ZERO);
+        HaloRenderer.renderHalo(ccrs, mStack, getter, GLOW_BOUNDS, block.getColor(), Vector3.ZERO);
     }
 
     @Override

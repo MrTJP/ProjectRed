@@ -1,10 +1,10 @@
 package mrtjp.projectred.transmission.part;
 
-import mrtjp.projectred.core.part.IPropagationPart;
 import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.core.part.IPropagationHooks;
+import mrtjp.projectred.core.part.IPropagationPart;
 
-import static mrtjp.projectred.core.BundledCommons.*;
+import static mrtjp.projectred.core.BundledSignalsLib.*;
 import static mrtjp.projectred.core.RedstonePropagator.*;
 
 public interface IBundledPropagationPart extends IPropagationPart, IPropagationHooks {

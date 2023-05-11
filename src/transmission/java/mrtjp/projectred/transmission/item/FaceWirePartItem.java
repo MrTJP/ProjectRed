@@ -3,7 +3,7 @@ package mrtjp.projectred.transmission.item;
 import codechicken.multipart.api.ItemMultiPart;
 import codechicken.multipart.api.part.TMultiPart;
 import mrtjp.projectred.ProjectRedTransmission;
-import mrtjp.projectred.core.PRLib;
+import mrtjp.projectred.core.PlacementLib;
 import mrtjp.projectred.transmission.WireType;
 import mrtjp.projectred.transmission.part.BaseWirePart;
 import net.minecraft.item.Item;
@@ -28,7 +28,7 @@ public class FaceWirePartItem extends ItemMultiPart {
     public TMultiPart newPart(ItemUseContext context) {
         Direction side = context.getClickedFace();
         BlockPos onPos = context.getClickedPos().relative(side.getOpposite());
-        if (!PRLib.canPlaceWireOnSide(context.getLevel(), onPos, side)) {
+        if (!PlacementLib.canPlaceWireOnSide(context.getLevel(), onPos, side)) {
             return null;
         } else {
             BaseWirePart wire = type.newPart();

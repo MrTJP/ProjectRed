@@ -7,7 +7,8 @@ import net.minecraft.item.Items;
 import net.minecraft.tags.ItemTags;
 import net.minecraftforge.common.Tags;
 
-import static mrtjp.projectred.core.CoreContent.*;
+import static mrtjp.projectred.core.init.CoreReferences.COPPER_COIL_ITEM;
+import static mrtjp.projectred.core.init.CoreTags.*;
 import static mrtjp.projectred.expansion.init.ExpansionReferences.*;
 
 public class ExpansionRecipeProvider extends RecipeProvider {
@@ -38,18 +39,18 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .key('B', BATTERY_ITEM)
                 .key('W', ItemTags.PLANKS)
                 .key('I', Tags.Items.INGOTS_IRON)
-                .key('E', tagIngotsElectrotineAlloy())
+                .key('E', ELECTROTINE_ALLOY_INGOT_TAG)
                 .patternLine("BWB")
                 .patternLine("BIB")
                 .patternLine("IEI");
 
         shapedRecipe(CHARGING_BENCH_BLOCK, 1)
                 .key('S', Tags.Items.STONE)
-                .key('C', itemCopperCoil().get())
+                .key('C', COPPER_COIL_ITEM)
                 .key('W', ItemTags.PLANKS)
                 .key('B', BATTERY_ITEM)
                 .key('I', Tags.Items.INGOTS_IRON)
-                .key('E', tagIngotsElectrotineAlloy())
+                .key('E', ELECTROTINE_ALLOY_INGOT_TAG)
                 .patternLine("SCS")
                 .patternLine("WBW")
                 .patternLine("IEI");
@@ -60,7 +61,7 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .key('I', Tags.Items.INGOTS_IRON)
                 .key('C', Blocks.CHEST)
                 .key('W', ItemTags.PLANKS)
-                .key('E', tagIngotsElectrotineAlloy())
+                .key('E', ELECTROTINE_ALLOY_INGOT_TAG)
                 .patternLine("SBS")
                 .patternLine("ICI")
                 .patternLine("WEW");
@@ -76,9 +77,9 @@ public class ExpansionRecipeProvider extends RecipeProvider {
 
         // Items
         shapedRecipe(BATTERY_ITEM, 1)
-                .key('E', tagDustsElectrotine())
-                .key('T', tagIngotsTin())
-                .key('C', tagIngotsCopper())
+                .key('E', ELECTROTINE_DUST_TAG)
+                .key('T', TIN_INGOT_TAG)
+                .key('C', COPPER_INGOT_TAG)
                 .patternLine("ETE")
                 .patternLine("ECE")
                 .patternLine("ETE");
@@ -89,7 +90,7 @@ public class ExpansionRecipeProvider extends RecipeProvider {
 
         shapedRecipe(ELECTRIC_SCREWDRIVER_ITEM, 1)
                 .key('I', Tags.Items.INGOTS_IRON)
-                .key('S', tagGemsSapphire())
+                .key('S', SAPPHIRE_GEM_TAG)
                 .key('B', BATTERY_ITEM)
                 .patternLine("I  ")
                 .patternLine(" S ")

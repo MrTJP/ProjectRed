@@ -4,6 +4,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.expansion.block.BatteryBoxBlock;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.inventory.container.BatteryBoxContainer;
@@ -119,16 +120,19 @@ public class BatteryBoxTile extends LowLoadPoweredTile {
 
         boolean changed = false;
 
+        if (level.getGameTime() % 20 == 0)
+            ProjectRedCore.LOGGER.info("vbat: " + conductor.getVoltage());
+
         // Attempt to keep conductor charge between UpperChargeTarget and LowerChargeTarget by
         // respectively drawing from or to internal storage
-        if (conductor.charge() > getConductorUpperChargeTarget() && powerStored < getMaxStorage()) {
-            int n = Math.min(conductor.charge() - getConductorUpperChargeTarget(), getConductorChargeSpeed()) / 10;
+        if (getConductorCharge() > getConductorUpperChargeTarget() && powerStored < getMaxStorage()) {
+            int n = Math.min(getConductorCharge() - getConductorUpperChargeTarget(), getConductorChargeSpeed()) / 10;
             n = Math.min(n, getMaxStorage() - powerStored);
-            conductor.drawPower(n * 1000);
+            conductor.applyPower(n * -1000);
             powerStored += n;
             if (n != 0) changed = true;
-        } else if (conductor.charge() < getConductorLowerChargeTarget() && powerStored > 0) {
-            int n = Math.min(getConductorLowerChargeTarget() - conductor.charge(), getConductorChargeSpeed()) / 10;
+        } else if (getConductorCharge() < getConductorLowerChargeTarget() && powerStored > 0) {
+            int n = Math.min(getConductorLowerChargeTarget() - getConductorCharge(), getConductorChargeSpeed()) / 10;
             n = Math.min(n, powerStored);
             conductor.applyPower(n * 1000);
             powerStored -= n;

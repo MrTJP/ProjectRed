@@ -10,7 +10,7 @@ import codechicken.lib.vec.Vertex5;
 import codechicken.lib.vec.uv.UVScale;
 import codechicken.lib.vec.uv.UVTransformation;
 import codechicken.lib.vec.uv.UVTranslation;
-import mrtjp.projectred.core.PRLib;
+import mrtjp.projectred.core.BundledSignalsLib;
 import mrtjp.projectred.core.UVT;
 
 import java.util.Arrays;
@@ -105,7 +105,7 @@ public class WireModelBuilder {
                 new Vertex5(0.5 - w, h, 0.5 - w, 8 - tw, 16 - tw)
         };
 
-        int r = PRLib.bundledCableBaseRotationMap()[side];
+        int r = BundledSignalsLib.bundledCableBaseRotationMap[side];
 
         if (tex == 0 || tex == 1) tex = (tex + r) % 2;
         if (tex == 1) r += 3;
@@ -276,7 +276,7 @@ public class WireModelBuilder {
     }
 
     private void reflectSide(Vertex5[] verts, int r) {
-        if ((r + PRLib.bundledCableBaseRotationMap()[side]) % 4 >= 2) {
+        if ((r + BundledSignalsLib.bundledCableBaseRotationMap[side]) % 4 >= 2) {
             apply(ROTATE_WIRE_UV_180, verts);
         }
     }

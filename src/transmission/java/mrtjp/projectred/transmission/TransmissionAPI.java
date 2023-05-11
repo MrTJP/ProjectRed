@@ -8,7 +8,6 @@ import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IBundledTile;
 import mrtjp.projectred.api.IBundledTileInteraction;
 import mrtjp.projectred.api.ITransmissionAPI;
-import mrtjp.projectred.core.BundledCommons;
 import mrtjp.projectred.core.BundledSignalsLib;
 import mrtjp.projectred.transmission.part.BaseCenterWirePart;
 import mrtjp.projectred.transmission.part.IBundledCablePart;
@@ -16,6 +15,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import static mrtjp.projectred.core.BundledSignalsLib.raiseSignal;
 
 public class TransmissionAPI implements ITransmissionAPI {
 
@@ -53,14 +54,14 @@ public class TransmissionAPI implements ITransmissionAPI {
 
                 if (part instanceof IBundledEmitter) {
                     int otherRotation = Rotation.rotationTo(pside, side^1);
-                    signal = BundledCommons.raiseSignal(signal, ((IBundledEmitter) part).getBundledSignal(otherRotation));
+                    signal = raiseSignal(signal, ((IBundledEmitter) part).getBundledSignal(otherRotation));
                 }
             }
 
             // Access center part
             TMultiPart part = tmp.getSlottedPart(6);
             if (part instanceof IBundledEmitter) {
-                signal = BundledCommons.raiseSignal(signal, ((IBundledEmitter) part).getBundledSignal(side ^ 1));
+                signal = raiseSignal(signal, ((IBundledEmitter) part).getBundledSignal(side ^ 1));
             }
         }
         return null;

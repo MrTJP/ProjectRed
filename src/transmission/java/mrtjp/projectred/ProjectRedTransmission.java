@@ -3,7 +3,6 @@ package mrtjp.projectred;
 import codechicken.lib.gui.SimpleItemGroup;
 import codechicken.lib.util.SneakyUtils;
 import codechicken.multipart.api.MultiPartType;
-import mrtjp.projectred.api.ITransmissionAPI;
 import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.transmission.TransmissionAPI;

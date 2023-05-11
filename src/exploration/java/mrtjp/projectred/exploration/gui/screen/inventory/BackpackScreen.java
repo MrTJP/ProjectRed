@@ -2,8 +2,8 @@ package mrtjp.projectred.exploration.gui.screen.inventory;
 
 import codechicken.lib.texture.TextureUtils;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import mrtjp.core.vec.Point;
 import mrtjp.projectred.exploration.inventory.container.BackpackContainer;
+import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.RedUIContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
