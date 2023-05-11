@@ -95,15 +95,15 @@ public class ChargingBenchTile extends LowLoadPoweredTile {
     public void tick() {
         super.tick();
         if (getLevel().isClientSide) return;
-        isCharged = conductor.canWork();
+        isCharged = canConductorWork();
 
         boolean changed = false;
 
         // Skim power from conductor if it is above the upper charge target to fill internal storage
-        if (conductor.charge() > getConductorUpperChargeTarget() && powerStored < getMaxStorage()) {
-            int n = Math.min(conductor.charge() - getConductorUpperChargeTarget(), getConductorChargeSpeed()) / 10;
+        if (getConductorCharge() > getConductorUpperChargeTarget() && powerStored < getMaxStorage()) {
+            int n = Math.min(getConductorCharge() - getConductorUpperChargeTarget(), getConductorChargeSpeed()) / 10;
             n = Math.min(n, getMaxStorage() - powerStored);
-            conductor.drawPower(n * 1000);
+            conductor.applyPower(n * -10);
             powerStored += n;
             if (n != 0) changed = true;
         }

@@ -20,7 +20,7 @@ import codechicken.multipart.block.TileMultiPart;
 import codechicken.multipart.util.PartRayTraceResult;
 import com.google.common.collect.ImmutableSet;
 import mrtjp.projectred.api.IConnectable;
-import mrtjp.projectred.core.PRLib;
+import mrtjp.projectred.core.PlacementLib;
 import mrtjp.projectred.core.part.IConnectableCenterPart;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.block.SoundType;
@@ -297,7 +297,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
         if (held.isEmpty() && player.isCrouching() && material != null) {
             if (!world().isClientSide) {
                 if (material != null && !player.isCreative()) {
-                    PRLib.dropTowardsPlayer(world(), pos(), ItemMicroBlock.create(0, 1, material), player);
+                    PlacementLib.dropTowardsPlayer(world(), pos(), ItemMicroBlock.create(0, 1, material), player);
                 }
                 material = null;
                 sendMaterialUpdate();
@@ -317,7 +317,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
 
                     // Drop old material if player is not in creative
                     if (material != null && !player.isCreative()) {
-                        PRLib.dropTowardsPlayer(world(), pos(), ItemMicroBlock.create(0, 1, material), player);
+                        PlacementLib.dropTowardsPlayer(world(), pos(), ItemMicroBlock.create(0, 1, material), player);
                     }
 
                     // Swap the material

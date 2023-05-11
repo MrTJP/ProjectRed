@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "projectred-core:item/illumar/pink_illumar"
+    "layer0": "projectred-core:item/pink_illumar"
   }
 }

@@ -83,7 +83,7 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
         switch (key) {
             case KEY_STATE:
                 gateState = packet.readByte();
-                if (Configurator.staticGates()) {
+                if (Configurator.staticGates) {
                     tile().markRender();
                 }
                 break;
@@ -213,7 +213,7 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
     }
 
     protected void tickSound() {
-        if (Configurator.logicGateSounds()) {
+        if (Configurator.logicGateSounds) {
             world().playSound(null, pos(), SoundEvents.LEVER_CLICK, SoundCategory.BLOCKS, 0.15F, 0.5f);
         }
     }

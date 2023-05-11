@@ -8,7 +8,6 @@ import mrtjp.projectred.lib.InventoryLib;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.IContainerListener;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;

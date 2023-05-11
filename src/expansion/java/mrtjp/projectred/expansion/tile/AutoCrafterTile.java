@@ -192,8 +192,8 @@ public class AutoCrafterTile extends BaseMachineTile implements CraftingHelper.I
     @Override
     protected int tickWork(int remainingWork) {
         updateRecipeIfNeeded();
-        if (conductor.canWork() && craftingHelper.canTakeIntoStorage()) {
-            conductor.drawPower(1100);
+        if (canConductorWork() && craftingHelper.canTakeIntoStorage()) {
+            conductor.applyPower(-1100);
             return 1;
         }
         // Pause work if no charge or no space for results

@@ -8,7 +8,7 @@ import codechicken.microblock.MicroblockClient;
 import codechicken.microblock.api.BlockMicroMaterial;
 import codechicken.multipart.block.TileMultiPart;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import mrtjp.projectred.core.RenderHalo;
+import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.illumination.block.IllumarLampBlock;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.Atlases;
@@ -70,9 +70,9 @@ public class IllumarLampMicroMaterial extends BlockMicroMaterial implements Illu
             boxes.add(part.getBounds().copy().expand(0.025D));
         }
 
-        RenderHalo.prepareRenderState(ccrs, mStack, buffers);
+        HaloRenderer.prepareRenderState(ccrs, mStack, buffers);
         for (Cuboid6 box : boxes) {
-            RenderHalo.renderToCCRS(ccrs, box, getLightColor(), new RedundantTransformation());
+            HaloRenderer.renderToCCRS(ccrs, box, getLightColor(), new RedundantTransformation());
         }
     }
 

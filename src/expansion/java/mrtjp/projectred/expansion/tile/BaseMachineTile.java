@@ -59,7 +59,7 @@ public abstract class BaseMachineTile extends LowLoadPoweredTile {
 
         if (getLevel().isClientSide) return;
 
-        isCharged = conductor.canWork();
+        isCharged = canConductorWork();
         if (!isWorking) { // Not currently working
             // Try to start work
             if (canStartOrContinueWork()) {

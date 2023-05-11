@@ -2,9 +2,9 @@ package mrtjp.projectred.expansion.gui.screen.inventory;
 
 import codechicken.lib.texture.TextureUtils;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import mrtjp.core.gui.GuiLib$;
-import mrtjp.core.vec.Point;
 import mrtjp.projectred.expansion.inventory.container.BatteryBoxContainer;
+import mrtjp.projectred.lib.GuiLib;
+import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.RedUIContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
@@ -34,11 +34,11 @@ public class BatteryBoxScreen extends RedUIContainerScreen<BatteryBoxContainer> 
 
         if (getMenu().canConductorWork())
             blit(stack, x + 57, y + 16, 176, 1, 7, 9);
-        GuiLib$.MODULE$.drawVerticalTank(stack, this, x + 57, y + 26, 176, 10, 7, 48, getMenu().getChargeScaled(48));
+        GuiLib.drawVerticalTank(stack, this, x + 57, y + 26, 176, 10, 7, 48, getMenu().getChargeScaled(48));
 
         if (getMenu().isPowerStorageFull())
             blit(stack, x + 112, y + 16, 184, 1, 14, 9);
-        GuiLib$.MODULE$.drawVerticalTank(stack, this, x + 112, y + 26, 184, 10, 14, 48, getMenu().getPowerStoredScaled(48));
+        GuiLib.drawVerticalTank(stack, this, x + 112, y + 26, 184, 10, 14, 48, getMenu().getPowerStoredScaled(48));
 
         if (getMenu().isStorageCharging())
             blit(stack, x + 65, y + 52, 199, 18, 48, 18);

@@ -3,7 +3,7 @@ package mrtjp.projectred.exploration.data;
 import codechicken.lib.datagen.LootTableProvider;
 import net.minecraft.data.DataGenerator;
 
-import static mrtjp.projectred.core.CoreContent.*;
+import static mrtjp.projectred.core.init.CoreReferences.*;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
 
 public class ExplorationLootTableProvider extends LootTableProvider.BlockLootProvider {
@@ -21,13 +21,13 @@ public class ExplorationLootTableProvider extends LootTableProvider.BlockLootPro
     protected void registerTables() {
 
         // Ores
-        register(RUBY_ORE_BLOCK, valueRangeOrSilkWithFortune(RUBY_ORE_BLOCK, itemRuby().get(), 1, 4));
-        register(SAPPHIRE_ORE_BLOCK, valueRangeOrSilkWithFortune(SAPPHIRE_ORE_BLOCK, itemSapphire().get(), 1, 4));
-        register(PERIDOT_ORE_BLOCK, valueRangeOrSilkWithFortune(PERIDOT_ORE_BLOCK, itemPeridot().get(), 1, 4));
+        register(RUBY_ORE_BLOCK, valueRangeOrSilkWithFortune(RUBY_ORE_BLOCK, RUBY_ITEM, 1, 4));
+        register(SAPPHIRE_ORE_BLOCK, valueRangeOrSilkWithFortune(SAPPHIRE_ORE_BLOCK, SAPPHIRE_ITEM, 1, 4));
+        register(PERIDOT_ORE_BLOCK, valueRangeOrSilkWithFortune(PERIDOT_ORE_BLOCK, PERIDOT_ITEM, 1, 4));
         register(COPPER_ORE_BLOCK, singleItem(COPPER_ORE_BLOCK));
         register(TIN_ORE_BLOCK, singleItem(TIN_ORE_BLOCK));
         register(SILVER_ORE_BLOCK, singleItem(SILVER_ORE_BLOCK));
-        register(ELECTROTINE_ORE_BLOCK, valueRangeOrSilkWithFortune(ELECTROTINE_ORE_BLOCK, itemElectrotineDust().get(), 1, 8));
+        register(ELECTROTINE_ORE_BLOCK, valueRangeOrSilkWithFortune(ELECTROTINE_ORE_BLOCK, ELECTROTINE_DUST_ITEM, 1, 8));
 
         // Decorative Blocks
         register(MARBLE_BLOCK, singleItem(MARBLE_BLOCK));

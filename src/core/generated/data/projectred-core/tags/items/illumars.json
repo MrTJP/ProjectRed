@@ -1,21 +1,21 @@
 {
   "replace": false,
   "values": [
-    "#projectred-core:illumars/white",
-    "#projectred-core:illumars/orange",
-    "#projectred-core:illumars/magenta",
-    "#projectred-core:illumars/light_blue",
-    "#projectred-core:illumars/yellow",
-    "#projectred-core:illumars/lime",
-    "#projectred-core:illumars/pink",
-    "#projectred-core:illumars/gray",
-    "#projectred-core:illumars/light_gray",
-    "#projectred-core:illumars/cyan",
-    "#projectred-core:illumars/purple",
-    "#projectred-core:illumars/blue",
-    "#projectred-core:illumars/brown",
-    "#projectred-core:illumars/green",
-    "#projectred-core:illumars/red",
-    "#projectred-core:illumars/black"
+    "projectred-core:white_illumar",
+    "projectred-core:orange_illumar",
+    "projectred-core:magenta_illumar",
+    "projectred-core:light_blue_illumar",
+    "projectred-core:yellow_illumar",
+    "projectred-core:lime_illumar",
+    "projectred-core:pink_illumar",
+    "projectred-core:gray_illumar",
+    "projectred-core:light_gray_illumar",
+    "projectred-core:cyan_illumar",
+    "projectred-core:purple_illumar",
+    "projectred-core:blue_illumar",
+    "projectred-core:brown_illumar",
+    "projectred-core:green_illumar",
+    "projectred-core:red_illumar",
+    "projectred-core:black_illumar"
   ]
 }

@@ -98,7 +98,7 @@ public abstract class BaseWirePart extends TMultiPart implements TIconHitEffects
     }
 
     public boolean useStaticRenderer() {
-        return Configurator.staticWires();
+        return Configurator.staticWires;
     }
 
     @Override

@@ -1,74 +1,87 @@
 package mrtjp.projectred.transmission.part;
 
-import codechicken.multipart.api.part.ITickablePart;
-import mrtjp.projectred.core.IPowerConnectable;
-import mrtjp.projectred.core.PowerConductor;
-import mrtjp.projectred.core.power.ConductorCache;
+import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.CenterLookup;
+import mrtjp.projectred.core.power.IPowerConductorSource;
+import mrtjp.projectred.core.power.IPowerConnectable;
+import mrtjp.projectred.core.power.PowerConductor;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
-public abstract class FramedPowerWire extends BaseCenterWirePart implements IPowerConnectable, ITickablePart {
+import java.util.LinkedList;
+import java.util.List;
 
-    private final ConductorCache cache = new ConductorCache(this::getConductor, 6);
+public abstract class FramedPowerWire extends BaseCenterWirePart implements IPowerConnectable, IPowerConductorSource {
+
+    private final List<PowerConductor> connectedConductors = new LinkedList<>();
+    private boolean cacheInvalid = true;
 
     public FramedPowerWire(WireType wireType) {
         super(wireType);
     }
 
-    private PowerConductor getConductor(int s) {
-        CenterLookup lookup = null;
+    @Override
+    public long getTime() {
+        return getLevel().getGameTime();
+    }
 
-        if (s < 0 || s > 6) return null;
-
-        if (maskConnectsOut(s)) {
-            lookup = CenterLookup.lookupStraightCenter(world(), pos(), s);
-        } else if (maskConnectsIn(s)) {
-            lookup = CenterLookup.lookupInsideFace(world(), pos(), s);
+    @Override
+    public List<PowerConductor> getConnectedConductors() {
+        if (cacheInvalid) {
+            recacheConductors();
+            cacheInvalid = false;
         }
+        return connectedConductors;
+    }
 
-        if (lookup == null) return null;
+    private void recacheConductors() {
+        connectedConductors.clear();
 
+        for (int s = 0; s < 6; s++) {
+            CenterLookup lookup;
+            if (maskConnectsIn(s)) {
+                lookup = CenterLookup.lookupInsideFace(world(), pos(), s);
+            } else if (maskConnectsOut(s)) {
+                lookup = CenterLookup.lookupStraightCenter(world(), pos(), s);
+            } else {
+                continue;
+            }
+
+            PowerConductor c = retrieveConductor(lookup);
+            if (c != null) connectedConductors.add(c);
+        }
+    }
+
+    private PowerConductor retrieveConductor(CenterLookup lookup) {
         if (lookup.part instanceof IPowerConnectable) {
-            return ((IPowerConnectable) lookup.part).conductor(lookup.otherDirection);
+            return ((IPowerConnectable) lookup.part).getConductor(lookup.otherDirection);
         }
 
         if (lookup.tile instanceof IPowerConnectable) {
-            return ((IPowerConnectable) lookup.tile).conductor(lookup.otherDirection);
+            return ((IPowerConnectable) lookup.tile).getConductor(lookup.otherDirection);
         }
 
         return null;
     }
 
     @Override
-    public PowerConductor conductorOut(int id) {
-        return cache.getExternalConductor(id);
-    }
-
-    @Override
-    public World connWorld() {
-        return world();
-    }
-
-    @Override
     public void onMaskChanged() {
         super.onMaskChanged();
-        cache.invalidateCache();
+        cacheInvalid = true;
     }
 
     @Override
     public void onNeighborBlockChanged(BlockPos from) {
         super.onNeighborBlockChanged(from);
-        cache.invalidateCache();
+        cacheInvalid = true;
     }
 
     //region Connections
     @Override
     public boolean discoverStraightOverride(int absDir) {
         CenterLookup lookup = CenterLookup.lookupStraightCenter(world(), pos(), absDir);
-        if (lookup.tile instanceof IPowerConnectable) {
-            return ((IPowerConnectable) lookup.tile).connectStraight(this, lookup.otherDirection, -1);
+        if (lookup.tile instanceof IConnectable) {
+            return ((IConnectable) lookup.tile).connectStraight(this, lookup.otherDirection, -1);
         }
         return false;
     }

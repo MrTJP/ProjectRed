@@ -6,11 +6,10 @@ import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IBundledTile;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.api.IMaskedBundledTile;
-import mrtjp.projectred.core.BundledCommons;
 import mrtjp.projectred.core.BundledSignalsLib;
+import mrtjp.projectred.core.FaceLookup;
 import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.core.part.IPropagationFacePart;
-import mrtjp.projectred.core.FaceLookup;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -19,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.Arrays;
 
+import static mrtjp.projectred.core.BundledSignalsLib.raiseSignal;
 import static mrtjp.projectred.core.RedstonePropagator.FORCE;
 import static mrtjp.projectred.core.RedstonePropagator.RISING;
 
@@ -224,15 +224,15 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
 
         } else if (lookup.part instanceof IBundledEmitter) {
             byte[] signalIn = ((IBundledEmitter) lookup.part).getBundledSignal(lookup.otherRotation);
-            BundledCommons.raiseSignal(tmpSignal, signalIn);
+            raiseSignal(tmpSignal, signalIn);
 
         } else if (lookup.tile instanceof IBundledTile) {
             byte[] signalIn = ((IBundledTile) lookup.tile).getBundledSignal(Rotation.rotateSide(lookup.otherSide, lookup.otherRotation));
-            BundledCommons.raiseSignal(tmpSignal, signalIn);
+            raiseSignal(tmpSignal, signalIn);
 
         } else if (lookup.tile != null) {
             byte[] externalSignal = BundledSignalsLib.getBundledSignalViaInteraction(lookup.tile.getLevel(), lookup.tile.getBlockPos(), Direction.values()[lookup.r]);
-            BundledCommons.raiseSignal(tmpSignal, externalSignal);
+            raiseSignal(tmpSignal, externalSignal);
         }
     }
     //endregion

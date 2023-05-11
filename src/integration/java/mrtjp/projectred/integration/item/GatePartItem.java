@@ -3,7 +3,7 @@ package mrtjp.projectred.integration.item;
 import codechicken.multipart.api.ItemMultiPart;
 import codechicken.multipart.api.part.TMultiPart;
 import mrtjp.projectred.ProjectRedIntegration;
-import mrtjp.projectred.core.PRLib;
+import mrtjp.projectred.core.PlacementLib;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.part.GatePart;
 import net.minecraft.item.Item;
@@ -28,7 +28,7 @@ public class GatePartItem extends ItemMultiPart {
     public TMultiPart newPart(ItemUseContext context) {
         Direction side = context.getClickedFace();
         BlockPos onPos = context.getClickedPos().relative(side.getOpposite());
-        if (!PRLib.canPlaceGateOnSide(context.getLevel(), onPos, side)) {
+        if (!PlacementLib.canPlaceGateOnSide(context.getLevel(), onPos, side)) {
             return null;
         }
         GatePart gatePart = gateType.newPart();

@@ -10,7 +10,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
 
 import static mrtjp.projectred.ProjectRedTransmission.MOD_ID;
-import static mrtjp.projectred.core.CoreContent.*;
+import static mrtjp.projectred.core.init.CoreReferences.*;
+import static mrtjp.projectred.core.init.CoreTags.ELECTROTINE_ALLOY_INGOT_TAG;
+import static mrtjp.projectred.core.init.CoreTags.RED_ALLOY_INGOT_TAG;
 import static mrtjp.projectred.transmission.init.TransmissionTags.*;
 
 public class TransmissionRecipeProvider extends RecipeProvider {
@@ -29,7 +31,7 @@ public class TransmissionRecipeProvider extends RecipeProvider {
 
         // Red alloy wire
         shapedRecipe(WireType.RED_ALLOY.getItem(), 12)
-                .key('R', itemRedIngot().get())
+                .key('R', RED_ALLOY_INGOT_TAG)
                 .patternLine(" R ")
                 .patternLine(" R ")
                 .patternLine(" R ");
@@ -39,7 +41,7 @@ public class TransmissionRecipeProvider extends RecipeProvider {
             Item w = type.getItem();
             shapedRecipe(w, 12)
                     .key('W', ItemTags.bind(type.getColour().getWoolTagName().toString()))
-                    .key('R', itemRedIngot().get())
+                    .key('R', RED_ALLOY_INGOT_TAG)
                     .patternLine("WRW")
                     .patternLine("WRW")
                     .patternLine("WRW");
@@ -66,7 +68,7 @@ public class TransmissionRecipeProvider extends RecipeProvider {
 
         // Low Load power line
         shapedRecipe(WireType.POWER_LOWLOAD.getItem(), 12)
-                .key('I', itemElectrotineIngot().get())
+                .key('I', ELECTROTINE_ALLOY_INGOT_TAG)
                 .key('B', CCLTags.Items.WOOL_BLUE)
                 .key('Y', CCLTags.Items.WOOL_YELLOW)
                 .patternLine("BIB")
@@ -108,16 +110,16 @@ public class TransmissionRecipeProvider extends RecipeProvider {
         framedWireRecipe(WireType.FRAMED_POWER_LOWLOAD.getItem(), WireType.POWER_LOWLOAD.getItem());
 
         // Wired plate
-        shapedRecipe(itemWiredPlate().get(), 1, new ResourceLocation(MOD_ID, itemWiredPlate().get().getRegistryName().getPath()))
+        shapedRecipe(WIRED_PLATE_ITEM, 1, new ResourceLocation(MOD_ID, WIRED_PLATE_ITEM.getRegistryName().getPath()))
                 .key('W', WireType.RED_ALLOY.getItem())
-                .key('P', itemPlate().get())
+                .key('P', PLATE_ITEM)
                 .patternLine("W")
                 .patternLine("P");
 
         // Bundled plate
-        shapedRecipe(itemBundledPlate().get(), 1, new ResourceLocation(MOD_ID, itemBundledPlate().get().getRegistryName().getPath()))
+        shapedRecipe(BUNDLED_PLATE_ITEM, 1, new ResourceLocation(MOD_ID, BUNDLED_PLATE_ITEM.getRegistryName().getPath()))
                 .key('W', BUNDLED_WIRE_ITEM_TAG)
-                .key('P', itemPlate().get())
+                .key('P', PLATE_ITEM)
                 .patternLine("W")
                 .patternLine("P");
     }

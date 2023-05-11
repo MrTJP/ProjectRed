@@ -3,11 +3,11 @@ package mrtjp.projectred.expansion.gui.screen.inventory;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.texture.TextureUtils;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import mrtjp.core.vec.Point;
 import mrtjp.projectred.ProjectRedExpansion;
 import mrtjp.projectred.expansion.inventory.container.ProjectBenchContainer;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.expansion.tile.ProjectBenchTile;
+import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractButtonNode;
 import mrtjp.projectred.redui.RedUIContainerScreen;
 import net.minecraft.client.gui.IHasContainer;
@@ -45,7 +45,7 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
             @Override
             protected void drawButtonBody(MatrixStack stack, boolean mouseover) {
                 TextureUtils.changeTexture(BACKGROUND);
-                blit(stack, getPosition().x(), getPosition().y(), 176, 0, 14, 14);
+                blit(stack, getPosition().x, getPosition().y, 176, 0, 14, 14);
             }
         };
         writePlanButton.setPosition(18, 56);
@@ -61,7 +61,7 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
             @Override
             protected void drawButtonBody(MatrixStack stack, boolean mouseover) {
                 TextureUtils.changeTexture(BACKGROUND);
-                blit(stack, getPosition().x(), getPosition().y(), 176, 15, 8, 8);
+                blit(stack, getPosition().x, getPosition().y, 176, 15, 8, 8);
             }
         };
         clearGridButton.setPosition(37, 17);

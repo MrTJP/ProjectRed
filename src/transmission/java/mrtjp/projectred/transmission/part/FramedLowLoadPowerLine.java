@@ -1,20 +1,15 @@
 package mrtjp.projectred.transmission.part;
 
+import codechicken.multipart.api.part.ITickablePart;
 import mrtjp.projectred.api.IConnectable;
-import mrtjp.projectred.core.ILowLoadPowerLine;
-import mrtjp.projectred.core.IPowerConnectable;
-import mrtjp.projectred.core.PowerConductor;
+import mrtjp.projectred.core.power.ILowLoadPowerLine;
+import mrtjp.projectred.core.power.IPowerConnectable;
+import mrtjp.projectred.core.power.PowerConductor;
 import mrtjp.projectred.transmission.WireType;
 
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+public class FramedLowLoadPowerLine extends FramedPowerWire implements ILowLoadPowerLine, ITickablePart {
 
-public class FramedLowLoadPowerLine extends FramedPowerWire implements ILowLoadPowerLine {
-
-    private final PowerConductor conductor = new LowLoadPowerConductor(this,
-            IntStream.range(0, 6)
-                    .boxed()
-                    .collect(Collectors.toList()));
+    private final PowerConductor conductor = new PowerConductor(this, 0.01, 16);
 
     public FramedLowLoadPowerLine(WireType wireType) {
         super(wireType);
@@ -26,14 +21,14 @@ public class FramedLowLoadPowerLine extends FramedPowerWire implements ILowLoadP
     }
 
     @Override
-    public PowerConductor conductor(int dir) {
+    public PowerConductor getConductor(int dir) {
         return conductor;
     }
 
     @Override
     public void tick() {
         if (!world().isClientSide) {
-            conductor.update();
+            conductor.tick();
         }
     }
 }

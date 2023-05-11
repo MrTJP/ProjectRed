@@ -9,7 +9,7 @@ import codechicken.lib.vec.uv.UV;
 import codechicken.lib.vec.uv.UVScale;
 import codechicken.lib.vec.uv.UVTransformation;
 import codechicken.lib.vec.uv.UVTranslation;
-import mrtjp.projectred.core.PRLib;
+import mrtjp.projectred.core.BundledSignalsLib;
 import mrtjp.projectred.core.UVT;
 
 import static mrtjp.projectred.transmission.client.WireModelBuilder.*;
@@ -202,13 +202,13 @@ public class FramedWireModelBuilder {
     }
 
     private void reflectSide(Vertex5[] verts, int s, int r) {
-        if ((r + PRLib.bundledCableBaseRotationMap()[s]) % 4 >= 2) {
+        if ((r + BundledSignalsLib.bundledCableBaseRotationMap[s]) % 4 >= 2) {
             apply(ROTATE_WIRE_UV_180, verts);
         }
     }
 
     private void rotateSide(Vertex5[] verts, int s) {
-        int r = PRLib.bundledCableBaseRotationMap()[s];
+        int r = BundledSignalsLib.bundledCableBaseRotationMap[s];
         UVTransformation uvt = new UVT(Rotation.quarterRotations[r % 4].at(new Vector3(8, 0, 16)));
         apply(uvt, verts);
     }

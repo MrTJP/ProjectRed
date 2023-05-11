@@ -17,7 +17,7 @@ import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 import codechicken.lib.vec.uv.IconTransformation;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import mrtjp.projectred.core.RenderHalo;
+import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.illumination.item.MultipartLightPartItem;
 import mrtjp.projectred.illumination.part.MultipartLightPart;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -116,7 +116,7 @@ public abstract class MultipartLightProperties {
                 renderInventory(lightItem.getColor(), lightItem.isInverted(), Vector3.ZERO, ccrs);
 
                 if (lightItem.isInverted()) {
-                    RenderHalo.renderHalo(ccrs, mStack, getter, getInventoryGlowBounds(), lightItem.getColor(), Vector3.ZERO);
+                    HaloRenderer.renderHalo(ccrs, mStack, getter, getInventoryGlowBounds(), lightItem.getColor(), Vector3.ZERO);
                 }
             }
 
