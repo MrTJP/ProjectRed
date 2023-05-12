@@ -140,7 +140,7 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
             powerStored += 1;
             burnTimeRemaining -= getBurnUseOnCharge();
         } else {
-            burnTimeRemaining -= Math.max(burnTimeRemaining, getBurnUseOnIdle());
+            burnTimeRemaining -= Math.min(burnTimeRemaining, getBurnUseOnIdle());
         }
     }
 
