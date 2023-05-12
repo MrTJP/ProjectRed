@@ -36,7 +36,7 @@ public class ChargingBenchScreen extends RedUIContainerScreen<ChargingBenchConta
         GuiLib.drawVerticalTank(stack, this, x + 14, y + 27, 176, 10, 7, 48, getMenu().getChargeScaled(48));
 
         if (getMenu().isPowerStorageFull())
-            blit(stack, x + 112, y + 16, 184, 1, 14, 9);
+            blit(stack, x + 41, y + 17, 184, 1, 14, 9);
         GuiLib.drawVerticalTank(stack, this, x + 41, y + 27, 184, 10, 14, 48, getMenu().getPowerStoredScaled(48));
 
         if (getMenu().isStorageCharging())

@@ -4,7 +4,6 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
-import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.expansion.block.BatteryBoxBlock;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.inventory.container.BatteryBoxContainer;
@@ -119,9 +118,6 @@ public class BatteryBoxTile extends LowLoadPoweredTile {
         if (getLevel().isClientSide) return;
 
         boolean changed = false;
-
-        if (level.getGameTime() % 20 == 0)
-            ProjectRedCore.LOGGER.info("vbat: " + conductor.getVoltage());
 
         // Attempt to keep conductor charge between UpperChargeTarget and LowerChargeTarget by
         // respectively drawing from or to internal storage
