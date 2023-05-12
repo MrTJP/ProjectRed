@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 public class ElectrotineGeneratorBlock extends ProjectRedBlock {
 
     public ElectrotineGeneratorBlock() {
-        super(AbstractBlock.Properties.of(Material.STONE));
+        super(STONE_PROPERTIES);
     }
 
     @Override

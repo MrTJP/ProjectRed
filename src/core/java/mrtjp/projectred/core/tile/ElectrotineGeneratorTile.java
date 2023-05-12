@@ -1,6 +1,7 @@
 package mrtjp.projectred.core.tile;
 
 import codechicken.lib.util.ServerUtils;
+import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.core.inventory.container.ElectrotineGeneratorContainer;
@@ -21,6 +22,8 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,12 +37,8 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
 
     private int chargeFlow = 0;
 
-    private final Inventory inventory = new Inventory(1) {
-        @Override
-        public boolean canPlaceItem(int slot, ItemStack stack) {
-            return stack.getItem() == ELECTROTINE_DUST_ITEM;
-        }
-    };
+    private final ElectrotineGeneratorInventory inventory = new ElectrotineGeneratorInventory();
+    private final LazyOptional<? extends IItemHandler> handler = LazyOptional.of(() -> new InvWrapper(inventory));
 
     private int burnTimeRemaining = 0;
     private int powerStored = 0;
@@ -90,10 +89,10 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
         return ActionResultType.SUCCESS;
     }
 
-    @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return super.getCapability(cap, side); //TODO add capabilities
+    public void onBlockRemoved() {
+        super.onBlockRemoved();
+        dropInventory(inventory, getLevel(), Vector3.fromBlockPos(getBlockPos()));
     }
 
     @Override
@@ -209,6 +208,23 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
         return getConductorCharge() > 600;
     }
 
+    //region Capabilities
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (!this.remove && cap == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return handler.cast();
+        }
+        return super.getCapability(cap, side);
+    }
+
+    @Override
+    protected void invalidateCaps() {
+        super.invalidateCaps();
+        handler.invalidate();
+    }
+    //endregion
+
     //region Container getters
     public Inventory getInventory() {
         return inventory;
@@ -223,4 +239,15 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
     }
     //endregion
 
+    private static class ElectrotineGeneratorInventory extends Inventory {
+
+        public ElectrotineGeneratorInventory() {
+            super(1);
+        }
+
+        @Override
+        public boolean canPlaceItem(int slot, ItemStack stack) {
+            return stack.getItem() == ELECTROTINE_DUST_ITEM;
+        }
+    }
 }
