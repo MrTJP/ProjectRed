@@ -3,6 +3,7 @@ package mrtjp.projectred.core.inventory.container;
 import codechicken.lib.inventory.container.ICCLContainerFactory;
 import mrtjp.projectred.core.tile.ElectrotineGeneratorTile;
 import mrtjp.projectred.lib.InventoryLib;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.IContainerListener;
 import net.minecraft.inventory.container.Slot;
@@ -80,6 +81,42 @@ public class ElectrotineGeneratorContainer extends BasePoweredTileContainer {
         }
     }
 
+    @Override
+    public ItemStack quickMoveStack(PlayerEntity player, int slotIndex) {
+
+        Slot slot = slots.get(slotIndex);
+        if (slot == null || !slot.hasItem()) return ItemStack.EMPTY;
+
+        ItemStack stack = slot.getItem();
+        ItemStack originalStack = stack.copy();
+
+        if (isFuel(slotIndex)) {
+            if (!moveToEntireInventory(stack, false)) return ItemStack.EMPTY;
+
+        } else if (stack.getItem() == ELECTROTINE_DUST_ITEM) {
+            if (!moveToFuel(stack, false)) return ItemStack.EMPTY;
+
+        } else if (isPlayerInventory(slotIndex)) {
+            if (!moveToHotbar(stack, false)) return ItemStack.EMPTY;
+
+        } else { //Hotbar
+            if (!moveToPlayerInventory(stack, false)) return ItemStack.EMPTY;
+        }
+
+        if (stack.isEmpty()) {
+            slot.set(ItemStack.EMPTY);
+        } else {
+            slot.setChanged();
+        }
+
+        if (stack.getCount() == originalStack.getCount()) {
+            return ItemStack.EMPTY;
+        }
+
+        slot.onTake(player, stack);
+        return originalStack;
+    }
+
     public int getBurnTimeScaled(int scale) {
         return burnTimeRemaining == 0 ? 0 : scale * burnTimeRemaining / tile.getMaxBurnTime();
     }
@@ -103,4 +140,29 @@ public class ElectrotineGeneratorContainer extends BasePoweredTileContainer {
     public boolean isChargingConductor() {
         return condCharge < tile.getDrawFloor() && (powerStored > 0 || burnTimeRemaining > tile.getBurnUseOnCharge());
     }
+
+    //@formatter:off
+    private boolean isPlayerInventory(int slotIndex) {
+        return slotIndex >= 0 && slotIndex < 27;
+    }
+    private boolean isHotbar(int slotIndex) {
+        return slotIndex >= 27 && slotIndex < 36;
+    }
+    private boolean isFuel(int slotIndex) {
+        return slotIndex == 36;
+    }
+
+    private boolean moveToPlayerInventory(ItemStack stack, boolean reverse) {
+        return moveItemStackTo(stack, 0, 27, reverse);
+    }
+    private boolean moveToHotbar(ItemStack stack, boolean reverse) {
+        return moveItemStackTo(stack, 27, 36, reverse);
+    }
+    private boolean moveToEntireInventory(ItemStack stack, boolean reverse) {
+        return moveItemStackTo(stack, 0, 36, reverse);
+    }
+    private boolean moveToFuel(ItemStack stack, boolean reverse) {
+        return moveItemStackTo(stack, 36, 37, reverse);
+    }
+    //@formatter:on
 }
