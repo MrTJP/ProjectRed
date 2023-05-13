@@ -21,6 +21,10 @@ public class ExpansionLanguageProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+
+        // Creative tab
+        add("itemGroup." + MOD_ID, "Project Red: Expansion");
+
         add(PROJECT_BENCH_BLOCK, "Project Bench");
         add(BATTERY_BOX_BLOCK, "Battery Box");
         add(AUTO_CRAFTER_BLOCK, "Auto Crafter");
@@ -30,7 +34,9 @@ public class ExpansionLanguageProvider extends LanguageProvider {
         add(RECIPE_PLAN_ITEM, "Recipe Plan");
         add(EMPTY_BATTERY_ITEM, "Empty Battery");
         add(BATTERY_ITEM, "Battery");
+        add(ELECTRIC_SCREWDRIVER_ITEM, "Electric Screwdriver");
 
+        // Strings
         add(UL_STORED_POWER_TOOLTIP, "Stored power");
         add(UL_PLAN_RESULT, "Result");
     }
