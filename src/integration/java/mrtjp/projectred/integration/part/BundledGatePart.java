@@ -16,6 +16,7 @@ import codechicken.multipart.util.PartRayTraceResult;
 import com.google.common.collect.ImmutableSet;
 import mrtjp.projectred.api.*;
 import mrtjp.projectred.core.BundledSignalsLib;
+import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.FaceLookup;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.lib.VecLib;
@@ -198,6 +199,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
             switch (key) {
                 case KEY_PACKED_IO:
                     unpackClientData(packet.readInt());
+                    if (Configurator.staticGates) tile().markRender();
                     break;
                 default:
                     super.read(packet, key);
@@ -371,9 +373,11 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
             switch (key) {
                 case KEY_OUTPUT:
                     output = packet.readShort();
+                    if (Configurator.staticGates) tile().markRender();
                     break;
                 case KEY_MASK:
                     mask = packet.readShort();
+                    if (Configurator.staticGates) tile().markRender();
                     break;
                 default:
                     super.read(packet, key);
@@ -553,6 +557,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
             switch (key) {
                 case KEY_CLIENT_IO:
                     unpackClientData(packet.readShort());
+                    if (Configurator.staticGates) tile().markRender();
                     break;
                 default:
                     super.read(packet, key);
@@ -755,6 +760,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
             switch (key) {
                 case KEY_PRESS_MASK:
                     pressMask = packet.readShort();
+                    if (Configurator.staticGates) tile().markRender();
                     break;
                 default:
                     super.read(packet, key);
@@ -922,6 +928,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
             switch (key) {
                 case KEY_BUNDLED_INPUT:
                     bInput0 = packet.readShort();
+                    if (Configurator.staticGates) tile().markRender();
                     break;
                 default:
                     super.read(packet, key);
