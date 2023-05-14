@@ -1,0 +1,60 @@
+plugins {
+    id 'net.minecraftforge.gradle'
+    id 'com.matthewprenger.cursegradle'
+}
+
+String mod_id = 'projectred-integration'
+
+minecraft {
+    mappings channel: mcp_mappings, version: mc_version
+    accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
+    runs {
+        client {
+            workingDirectory file('run')
+            mods {
+                '${mod_id}' { source sourceSets.main }
+            }
+        }
+        server {
+            workingDirectory file('run')
+            mods {
+                '${mod_id}' { source sourceSets.main }
+            }
+        }
+        datagen {
+            workingDirectory file('run')
+            args '--mod', mod_id, '--all', '--output', file("src/main/generated"), '--existing', file("src/main/resources")
+            mods {
+                '${mod_id}' { source sourceSets.main }
+            }
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+
+    implementation "codechicken:CodeChickenLib:${mc_version}-${ccl_version}:deobf"
+    implementation "codechicken:CBMultipart:${mc_version}-${cbm_version}:deobf"
+
+    // Unfortunately, had to subclass something using Scala classes
+    compileOnly "org.scala-lang:scala-library:${scala_version}"
+
+    implementation project(":core")
+}
+
+curseforge {
+    apiKey = System.getenv('CURSE_TOKEN') ?: 'XXX'
+
+    // Integration
+    project {
+        id = '229045'
+        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
+        changelogType = 'markdown'
+        changelog = rootProject.file('CHANGELOG.md')
+        relations {
+            requiredDependency 'project-red-core'
+        }
+    }
+
+}

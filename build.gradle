@@ -1,202 +1,62 @@
 import java.time.Instant
-
-buildscript {
-    repositories {
-        mavenLocal()
-        maven { url = "https://files.minecraftforge.net/maven/" }
-        // maven { url = "https://proxy-maven.covers1624.net/" }
-    }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:4.1.+'
-    }
-}
-
 plugins {
     id 'java'
     id 'maven-publish'
-    id "net.covers1624.signing" version '1.1.3'
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
 
-apply plugin: 'net.minecraftforge.gradle'
+String parsed_mod_version = System.getenv("AUTO_GENERATED_VERSION") ?: "${mod_version}.${Instant.now().getEpochSecond()}"
+println "Starting build of ${name}, Version: ${parsed_mod_version}"
+println "Using Forge: ${forge_version}, for Minecraft: ${mc_version}, with Mappings: ${mcp_mappings}"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+group = 'mrtjp'
+version = "${mc_version}-${parsed_mod_version}"
 
-group = "mrtjp"
-archivesBaseName = "ProjectRed"
-
-sourceSets {
-    core
-    expansion
-    exploration
-    illumination
-    integration
-    transmission
+// Global configuration
+allprojects {
+    group = 'mrtjp'
+    version = "${mc_version}-${parsed_mod_version}"
 }
 
-sourceSets.each {
-    it.resources.srcDirs += "src/${it.name}/generated"
-}
+// Common submodule configurations
+subprojects { p ->
 
-file('build.properties').withReader {
-    def prop = new Properties()
-    prop.load(it)
-    project.ext.config = new ConfigSlurper().parse prop
-}
+    // Needs to be force-applied here to allow below configuration
+    apply plugin: 'java'
 
-config.mod_version = System.getenv("AUTO_GENERATED_VERSION") ?: "${config.mod_version}.${Instant.now().getEpochSecond()}"
-version = "${config.mc_version}-${config.mod_version}"
-println "Starting build of ${archivesBaseName}, Version: ${config.mod_version}"
-println "Using Forge: ${config.forge_version}, for Minecraft: ${config.mc_version}, with Mappings: ${config.mappings}"
+    // Select Java version
+    java.toolchain.languageVersion = JavaLanguageVersion.of(java_lang_version)
 
-minecraft {
-    mappings channel: config.mappings, version: config.mc_version
-    accessTransformer = file("src/core/resources/META-INF/accesstransformer.cfg")
-    runs {
-        client {
-            workingDirectory file('run')
-            mods {
-                'projectred-core' { source sourceSets.core }
-                'projectred-expansion' { source sourceSets.expansion }
-                'projectred-exploration' { source sourceSets.exploration }
-                'projectred-illumination' { source sourceSets.illumination }
-                'projectred-integration' { source sourceSets.integration }
-                'projectred-transmission' { source sourceSets.transmission }
-            }
-        }
-        server {
-            workingDirectory file('run')
-            mods {
-                'projectred-core' { source sourceSets.core }
-                'projectred-expansion' { source sourceSets.expansion }
-                'projectred-exploration' { source sourceSets.exploration }
-                'projectred-illumination' { source sourceSets.illumination }
-                'projectred-integration' { source sourceSets.integration }
-                'projectred-transmission' { source sourceSets.transmission }
-            }
-        }
-
-        sourceSets.each {
-            "${it.name}Data" {
-                workingDirectory file('run')
-                args '--mod', "projectred-${it.name}".toString(), '--all', '--output', file("src/${it.name}/generated"), '--existing', file("src/${it.name}/resources")
-                mods {
-                    'projectred-core' { source sourceSets.core }
-                    'projectred-expansion' { source sourceSets.expansion }
-                    'projectred-exploration' { source sourceSets.exploration }
-                    'projectred-illumination' { source sourceSets.illumination }
-                    'projectred-integration' { source sourceSets.integration }
-                    'projectred-transmission' { source sourceSets.transmission }
-                }
-            }
-        }
+    // Jar settings
+    jar {
+        archiveClassifier = p.name
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
-}
 
-repositories {
-    mavenLocal()
-    maven { url = "https://proxy-maven.covers1624.net/" }
-    maven { url = "https://squiddev.cc/maven/" }
-}
+    // ForgeGradle version settings
+    archivesBaseName = rootProject.name
 
-configurations {
-    coreCompile.extendsFrom compile
+    // Add datagen resources to source set
+    sourceSets.main.resources.srcDirs += "src/main/generated"
 
-    moduleCompile.extendsFrom coreCompile
+    // Add default repositories
+    repositories {
+        mavenLocal()
+        maven { url = "https://proxy-maven.covers1624.net/" }
+        maven { url = "https://squiddev.cc/maven/" }
+    }
 
-    expansionCompile.extendsFrom moduleCompile
-    explorationCompile.extendsFrom moduleCompile
-    illuminationCompile.extendsFrom moduleCompile
-    integrationCompile.extendsFrom moduleCompile
-    transmissionCompile.extendsFrom moduleCompile
-}
-
-dependencies {
-    minecraft "net.minecraftforge:forge:${config.mc_version}-${config.forge_version}"
-
-    // PR Core deps
-    coreCompile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:deobf"
-    coreCompile "codechicken:CBMultipart:${config.mc_version}-${config.cbm_version}:deobf"
-
-    // Common deps for all PR modules
-    moduleCompile sourceSets.core.output
-
-    // compile against the JEI API but do not include it at runtime
-    coreCompileOnly fg.deobf("mezz.jei:jei-${config.mc_version}:${config.jei_version}:api")
-    // at runtime, use the full JEI jar
-    coreRuntimeOnly fg.deobf("mezz.jei:jei-${config.mc_version}:${config.jei_version}")
-
-    coreCompile fg.deobf("org.squiddev:cc-tweaked-${config.mc_version}:${config.cct_version}")
-
-    // Unfortunately, had to subclass something using Scala classes
-    illuminationCompile "org.scala-lang:scala-library:${config.scala_version}"
-}
-
-
-jar.enabled = false //Disable main sourceset
-reobf {
-    jar { enabled = false } //Disable main sourceset
-    coreJar { classpath += sourceSets.core.compileClasspath }
-    expansionJar { classpath += sourceSets.expansion.compileClasspath }
-    explorationJar { classpath += sourceSets.exploration.compileClasspath }
-    illuminationJar { classpath += sourceSets.illumination.compileClasspath }
-    integrationJar { classpath += sourceSets.integration.compileClasspath }
-    transmissionJar { classpath += sourceSets.transmission.compileClasspath }
-}
-
-task coreJar(type: Jar) {
-    classifier "core"
-    dependsOn compileCoreJava
-    from sourceSets.core.output
-    finalizedBy reobfCoreJar
-}
-
-task expansionJar(type: Jar) {
-    classifier "expansion"
-    dependsOn compileExpansionJava
-    from sourceSets.expansion.output
-    finalizedBy reobfExpansionJar
-}
-
-task explorationJar(type: Jar) {
-    classifier "exploration"
-    dependsOn  compileExplorationJava
-    from sourceSets.exploration.output
-    finalizedBy reobfExplorationJar
-}
-
-task illuminationJar(type: Jar) {
-    classifier "illumination"
-    dependsOn compileIlluminationJava
-    from sourceSets.illumination.output
-    finalizedBy reobfIlluminationJar
-}
-
-task integrationJar(type: Jar) {
-    classifier "integration"
-    dependsOn compileIntegrationJava
-    from sourceSets.integration.output
-    finalizedBy reobfIntegrationJar
-}
-
-task transmissionJar(type: Jar) {
-    classifier "transmission"
-    dependsOn compileTransmissionJava
-    from sourceSets.transmission.output
-    finalizedBy reobfTransmissionJar
-}
-
-sourceSets.findAll {it.name != "main" && it.name != "test" } each { set ->
-    def setNameCaps = "${set.name}".substring(0, 1).toUpperCase() + "${set.name}".substring(1)
-    "process${setNameCaps}Resources" { task ->
-        from(set.resources.srcDirs) { spec ->
+    // Replace version tokens in mods.toml
+    processResources { task ->
+        from(sourceSets.main.resources.srcDirs) { spec ->
             spec.include 'META-INF/mods.toml'
+            spec.duplicatesStrategy = DuplicatesStrategy.INCLUDE
             task.doFirst {
-                spec.expand 'version': config.mod_version,
-                        'mc_version': config.mc_version,
-                        'ccl_version': resolve("CodeChickenLib"),
-                        'cbm_version': resolve("CBMultipart"),
-                        'cct_version': config.cct_version
+                println "Replacing version tokens in mods.toml"
+                spec.expand 'version': mod_version,
+                        'mc_version': mc_version,
+                        'ccl_version': ccl_version,
+                        'cbm_version': cbm_version,
+                        'cct_version': cct_version
             }
         }
     }
@@ -214,34 +74,35 @@ publishing {
     }
     publications {
         ProjectRed(MavenPublication) {
-            groupId project.group
-            artifactId project.archivesBaseName
-            version project.version
-            artifact coreJar
-            artifact expansionJar
-            artifact explorationJar
-            artifact illuminationJar
-            artifact integrationJar
-            artifact transmissionJar
+            artifact project(':core').jar
+            artifact project(':expansion').jar
+            artifact project(':exploration').jar
+            artifact project(':illumination').jar
+            artifact project(':integration').jar
+            artifact project(':transmission').jar
 
             pom {
-                name = archivesBaseName
-                description = archivesBaseName
-                //The publish plugin doesnt like GString's here apparently..
-                url = "https://github.com/MrTJP/ProjectRed".toString()
+                name = rootProject.name
+                description = rootProject.name
+
+                url = 'https://github.com/MrTJP/ProjectRed'
                 scm {
-                    url = "https://github.com/MrTJP/ProjectRed".toString()
-                    connection = "scm:git:git://github.com/MrTJP/ProjectRed.git".toString()
-                    connection = "scm:git:git@github.com:MrTJP/ProjectRed.git".toString()
+                    url = 'https://github.com/MrTJP/ProjectRed'
+                    connection = 'scm:git:git://github.com/MrTJP/ProjectRed.git'
+                    connection = 'scm:git:git@github.com:MrTJP/ProjectRed.git'
                 }
                 issueManagement {
                     system = 'github'
-                    url = "https://github.com/MrTJP/ProjectRed/issues".toString()
+                    url = 'https://github.com/MrTJP/ProjectRed/issues'
                 }
                 developers {
                     developer {
                         id = 'mrtjp'
                         name = 'mrtjp'
+                    }
+                    developer {
+                        id = 'Chicken-Bones'
+                        name = 'Chicken-Bones'
                     }
                     developer {
                         id = 'covers1624'
@@ -251,117 +112,4 @@ publishing {
             }
         }
     }
-}
-
-curseforge {
-    apiKey = System.getenv('CURSE_TOKEN') ?: 'XXX'
-
-    // Core
-    project {
-        id = '228702'
-        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
-        changelogType = 'markdown'
-        changelog = file('CHANGELOG.md')
-        relations {
-            requiredDependency 'codechicken-lib-1-8' // CCL is required for everything
-            requiredDependency 'cb-multipart' // CBMultipart is required for everything
-        }
-
-        mainArtifact coreJar
-    }
-
-    // Expansion
-    project {
-        id = '229048'
-        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
-        changelogType = 'markdown'
-        changelog = file('CHANGELOG.md')
-        relations {
-            requiredDependency 'project-red-core'
-        }
-
-        mainArtifact expansionJar
-    }
-
-    // Exploration
-    project {
-        id = '229049'
-        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
-        changelogType = 'markdown'
-        changelog = file('CHANGELOG.md')
-        relations {
-            requiredDependency 'project-red-core'
-        }
-
-        mainArtifact explorationJar
-    }
-
-    // Illumination
-    project {
-        id = '229046'
-        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
-        changelogType = 'markdown'
-        changelog = file('CHANGELOG.md')
-        relations {
-            requiredDependency 'project-red-core'
-        }
-
-        mainArtifact illuminationJar
-    }
-
-    // Integration
-    project {
-        id = '229045'
-        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
-        changelogType = 'markdown'
-        changelog = file('CHANGELOG.md')
-        relations {
-            requiredDependency 'project-red-core'
-        }
-
-        mainArtifact integrationJar
-    }
-
-    // Transmission
-    project {
-        id = '478939'
-        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
-        changelogType = 'markdown'
-        changelog = file('CHANGELOG.md')
-        relations {
-            requiredDependency 'project-red-core'
-        }
-
-        mainArtifact transmissionJar
-    }
-}
-
-/**
- * Polls the 'compile' configuration for a dependency with the given module name
- * and resolves, and returns its version. E.g: '1.2.+' will resolve to '1.2.3.4'
- *
- * @param module The module to search for.
- * @param chop If the string should be chopped on the last '-' in its string.
- * @param configuration The name of the configuration to search.
- * @param errorMissing If an error should be thrown if it can't be found.
- * @return The version string, '0' if 'errorMissing' is false and nothing was found.
- */
-def resolve(module, chop = true, configuration = 'coreCompile', errorMissing = true) {
-    //Copy and lenient resolve the configuration, Forge cant be resolved at this time so lenient is required.
-    def filtered = configurations.getByName(configuration).copy().incoming.artifactView({ it.lenient = true }).artifacts
-            .findAll { it.id.componentIdentifier.module == module }
-            .collect { it.id.componentIdentifier.version }
-    if (filtered.size() > 1) {
-        println "WARNING: Found ${filtered.size()} Dependencies with ModuleName '${module}' in configuration '${configuration.name}'"
-    }
-    if (errorMissing && filtered.isEmpty()) {
-        throw new RuntimeException("Failed resolve dependency version for '${module}'")
-    }
-    if (filtered.isEmpty()) return "0"
-    def version = filtered.first() as String
-    if (chop) {
-        def idx = version.lastIndexOf('-')
-        return version.substring(idx + 1)
-    }
-    return version
 }

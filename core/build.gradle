@@ -1,0 +1,63 @@
+plugins {
+    id 'net.minecraftforge.gradle'
+    id 'com.matthewprenger.cursegradle'
+}
+
+String mod_id = 'projectred-core'
+
+minecraft {
+    mappings channel: mcp_mappings, version: mc_version
+    accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
+    runs {
+        client {
+            workingDirectory file('run')
+            mods {
+                '${mod_id}' { source sourceSets.main }
+            }
+        }
+        server {
+            workingDirectory file('run')
+            mods {
+                '${mod_id}' { source sourceSets.main }
+            }
+        }
+        datagen {
+            workingDirectory file('run')
+            args '--mod', mod_id, '--all', '--output', file("src/main/generated"), '--existing', file("src/main/resources")
+            mods {
+                '${mod_id}' { source sourceSets.main }
+            }
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+
+    implementation "codechicken:CodeChickenLib:${mc_version}-${ccl_version}:deobf"
+    implementation "codechicken:CBMultipart:${mc_version}-${cbm_version}:deobf"
+
+    // compile against the JEI API but do not include it at runtime
+    compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")
+    // at runtime, use the full JEI jar
+    runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
+
+    // TODO compileOnly against API jar, runtimeOnly against distro
+    implementation fg.deobf("org.squiddev:cc-tweaked-${mc_version}:${cct_version}")
+}
+
+curseforge {
+    apiKey = System.getenv('CURSE_TOKEN') ?: 'XXX'
+
+    // Core
+    project {
+        id = '228702'
+        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
+        changelogType = 'markdown'
+        changelog = rootProject.file('CHANGELOG.md')
+        relations {
+            requiredDependency 'codechicken-lib-1-8' // CCL is required for everything
+            requiredDependency 'cb-multipart' // CBMultipart is required for everything
+        }
+    }
+}
