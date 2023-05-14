@@ -100,7 +100,7 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle2-${{ hashFiles('**/build.gradle', '**/build.properties', '**/gradle-wrapper.properties') }}
+          key: ${{ runner.os }}-gradle2-${{ hashFiles('**/build.gradle', '**/build.properties', '**/gradle.properties', '**/gradle-wrapper.properties') }}
 
       - name: Build
         run: ./gradlew build
@@ -153,10 +153,10 @@ jobs:
           rm -f ~/.gradle/caches/modules-2/gc.properties
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: project-red-${{ steps.versioning.outputs.version }}
           path: |
-            build/libs
+            '*/build/libs/ProjectRed-*.jar'
             CHANGELOG.md
             CHANGELOG.txt
