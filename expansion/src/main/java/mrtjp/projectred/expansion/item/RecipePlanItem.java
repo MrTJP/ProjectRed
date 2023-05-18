@@ -1,6 +1,6 @@
 package mrtjp.projectred.expansion.item;
 
-import mrtjp.projectred.ProjectRedExpansion;
+import mrtjp.projectred.expansion.ProjectRedExpansion;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;

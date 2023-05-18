@@ -13,7 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-import static mrtjp.projectred.ProjectRedCore.MOD_ID;
+import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 
 public class CoreNetwork {
 

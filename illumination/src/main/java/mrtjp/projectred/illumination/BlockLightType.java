@@ -1,7 +1,6 @@
 package mrtjp.projectred.illumination;
 
 import codechicken.lib.colour.EnumColour;
-import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.illumination.block.IllumarLampBlock;
 import mrtjp.projectred.illumination.tile.IllumarLampTile;
 import net.minecraft.block.Block;

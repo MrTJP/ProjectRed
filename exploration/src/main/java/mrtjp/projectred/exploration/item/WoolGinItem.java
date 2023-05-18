@@ -2,7 +2,7 @@ package mrtjp.projectred.exploration.item;
 
 import net.minecraft.item.Item;
 
-import static mrtjp.projectred.ProjectRedExploration.EXPLORATION_GROUP;
+import static mrtjp.projectred.exploration.ProjectRedExploration.EXPLORATION_GROUP;
 
 public class WoolGinItem extends DamageableCraftingContainerItem {
 

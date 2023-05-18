@@ -27,7 +27,7 @@ import org.lwjgl.opengl.GL11;
 import java.util.*;
 import java.util.function.BiConsumer;
 
-import static mrtjp.projectred.ProjectRedIntegration.MOD_ID;
+import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
 public class GateComponentModels {
 

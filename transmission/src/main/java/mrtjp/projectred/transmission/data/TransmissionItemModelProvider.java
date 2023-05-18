@@ -7,7 +7,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
-import static mrtjp.projectred.ProjectRedTransmission.MOD_ID;
+import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 
 public class TransmissionItemModelProvider extends ItemModelProvider {
 

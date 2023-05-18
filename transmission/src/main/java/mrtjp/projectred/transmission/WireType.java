@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import static mrtjp.projectred.ProjectRedTransmission.MOD_ID;
+import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 import static mrtjp.projectred.transmission.init.TransmissionParts.*;
 
 public enum WireType {

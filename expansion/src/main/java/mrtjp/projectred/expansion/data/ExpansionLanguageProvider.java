@@ -3,7 +3,7 @@ package mrtjp.projectred.expansion.data;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
 
-import static mrtjp.projectred.ProjectRedExpansion.MOD_ID;
+import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 import static mrtjp.projectred.expansion.init.ExpansionReferences.*;
 import static mrtjp.projectred.expansion.init.ExpansionUnlocal.UL_PLAN_RESULT;
 import static mrtjp.projectred.expansion.init.ExpansionUnlocal.UL_STORED_POWER_TOOLTIP;

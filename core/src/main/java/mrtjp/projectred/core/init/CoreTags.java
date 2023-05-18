@@ -5,7 +5,7 @@ import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
 
-import static mrtjp.projectred.ProjectRedCore.MOD_ID;
+import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 
 public class CoreTags {
 

@@ -1,10 +1,9 @@
-package mrtjp.projectred;
+package mrtjp.projectred.illumination;
 
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.gui.SimpleItemGroup;
 import codechicken.lib.util.SneakyUtils;
 import codechicken.multipart.api.MultiPartType;
-import mrtjp.projectred.illumination.BlockLightType;
 import mrtjp.projectred.illumination.data.*;
 import mrtjp.projectred.illumination.init.IlluminationBlocks;
 import mrtjp.projectred.illumination.init.IlluminationClientInit;
@@ -26,7 +25,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import static mrtjp.projectred.ProjectRedIllumination.MOD_ID;
+import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
 
 @Mod(MOD_ID)
 public class ProjectRedIllumination {

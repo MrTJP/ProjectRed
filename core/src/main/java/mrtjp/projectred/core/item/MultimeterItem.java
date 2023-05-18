@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 
-import static mrtjp.projectred.ProjectRedCore.CORE_GROUP;
+import static mrtjp.projectred.core.ProjectRedCore.CORE_GROUP;
 
 public class MultimeterItem extends Item {
 

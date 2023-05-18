@@ -3,7 +3,7 @@ package mrtjp.projectred.expansion.gui.screen.inventory;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.texture.TextureUtils;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import mrtjp.projectred.ProjectRedExpansion;
+import mrtjp.projectred.expansion.ProjectRedExpansion;
 import mrtjp.projectred.expansion.inventory.container.ProjectBenchContainer;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.expansion.tile.ProjectBenchTile;

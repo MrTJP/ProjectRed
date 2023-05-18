@@ -5,7 +5,7 @@ import mrtjp.projectred.expansion.item.ElectricScrewdriverItem;
 import mrtjp.projectred.expansion.item.EmptyBatteryItem;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 
-import static mrtjp.projectred.ProjectRedExpansion.ITEMS;
+import static mrtjp.projectred.expansion.ProjectRedExpansion.ITEMS;
 
 public class ExpansionItems {
 

@@ -1,15 +1,12 @@
-package mrtjp.projectred;
+package mrtjp.projectred.core;
 
 import codechicken.lib.gui.SimpleItemGroup;
 import codechicken.lib.util.SneakyUtils;
 import codechicken.multipart.api.MultiPartType;
 import mrtjp.projectred.compatibility.ComputerCraftCompatibility;
-import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.CoreNetwork;
 import mrtjp.projectred.core.data.*;
 import mrtjp.projectred.core.init.*;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
@@ -30,7 +27,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static mrtjp.projectred.ProjectRedCore.MOD_ID;
+import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 
 @Mod(MOD_ID)
 public class ProjectRedCore {

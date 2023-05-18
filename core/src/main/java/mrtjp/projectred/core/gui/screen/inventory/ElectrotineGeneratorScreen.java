@@ -11,7 +11,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-import static mrtjp.projectred.ProjectRedCore.MOD_ID;
+import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 
 public class ElectrotineGeneratorScreen extends RedUIContainerScreen<ElectrotineGeneratorContainer> implements IHasContainer<ElectrotineGeneratorContainer> {
 

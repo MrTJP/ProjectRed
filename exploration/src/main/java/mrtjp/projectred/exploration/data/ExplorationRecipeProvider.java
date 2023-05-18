@@ -13,7 +13,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
 
-import static mrtjp.projectred.ProjectRedExploration.MOD_ID;
+import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 import static mrtjp.projectred.core.init.CoreReferences.*;
 import static mrtjp.projectred.core.init.CoreTags.*;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.*;

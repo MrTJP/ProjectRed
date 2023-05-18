@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static mrtjp.projectred.ProjectRedTransmission.MOD_ID;
+import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 
 public class TransmissionClientInit {
 

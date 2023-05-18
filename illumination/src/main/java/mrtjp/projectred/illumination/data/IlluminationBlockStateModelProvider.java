@@ -1,6 +1,6 @@
 package mrtjp.projectred.illumination.data;
 
-import mrtjp.projectred.ProjectRedIllumination;
+import mrtjp.projectred.illumination.ProjectRedIllumination;
 import mrtjp.projectred.illumination.BlockLightType;
 import mrtjp.projectred.illumination.block.IllumarLampBlock;
 import net.minecraft.block.Block;

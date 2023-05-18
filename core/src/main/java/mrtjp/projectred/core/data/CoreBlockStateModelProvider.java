@@ -11,7 +11,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nonnull;
 
-import static mrtjp.projectred.ProjectRedCore.MOD_ID;
+import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 import static mrtjp.projectred.core.init.CoreReferences.ELECTROTINE_GENERATOR_BLOCK;
 
 public class CoreBlockStateModelProvider extends BlockStateProvider {

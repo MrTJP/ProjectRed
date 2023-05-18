@@ -2,8 +2,8 @@ package mrtjp.projectred.illumination.init;
 
 import mrtjp.projectred.illumination.MultipartLightType;
 
-import static mrtjp.projectred.ProjectRedIllumination.ITEMS;
-import static mrtjp.projectred.ProjectRedIllumination.PARTS;
+import static mrtjp.projectred.illumination.ProjectRedIllumination.ITEMS;
+import static mrtjp.projectred.illumination.ProjectRedIllumination.PARTS;
 
 public class IlluminationParts {
 

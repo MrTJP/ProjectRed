@@ -9,7 +9,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
 
-import static mrtjp.projectred.ProjectRedTransmission.MOD_ID;
+import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 import static mrtjp.projectred.core.init.CoreReferences.*;
 import static mrtjp.projectred.core.init.CoreTags.ELECTROTINE_ALLOY_INGOT_TAG;
 import static mrtjp.projectred.core.init.CoreTags.RED_ALLOY_INGOT_TAG;

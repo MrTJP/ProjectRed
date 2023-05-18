@@ -14,7 +14,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Map;
 
-import static mrtjp.projectred.ProjectRedIllumination.MOD_ID;
+import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
 
 public class FalloutLightProperties extends MultipartLightProperties {
 

@@ -2,8 +2,8 @@ package mrtjp.projectred.integration.init;
 
 import mrtjp.projectred.integration.GateType;
 
-import static mrtjp.projectred.ProjectRedIntegration.ITEMS;
-import static mrtjp.projectred.ProjectRedIntegration.PARTS;
+import static mrtjp.projectred.integration.ProjectRedIntegration.ITEMS;
+import static mrtjp.projectred.integration.ProjectRedIntegration.PARTS;
 
 public class IntegrationParts {
 

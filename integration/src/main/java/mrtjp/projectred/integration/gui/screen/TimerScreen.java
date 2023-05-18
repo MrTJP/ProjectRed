@@ -14,7 +14,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 
-import static mrtjp.projectred.ProjectRedIntegration.MOD_ID;
+import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
 public class TimerScreen extends RedUIScreen {
 

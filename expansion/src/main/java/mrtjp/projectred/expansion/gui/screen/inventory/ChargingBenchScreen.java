@@ -10,7 +10,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-import static mrtjp.projectred.ProjectRedExpansion.MOD_ID;
+import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 
 public class ChargingBenchScreen extends RedUIContainerScreen<ChargingBenchContainer> {
 

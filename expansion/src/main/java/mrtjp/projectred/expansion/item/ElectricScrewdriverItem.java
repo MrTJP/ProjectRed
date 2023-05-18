@@ -1,6 +1,6 @@
 package mrtjp.projectred.expansion.item;
 
-import mrtjp.projectred.ProjectRedExpansion;
+import mrtjp.projectred.expansion.ProjectRedExpansion;
 import mrtjp.projectred.api.IScrewdriver;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;

@@ -5,7 +5,7 @@ import mrtjp.projectred.illumination.MultipartLightType;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
 
-import static mrtjp.projectred.ProjectRedIllumination.MOD_ID;
+import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
 
 public class IlluminationLanguageProvider extends LanguageProvider {
 

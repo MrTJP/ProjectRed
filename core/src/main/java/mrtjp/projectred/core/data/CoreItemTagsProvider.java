@@ -8,7 +8,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nullable;
 
-import static mrtjp.projectred.ProjectRedCore.MOD_ID;
+import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 import static mrtjp.projectred.core.init.CoreReferences.*;
 import static mrtjp.projectred.core.init.CoreTags.*;
 

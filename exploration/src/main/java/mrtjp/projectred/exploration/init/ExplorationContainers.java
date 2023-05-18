@@ -3,7 +3,7 @@ package mrtjp.projectred.exploration.init;
 import codechicken.lib.inventory.container.ICCLContainerType;
 import mrtjp.projectred.exploration.inventory.container.BackpackContainer;
 
-import static mrtjp.projectred.ProjectRedExploration.CONTAINERS;
+import static mrtjp.projectred.exploration.ProjectRedExploration.CONTAINERS;
 
 public class ExplorationContainers {
 

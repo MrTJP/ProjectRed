@@ -10,7 +10,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nullable;
 
-import static mrtjp.projectred.ProjectRedTransmission.MOD_ID;
+import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 import static mrtjp.projectred.transmission.init.TransmissionTags.*;
 
 public class TransmissionItemTagsProvider extends ItemTagsProvider {

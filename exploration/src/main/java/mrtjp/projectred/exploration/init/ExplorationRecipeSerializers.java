@@ -3,7 +3,7 @@ package mrtjp.projectred.exploration.init;
 import mrtjp.projectred.exploration.item.crafting.BackpackDyeRecipe;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
 
-import static mrtjp.projectred.ProjectRedExploration.RECIPE_SERIALIZERS;
+import static mrtjp.projectred.exploration.ProjectRedExploration.RECIPE_SERIALIZERS;
 
 public class ExplorationRecipeSerializers {
 

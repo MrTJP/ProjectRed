@@ -2,8 +2,8 @@ package mrtjp.projectred.transmission.init;
 
 import mrtjp.projectred.transmission.WireType;
 
-import static mrtjp.projectred.ProjectRedTransmission.ITEMS;
-import static mrtjp.projectred.ProjectRedTransmission.PARTS;
+import static mrtjp.projectred.transmission.ProjectRedTransmission.ITEMS;
+import static mrtjp.projectred.transmission.ProjectRedTransmission.PARTS;
 
 public class TransmissionParts {
 

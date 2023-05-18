@@ -6,7 +6,7 @@ import mrtjp.projectred.expansion.inventory.container.BatteryBoxContainer;
 import mrtjp.projectred.expansion.inventory.container.ChargingBenchContainer;
 import mrtjp.projectred.expansion.inventory.container.ProjectBenchContainer;
 
-import static mrtjp.projectred.ProjectRedExpansion.CONTAINERS;
+import static mrtjp.projectred.expansion.ProjectRedExpansion.CONTAINERS;
 import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
 
 public class ExpansionContainers {

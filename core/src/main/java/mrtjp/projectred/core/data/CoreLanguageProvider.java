@@ -3,7 +3,7 @@ package mrtjp.projectred.core.data;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
 
-import static mrtjp.projectred.ProjectRedCore.MOD_ID;
+import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 import static mrtjp.projectred.core.init.CoreReferences.*;
 
 public class CoreLanguageProvider extends LanguageProvider {

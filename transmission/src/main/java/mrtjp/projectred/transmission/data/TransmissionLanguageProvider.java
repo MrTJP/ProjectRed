@@ -4,7 +4,7 @@ import mrtjp.projectred.transmission.WireType;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
 
-import static mrtjp.projectred.ProjectRedTransmission.MOD_ID;
+import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 
 public class TransmissionLanguageProvider extends LanguageProvider {
 

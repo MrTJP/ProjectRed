@@ -17,7 +17,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import org.lwjgl.glfw.GLFW;
 
-import static mrtjp.projectred.ProjectRedExpansion.MOD_ID;
+import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 
 public class AutoCrafterScreen extends RedUIContainerScreen<AutoCrafterContainer> {
 
