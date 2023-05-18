@@ -144,7 +144,7 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
     @Override
     public boolean discoverOpen(int r) {
         int absDir = absoluteDir(r);
-        IRedstoneTile tile = (IRedstoneTile) getTile(); // IRedstoneTile is mixed in
+        IRedstoneTile tile = (IRedstoneTile) this.tile(); // IRedstoneTile is mixed in
         return (tile.openConnections(absDir) & 1 << Rotation.rotationTo(absDir & 6, getSide())) != 0;
     }
 

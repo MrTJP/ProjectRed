@@ -30,25 +30,17 @@ import net.minecraft.world.World;
  * <p>
  * F = Render corner connections. Like corner connections but set to low if the other wire part is smaller than this (they render to us not us to them)
  */
-public interface IConnectableFacePart extends IConnectablePart, IOrientableFacePart {
-
-    //region Trait fields
-    BlockPos getPos();
-
-    World getLevel();
-
-    TileMultiPart getTile();
-    //endregion
+public interface IConnectableFacePart extends MultiPartInterface, IConnectablePart, IOrientableFacePart {
 
     //region Neighbor Positions
     default BlockPos posOfCorner(int r) {
-        return getPos()
+        return pos()
                 .relative(Direction.values()[absoluteDir(r)])
                 .relative(Direction.values()[getSide()]);
     }
 
     default BlockPos posOfStraight(int r) {
-        return getPos().relative(Direction.values()[absoluteDir(r)]);
+        return pos().relative(Direction.values()[absoluteDir(r)]);
     }
 
     default int rotFromCorner(int r) {
@@ -67,27 +59,27 @@ public interface IConnectableFacePart extends IConnectablePart, IOrientableFaceP
     //region Connectable Neighbor Acquisitions
     default IConnectable getCorner(int r) {
         int absDir = absoluteDir(r);
-        BlockPos pos = getPos()
+        BlockPos pos = pos()
                 .relative(Direction.values()[absDir])
                 .relative(Direction.values()[getSide()]);
 
-        TMultiPart part = BlockMultiPart.getPart(getLevel(), pos, absDir ^ 1);
+        TMultiPart part = BlockMultiPart.getPart(level(), pos, absDir ^ 1);
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
 
     default IConnectable getStraight(int r) {
-        BlockPos pos = getPos().relative(Direction.values()[absoluteDir(r)]);
-        TMultiPart part = BlockMultiPart.getPart(getLevel(), pos, getSide());
+        BlockPos pos = pos().relative(Direction.values()[absoluteDir(r)]);
+        TMultiPart part = BlockMultiPart.getPart(level(), pos, getSide());
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
 
     default IConnectable getInternal(int r) {
-        TMultiPart part = getTile().getSlottedPart(absoluteDir(r));
+        TMultiPart part = tile().getSlottedPart(absoluteDir(r));
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
 
     default IConnectable getCenter() {
-        TMultiPart part = getTile().getSlottedPart(6);
+        TMultiPart part = tile().getSlottedPart(6);
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
     //endregion
@@ -185,13 +177,13 @@ public interface IConnectableFacePart extends IConnectablePart, IOrientableFaceP
 
     default boolean outsideCornerEdgeOpen(int r) {
         int absDir = absoluteDir(r);
-        BlockPos pos = getPos().relative(Direction.values()[absDir]);
-        if (getLevel().isEmptyBlock(pos)) return true;
+        BlockPos pos = pos().relative(Direction.values()[absDir]);
+        if (level().isEmptyBlock(pos)) return true;
 
         int side1 = absDir ^ 1;
         int side2 = getSide();
 
-        TileMultiPart t = BlockMultiPart.getTile(getLevel(), pos);
+        TileMultiPart t = BlockMultiPart.getTile(level(), pos);
         if (t == null) return false; // Non-multipart block is here. We cant go through it.
 
         // Tile may have parts, but at least all slots that take up this edge must be empty.
@@ -200,7 +192,7 @@ public interface IConnectableFacePart extends IConnectablePart, IOrientableFaceP
     }
 
     default boolean insideCornerEdgeOpen(int r) {
-        return getTile().getSlottedPart(PartMap.edgeBetween(absoluteDir(r), getSide())) == null;
+        return tile().getSlottedPart(PartMap.edgeBetween(absoluteDir(r), getSide())) == null;
     }
 
     /**
@@ -339,11 +331,11 @@ public interface IConnectableFacePart extends IConnectablePart, IOrientableFaceP
 
     default void notifyCorner(int r) {
         BlockPos pos = posOfCorner(r);
-        getLevel().neighborChanged(pos, getTile().getBlockState().getBlock(), pos);
+        level().neighborChanged(pos, tile().getBlockState().getBlock(), pos);
     }
 
     default void notifyStraight(int r) {
         BlockPos pos = posOfStraight(r);
-        getLevel().neighborChanged(pos, getTile().getBlockState().getBlock(), pos);
+        level().neighborChanged(pos, tile().getBlockState().getBlock(), pos);
     }
 }

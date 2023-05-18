@@ -38,22 +38,22 @@ public class RedAlloyWirePart extends RedwirePart {
     public void propagateOther(int mode) {
 
         // Update block above and below
-        RedstonePropagator.addNeighborChange(getLevel(), getPos().relative(Direction.values()[getSide()]));
-        RedstonePropagator.addNeighborChange(getLevel(), getPos().relative(Direction.values()[getSide() ^ 1]));
+        RedstonePropagator.addNeighborChange(level(), this.pos().relative(Direction.values()[getSide()]));
+        RedstonePropagator.addNeighborChange(level(), this.pos().relative(Direction.values()[getSide() ^ 1]));
 
         // Update all 4 rotational sides if they are not connected. They are excluded
         // because things that actually connect are expected to be part of the propagation anyway
         for (int r = 0; r < 4; r++) {
             if (!maskConnects(r)) {
-                RedstonePropagator.addNeighborChange(getLevel(), posOfStraight(r));
+                RedstonePropagator.addNeighborChange(level(), posOfStraight(r));
             }
         }
 
         // Update all neighbors of the block below
-        BlockPos posUnder = getPos().relative(Direction.values()[getSide()]);
+        BlockPos posUnder = this.pos().relative(Direction.values()[getSide()]);
         for (int s = 0; s < 6; s++) {
             if (s != (getSide() ^ 1)) {
-                RedstonePropagator.addNeighborChange(getLevel(), posUnder.relative(Direction.values()[s]));
+                RedstonePropagator.addNeighborChange(level(), posUnder.relative(Direction.values()[s]));
             }
         }
     }

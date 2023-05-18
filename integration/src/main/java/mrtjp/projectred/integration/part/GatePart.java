@@ -106,6 +106,11 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
 
     //region Trait variables
     @Override
+    public World level() {
+        return world();
+    }
+
+    @Override
     public int getConnMap() {
         return connMap;
     }
@@ -133,21 +138,6 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
     @Override
     public void setRotation(int r) {
         orientation = (byte) ((orientation & 0xFC) | (r & 0x3));
-    }
-
-    @Override
-    public BlockPos getPos() {
-        return pos();
-    }
-
-    @Override
-    public World getLevel() {
-        return world();
-    }
-
-    @Override
-    public TileMultiPart getTile() {
-        return tile();
     }
     //endregion
 
