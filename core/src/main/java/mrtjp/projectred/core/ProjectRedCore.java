@@ -76,7 +76,7 @@ public class ProjectRedCore {
 
         // Load compatibility modules
         if (Configurator.compat_CCBundledCable) {
-            OptionalMod.of("computercraft").ifPresent(ComputerCraftCompatibility::init);
+            OptionalMod.of("computercraft").ifPresent(mod -> ComputerCraftCompatibility.init(mod));
         }
     }
 
