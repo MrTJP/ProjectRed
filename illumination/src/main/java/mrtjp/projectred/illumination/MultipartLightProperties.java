@@ -35,7 +35,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static mrtjp.projectred.ProjectRedIllumination.MOD_ID;
+import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
 
 public abstract class MultipartLightProperties {
 

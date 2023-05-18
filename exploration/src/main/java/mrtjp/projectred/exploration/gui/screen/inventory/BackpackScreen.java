@@ -9,7 +9,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-import static mrtjp.projectred.ProjectRedExploration.MOD_ID;
+import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 
 public class BackpackScreen extends RedUIContainerScreen<BackpackContainer> {
 

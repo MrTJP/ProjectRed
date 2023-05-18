@@ -6,7 +6,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
-import static mrtjp.projectred.ProjectRedExploration.MOD_ID;
+import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
 
 public class ExplorationItemModelProvider extends ItemModelProvider {

@@ -7,7 +7,7 @@ import codechicken.multipart.api.MultipartClientRegistry;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
-import mrtjp.projectred.ProjectRedIntegration;
+import mrtjp.projectred.integration.ProjectRedIntegration;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.client.GateModelRenderer;
 import mrtjp.projectred.integration.client.GatePartItemRenderer;

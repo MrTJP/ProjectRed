@@ -2,7 +2,7 @@ package mrtjp.projectred.integration.item;
 
 import codechicken.multipart.api.ItemMultiPart;
 import codechicken.multipart.api.part.TMultiPart;
-import mrtjp.projectred.ProjectRedIntegration;
+import mrtjp.projectred.integration.ProjectRedIntegration;
 import mrtjp.projectred.core.PlacementLib;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.part.GatePart;

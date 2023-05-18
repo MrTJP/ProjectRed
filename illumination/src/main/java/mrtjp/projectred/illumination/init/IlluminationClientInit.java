@@ -32,7 +32,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static mrtjp.projectred.ProjectRedIllumination.MOD_ID;
+import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
 
 public class IlluminationClientInit {
     public static void init() {

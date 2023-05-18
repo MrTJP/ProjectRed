@@ -2,7 +2,6 @@ package mrtjp.projectred.core;
 
 import codechicken.lib.config.ConfigTag;
 import codechicken.lib.config.StandardConfigFile;
-import mrtjp.projectred.ProjectRedCore;
 
 import java.nio.file.Paths;
 

@@ -12,7 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.RegistryObject;
 
-import static mrtjp.projectred.ProjectRedExploration.*;
+import static mrtjp.projectred.exploration.ProjectRedExploration.*;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
 
 public class ExplorationBlocks {

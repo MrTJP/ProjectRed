@@ -20,8 +20,8 @@ import net.minecraftforge.common.world.BiomeGenerationSettingsBuilder;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.fml.RegistryObject;
 
-import static mrtjp.projectred.ProjectRedExploration.MOD_ID;
-import static mrtjp.projectred.ProjectRedExploration.WORLD_CARVERS;
+import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
+import static mrtjp.projectred.exploration.ProjectRedExploration.WORLD_CARVERS;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
 import static net.minecraft.world.biome.Biome.Category.*;
 

@@ -6,7 +6,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
 
-import static mrtjp.projectred.ProjectRedExpansion.*;
+import static mrtjp.projectred.expansion.ProjectRedExpansion.*;
 import static mrtjp.projectred.expansion.init.ExpansionReferences.*;
 
 public class ExpansionBlocks {

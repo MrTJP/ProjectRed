@@ -2,7 +2,7 @@ package mrtjp.projectred.illumination.item;
 
 import codechicken.multipart.api.ItemMultiPart;
 import codechicken.multipart.api.part.TMultiPart;
-import mrtjp.projectred.ProjectRedIllumination;
+import mrtjp.projectred.illumination.ProjectRedIllumination;
 import mrtjp.projectred.illumination.MultipartLightProperties;
 import mrtjp.projectred.illumination.part.MultipartLightPart;
 import net.minecraft.item.Item;

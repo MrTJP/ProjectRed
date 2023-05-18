@@ -8,7 +8,7 @@ import net.minecraft.item.*;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.SoundEvents;
 
-import static mrtjp.projectred.ProjectRedExploration.*;
+import static mrtjp.projectred.exploration.ProjectRedExploration.*;
 import static mrtjp.projectred.core.init.CoreTags.*;
 
 public class ExplorationItems {

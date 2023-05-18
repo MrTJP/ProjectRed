@@ -1,12 +1,10 @@
-package mrtjp.projectred;
+package mrtjp.projectred.transmission;
 
 import codechicken.lib.gui.SimpleItemGroup;
 import codechicken.lib.util.SneakyUtils;
 import codechicken.multipart.api.MultiPartType;
 import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.core.RedstonePropagator;
-import mrtjp.projectred.transmission.TransmissionAPI;
-import mrtjp.projectred.transmission.WireType;
 import mrtjp.projectred.transmission.data.TransmissionItemModelProvider;
 import mrtjp.projectred.transmission.data.TransmissionItemTagsProvider;
 import mrtjp.projectred.transmission.data.TransmissionLanguageProvider;
@@ -28,7 +26,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import static mrtjp.projectred.ProjectRedTransmission.MOD_ID;
+import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 
 @Mod(MOD_ID)
 public class ProjectRedTransmission {

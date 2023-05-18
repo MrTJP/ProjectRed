@@ -2,7 +2,7 @@ package mrtjp.projectred.compatibility;
 
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.redstone.IBundledRedstoneProvider;
-import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.core.ProjectRedCore;
 import mrtjp.projectred.api.IBundledTileInteraction;
 import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.core.BundledSignalsLib;

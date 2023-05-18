@@ -3,7 +3,7 @@ package mrtjp.projectred.exploration.data;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
 
-import static mrtjp.projectred.ProjectRedExploration.MOD_ID;
+import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
 
 public class ExplorationLanguageProvider extends LanguageProvider {

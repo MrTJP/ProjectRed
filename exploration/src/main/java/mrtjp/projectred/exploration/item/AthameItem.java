@@ -1,6 +1,6 @@
 package mrtjp.projectred.exploration.item;
 
-import mrtjp.projectred.ProjectRedExploration;
+import mrtjp.projectred.exploration.ProjectRedExploration;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.Item;

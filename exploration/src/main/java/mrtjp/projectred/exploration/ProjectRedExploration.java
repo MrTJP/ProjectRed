@@ -1,4 +1,4 @@
-package mrtjp.projectred;
+package mrtjp.projectred.exploration;
 
 import codechicken.lib.gui.SimpleItemGroup;
 import mrtjp.projectred.exploration.data.*;
@@ -23,7 +23,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import static mrtjp.projectred.ProjectRedExploration.MOD_ID;
+import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.MARBLE_BRICK_BLOCK;
 
 @Mod(MOD_ID)

@@ -7,8 +7,8 @@ import net.minecraft.item.Item;
 
 import java.util.function.Supplier;
 
-import static mrtjp.projectred.ProjectRedCore.CORE_GROUP;
-import static mrtjp.projectred.ProjectRedCore.ITEMS;
+import static mrtjp.projectred.core.ProjectRedCore.CORE_GROUP;
+import static mrtjp.projectred.core.ProjectRedCore.ITEMS;
 
 public class CoreItems {
 

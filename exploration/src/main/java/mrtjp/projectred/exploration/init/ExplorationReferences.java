@@ -8,7 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraftforge.registries.ObjectHolder;
 
-import static mrtjp.projectred.ProjectRedExploration.MOD_ID;
+import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 import static mrtjp.projectred.exploration.init.ExplorationBlocks.*;
 import static mrtjp.projectred.exploration.init.ExplorationContainers.ID_BACKPACK_CONTAINER;
 import static mrtjp.projectred.exploration.init.ExplorationItems.*;

@@ -6,7 +6,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
 
-import static mrtjp.projectred.ProjectRedCore.*;
+import static mrtjp.projectred.core.ProjectRedCore.*;
 import static mrtjp.projectred.core.init.CoreReferences.ELECTROTINE_GENERATOR_BLOCK;
 
 public class CoreBlocks {

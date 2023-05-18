@@ -1,7 +1,7 @@
 package mrtjp.projectred.exploration.item;
 
 import codechicken.lib.util.ServerUtils;
-import mrtjp.projectred.ProjectRedExploration;
+import mrtjp.projectred.exploration.ProjectRedExploration;
 import mrtjp.projectred.core.inventory.BaseInventory;
 import mrtjp.projectred.exploration.init.ExplorationTags;
 import mrtjp.projectred.exploration.inventory.container.BackpackContainer;

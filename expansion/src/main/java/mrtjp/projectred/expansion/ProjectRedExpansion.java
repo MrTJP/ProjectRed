@@ -1,4 +1,4 @@
-package mrtjp.projectred;
+package mrtjp.projectred.expansion;
 
 import codechicken.lib.gui.SimpleItemGroup;
 import codechicken.lib.util.SneakyUtils;
@@ -22,7 +22,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import static mrtjp.projectred.ProjectRedExpansion.MOD_ID;
+import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 
 @Mod(MOD_ID)
 public class ProjectRedExpansion {

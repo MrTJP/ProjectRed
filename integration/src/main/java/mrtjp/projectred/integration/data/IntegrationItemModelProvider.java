@@ -9,7 +9,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nonnull;
 
-import static mrtjp.projectred.ProjectRedIntegration.MOD_ID;
+import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
 public class IntegrationItemModelProvider extends ItemModelProvider {
 

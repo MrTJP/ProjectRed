@@ -1,10 +1,8 @@
-package mrtjp.projectred;
+package mrtjp.projectred.integration;
 
 import codechicken.lib.gui.SimpleItemGroup;
 import codechicken.lib.util.SneakyUtils;
 import codechicken.multipart.api.MultiPartType;
-import mrtjp.projectred.integration.GateType;
-import mrtjp.projectred.integration.IntegrationNetwork;
 import mrtjp.projectred.integration.data.IntegrationItemModelProvider;
 import mrtjp.projectred.integration.data.IntegrationLanguageProvider;
 import mrtjp.projectred.integration.data.IntegrationRecipeProvider;
@@ -23,7 +21,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import static mrtjp.projectred.ProjectRedIntegration.MOD_ID;
+import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
 @Mod(MOD_ID)
 public class ProjectRedIntegration {

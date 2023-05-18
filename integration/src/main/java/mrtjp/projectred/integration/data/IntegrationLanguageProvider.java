@@ -4,7 +4,7 @@ import mrtjp.projectred.integration.GateType;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
 
-import static mrtjp.projectred.ProjectRedIntegration.MOD_ID;
+import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
 public class IntegrationLanguageProvider extends LanguageProvider {
 
