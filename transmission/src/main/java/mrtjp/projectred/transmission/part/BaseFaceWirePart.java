@@ -60,6 +60,11 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
 
     //region Trait fields
     @Override
+    public World level() {
+        return world();
+    }
+
+    @Override
     public int getConnMap() {
         return connMap;
     }
@@ -87,21 +92,6 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     @Override
     public void setRotation(int r) {
         throw new RuntimeException("Attempted to rotate a wire!");
-    }
-
-    @Override
-    public BlockPos getPos() {
-        return pos();
-    }
-
-    @Override
-    public World getLevel() {
-        return world();
-    }
-
-    @Override
-    public TileMultiPart getTile() {
-        return tile();
     }
     //endregion
 

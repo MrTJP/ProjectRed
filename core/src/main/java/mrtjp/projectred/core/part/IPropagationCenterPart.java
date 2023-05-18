@@ -20,7 +20,7 @@ public interface IPropagationCenterPart extends IPropagationHooks, IConnectableC
 
                 } else if (maskConnectsOut(s)) {
                     if (!propagateTo(getStraight(s), prev, mode)) {
-                        RedstonePropagator.addNeighborChange(getLevel(), posOfStraight(s));
+                        RedstonePropagator.addNeighborChange(level(), posOfStraight(s));
                     }
                 }
             }

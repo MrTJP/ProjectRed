@@ -86,6 +86,11 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
 
     //region Trait fields
     @Override
+    public World level() {
+        return world();
+    }
+
+    @Override
     public int getConnMap() {
         return connMap;
     }
@@ -93,21 +98,6 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     @Override
     public void setConnMap(int map) {
         connMap = map;
-    }
-
-    @Override
-    public BlockPos getPos() {
-        return pos();
-    }
-
-    @Override
-    public World getLevel() {
-        return world();
-    }
-
-    @Override
-    public TileMultiPart getTile() {
-        return tile();
     }
     //endregion
 

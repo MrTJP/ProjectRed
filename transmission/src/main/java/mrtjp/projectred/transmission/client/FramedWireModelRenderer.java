@@ -86,7 +86,7 @@ public class FramedWireModelRenderer {
     }
 
     public static void renderCoverHighlight(BaseCenterWirePart wire, MicroMaterial material, CCRenderState ccrs, MatrixStack mStack, IRenderTypeBuffer getter) {
-        BlockPos pos = wire.getPos();
+        BlockPos pos = wire.pos();
 
         Matrix4 mat = new Matrix4(mStack);
         mat.translate(pos);

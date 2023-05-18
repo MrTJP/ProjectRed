@@ -22,7 +22,7 @@ public abstract class FramedPowerWire extends BaseCenterWirePart implements IPow
 
     @Override
     public long getTime() {
-        return getLevel().getGameTime();
+        return level().getGameTime();
     }
 
     @Override

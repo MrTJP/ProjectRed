@@ -8,31 +8,23 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public interface IConnectableCenterPart extends IConnectablePart {
-
-    //region Trait fields
-    BlockPos getPos();
-
-    World getLevel();
-
-    TileMultiPart getTile();
-    //endregion
+public interface IConnectableCenterPart extends MultiPartInterface, IConnectablePart {
 
     //region Neighbor Positions
     default BlockPos posOfStraight(int s) {
-        return getPos().relative(Direction.values()[s]);
+        return pos().relative(Direction.values()[s]);
     }
     //endregion
 
     //region Connectable Neighbor Acquisitions
     default IConnectable getStraight(int s) {
-        BlockPos pos = getPos().relative(Direction.values()[s]);
-        TMultiPart part = BlockMultiPart.getPart(getLevel(), pos, 6);
+        BlockPos pos = pos().relative(Direction.values()[s]);
+        TMultiPart part = BlockMultiPart.getPart(level(), pos, 6);
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
 
     default IConnectable getInternal(int s) {
-        TMultiPart part = getTile().getSlottedPart(s);
+        TMultiPart part = tile().getSlottedPart(s);
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
     //endregion
@@ -189,6 +181,6 @@ public interface IConnectableCenterPart extends IConnectablePart {
 
     default void notifyStraight(int r) {
         BlockPos pos = posOfStraight(r);
-        getLevel().neighborChanged(pos, getTile().getBlockState().getBlock(), pos);
+        level().neighborChanged(pos, tile().getBlockState().getBlock(), pos);
     }
 }
