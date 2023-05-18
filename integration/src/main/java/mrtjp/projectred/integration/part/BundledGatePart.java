@@ -3,7 +3,6 @@ package mrtjp.projectred.integration.part;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.raytracer.IndexedVoxelShape;
 import codechicken.lib.raytracer.MultiIndexedVoxelShape;
 import codechicken.lib.raytracer.VoxelShapeCache;
@@ -11,7 +10,7 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
-import codechicken.microblock.FaceMicroFactory;
+import codechicken.microblock.part.face.FaceMicroblockPart;
 import codechicken.multipart.util.PartRayTraceResult;
 import com.google.common.collect.ImmutableSet;
 import mrtjp.projectred.api.*;
@@ -20,14 +19,14 @@ import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.FaceLookup;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.lib.VecLib;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.*;
 
@@ -65,17 +64,17 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
     }
 
     private byte[] calcCornerSignal(int r) {
-        FaceLookup lookup = FaceLookup.lookupCorner(world(), pos(), getSide(), r);
+        FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
         return resolveArray(lookup);
     }
 
     private byte[] calcStraightSignal(int r) {
-        FaceLookup lookup = FaceLookup.lookupStraight(world(), pos(), getSide(), r);
+        FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
         return resolveArray(lookup);
     }
 
     private byte[] calcInsideSignal(int r) {
-        FaceLookup lookup = FaceLookup.lookupInsideFace(world(), pos(), getSide(), r);
+        FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
         return resolveArray(lookup);
     }
 
@@ -97,7 +96,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
     @Override
     public boolean discoverStraightOverride(int absDir) {
         BlockPos pos = pos().relative(Direction.values()[absDir]);
-        TileEntity tile = world().getBlockEntity(pos);
+        BlockEntity tile = level().getBlockEntity(pos);
         if (tile instanceof IMaskedBundledTile) {
             IMaskedBundledTile b = (IMaskedBundledTile) tile;
             int r = Rotation.rotationTo(absDir, getSide());
@@ -108,7 +107,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
             return ((IBundledTile) tile).canConnectBundled(absDir ^ 1);
         }
 
-        if (BundledSignalsLib.canConnectBundledViaInteraction(world(), pos, Direction.values()[absDir ^ 1])) {
+        if (BundledSignalsLib.canConnectBundledViaInteraction(level(), pos, Direction.values()[absDir ^ 1])) {
             return true;
         }
 
@@ -118,7 +117,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
     //region Multipart properties
     @Override
-    public int getLightValue() {
+    public int getLightEmission() {
         // Bundled gates don't typically have rs torches
         return 0;
     }
@@ -163,7 +162,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
         //region save/load
         @Override
-        public void save(CompoundNBT tag) {
+        public void save(CompoundTag tag) {
             super.save(tag);
             saveSignal(tag, "in0", input0);
             saveSignal(tag, "out0", output0);
@@ -172,7 +171,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         }
 
         @Override
-        public void load(CompoundNBT tag) {
+        public void load(CompoundTag tag) {
             super.load(tag);
             input0 = loadSignal(tag, "in0");
             output0 = loadSignal(tag, "out0");
@@ -338,14 +337,14 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
         //region save/load
         @Override
-        public void save(CompoundNBT tag) {
+        public void save(CompoundTag tag) {
             super.save(tag);
             tag.putShort("in", mask);
             tag.putShort("out", output);
         }
 
         @Override
-        public void load(CompoundNBT tag) {
+        public void load(CompoundTag tag) {
             super.load(tag);
             mask = tag.getShort("in");
             output = tag.getShort("out");
@@ -513,7 +512,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
         //region save/load
         @Override
-        public void save(CompoundNBT tag) {
+        public void save(CompoundTag tag) {
             super.save(tag);
             tag.putByte("in", rsIn);
             tag.putByte("out", rsOut);
@@ -523,7 +522,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         }
 
         @Override
-        public void load(CompoundNBT tag) {
+        public void load(CompoundTag tag) {
             super.load(tag);
             rsIn = tag.getByte("in");
             rsOut = tag.getByte("out");
@@ -678,8 +677,8 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
         private static final int KEY_PRESS_MASK = 20;
 
-        private static final IndexedCuboid6[] UNPRESSED_BOXES = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 3, 13), new Vector3(-0.25, 0, -0.25));
-        private static final IndexedCuboid6[] PRESSED_BOXES = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25));
+        private static final Cuboid6[] UNPRESSED_BOXES = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 3, 13), new Vector3(-0.25, 0, -0.25));
+        private static final Cuboid6[] PRESSED_BOXES = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25));
 
         private static final ArrayList<HashMap<Integer, MultiIndexedVoxelShape>> shapeCache = new ArrayList<>(6 * 4);
 
@@ -701,7 +700,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
             List<IndexedVoxelShape> shapeList = new LinkedList<>();
 
             // Base platform box
-            VoxelShape baseShape = VoxelShapeCache.getShape(FaceMicroFactory.aBounds()[0x10].copy().apply(t));
+            VoxelShape baseShape = VoxelShapeCache.getShape(FaceMicroblockPart.aBounds[0x10].copy().apply(t));
             shapeList.add(new IndexedVoxelShape(baseShape, -1));
             for (int i = 0; i < 16; i++) {
                 Cuboid6 bounds = ((pressMask & 1 << i) != 0 ? PRESSED_BOXES : UNPRESSED_BOXES)[i].copy().apply(t);
@@ -728,14 +727,14 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
         //region save/load
         @Override
-        public void save(CompoundNBT tag) {
+        public void save(CompoundTag tag) {
             super.save(tag);
             tag.putShort("press", pressMask);
             tag.putShort("mask", bOut);
         }
 
         @Override
-        public void load(CompoundNBT tag) {
+        public void load(CompoundTag tag) {
             super.load(tag);
             pressMask = tag.getShort("press");
             setbOut(tag.getShort("mask"));
@@ -858,15 +857,15 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         //endregion
 
         @Override
-        public VoxelShape getShape(ISelectionContext context) {
+        public VoxelShape getShape(CollisionContext context) {
             return getOrCreateOutline(getOrientation(), pressMask);
         }
 
         @Override
-        protected boolean gateLogicActivate(PlayerEntity player, ItemStack held, PartRayTraceResult hit) {
+        protected boolean gateLogicActivate(Player player, ItemStack held, PartRayTraceResult hit) {
             if (!held.isEmpty() && held.getItem() instanceof IScrewdriver) return false;
             if (hit.subHit > -1) {
-                if (!world().isClientSide) {
+                if (!level().isClientSide) {
                     pressMask ^= (1 << hit.subHit);
                     gateLogicOnChange();
                 }
@@ -888,14 +887,14 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
         //region save/load
         @Override
-        public void save(CompoundNBT tag) {
+        public void save(CompoundTag tag) {
             super.save(tag);
             tag.putShort("in", bInput0);
             tag.putBoolean("v2", true);
         }
 
         @Override
-        public void load(CompoundNBT tag) {
+        public void load(CompoundTag tag) {
             super.load(tag);
             bInput0 = tag.getShort("in");
 
@@ -987,11 +986,11 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         //endregion
 
         @Override
-        protected boolean gateLogicActivate(PlayerEntity player, ItemStack held, PartRayTraceResult hit) {
+        protected boolean gateLogicActivate(Player player, ItemStack held, PartRayTraceResult hit) {
             if (held.isEmpty() || held.getItem() instanceof IScrewdriver) return false;
             EnumColour c = EnumColour.fromDyeStack(held);
             if (c != null && c.ordinal() != getState() && c != EnumColour.BLACK) {
-                if (!world().isClientSide) {
+                if (!level().isClientSide) {
                     setState(c.ordinal());
                     sendStateUpdate();
                 }

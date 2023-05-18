@@ -6,7 +6,7 @@ import mrtjp.projectred.core.power.IPowerConductorSource;
 import mrtjp.projectred.core.power.IPowerConnectable;
 import mrtjp.projectred.core.power.PowerConductor;
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -40,9 +40,9 @@ public abstract class FramedPowerWire extends BaseCenterWirePart implements IPow
         for (int s = 0; s < 6; s++) {
             CenterLookup lookup;
             if (maskConnectsIn(s)) {
-                lookup = CenterLookup.lookupInsideFace(world(), pos(), s);
+                lookup = CenterLookup.lookupInsideFace(level(), pos(), s);
             } else if (maskConnectsOut(s)) {
-                lookup = CenterLookup.lookupStraightCenter(world(), pos(), s);
+                lookup = CenterLookup.lookupStraightCenter(level(), pos(), s);
             } else {
                 continue;
             }
@@ -79,7 +79,7 @@ public abstract class FramedPowerWire extends BaseCenterWirePart implements IPow
     //region Connections
     @Override
     public boolean discoverStraightOverride(int absDir) {
-        CenterLookup lookup = CenterLookup.lookupStraightCenter(world(), pos(), absDir);
+        CenterLookup lookup = CenterLookup.lookupStraightCenter(level(), pos(), absDir);
         if (lookup.tile instanceof IConnectable) {
             return ((IConnectable) lookup.tile).connectStraight(this, lookup.otherDirection, -1);
         }

@@ -24,4 +24,9 @@ public class UVT extends UVTransformation {
     public UVTransformation inverse() {
         return new UVT(t.inverse());
     }
+
+    @Override
+    public UVTransformation copy() {
+        return new UVT(t.copy());
+    }
 }

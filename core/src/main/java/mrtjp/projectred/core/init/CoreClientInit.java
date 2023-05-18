@@ -2,7 +2,7 @@ package mrtjp.projectred.core.init;
 
 import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.core.gui.screen.inventory.ElectrotineGeneratorScreen;
-import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -21,7 +21,7 @@ public class CoreClientInit {
     private static void clientSetup(final FMLClientSetupEvent event) {
 
         // Register screens
-        ScreenManager.register(ELECTROTINE_GENERATOR_CONTAINER, ElectrotineGeneratorScreen::new);
+        MenuScreens.register(ELECTROTINE_GENERATOR_CONTAINER, ElectrotineGeneratorScreen::new);
 
         // Register Halo renderer
         MinecraftForge.EVENT_BUS.addListener(HaloRenderer::onRenderWorldLastEvent);

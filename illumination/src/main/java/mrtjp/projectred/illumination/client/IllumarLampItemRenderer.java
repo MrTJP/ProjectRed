@@ -8,19 +8,19 @@ import codechicken.lib.util.TransformUtils;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Vector3;
 import codechicken.lib.vec.uv.IconTransformation;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.illumination.block.IllumarLampBlock;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Random;
 
@@ -30,12 +30,12 @@ public class IllumarLampItemRenderer extends WrappedItemModel implements IItemRe
     private static final Cuboid6 GLOW_BOUNDS = Cuboid6.full.copy().expand(0.02D);
     private static final Random random = new Random();
 
-    public IllumarLampItemRenderer(IBakedModel wrapped) {
+    public IllumarLampItemRenderer(BakedModel wrapped) {
         super(wrapped);
     }
 
     @Override
-    public void renderItem(ItemStack stack, ItemCameraTransforms.TransformType transformType, MatrixStack mStack, IRenderTypeBuffer getter, int packedLight, int packedOverlay) {
+    public void renderItem(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack mStack, MultiBufferSource getter, int packedLight, int packedOverlay) {
         Item item = stack.getItem();
         if (!(item instanceof BlockItem)) return;
 
@@ -46,7 +46,7 @@ public class IllumarLampItemRenderer extends WrappedItemModel implements IItemRe
         if (!block.isInverted()) {
             // Non-inverted blocks can use default Minecraft BlockItem model. Shouldn't happen
             // because this renderer should only be registered to inverted variants.
-            renderWrapped(stack, transformType, mStack, getter, packedLight, packedOverlay, false);
+            renderWrapped(stack, mStack, getter, packedLight, packedOverlay, false);
             return;
         }
 
@@ -71,7 +71,7 @@ public class IllumarLampItemRenderer extends WrappedItemModel implements IItemRe
     }
 
     @Override
-    public IModelTransform getModelTransform() {
+    public ModelState getModelTransform() {
         return TransformUtils.DEFAULT_BLOCK;
     }
 

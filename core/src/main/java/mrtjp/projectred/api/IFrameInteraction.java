@@ -5,8 +5,8 @@
  */
 package mrtjp.projectred.api;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * Class used instead of {@link IFrame} to add frame capabilities to a block without having
@@ -23,5 +23,5 @@ public interface IFrameInteraction extends IFrame {
      * @return True if this interaction is valid for the given
      * location.
      */
-    boolean canInteract(World w, BlockPos pos);
+    boolean canInteract(Level w, BlockPos pos);
 }

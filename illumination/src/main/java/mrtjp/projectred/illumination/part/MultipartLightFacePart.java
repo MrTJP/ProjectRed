@@ -1,20 +1,15 @@
 package mrtjp.projectred.illumination.part;
 
 import codechicken.lib.vec.Rotation;
-import codechicken.multipart.api.MultiPartType;
-import codechicken.multipart.api.part.TFacePart;
-import codechicken.multipart.api.part.redstone.IMaskedRedstonePart;
+import codechicken.multipart.api.MultipartType;
+import codechicken.multipart.api.part.FacePart;
+import codechicken.multipart.api.part.redstone.MaskedRedstonePart;
 import mrtjp.projectred.illumination.MultipartLightProperties;
 
-public class MultipartLightFacePart extends MultipartLightPart implements TFacePart, IMaskedRedstonePart {
+public class MultipartLightFacePart extends MultipartLightPart implements FacePart, MaskedRedstonePart {
 
-    public MultipartLightFacePart(MultiPartType<?> type, MultipartLightProperties properties, int color, boolean inverted) {
+    public MultipartLightFacePart(MultipartType<?> type, MultipartLightProperties properties, int color, boolean inverted) {
         super(type, properties, color, inverted);
-    }
-
-    @Override
-    public boolean solid(int side) {
-        return false;
     }
 
     @Override
@@ -34,4 +29,6 @@ public class MultipartLightFacePart extends MultipartLightPart implements TFaceP
 
         return 1 << Rotation.rotationTo(side & 6, getSide());
     }
+
+
 }

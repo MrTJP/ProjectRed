@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_illumination:white_inverted_illumar_lamp"
+  },
+  "pattern": [
+    "GIG",
+    "GIG",
+    "GRG"
+  ],
+  "key": {
+    "I": {
+      "item": "projectred_core:white_illumar"
+    },
+    "G": {
+      "tag": "forge:glass_panes/colorless"
+    },
+    "R": {
+      "item": "minecraft:redstone_torch"
+    }
+  }
+}

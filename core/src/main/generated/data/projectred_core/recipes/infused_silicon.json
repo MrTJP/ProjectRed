@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "result": {
+    "item": "projectred_core:infused_silicon"
+  },
+  "ingredient": {
+    "item": "projectred_core:red_silicon_comp"
+  },
+  "experience": 0.0,
+  "cookingtime": 200
+}

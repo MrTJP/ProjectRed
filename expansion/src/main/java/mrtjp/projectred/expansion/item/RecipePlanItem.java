@@ -1,15 +1,15 @@
 package mrtjp.projectred.expansion.item;
 
 import mrtjp.projectred.expansion.ProjectRedExpansion;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -24,11 +24,11 @@ public class RecipePlanItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
 
         if (RecipePlanItem.hasRecipeInside(stack)) {
             ItemStack output = RecipePlanItem.loadPlanOutput(stack);
-            tooltip.add(new TranslationTextComponent(UL_PLAN_RESULT).append(": " + output.getDisplayName().getString()).withStyle(TextFormatting.GRAY));
+            tooltip.add(new TextComponent(UL_PLAN_RESULT).append(": " + output.getDisplayName().getString()).withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -37,7 +37,7 @@ public class RecipePlanItem extends Item {
     }
 
     public static void savePlan(ItemStack stack, ItemStack[] inputs, ItemStack output) {
-        CompoundNBT inputsNBT = new CompoundNBT();
+        CompoundTag inputsNBT = new CompoundTag();
         for (int i = 0; i < 9; i++) {
             ItemStack input = inputs[i];
             if (!input.isEmpty()) {
@@ -46,20 +46,20 @@ public class RecipePlanItem extends Item {
                     input.setDamageValue(0);
                 }
 
-                CompoundNBT itemStackNBT = new CompoundNBT();
+                CompoundTag itemStackNBT = new CompoundTag();
                 input.save(itemStackNBT);
                 inputsNBT.put("input_" + i, itemStackNBT);
             }
         }
 
-        CompoundNBT outputNBT = new CompoundNBT();
+        CompoundTag outputNBT = new CompoundTag();
         output.save(outputNBT);
 
         stack.getOrCreateTag().put("planInputs", inputsNBT);
         stack.getOrCreateTag().put("planOutput", outputNBT);
     }
 
-    public static void loadPlanInputsToGrid(IInventory craftingGrid, ItemStack stack) {
+    public static void loadPlanInputsToGrid(Container craftingGrid, ItemStack stack) {
 
         if (!hasRecipeInside(stack)) {
             return;
@@ -82,7 +82,7 @@ public class RecipePlanItem extends Item {
             return inputs;
         }
 
-        CompoundNBT inputsNBT = stack.getTag().getCompound("planInputs");
+        CompoundTag inputsNBT = stack.getTag().getCompound("planInputs");
         for (int i = 0; i < 9; i++) {
             String id = "input_" + i;
             inputs[i] = inputsNBT.contains(id) ? ItemStack.of(inputsNBT.getCompound(id)) : ItemStack.EMPTY;

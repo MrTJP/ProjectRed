@@ -4,7 +4,7 @@ issueTrackerURL="https://github.com/MrTJP/ProjectRed"
 license="MIT"
 
 [[mods]]
-    modId="projectred-expansion"
+    modId="projectred_expansion"
     displayName="ProjectRed Expansion"
     version="${file.jarVersion}"
 
@@ -14,32 +14,32 @@ license="MIT"
     description='''
 Redstone. The way it was meant to be.
     '''
-[[dependencies.projectred-expansion]]
+[[dependencies.projectred_expansion]]
     modId="forge"
     mandatory=true
     versionRange="[${forge_version},)"
     ordering="NONE"
     side="BOTH"
-[[dependencies.projectred-expansion]]
+[[dependencies.projectred_expansion]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.5]"
+    versionRange="[1.18.2]"
     ordering="NONE"
     side="BOTH"
-[[dependencies.projectred-expansion]]
+[[dependencies.projectred_expansion]]
     modId="codechickenlib"
     mandatory=true
     versionRange="[${ccl_version},)"
     ordering="AFTER"
     side="BOTH"
-[[dependencies.projectred-expansion]]
+[[dependencies.projectred_expansion]]
     modId="cb_multipart"
     mandatory=true
     versionRange="[${cbm_version},)"
     ordering="AFTER"
     side="BOTH"
-[[dependencies.projectred-expansion]]
-    modId="projectred-core"
+[[dependencies.projectred_expansion]]
+    modId="projectred_core"
     mandatory=true
     versionRange="[${file.jarVersion},)"
     ordering="AFTER"

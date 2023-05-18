@@ -1,38 +1,40 @@
 package mrtjp.projectred.expansion.inventory.container;
 
 import codechicken.lib.inventory.container.ICCLContainerFactory;
+import mrtjp.projectred.core.inventory.container.SimpleDataSlot;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.expansion.tile.AutoCrafterTile;
 import mrtjp.projectred.lib.InventoryLib;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.IContainerListener;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class AutoCrafterContainer extends BaseMachineContainer {
 
     public static final ICCLContainerFactory<AutoCrafterContainer> FACTORY = (windowId, playerInv, packet) -> {
-        TileEntity tile = playerInv.player.level.getBlockEntity(packet.readPos());
+        BlockEntity tile = playerInv.player.level.getBlockEntity(packet.readPos());
         if (!(tile instanceof AutoCrafterTile)) return null;
         return new AutoCrafterContainer(playerInv, (AutoCrafterTile) tile, windowId);
     };
 
-    private final PlayerInventory playerInventory;
+    private final Inventory playerInventory;
     private final AutoCrafterTile tile;
 
     private int planSlot;
 
-    public AutoCrafterContainer(PlayerInventory inventory, AutoCrafterTile tile, int windowId) {
+    public AutoCrafterContainer(Inventory inventory, AutoCrafterTile tile, int windowId) {
         super(ExpansionReferences.AUTO_CRAFTER_CONTAINER, windowId, tile);
         this.playerInventory = inventory;
         this.tile = tile;
 
         InventoryLib.addPlayerInventory(inventory, 8, 130, this::addSlot);
         addAutoCrafterInventory();
+
+        addDataSlot(new SimpleDataSlot(tile::getPlanSlot, value -> planSlot = value));
     }
 
     private void addAutoCrafterInventory() {
@@ -57,32 +59,9 @@ public class AutoCrafterContainer extends BaseMachineContainer {
         return planSlot;
     }
 
-    @Override
-    public void broadcastChanges() {
-        super.broadcastChanges();
-
-        if (planSlot != tile.getPlanSlot()) {
-            planSlot = tile.getPlanSlot();
-            for (IContainerListener listener : containerListeners) {
-                listener.setContainerData(this, 200, planSlot);
-            }
-        }
-    }
-
-    @Override
-    public void setData(int id, int value) {
-        switch (id) {
-            case 200:
-                planSlot = value;
-                break;
-            default:
-                super.setData(id, value);
-        }
-    }
-
     //region Quickmove
     @Override
-    public ItemStack quickMoveStack(PlayerEntity player, int slotIndex) {
+    public ItemStack quickMoveStack(Player player, int slotIndex) {
 
         Slot slot = slots.get(slotIndex);
         if (slot == null || !slot.hasItem()) return ItemStack.EMPTY;
@@ -156,7 +135,7 @@ public class AutoCrafterContainer extends BaseMachineContainer {
     //@formatter:on
 
     private static class PlanSlot extends Slot {
-        public PlanSlot(IInventory inventory, int index, int x, int y) {
+        public PlanSlot(Container inventory, int index, int x, int y) {
             super(inventory, index, x, y);
         }
 

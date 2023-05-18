@@ -2,41 +2,36 @@ package mrtjp.projectred.illumination.part;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Vector3;
-import codechicken.microblock.HollowMicroblock;
-import codechicken.multipart.api.MultiPartType;
-import codechicken.multipart.api.NormalOcclusionTest;
+import codechicken.microblock.part.hollow.HollowMicroblockPart;
+import codechicken.multipart.api.MultipartType;
 import codechicken.multipart.api.RedstoneInteractions;
-import codechicken.multipart.api.part.TMultiPart;
-import codechicken.multipart.api.part.TNormalOcclusionPart;
-import codechicken.multipart.api.part.TSlottedPart;
-import codechicken.multipart.api.part.redstone.IRedstonePart;
-import codechicken.multipart.block.BlockMultiPart;
-import codechicken.multipart.block.TileMultiPart;
+import codechicken.multipart.api.part.BaseMultipart;
+import codechicken.multipart.api.part.MultiPart;
+import codechicken.multipart.api.part.NormalOcclusionPart;
+import codechicken.multipart.api.part.SlottedPart;
+import codechicken.multipart.api.part.redstone.RedstonePart;
+import codechicken.multipart.block.BlockMultipart;
+import codechicken.multipart.block.TileMultipart;
 import codechicken.multipart.util.PartRayTraceResult;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import mrtjp.projectred.core.PlacementLib;
-import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.illumination.MultipartLightProperties;
-import net.minecraft.block.SoundType;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Collections;
 
-public class MultipartLightPart extends TMultiPart implements TSlottedPart, TNormalOcclusionPart, IRedstonePart {
+public class MultipartLightPart extends BaseMultipart implements SlottedPart, NormalOcclusionPart, RedstonePart {
 
-    private final MultiPartType<?> type;
+    private final MultipartType<?> type;
     private final MultipartLightProperties properties;
     private final int color;
     private final boolean inverted;
@@ -44,7 +39,7 @@ public class MultipartLightPart extends TMultiPart implements TSlottedPart, TNor
     protected boolean powered = false;
     protected int side = 0;
 
-    public MultipartLightPart(MultiPartType<?> type, MultipartLightProperties properties, int color, boolean inverted) {
+    public MultipartLightPart(MultipartType<?> type, MultipartLightProperties properties, int color, boolean inverted) {
         this.type = type;
         this.properties = properties;
         this.color = color;
@@ -67,18 +62,22 @@ public class MultipartLightPart extends TMultiPart implements TSlottedPart, TNor
         return powered != inverted;
     }
 
+    public MultipartLightProperties getProperties() {
+        return properties;
+    }
+
     public void preparePlacement(int side) {
         this.side = side;
     }
 
     @Override
-    public void save(CompoundNBT tag) {
+    public void save(CompoundTag tag) {
         tag.putBoolean("pow", powered);
         tag.putByte("side", (byte) side);
     }
 
     @Override
-    public void load(CompoundNBT tag) {
+    public void load(CompoundTag tag) {
         powered = tag.getBoolean("pow");
         side = tag.getByte("side") & 0xFF;
     }
@@ -107,7 +106,7 @@ public class MultipartLightPart extends TMultiPart implements TSlottedPart, TNor
     }
 
     @Override
-    public void onPartChanged(TMultiPart part) {
+    public void onPartChanged(MultiPart part) {
         if (checkSupport()) return;
         updateState(false);
     }
@@ -119,7 +118,7 @@ public class MultipartLightPart extends TMultiPart implements TSlottedPart, TNor
     }
 
     @Override
-    public int getLightValue() {
+    public int getLightEmission() {
         return (isInverted() != powered) ? 15 : 0;
     }
 
@@ -128,13 +127,13 @@ public class MultipartLightPart extends TMultiPart implements TSlottedPart, TNor
     }
 
     private boolean checkSupport() {
-        if (world().isClientSide) return false;
+        if (level().isClientSide) return false;
         if (properties.canFloat()) return false;
 
         BlockPos bc = pos().relative(Direction.values()[side]);
-        if (MultipartLightPart.canPlaceLight(world(), bc, Direction.values()[side^1])) return false;
+        if (MultipartLightPart.canPlaceLight(level(), bc, Direction.values()[side^1])) return false;
 
-        TileMultiPart.dropItem(getItem(), world(), Vector3.fromTileCenter(tile()));
+        TileMultipart.dropItem(getItem(), level(), Vector3.fromTileCenter(tile()));
         tile().remPart(this);
         return true;
     }
@@ -150,7 +149,7 @@ public class MultipartLightPart extends TMultiPart implements TSlottedPart, TNor
 
     private void updateState(boolean forceRender) {
         boolean updated = false;
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             boolean oldPower = powered;
             powered = checkPower();
             if (oldPower != powered) {
@@ -164,34 +163,29 @@ public class MultipartLightPart extends TMultiPart implements TSlottedPart, TNor
     }
 
     private void updateRender() {
-        if (!world().isClientSide)
+        if (!level().isClientSide)
             sendUpdate(this::writeDesc);
         tile().recalcLight(false, true);
         tile().markRender();
     }
 
     @Override
-    public boolean occlusionTest(TMultiPart npart) {
-        return NormalOcclusionTest.test(this, npart) && super.occlusionTest(npart);
-    }
-
-    @Override
-    public VoxelShape getShape(ISelectionContext context) {
+    public VoxelShape getShape(CollisionContext context) {
         return properties.getShape(side);
     }
 
     @Override
     public VoxelShape getOcclusionShape() {
-        return getShape(ISelectionContext.empty());
+        return getShape(CollisionContext.empty());
     }
 
     @Override
-    public MultiPartType<?> getType() {
+    public MultipartType<?> getType() {
         return type;
     }
 
     @Override
-    public float getStrength(PlayerEntity player, PartRayTraceResult hit) {
+    public float getStrength(Player player, PartRayTraceResult hit) {
         return 2/30f;
     }
 
@@ -206,7 +200,7 @@ public class MultipartLightPart extends TMultiPart implements TSlottedPart, TNor
     }
 
     @Override
-    public ItemStack pickItem(PartRayTraceResult hit) {
+    public ItemStack getCloneStack(PartRayTraceResult hit) {
         return getItem();
     }
 
@@ -226,34 +220,16 @@ public class MultipartLightPart extends TMultiPart implements TSlottedPart, TNor
     }
 
     @Override
-    public SoundType getPlacementSound(ItemUseContext context) {
+    public SoundType getPlacementSound(UseOnContext context) {
         return SoundType.GLASS;
     }
 
-    @Override
-    public boolean renderStatic(RenderType layer, CCRenderState ccrs) {
-        if (layer == null || layer == RenderType.cutout()) {
-            ccrs.setBrightness(world(), pos());
-            properties.render(this, Vector3.ZERO, ccrs);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void renderDynamic(MatrixStack mStack, IRenderTypeBuffer buffers, int packedLight, int packedOverlay, float partialTicks) {
-//        if (isOn)
-//            RenderHalo.addLight(pos, getColor, getLightBounds) //TODO RenderWorldLastEvent rendering is broken
-        if (isLightOn())
-            HaloRenderer.renderHalo(CCRenderState.instance(), mStack, buffers, properties.getGlowBounds(getSide()), getColor(), Vector3.ZERO);
-    }
-
-    public static boolean canPlaceLight(World world, BlockPos pos, Direction side) {
+    public static boolean canPlaceLight(Level world, BlockPos pos, Direction side) {
 
         if (PlacementLib.canPlaceLight(world, pos, side)) return true;
 
-        TMultiPart part = BlockMultiPart.getPart(world, pos, side.ordinal());
-        if (part instanceof HollowMicroblock) return true;
+        MultiPart part = BlockMultipart.getPart(world, pos, side.ordinal());
+        if (part instanceof HollowMicroblockPart) return true;
 
         return false;
     }

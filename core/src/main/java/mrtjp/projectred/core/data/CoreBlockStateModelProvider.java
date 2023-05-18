@@ -1,7 +1,7 @@
 package mrtjp.projectred.core.data;
 
 import mrtjp.projectred.core.block.ProjectRedBlock;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockStateProvider;

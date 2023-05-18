@@ -2,18 +2,19 @@ package mrtjp.projectred.transmission.init;
 
 import codechicken.lib.render.item.IItemRenderer;
 import codechicken.lib.texture.SpriteRegistryHelper;
-import codechicken.lib.util.SneakyUtils;
-import codechicken.microblock.MicroMaterialRegistry;
+import codechicken.microblock.client.MicroMaterialClientRegistry;
 import codechicken.multipart.api.MultipartClientRegistry;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mrtjp.projectred.transmission.WireType;
 import mrtjp.projectred.transmission.client.*;
-import net.minecraft.client.renderer.model.*;
+import net.covers1624.quack.util.SneakyUtils;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.resources.model.*;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
@@ -22,13 +23,11 @@ import net.minecraftforge.client.model.geometry.IModelGeometry;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.resource.IResourceType;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 
@@ -49,14 +48,14 @@ public class TransmissionClientInit {
 
     private static void clientSetup(final FMLClientSetupEvent event) {
 
-        // Register part item renderers
+        // Register part renderers
         for (WireType type : WireType.values()) {
             MultipartClientRegistry.register(type.getPartType(),
                     SneakyUtils.unsafeCast(type.isCenterPart() ? CenterWirePartRenderer.INSTANCE : FaceWirePartRenderer.INSTANCE));
         }
 
         // Highlight renderer for cover-on-wire overlay
-        MicroMaterialRegistry.registerHighlightRenderer(FramedWireHighlightRenderer.INSTANCE);
+        MicroMaterialClientRegistry.registerGlobalHighlightRenderer(FramedWireHighlightRenderer.INSTANCE);
     }
 
     private static void onModelRegistryEvent(ModelRegistryEvent event) {
@@ -76,15 +75,14 @@ public class TransmissionClientInit {
         }
 
         @Override
-        public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
+        public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
             return renderer;
         }
 
         //@formatter:off
         @Override public GenericModelLoader read(JsonDeserializationContext deserializationContext, JsonObject modelContents) { return this; }
-        @Override public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) { return Collections.emptyList(); }
-        @Override public void onResourceManagerReload(IResourceManager resourceManager) {}
-        @Override public void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {}
+        @Override public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) { return Collections.emptySet(); }
+        @Override public void onResourceManagerReload(ResourceManager resourceManager) {}
         //@formatter:on
     }
 }

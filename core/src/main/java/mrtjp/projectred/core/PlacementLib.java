@@ -1,16 +1,16 @@
 package mrtjp.projectred.core;
 
 import codechicken.lib.vec.Vector3;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class PlacementLib {
         gateWhiteList.add(Blocks.GLASS);
     }
 
-    public static boolean canPlaceWireOnSide(World world, BlockPos pos, Direction side) {
+    public static boolean canPlaceWireOnSide(Level world, BlockPos pos, Direction side) {
         BlockState state = world.getBlockState(pos);
         if (wireWhiteList.contains(state.getBlock())) {
             return true;
@@ -37,7 +37,7 @@ public class PlacementLib {
         return state.isFaceSturdy(world, pos, side);
     }
 
-    public static boolean canPlaceGateOnSide(World world, BlockPos pos, Direction side) {
+    public static boolean canPlaceGateOnSide(Level world, BlockPos pos, Direction side) {
         if (canPlaceWireOnSide(world, pos, side)) return true;
 
         BlockState state = world.getBlockState(pos);
@@ -47,7 +47,7 @@ public class PlacementLib {
         return false;
     }
 
-    public static boolean canPlaceLight(World world, BlockPos pos, Direction side) {
+    public static boolean canPlaceLight(Level world, BlockPos pos, Direction side) {
         if (canPlaceWireOnSide(world, pos, side)) return true;
         if (side == Direction.UP) {
             return Block.canSupportCenter(world, pos, side);
@@ -55,7 +55,7 @@ public class PlacementLib {
         return false;
     }
 
-    public static void dropTowardsPlayer(World world, BlockPos pos, ItemStack stack, PlayerEntity player) {
+    public static void dropTowardsPlayer(Level world, BlockPos pos, ItemStack stack, Player player) {
 
         if (world.isClientSide || !world.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
             return;

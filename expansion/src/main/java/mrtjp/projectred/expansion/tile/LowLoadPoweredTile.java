@@ -5,8 +5,10 @@ import mrtjp.projectred.core.power.ILowLoadMachine;
 import mrtjp.projectred.core.power.ILowLoadPowerLine;
 import mrtjp.projectred.core.power.PowerConductor;
 import mrtjp.projectred.core.tile.BasePoweredTile;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class LowLoadPoweredTile extends BasePoweredTile implements ILowLoadMachine {
 
@@ -14,19 +16,19 @@ public abstract class LowLoadPoweredTile extends BasePoweredTile implements ILow
 
     private int chargeFlow = 0;
 
-    public LowLoadPoweredTile(TileEntityType<?> type) {
-        super(type);
+    public LowLoadPoweredTile(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     @Override
-    public void saveToNBT(CompoundNBT tag) {
+    public void saveToNBT(CompoundTag tag) {
         super.saveToNBT(tag);
         conductor.save(tag);
         tag.putInt("chargeFlow", chargeFlow);
     }
 
     @Override
-    public void loadFromNBT(CompoundNBT tag) {
+    public void loadFromNBT(CompoundTag tag) {
         super.loadFromNBT(tag);
         conductor.load(tag);
         chargeFlow = tag.getInt("chargeFlow");

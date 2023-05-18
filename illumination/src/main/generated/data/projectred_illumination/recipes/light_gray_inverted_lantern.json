@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_illumination:light_gray_inverted_lantern"
+  },
+  "pattern": [
+    "PNP",
+    "GIG",
+    "PRP"
+  ],
+  "key": {
+    "N": {
+      "tag": "forge:nuggets/gold"
+    },
+    "I": {
+      "item": "projectred_core:light_gray_illumar"
+    },
+    "G": {
+      "tag": "forge:glass_panes/colorless"
+    },
+    "R": {
+      "item": "minecraft:redstone_torch"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    }
+  }
+}

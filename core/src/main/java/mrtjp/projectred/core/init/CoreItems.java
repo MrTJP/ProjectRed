@@ -3,11 +3,11 @@ package mrtjp.projectred.core.init;
 import mrtjp.projectred.core.item.DrawPlateItem;
 import mrtjp.projectred.core.item.MultimeterItem;
 import mrtjp.projectred.core.item.ScrewdriverItem;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 import java.util.function.Supplier;
 
-import static mrtjp.projectred.core.ProjectRedCore.CORE_GROUP;
+import static mrtjp.projectred.core.ProjectRedCore.CORE_CREATIVE_TAB;
 import static mrtjp.projectred.core.ProjectRedCore.ITEMS;
 
 public class CoreItems {
@@ -134,6 +134,6 @@ public class CoreItems {
     }
 
     private static Supplier<Item> createSimpleItemSupplier() {
-        return () -> new Item(new Item.Properties().tab(CORE_GROUP));
+        return () -> new Item(new Item.Properties().tab(CORE_CREATIVE_TAB));
     }
 }

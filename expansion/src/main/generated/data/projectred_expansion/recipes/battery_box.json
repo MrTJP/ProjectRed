@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_expansion:battery_box"
+  },
+  "pattern": [
+    "BWB",
+    "BIB",
+    "IEI"
+  ],
+  "key": {
+    "B": {
+      "item": "projectred_expansion:battery"
+    },
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "E": {
+      "tag": "forge:ingots/electrotine_alloy"
+    },
+    "W": {
+      "tag": "minecraft:planks"
+    }
+  }
+}

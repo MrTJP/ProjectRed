@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "result": {
+    "item": "projectred_core:electrotine_ingot"
+  },
+  "ingredient": {
+    "item": "projectred_core:electrotine_iron_comp"
+  },
+  "experience": 0.0,
+  "cookingtime": 200
+}

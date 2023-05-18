@@ -5,20 +5,19 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.packet.ICustomPacketHandler;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.packet.PacketCustomChannelBuilder;
-import codechicken.multipart.api.part.TMultiPart;
-import codechicken.multipart.block.BlockMultiPart;
-import codechicken.multipart.block.TileMultiPart;
+import codechicken.multipart.api.part.MultiPart;
+import codechicken.multipart.block.BlockMultipart;
 import mrtjp.projectred.integration.gui.screen.CounterScreen;
 import mrtjp.projectred.integration.gui.screen.TimerScreen;
 import mrtjp.projectred.integration.part.ComplexGatePart;
 import mrtjp.projectred.integration.part.GatePart;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.play.IClientPlayNetHandler;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.play.IServerPlayNetHandler;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.level.Level;
 
 import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
@@ -42,21 +41,21 @@ public class IntegrationNetwork {
                 .build();
     }
 
-    public static MCDataOutput writePartIndex(MCDataOutput out, TMultiPart part) {
+    public static MCDataOutput writePartIndex(MCDataOutput out, MultiPart part) {
         out.writePos(part.pos()).writeByte(part.tile().getPartList().indexOf(part));
         return out;
     }
 
-    public static TMultiPart readPartIndex(World world, MCDataInput in) {
+    public static MultiPart readPartIndex(Level world, MCDataInput in) {
         BlockPos pos = in.readPos();
         int index = in.readUByte();
-        return BlockMultiPart.getTile(world, pos).getPartList().get(index);
+        return BlockMultipart.getTile(world, pos).getPartList().get(index);
     }
 
     private static class ClientHandler implements ICustomPacketHandler.IClientPacketHandler {
 
         @Override
-        public void handlePacket(PacketCustom packet, Minecraft mc, IClientPlayNetHandler handler) {
+        public void handlePacket(PacketCustom packet, Minecraft mc, ClientPacketListener handler) {
             switch (packet.getType()) {
                 case OPEN_TIMER_GUI_FROM_SERVER:
                     handleOpenTimerGuiMessage(mc, packet);
@@ -71,14 +70,14 @@ public class IntegrationNetwork {
         }
 
         private void handleOpenTimerGuiMessage(Minecraft mc, MCDataInput data) {
-            TMultiPart part = readPartIndex(mc.level, data);
+            MultiPart part = readPartIndex(mc.level, data);
             if (part instanceof ComplexGatePart.ITimerGuiLogic) {
                 mc.setScreen(new TimerScreen((GatePart) part));
             }
         }
 
         private void handleOpenCounterGuiMessage(Minecraft mc, MCDataInput data) {
-            TMultiPart part = readPartIndex(mc.level, data);
+            MultiPart part = readPartIndex(mc.level, data);
             if (part instanceof ComplexGatePart.ICounterGuiLogic) {
                 mc.setScreen(new CounterScreen((GatePart) part));
             }
@@ -88,7 +87,7 @@ public class IntegrationNetwork {
     private static class ServerHandler implements ICustomPacketHandler.IServerPacketHandler {
 
         @Override
-        public void handlePacket(PacketCustom packet, ServerPlayerEntity sender, IServerPlayNetHandler handler) {
+        public void handlePacket(PacketCustom packet, ServerPlayer sender, ServerGamePacketListenerImpl handler) {
             switch (packet.getType()) {
 
                 case INCR_TIMER_FROM_CLIENT:
@@ -103,16 +102,16 @@ public class IntegrationNetwork {
             }
         }
 
-        private void handleIncrTimerMessage(World world, PacketCustom packet) {
-            TMultiPart part = readPartIndex(world, packet);
+        private void handleIncrTimerMessage(Level world, PacketCustom packet) {
+            MultiPart part = readPartIndex(world, packet);
             if (part instanceof ComplexGatePart.ITimerGuiLogic) {
                 ComplexGatePart.ITimerGuiLogic gate = (ComplexGatePart.ITimerGuiLogic) part;
                 gate.setTimerMax(gate.getTimerMax() + packet.readShort());
             }
         }
 
-        private void handleIncrCounterMessage(World world, PacketCustom packet) {
-            TMultiPart part = readPartIndex(world, packet);
+        private void handleIncrCounterMessage(Level world, PacketCustom packet) {
+            MultiPart part = readPartIndex(world, packet);
             if (part instanceof ComplexGatePart.ICounterGuiLogic) {
                 ComplexGatePart.ICounterGuiLogic gate = (ComplexGatePart.ICounterGuiLogic) part;
                 int actionId = packet.readByte();

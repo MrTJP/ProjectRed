@@ -4,10 +4,10 @@ import mrtjp.projectred.expansion.inventory.container.AutoCrafterContainer;
 import mrtjp.projectred.expansion.inventory.container.BatteryBoxContainer;
 import mrtjp.projectred.expansion.inventory.container.ChargingBenchContainer;
 import mrtjp.projectred.expansion.inventory.container.ProjectBenchContainer;
-import net.minecraft.block.Block;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
@@ -35,15 +35,15 @@ public class ExpansionReferences {
 
     // Tiles
     @ObjectHolder(ID_PROJECT_BENCH)
-    public static TileEntityType<?> PROJECT_BENCH_TILE = null;
+    public static BlockEntityType<?> PROJECT_BENCH_TILE = null;
     @ObjectHolder(ID_BATTERY_BOX)
-    public static TileEntityType<?> BATTERY_BOX_TILE = null;
+    public static BlockEntityType<?> BATTERY_BOX_TILE = null;
     @ObjectHolder(ID_CHARGING_BENCH)
-    public static TileEntityType<?> CHARGING_BENCH_TILE = null;
+    public static BlockEntityType<?> CHARGING_BENCH_TILE = null;
     @ObjectHolder(ID_AUTO_CRAFTER)
-    public static TileEntityType<?> AUTO_CRAFTER_TILE = null;
+    public static BlockEntityType<?> AUTO_CRAFTER_TILE = null;
     @ObjectHolder(ID_FIRE_STARTER)
-    public static TileEntityType<?> FIRE_STARTER_TILE = null;
+    public static BlockEntityType<?> FIRE_STARTER_TILE = null;
 //    @ObjectHolder(ID_INDUCTION_FURNACE)
 //    public static TileEntityType<?> INDUCTION_FURNACE_TILE = null;
 //    @ObjectHolder(ID_TELEPOSER)
@@ -51,13 +51,13 @@ public class ExpansionReferences {
 
     // Containers
     @ObjectHolder(ID_PROJECT_BENCH)
-    public static ContainerType<ProjectBenchContainer> PROJECT_BENCH_CONTAINER = null;
+    public static MenuType<ProjectBenchContainer> PROJECT_BENCH_CONTAINER = null;
     @ObjectHolder(ID_BATTERY_BOX)
-    public static ContainerType<BatteryBoxContainer> BATTERY_BOX_CONTAINER = null;
+    public static MenuType<BatteryBoxContainer> BATTERY_BOX_CONTAINER = null;
     @ObjectHolder(ID_AUTO_CRAFTER)
-    public static ContainerType<AutoCrafterContainer> AUTO_CRAFTER_CONTAINER = null;
+    public static MenuType<AutoCrafterContainer> AUTO_CRAFTER_CONTAINER = null;
     @ObjectHolder(ID_CHARGING_BENCH)
-    public static ContainerType<ChargingBenchContainer> CHARGING_BENCH_CONTAINER = null;
+    public static MenuType<ChargingBenchContainer> CHARGING_BENCH_CONTAINER = null;
 
     // Items
     @ObjectHolder(ID_RECIPE_PLAN)

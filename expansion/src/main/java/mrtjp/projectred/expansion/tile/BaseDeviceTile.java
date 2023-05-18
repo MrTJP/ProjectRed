@@ -5,18 +5,17 @@ import codechicken.lib.data.MCDataOutput;
 import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.core.tile.ProjectRedTile;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
-public abstract class BaseDeviceTile extends ProjectRedTile implements ITickableTileEntity {
+public abstract class BaseDeviceTile extends ProjectRedTile {
 
     protected int side = 0;
     protected boolean powered = false;
@@ -24,12 +23,13 @@ public abstract class BaseDeviceTile extends ProjectRedTile implements ITickable
 
     private long schedTick = -1L;
 
-    public BaseDeviceTile(TileEntityType<?> type) {
-        super(type);
+    public BaseDeviceTile(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+        side = state.getValue(ProjectRedBlock.SIDE);
     }
 
     @Override
-    public void saveToNBT(CompoundNBT tag) {
+    public void saveToNBT(CompoundTag tag) {
         tag.putLong("schedTick", schedTick);
         tag.putByte("side", (byte) side);
         tag.putBoolean("powered", powered);
@@ -37,7 +37,7 @@ public abstract class BaseDeviceTile extends ProjectRedTile implements ITickable
     }
 
     @Override
-    public void loadFromNBT(CompoundNBT tag) {
+    public void loadFromNBT(CompoundTag tag) {
         schedTick = tag.getLong("schedTick");
         side = tag.getByte("side");
         powered = tag.getBoolean("powered");
@@ -116,7 +116,7 @@ public abstract class BaseDeviceTile extends ProjectRedTile implements ITickable
     }
 
     @Override
-    public ActionResultType onBlockActivated(PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack held = player.getItemInHand(hand);
 
         // Try to rotate block
@@ -129,17 +129,11 @@ public abstract class BaseDeviceTile extends ProjectRedTile implements ITickable
                     pushBlockState();
                     setChanged();
                 }
-                return ActionResultType.sidedSuccess(level.isClientSide);
+                return InteractionResult.sidedSuccess(level.isClientSide);
             }
-            return ActionResultType.FAIL;
+            return InteractionResult.FAIL;
         }
-        return ActionResultType.PASS;
-    }
-
-    @Override
-    public void loadBlockState(BlockState state) {
-        super.loadBlockState(state);
-        side = state.getValue(ProjectRedBlock.SIDE);
+        return InteractionResult.PASS;
     }
 
     @Override

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "item": "projectred_transmission:purple_framed_insulated_wire"
+  },
+  "ingredients": [
+    {
+      "tag": "projectred_transmission:framed_insulated_wire"
+    },
+    {
+      "tag": "forge:dyes/purple"
+    }
+  ]
+}

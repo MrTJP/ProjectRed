@@ -7,41 +7,40 @@ import codechicken.lib.raytracer.VoxelShapeCache;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
-import codechicken.microblock.ItemMicroBlock;
-import codechicken.microblock.MicroMaterialRegistry;
-import codechicken.microblock.api.ISidedHollowConnect;
 import codechicken.microblock.api.MicroMaterial;
-import codechicken.microblock.handler.MicroblockModContent;
-import codechicken.multipart.api.NormalOcclusionTest;
-import codechicken.multipart.api.part.TMultiPart;
-import codechicken.multipart.api.part.TNormalOcclusionPart;
-import codechicken.multipart.api.part.TSlottedPart;
-import codechicken.multipart.block.TileMultiPart;
+import codechicken.microblock.api.SlottedHollowConnect;
+import codechicken.microblock.init.CBMicroblockModContent;
+import codechicken.microblock.item.ItemMicroBlock;
+import codechicken.microblock.util.MicroMaterialRegistry;
+import codechicken.multipart.api.part.MultiPart;
+import codechicken.multipart.api.part.NormalOcclusionPart;
+import codechicken.multipart.api.part.SlottedPart;
+import codechicken.multipart.block.TileMultipart;
 import codechicken.multipart.util.PartRayTraceResult;
 import com.google.common.collect.ImmutableSet;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.PlacementLib;
 import mrtjp.projectred.core.part.IConnectableCenterPart;
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.block.SoundType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class BaseCenterWirePart extends BaseWirePart implements IConnectableCenterPart, TNormalOcclusionPart, TSlottedPart, ISidedHollowConnect {
+public abstract class BaseCenterWirePart extends BaseWirePart implements IConnectableCenterPart, NormalOcclusionPart, SlottedPart, SlottedHollowConnect {
 
     public static final Cuboid6[] fOBounds = new Cuboid6[7];
     public static final VoxelShape[] fOShapes = new VoxelShape[7];
@@ -86,11 +85,6 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
 
     //region Trait fields
     @Override
-    public World level() {
-        return world();
-    }
-
-    @Override
     public int getConnMap() {
         return connMap;
     }
@@ -103,7 +97,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
 
     //region TMultiPart overrides
     @Override
-    public void save(CompoundNBT tag) {
+    public void save(CompoundTag tag) {
         super.save(tag);
         tag.putInt("connMap", connMap);
         if (material != null) {
@@ -112,7 +106,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     }
 
     @Override
-    public void load(CompoundNBT tag) {
+    public void load(CompoundTag tag) {
         super.load(tag);
         connMap = tag.getInt("connMap");
         material = tag.contains("mat") ? MicroMaterialRegistry.getMaterial(tag.getString("mat")) : null;
@@ -124,7 +118,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
         packet.writeByte(packedConnMap());
         packet.writeBoolean(material != null);
         if (material != null) {
-            packet.writeRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS(), material);
+            packet.writeRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS, material);
         }
     }
 
@@ -133,7 +127,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
         super.readDesc(packet);
         connMap = packet.readUByte();
         if (packet.readBoolean()) {
-            material = packet.readRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS());
+            material = packet.readRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS);
         }
     }
 
@@ -145,7 +139,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
                 if (useStaticRenderer()) tile().markRender();
                 break;
             case KEY_MATERIAL:
-                material = packet.readRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS());
+                material = packet.readRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS);
                 if (useStaticRenderer()) tile().markRender();
                 break;
             case KEY_REMOVE_MATERIAL:
@@ -166,7 +160,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
         if (material == null) {
             sendUpdate(KEY_REMOVE_MATERIAL, p -> {});
         } else {
-            sendUpdate(KEY_MATERIAL, p -> p.writeRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS(), material));
+            sendUpdate(KEY_MATERIAL, p -> p.writeRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS, material));
         }
     }
 
@@ -179,14 +173,14 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     }
 
     @Override
-    public SoundType getPlacementSound(ItemUseContext context) {
+    public SoundType getPlacementSound(UseOnContext context) {
         return SoundType.GLASS;
     }
 
     @Override
-    public void onPartChanged(TMultiPart part) {
+    public void onPartChanged(MultiPart part) {
         super.onPartChanged(part);
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             if (updateOutward()) {
                 onMaskChanged();
             }
@@ -196,7 +190,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     @Override
     public void onNeighborBlockChanged(BlockPos from) {
         super.onNeighborBlockChanged(from);
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             if (updateExternalConns()) {
                 onMaskChanged();
             }
@@ -206,7 +200,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     @Override
     public void onAdded() {
         super.onAdded();
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             if (updateInward()) onMaskChanged();
         }
     }
@@ -214,13 +208,13 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     @Override
     public void onRemoved() {
         super.onRemoved();
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             notifyAllExternals();
         }
     }
 
     @Override
-    public float getStrength(PlayerEntity player, PartRayTraceResult hit) {
+    public float getStrength(Player player, PartRayTraceResult hit) {
         if (material != null) {
             return Math.min(1.25f / 30f, material.getStrength(player));
         }
@@ -241,12 +235,12 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     }
 
     @Override
-    public VoxelShape getShape(ISelectionContext context) {
+    public VoxelShape getShape(CollisionContext context) {
         return new IndexedVoxelShape(getCollisionShape(context), 0);
     }
 
     @Override
-    public VoxelShape getCollisionShape(ISelectionContext context) {
+    public VoxelShape getCollisionShape(CollisionContext context) {
         int m = 0;
         for (int s = 0; s < 6; s++) {
             if (maskConnects(s)) {
@@ -261,15 +255,10 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     public VoxelShape getOcclusionShape() {
         return fOShapes[expandBounds >= 0 ? expandBounds : 6];
     }
-
-    @Override
-    public boolean occlusionTest(TMultiPart npart) {
-        return NormalOcclusionTest.test(this, npart);
-    }
     //endregion
 
     @Override
-    public int getHollowSize(int side) {
+    public int getHoleSize(int side) {
         return 8;
     }
 
@@ -279,35 +268,35 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     }
 
     @Override
-    public ActionResultType activate(PlayerEntity player, PartRayTraceResult hit, ItemStack held, Hand hand) {
+    public InteractionResult activate(Player player, PartRayTraceResult hit, ItemStack held, InteractionHand hand) {
 
-        if (super.activate(player, hit, held, hand).shouldSwing()) return ActionResultType.SUCCESS;
+        if (super.activate(player, hit, held, hand).shouldSwing()) return InteractionResult.SUCCESS;
 
         // Couch + right click with empty hand removes material
         if (held.isEmpty() && player.isCrouching() && material != null) {
-            if (!world().isClientSide) {
+            if (!level().isClientSide) {
                 if (material != null && !player.isCreative()) {
-                    PlacementLib.dropTowardsPlayer(world(), pos(), ItemMicroBlock.create(0, 1, material), player);
+                    PlacementLib.dropTowardsPlayer(level(), pos(), ItemMicroBlock.create(0, 1, material), player);
                 }
                 material = null;
                 sendMaterialUpdate();
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
         // Right click with cover Microblock allows adding a cover material
-        if (!held.isEmpty() && held.getItem() == MicroblockModContent.itemMicroBlock() && MicroMaterialRegistry.microFactory(held) == 0 && MicroMaterialRegistry.microSize(held) == 1) {
+        if (!held.isEmpty() && held.getItem() == CBMicroblockModContent.MICRO_BLOCK_ITEM.get() && ItemMicroBlock.getFactory(held) == CBMicroblockModContent.FACE_MICROBLOCK_PART.get() && ItemMicroBlock.getSize(held) == 1) {
             MicroMaterial newMat = ItemMicroBlock.getMaterialFromStack(held);
             if (newMat != null && (material == null || newMat != material)) {
-                if (!world().isClientSide) {
+                if (!level().isClientSide) {
                     // Exclude incompatible materials
                     if (newMat.isTransparent()) {
-                        return ActionResultType.PASS;
+                        return InteractionResult.PASS;
                     }
 
                     // Drop old material if player is not in creative
                     if (material != null && !player.isCreative()) {
-                        PlacementLib.dropTowardsPlayer(world(), pos(), ItemMicroBlock.create(0, 1, material), player);
+                        PlacementLib.dropTowardsPlayer(level(), pos(), ItemMicroBlock.create(0, 1, material), player);
                     }
 
                     // Swap the material
@@ -316,24 +305,24 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
 
                     // Play material sound
                     SoundType sound = newMat.getSound();
-                    world().playSound(null, pos(), sound.getPlaceSound(), SoundCategory.BLOCKS, sound.getVolume() + 1.0F/2.0F, sound.getPitch() * 0.8F);
+                    level().playSound(null, pos(), sound.getPlaceSound(), SoundSource.BLOCKS, sound.getVolume() + 1.0F/2.0F, sound.getPitch() * 0.8F);
 
                     // Consume item from player if not in creative
                     if (!player.isCreative()) {
                         held.shrink(1);
                     }
                 }
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         }
 
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 
     //region IConnectableCenterPart overrides
     @Override
     public boolean discoverOpen(int s) {
-        TMultiPart part = tile().getSlottedPart(s);
+        MultiPart part = tile().getSlottedPart(s);
 
         // If nothing on the face, connection is possible
         if (part == null) {

@@ -1,15 +1,15 @@
 package mrtjp.projectred.core.tile;
 
 import codechicken.lib.vec.Rotation;
-import codechicken.multipart.api.part.TMultiPart;
-import codechicken.multipart.block.BlockMultiPart;
-import codechicken.multipart.block.TileMultiPart;
+import codechicken.multipart.api.part.MultiPart;
+import codechicken.multipart.block.BlockMultipart;
+import codechicken.multipart.block.TileMultipart;
 import codechicken.multipart.util.PartMap;
 import mrtjp.projectred.api.IConnectable;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public interface IConnectableTile extends IBlockEventTile, IConnectable {
 
@@ -88,23 +88,23 @@ public interface IConnectableTile extends IBlockEventTile, IConnectable {
 
     //region Neighbor acquisitions
 
-    default TMultiPart getStraightCenter(int s) {
+    default MultiPart getStraightCenter(int s) {
         BlockPos pos = posOfStraight(s);
-        TileMultiPart tile = BlockMultiPart.getTile(getBlockLevel(), pos);
+        TileMultipart tile = BlockMultipart.getTile(getBlockLevel(), pos);
         if (tile == null) return null;
         return tile.getSlottedPart(6);
     }
 
-    default TMultiPart getStraight(int s, int edgeRot) {
+    default MultiPart getStraight(int s, int edgeRot) {
         BlockPos pos = posOfStraight(s);
-        TileMultiPart tile = BlockMultiPart.getTile(getBlockLevel(), pos);
+        TileMultipart tile = BlockMultipart.getTile(getBlockLevel(), pos);
         if (tile == null) return null;
         return tile.getSlottedPart(Rotation.rotateSide(s ^ 1, edgeRot));
     }
 
-    default TMultiPart getCorner(int s, int edgeRot) {
+    default MultiPart getCorner(int s, int edgeRot) {
         BlockPos pos = posOfCorner(s, edgeRot);
-        TileMultiPart tile = BlockMultiPart.getTile(getBlockLevel(), pos);
+        TileMultipart tile = BlockMultipart.getTile(getBlockLevel(), pos);
         if (tile == null) return null;
         return tile.getSlottedPart(s ^ 1);
     }
@@ -167,7 +167,7 @@ public interface IConnectableTile extends IBlockEventTile, IConnectable {
 
         int side1 = s ^ 1;
         int side2 = Rotation.rotateSide(s ^ 1, edgeRot);
-        TileMultiPart t = BlockMultiPart.getTile(getBlockLevel(), pos);
+        TileMultipart t = BlockMultipart.getTile(getBlockLevel(), pos);
         if (t == null) return false;
 
         return t.getSlottedPart(side1) == null &&
@@ -176,7 +176,7 @@ public interface IConnectableTile extends IBlockEventTile, IConnectable {
     }
 
     default boolean discoverStraightCenter(int s) {
-        TMultiPart p = getStraightCenter(s);
+        MultiPart p = getStraightCenter(s);
         if (p instanceof IConnectable) {
             IConnectable connectable = (IConnectable) p;
             return canConnectPart(connectable, s, -1) && connectable.connectStraight(this, s ^ 1, -1);
@@ -186,7 +186,7 @@ public interface IConnectableTile extends IBlockEventTile, IConnectable {
     }
 
     default boolean discoverStraight(int s, int edgeRot) {
-        TMultiPart p = getStraight(s, edgeRot);
+        MultiPart p = getStraight(s, edgeRot);
         if (p instanceof IConnectable) {
             IConnectable connectable = (IConnectable) p;
             return canConnectPart(connectable, s, edgeRot) && connectable.connectStraight(this, rotFromStraight(s, edgeRot), -1);
@@ -196,7 +196,7 @@ public interface IConnectableTile extends IBlockEventTile, IConnectable {
     }
 
     default boolean discoverCorner(int s, int edgeRot) {
-        TMultiPart p = getCorner(s, edgeRot);
+        MultiPart p = getCorner(s, edgeRot);
         if (p instanceof IConnectable) {
             IConnectable connectable = (IConnectable) p;
             return canConnectPart(connectable, s, edgeRot) &&
@@ -211,7 +211,7 @@ public interface IConnectableTile extends IBlockEventTile, IConnectable {
 
     default boolean discoverStraightCenterOverride(int s) {
         BlockPos pos = posOfStraight(s);
-        TileEntity tile = getBlockLevel().getBlockEntity(pos);
+        BlockEntity tile = getBlockLevel().getBlockEntity(pos);
         if (tile instanceof IConnectable) {
             IConnectable connectable = (IConnectable) tile;
             return canConnectPart(connectable, s, -1) && connectable.connectStraight(this, s, -1);

@@ -1,9 +1,9 @@
 package mrtjp.projectred.core.inventory;
 
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Simple extension of default vanilla Inventory class that allows for proper saving and loading
@@ -11,7 +11,7 @@ import net.minecraft.nbt.ListNBT;
  * <p>
  * Use BaseInventory#save and BaseInventory#load instead of Inventory#createTag and Inventory#fromTag
  */
-public class BaseInventory extends Inventory {
+public class BaseInventory extends SimpleContainer {
 
     private static final String TAG_ITEMS = "items";
     private static final String TAG_SLOT = "slot";
@@ -21,12 +21,12 @@ public class BaseInventory extends Inventory {
         super(size);
     }
 
-    public void save(CompoundNBT tag) {
-        ListNBT list = new ListNBT();
+    public void save(CompoundTag tag) {
+        ListTag list = new ListTag();
         for (int i = 0; i < getContainerSize(); i++) {
             ItemStack stack = getItem(i);
             if (!stack.isEmpty()) {
-                CompoundNBT itemTag = new CompoundNBT();
+                CompoundTag itemTag = new CompoundTag();
                 itemTag.putInt(TAG_SLOT, i);
                 stack.save(itemTag);
                 list.add(itemTag);
@@ -36,11 +36,11 @@ public class BaseInventory extends Inventory {
         tag.putInt(TAG_ITEM_COUNT, list.size());
     }
 
-    public void load(CompoundNBT tag) {
+    public void load(CompoundTag tag) {
         clearContent();
-        ListNBT list = tag.getList(TAG_ITEMS, 10);
+        ListTag list = tag.getList(TAG_ITEMS, 10);
         for (int i = 0; i < list.size(); i++) {
-            CompoundNBT itemTag = list.getCompound(i);
+            CompoundTag itemTag = list.getCompound(i);
             int slot = itemTag.contains("index") ? itemTag.getInt("index") : itemTag.getInt(TAG_SLOT); //TODO remove legacy support
             if (slot >= 0 && slot < getContainerSize()) {
                 setItem(slot, ItemStack.of(itemTag));
@@ -48,7 +48,7 @@ public class BaseInventory extends Inventory {
         }
     }
 
-    public static int getItemCount(CompoundNBT tag) {
+    public static int getItemCount(CompoundTag tag) {
         return tag.contains(TAG_ITEM_COUNT) ? tag.getInt(TAG_ITEM_COUNT) : tag.getList(TAG_ITEMS, 10).size(); //TODO remove legacy support
     }
 }

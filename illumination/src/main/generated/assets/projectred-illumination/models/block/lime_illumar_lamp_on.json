@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "projectred-illumination:block/lime_illumar_lamp_on"
-  }
-}

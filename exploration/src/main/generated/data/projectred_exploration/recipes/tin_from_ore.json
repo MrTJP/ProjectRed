@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "result": {
+    "item": "projectred_core:tin_ingot"
+  },
+  "ingredient": {
+    "item": "projectred_exploration:tin_ore"
+  },
+  "experience": 0.7,
+  "cookingtime": 200
+}

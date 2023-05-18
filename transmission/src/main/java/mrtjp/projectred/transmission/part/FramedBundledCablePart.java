@@ -1,6 +1,6 @@
 package mrtjp.projectred.transmission.part;
 
-import codechicken.multipart.api.part.TMultiPart;
+import codechicken.multipart.api.part.MultiPart;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IBundledTile;
 import mrtjp.projectred.api.IConnectable;
@@ -10,10 +10,10 @@ import mrtjp.projectred.core.CenterLookup;
 import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.core.part.IPropagationCenterPart;
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.Arrays;
 
@@ -60,20 +60,20 @@ public class FramedBundledCablePart extends BaseCenterWirePart implements IBundl
 
     //region TMultiPart overrides
     @Override
-    public void save(CompoundNBT tag) {
+    public void save(CompoundTag tag) {
         super.save(tag);
         tag.putByteArray("signal", signal);
     }
 
     @Override
-    public void load(CompoundNBT tag) {
+    public void load(CompoundTag tag) {
         super.load(tag);
         setSignal(tag.getByteArray("signal"));
     }
 
     @Override
-    public void onPartChanged(TMultiPart part) {
-        if (!world().isClientSide) {
+    public void onPartChanged(MultiPart part) {
+        if (!level().isClientSide) {
             RedstonePropagator.logCalculation();
             if (updateOutward()) {
                 onMaskChanged();
@@ -86,7 +86,7 @@ public class FramedBundledCablePart extends BaseCenterWirePart implements IBundl
 
     @Override
     public void onNeighborBlockChanged(BlockPos from) {
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             RedstonePropagator.logCalculation();
             if (updateExternalConns()) {
                 onMaskChanged();
@@ -100,7 +100,7 @@ public class FramedBundledCablePart extends BaseCenterWirePart implements IBundl
     @Override
     public void onAdded() {
         super.onAdded();
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             RedstonePropagator.propagateTo(this, RISING);
         }
     }
@@ -126,7 +126,7 @@ public class FramedBundledCablePart extends BaseCenterWirePart implements IBundl
     @Override
     public boolean discoverStraightOverride(int absDir) {
         BlockPos pos = pos().relative(Direction.values()[absDir]);
-        TileEntity tile = world().getBlockEntity(pos);
+        BlockEntity tile = level().getBlockEntity(pos);
         if (tile instanceof IMaskedBundledTile) {
             IMaskedBundledTile b = (IMaskedBundledTile) tile;
             return b.canConnectBundled(absDir^1) && (b.getConnectionMask(absDir^1) & 0x10) != 0;
@@ -136,7 +136,7 @@ public class FramedBundledCablePart extends BaseCenterWirePart implements IBundl
             return ((IBundledTile) tile).canConnectBundled(absDir^1);
         }
 
-        return BundledSignalsLib.canConnectBundledViaInteraction(world(), pos, Direction.values()[absDir^1]);
+        return BundledSignalsLib.canConnectBundledViaInteraction(level(), pos, Direction.values()[absDir^1]);
     }
     //endregion
 
@@ -179,12 +179,12 @@ public class FramedBundledCablePart extends BaseCenterWirePart implements IBundl
     }
 
     protected void calcCenterToCenterSignal(int s) {
-        CenterLookup lookup = CenterLookup.lookupStraightCenter(world(), pos(), s);
+        CenterLookup lookup = CenterLookup.lookupStraightCenter(level(), pos(), s);
         resolveSignal(lookup);
     }
 
     protected void calcCenterToInsideFaceSignal(int s) {
-        CenterLookup lookup = CenterLookup.lookupInsideFace(world(), pos(), s);
+        CenterLookup lookup = CenterLookup.lookupInsideFace(level(), pos(), s);
         resolveSignal(lookup);
     }
 

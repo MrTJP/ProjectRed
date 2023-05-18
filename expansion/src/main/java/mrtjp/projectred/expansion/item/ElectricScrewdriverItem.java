@@ -2,13 +2,13 @@ package mrtjp.projectred.expansion.item;
 
 import mrtjp.projectred.expansion.ProjectRedExpansion;
 import mrtjp.projectred.api.IScrewdriver;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.LevelReader;
 
 public class ElectricScrewdriverItem extends Item implements IScrewdriver, IChargable {
 
@@ -20,22 +20,22 @@ public class ElectricScrewdriverItem extends Item implements IScrewdriver, IChar
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
-        return ActionResultType.PASS;
+    public InteractionResult useOn(UseOnContext context) {
+        return InteractionResult.PASS;
     }
 
     @Override
-    public boolean doesSneakBypassUse(ItemStack stack, IWorldReader world, BlockPos pos, PlayerEntity player) {
+    public boolean doesSneakBypassUse(ItemStack stack, LevelReader world, BlockPos pos, Player player) {
         return true;
     }
 
     @Override
-    public boolean canUse(PlayerEntity player, ItemStack stack) {
+    public boolean canUse(Player player, ItemStack stack) {
         return stack.getDamageValue() < stack.getMaxDamage();
     }
 
     @Override
-    public void damageScrewdriver(PlayerEntity player, ItemStack stack) {
+    public void damageScrewdriver(Player player, ItemStack stack) {
         stack.hurtAndBreak(1, player, p -> {});
     }
 

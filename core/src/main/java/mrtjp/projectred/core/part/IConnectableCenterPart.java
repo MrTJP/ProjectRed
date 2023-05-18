@@ -1,14 +1,12 @@
 package mrtjp.projectred.core.part;
 
-import codechicken.multipart.api.part.TMultiPart;
-import codechicken.multipart.block.BlockMultiPart;
-import codechicken.multipart.block.TileMultiPart;
+import codechicken.multipart.api.part.MultiPart;
+import codechicken.multipart.block.BlockMultipart;
 import mrtjp.projectred.api.IConnectable;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 
-public interface IConnectableCenterPart extends MultiPartInterface, IConnectablePart {
+public interface IConnectableCenterPart extends MultiPart, IConnectablePart {
 
     //region Neighbor Positions
     default BlockPos posOfStraight(int s) {
@@ -19,12 +17,12 @@ public interface IConnectableCenterPart extends MultiPartInterface, IConnectable
     //region Connectable Neighbor Acquisitions
     default IConnectable getStraight(int s) {
         BlockPos pos = pos().relative(Direction.values()[s]);
-        TMultiPart part = BlockMultiPart.getPart(level(), pos, 6);
+        MultiPart part = BlockMultipart.getPart(level(), pos, 6);
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
 
     default IConnectable getInternal(int s) {
-        TMultiPart part = tile().getSlottedPart(s);
+        MultiPart part = tile().getSlottedPart(s);
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
     //endregion

@@ -1,21 +1,21 @@
 package mrtjp.projectred.redui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.lib.Size;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class RedUIContainerScreen<T extends Container> extends ContainerScreen<T> implements RedUIRootNode {
+public class RedUIContainerScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> implements RedUIRootNode {
 
     private final List<RedUINode> children = new LinkedList<>();
 
@@ -28,7 +28,7 @@ public class RedUIContainerScreen<T extends Container> extends ContainerScreen<T
 
     private long lastClickTime = 0;
 
-    public RedUIContainerScreen(int backgroundWidth, int backgroundHeight, T container, PlayerInventory playerInventory, ITextComponent title) {
+    public RedUIContainerScreen(int backgroundWidth, int backgroundHeight, T container, Inventory playerInventory, Component title) {
         super(container, playerInventory, title);
         this.imageWidth = backgroundWidth;
         this.imageHeight = backgroundHeight;
@@ -49,7 +49,7 @@ public class RedUIContainerScreen<T extends Container> extends ContainerScreen<T
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float partialFrame) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialFrame) {
 
         // Call frame update function on all nodes
         Point mousePoint = new Point(mouseX, mouseY);
@@ -73,13 +73,18 @@ public class RedUIContainerScreen<T extends Container> extends ContainerScreen<T
     }
 
     @Override
-    protected void renderBg(MatrixStack stack, float partialFrame, int mouseX, int mouseY) {
+    protected void renderBg(PoseStack stack, float partialFrame, int mouseX, int mouseY) {
         // We render through RedUI's render methods
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void renderTooltipScreenSpace(PoseStack stack, Point screenSpacePoint, List<Component> tooltip) {
+        renderComponentTooltip(stack, tooltip, screenSpacePoint.x, screenSpacePoint.y);
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
         getSubTree(n -> true).forEach(RedUINode::update);
     }
 
@@ -178,7 +183,7 @@ public class RedUIContainerScreen<T extends Container> extends ContainerScreen<T
     }
 
     @Override
-    public FontRenderer getFontRenderer() {
+    public Font getFontRenderer() {
         return font;
     }
 

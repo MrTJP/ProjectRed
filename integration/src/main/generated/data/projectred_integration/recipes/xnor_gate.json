@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_integration:xnor_gate"
+  },
+  "pattern": [
+    "ACA",
+    "CAC",
+    "WCW"
+  ],
+  "key": {
+    "C": {
+      "item": "projectred_core:cathode"
+    },
+    "A": {
+      "item": "projectred_core:anode"
+    },
+    "W": {
+      "item": "projectred_core:conductive_plate"
+    }
+  }
+}

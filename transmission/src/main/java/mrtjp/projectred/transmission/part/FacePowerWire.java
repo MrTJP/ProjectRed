@@ -7,7 +7,7 @@ import mrtjp.projectred.core.power.IPowerConductorSource;
 import mrtjp.projectred.core.power.IPowerConnectable;
 import mrtjp.projectred.core.power.PowerConductor;
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +23,7 @@ public abstract class FacePowerWire extends BaseFaceWirePart implements IPowerCo
 
     @Override
     public long getTime() {
-        return world().getGameTime();
+        return level().getGameTime();
     }
 
     @Override
@@ -53,11 +53,11 @@ public abstract class FacePowerWire extends BaseFaceWirePart implements IPowerCo
         FaceLookup lookup;
         for (int r = 0; r < 4; r++) {
             if (maskConnectsCorner(r)) {
-                lookup = FaceLookup.lookupCorner(world(), pos(), getSide(), r);
+                lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
             } else if (maskConnectsStraight(r)) {
-                lookup = FaceLookup.lookupStraight(world(), pos(), getSide(), r);
+                lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
             } else if (maskConnectsInside(r)) {
-                lookup = FaceLookup.lookupInsideFace(world(), pos(), getSide(), r);
+                lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
             } else {
                 continue;
             }
@@ -67,7 +67,7 @@ public abstract class FacePowerWire extends BaseFaceWirePart implements IPowerCo
         }
 
         if (maskConnectsCenter()) {
-            lookup = FaceLookup.lookupInsideCenter(world(), pos(), getSide());
+            lookup = FaceLookup.lookupInsideCenter(level(), pos(), getSide());
             PowerConductor c = retrieveConductor(lookup);
             if (c != null) connectedConductors.add(c);
         }
@@ -90,7 +90,7 @@ public abstract class FacePowerWire extends BaseFaceWirePart implements IPowerCo
     @Override
     public boolean discoverCornerOverride(int absDir) {
         int r = absoluteRot(absDir);
-        FaceLookup lookup = FaceLookup.lookupCorner(world(), pos(), getSide(), r);
+        FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
         if (lookup.tile instanceof IConnectable) {
             return ((IConnectable) lookup.tile).connectCorner(this, getSide() ^ 1, Rotation.rotationTo(getSide(), absDir ^ 1));
         }
@@ -100,7 +100,7 @@ public abstract class FacePowerWire extends BaseFaceWirePart implements IPowerCo
     @Override
     public boolean discoverStraightOverride(int absDir) {
         int r = absoluteRot(absDir);
-        FaceLookup lookup = FaceLookup.lookupStraight(world(), pos(), getSide(), r);
+        FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
         if (lookup.tile instanceof IConnectable) {
             return ((IConnectable) lookup.tile).connectStraight(this, absDir ^ 1, Rotation.rotationTo(absDir, getSide()));
         }

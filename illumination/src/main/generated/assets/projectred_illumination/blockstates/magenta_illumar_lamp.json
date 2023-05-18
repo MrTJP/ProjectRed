@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "projectred_illumination:block/magenta_illumar_lamp"
+    },
+    "lit=true": {
+      "model": "projectred_illumination:block/magenta_illumar_lamp_on"
+    }
+  }
+}

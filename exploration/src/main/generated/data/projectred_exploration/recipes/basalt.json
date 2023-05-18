@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "result": {
+    "item": "projectred_exploration:basalt"
+  },
+  "ingredient": {
+    "item": "projectred_exploration:basalt_cobble"
+  },
+  "experience": 0.1,
+  "cookingtime": 200
+}

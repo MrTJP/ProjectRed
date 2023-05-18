@@ -2,8 +2,8 @@ package mrtjp.projectred.transmission.part;
 
 import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 
 public class RedAlloyWirePart extends RedwirePart {
 
@@ -15,7 +15,7 @@ public class RedAlloyWirePart extends RedwirePart {
     @Override
     public void onRemoved() {
         super.onRemoved();
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             tile().notifyNeighborChange(getSide());
         }
     }

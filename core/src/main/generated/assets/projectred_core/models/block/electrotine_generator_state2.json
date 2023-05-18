@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "side": "projectred_core:block/electrotine_generator_side",
+    "front": "projectred_core:block/electrotine_generator_front_2",
+    "bottom": "projectred_core:block/electrotine_generator_bottom",
+    "top": "projectred_core:block/electrotine_generator_top"
+  }
+}

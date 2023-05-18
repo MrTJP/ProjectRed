@@ -5,9 +5,9 @@ import codechicken.lib.colour.EnumColour;
 import codechicken.lib.raytracer.VoxelShapeCache;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.OBJParser;
 import codechicken.lib.render.item.IItemRenderer;
 import codechicken.lib.render.lighting.LightModel;
+import codechicken.lib.render.model.OBJParser;
 import codechicken.lib.render.pipeline.ColourMultiplier;
 import codechicken.lib.texture.AtlasRegistrar;
 import codechicken.lib.util.TransformUtils;
@@ -16,18 +16,18 @@ import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 import codechicken.lib.vec.uv.IconTransformation;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.illumination.item.MultipartLightPartItem;
 import mrtjp.projectred.illumination.part.MultipartLightPart;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -104,7 +104,7 @@ public abstract class MultipartLightProperties {
     public IItemRenderer getItemRenderer() {
         return new IItemRenderer() {
             @Override
-            public void renderItem(ItemStack stack, ItemCameraTransforms.TransformType transformType, MatrixStack mStack, IRenderTypeBuffer getter, int packedLight, int packedOverlay) {
+            public void renderItem(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack mStack, MultiBufferSource getter, int packedLight, int packedOverlay) {
                 if (!(stack.getItem() instanceof MultipartLightPartItem)) return;
 
                 MultipartLightPartItem lightItem = (MultipartLightPartItem) stack.getItem();
@@ -121,8 +121,8 @@ public abstract class MultipartLightProperties {
             }
 
             //@formatter:off
-            @Override public IModelTransform getModelTransform() { return TransformUtils.DEFAULT_BLOCK; }
-            @Override public boolean useAmbientOcclusion() { return true; }
+            @Override public ModelState getModelTransform() { return TransformUtils.DEFAULT_BLOCK; }
+            @Override public boolean useAmbientOcclusion() { return false; }
             @Override public boolean isGui3d() { return true; }
             @Override public boolean usesBlockLight() { return true; }
             //@formatter:on
@@ -136,7 +136,10 @@ public abstract class MultipartLightProperties {
     }
 
     public static Map<String, CCModel> parseCorrectedModel(String name) {
-        Map<String, CCModel> models = OBJParser.parseModels(new ResourceLocation(MOD_ID, "obj/" + name + ".obj"),  7, null);
+        Map<String, CCModel> models = new OBJParser(new ResourceLocation(MOD_ID, "obj/" + name + ".obj"))
+                .ignoreMtl()
+                .quads()
+                .parse();
 
         Map<String, CCModel> bfModels = new HashMap<>();
         models.forEach((key, model) -> bfModels.put(key, model.backfacedCopy()));

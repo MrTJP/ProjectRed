@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "side": "projectred_expansion:block/charging_bench_side_1",
+    "bottom": "projectred_expansion:block/charging_bench_bottom",
+    "top": "projectred_expansion:block/charging_bench_top_1"
+  }
+}

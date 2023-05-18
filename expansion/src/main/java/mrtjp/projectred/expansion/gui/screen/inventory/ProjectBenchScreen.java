@@ -1,8 +1,8 @@
 package mrtjp.projectred.expansion.gui.screen.inventory;
 
 import codechicken.lib.colour.EnumColour;
-import codechicken.lib.texture.TextureUtils;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.expansion.ProjectRedExpansion;
 import mrtjp.projectred.expansion.inventory.container.ProjectBenchContainer;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
@@ -10,22 +10,21 @@ import mrtjp.projectred.expansion.tile.ProjectBenchTile;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractButtonNode;
 import mrtjp.projectred.redui.RedUIContainerScreen;
-import net.minecraft.client.gui.IHasContainer;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
-public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContainer> implements IHasContainer<ProjectBenchContainer> {
+public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContainer> {
 
     public static final ResourceLocation BACKGROUND = new ResourceLocation(ProjectRedExpansion.MOD_ID, "textures/gui/project_bench.png");
 
     private boolean isShiftDown = false;
 
-    public ProjectBenchScreen(ProjectBenchContainer container, PlayerInventory playerInventory, ITextComponent title) {
+    public ProjectBenchScreen(ProjectBenchContainer container, Inventory playerInventory, Component title) {
         super(176, 208, container, playerInventory, title);
 
         inventoryLabelX = 8;
@@ -43,8 +42,8 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
             }
 
             @Override
-            protected void drawButtonBody(MatrixStack stack, boolean mouseover) {
-                TextureUtils.changeTexture(BACKGROUND);
+            protected void drawButtonBody(PoseStack stack, boolean mouseover) {
+                RenderSystem.setShaderTexture(0, BACKGROUND);
                 blit(stack, getPosition().x, getPosition().y, 176, 0, 14, 14);
             }
         };
@@ -59,8 +58,8 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
             }
 
             @Override
-            protected void drawButtonBody(MatrixStack stack, boolean mouseover) {
-                TextureUtils.changeTexture(BACKGROUND);
+            protected void drawButtonBody(PoseStack stack, boolean mouseover) {
+                RenderSystem.setShaderTexture(0, BACKGROUND);
                 blit(stack, getPosition().x, getPosition().y, 176, 15, 8, 8);
             }
         };
@@ -70,8 +69,8 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
     }
 
     @Override
-    public void drawBack(MatrixStack stack, Point mouse, float partialFrame) {
-        TextureUtils.changeTexture(BACKGROUND);
+    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
+        RenderSystem.setShaderTexture(0, BACKGROUND);
         int x = getFrame().x();
         int y = getFrame().y();
 
@@ -87,14 +86,14 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
     }
 
     @Override
-    public void drawFront(MatrixStack stack, Point mouse, float partialFrame) {
+    public void drawFront(PoseStack stack, Point mouse, float partialFrame) {
 
         if (isShiftDown) {
             drawPlanOutputsOverlay(stack, getFrame().x(), getFrame().y());
         }
     }
 
-    private void drawPlanIngredientsOverlay(MatrixStack mStack, ItemStack[] ingredients, int missingMask, int xPos, int yPos) {
+    private void drawPlanIngredientsOverlay(PoseStack mStack, ItemStack[] ingredients, int missingMask, int xPos, int yPos) {
 
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
@@ -113,7 +112,7 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
         }
     }
 
-    private void drawPlanOutputsOverlay(MatrixStack mStack, int xPos, int yPos) {
+    private void drawPlanOutputsOverlay(PoseStack mStack, int xPos, int yPos) {
 
         for (Slot slot : getMenu().slots) {
             ItemStack stack = slot.getItem();

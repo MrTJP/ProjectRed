@@ -1,10 +1,10 @@
 package mrtjp.projectred.redui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.lib.Size;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.Collections;
 
@@ -28,17 +28,17 @@ public abstract class ScrollBarNode extends AbstractGuiNode {
     }
 
     @Override
-    public void drawBack(MatrixStack stack, Point mouse, float partialFrame) {
+    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
 
         // Draw scroll bar background
         drawSlider(stack, sliderFrame);
     }
 
     @Override
-    public void drawFront(MatrixStack stack, Point mouse, float partialFrame) {
+    public void drawFront(PoseStack stack, Point mouse, float partialFrame) {
         if (!isFirstHit(mouse)) return;
 
-        renderTooltip(stack, mouse, Collections.singletonList(new StringTextComponent("Scroll (" + scrollPercentage + ")")));
+        renderTooltip(stack, mouse, Collections.singletonList(new TextComponent("Scroll (" + scrollPercentage + ")")));
     }
 
     @Override
@@ -134,7 +134,7 @@ public abstract class ScrollBarNode extends AbstractGuiNode {
         }
     }
 
-    protected abstract void drawSlider(MatrixStack stack, Rect sliderFrame);
+    protected abstract void drawSlider(PoseStack stack, Rect sliderFrame);
 
     protected abstract void adjustContent(double scrollPercentage); //move content based on scroll position
 }

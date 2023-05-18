@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_exploration:iron_sickle",
+    "nbt": "{Damage:0}"
+  },
+  "pattern": [
+    " M ",
+    "  M",
+    "SM "
+  ],
+  "key": {
+    "M": {
+      "tag": "forge:ingots/iron"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    }
+  }
+}

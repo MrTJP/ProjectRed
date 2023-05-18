@@ -1,13 +1,13 @@
 package mrtjp.projectred.integration;
 
-import codechicken.multipart.api.MultiPartType;
-import codechicken.multipart.api.SimpleMultiPartType;
+import codechicken.multipart.api.MultipartType;
+import codechicken.multipart.api.SimpleMultipartType;
 import mrtjp.projectred.integration.item.GatePartItem;
 import mrtjp.projectred.integration.part.*;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Function;
 
@@ -55,7 +55,7 @@ public enum GateType
     private final Function<GateType, GatePart> partFactory;
 
     private RegistryObject<Item> itemSupplier;
-    private RegistryObject<MultiPartType<GatePart>> partSupplier;
+    private RegistryObject<MultipartType<GatePart>> partSupplier;
 
     GateType(String unlocalName, Function<GateType, GatePart> partFactory) {
         this.unlocalName = unlocalName;
@@ -74,7 +74,7 @@ public enum GateType
         return new ItemStack(getItem());
     }
 
-    public MultiPartType<GatePart> getPartType() {
+    public MultipartType<GatePart> getPartType() {
         return partSupplier.get();
     }
 
@@ -82,8 +82,8 @@ public enum GateType
         return partFactory.apply(this);
     }
 
-    public void registerParts(DeferredRegister<MultiPartType<?>> partRegistry, DeferredRegister<Item> itemRegistry) {
+    public void registerParts(DeferredRegister<MultipartType<?>> partRegistry, DeferredRegister<Item> itemRegistry) {
         itemSupplier = itemRegistry.register(unlocalName, () -> new GatePartItem(this));
-        partSupplier = partRegistry.register(unlocalName, () -> new SimpleMultiPartType<>(isClient -> partFactory.apply(this)));
+        partSupplier = partRegistry.register(unlocalName, () -> new SimpleMultipartType<>(isClient -> partFactory.apply(this)));
     }
 }

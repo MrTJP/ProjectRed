@@ -2,39 +2,41 @@ package mrtjp.projectred.expansion.inventory.container;
 
 import codechicken.lib.inventory.container.ICCLContainerFactory;
 import mrtjp.projectred.core.inventory.container.BasePoweredTileContainer;
+import mrtjp.projectred.core.inventory.container.SimpleDataSlot;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.item.IChargable;
 import mrtjp.projectred.expansion.tile.ChargingBenchTile;
 import mrtjp.projectred.lib.InventoryLib;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.IContainerListener;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class ChargingBenchContainer extends BasePoweredTileContainer {
 
     public static ICCLContainerFactory<ChargingBenchContainer> FACTORY = (windowId, inventory, packet) -> {
-        TileEntity tile = inventory.player.level.getBlockEntity(packet.readPos());
+        BlockEntity tile = inventory.player.level.getBlockEntity(packet.readPos());
         if (!(tile instanceof ChargingBenchTile)) return null;
 
         return new ChargingBenchContainer(inventory, (ChargingBenchTile) tile, windowId);
     };
 
-    private final PlayerInventory playerInventory;
+    private final Inventory playerInventory;
     private final ChargingBenchTile tile;
 
     protected int powerStored = 0;
 
-    public ChargingBenchContainer(PlayerInventory inventory, ChargingBenchTile tile, int windowId) {
+    public ChargingBenchContainer(Inventory inventory, ChargingBenchTile tile, int windowId) {
         super(ExpansionReferences.CHARGING_BENCH_CONTAINER, windowId, tile);
         this.playerInventory = inventory;
         this.tile = tile;
 
         InventoryLib.addPlayerInventory(inventory, 8, 101, this::addSlot);
         addChargingBenchInventory();
+
+        addDataSlot(new SimpleDataSlot(tile::getPowerStored, value -> powerStored = value));
     }
 
     private void addChargingBenchInventory() {
@@ -43,32 +45,7 @@ public class ChargingBenchContainer extends BasePoweredTileContainer {
     }
 
     @Override
-    public void broadcastChanges() { //TODO switch to Minecraft's Data Slot system
-        super.broadcastChanges();
-
-        boolean needsPower = tile.getPowerStored() != powerStored;
-        powerStored = tile.getPowerStored();
-
-        if (needsPower) {
-            for (IContainerListener listener : containerListeners) {
-                listener.setContainerData(this, 300, powerStored);
-            }
-        }
-    }
-
-    @Override
-    public void setData(int id, int value) { //TODO switch to Minecraft's Data Slot system
-        switch (id) {
-            case 300:
-                powerStored = value;
-                break;
-            default:
-                super.setData(id, value);
-        }
-    }
-
-    @Override
-    public ItemStack quickMoveStack(PlayerEntity player, int slotIndex) {
+    public ItemStack quickMoveStack(Player player, int slotIndex) {
 
         Slot slot = slots.get(slotIndex);
         if (slot == null || !slot.hasItem()) return ItemStack.EMPTY;
@@ -159,7 +136,7 @@ public class ChargingBenchContainer extends BasePoweredTileContainer {
 
     private static class ChargeableItemSlot extends Slot {
 
-        public ChargeableItemSlot(IInventory inventory, int slot, int x, int y) {
+        public ChargeableItemSlot(Container inventory, int slot, int x, int y) {
             super(inventory, slot, x, y);
         }
 

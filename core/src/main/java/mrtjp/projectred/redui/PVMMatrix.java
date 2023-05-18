@@ -2,7 +2,7 @@ package mrtjp.projectred.redui;
 
 import codechicken.lib.vec.Matrix4;
 import codechicken.lib.vec.Vector3;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 /**
  * Calculates a view matrix based on camera position, x rotation, and y rotation.
@@ -63,10 +63,10 @@ public class PVMMatrix {
         return viewMatrix;
     }
 
-    public MatrixStack getModelViewMatrixStack() {
-        MatrixStack stack = new MatrixStack();
-        stack.pushPose();
-        stack.last().pose().set(viewMatrix.toMatrix4f());
+    public PoseStack getModelViewMatrixStack() {
+        PoseStack stack = new PoseStack();
+        stack.setIdentity();
+        stack.mulPoseMatrix(viewMatrix.toMatrix4f());
         return stack;
     }
 

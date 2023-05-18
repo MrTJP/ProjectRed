@@ -1,22 +1,22 @@
 package mrtjp.projectred.expansion.tile;
 
-import codechicken.multipart.api.tile.IRedstoneConnector;
+import codechicken.multipart.api.tile.RedstoneConnector;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
-import net.minecraft.block.AbstractFireBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CampfireBlock;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.FireBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
-public class FireStarterTile extends BaseDeviceTile implements IRedstoneConnector {
+public class FireStarterTile extends BaseDeviceTile implements RedstoneConnector {
 
-    public FireStarterTile() {
-        super(ExpansionReferences.FIRE_STARTER_TILE);
+    public FireStarterTile(BlockPos pos, BlockState state) {
+        super(ExpansionReferences.FIRE_STARTER_TILE, pos, state);
     }
 
     @Override
@@ -35,22 +35,22 @@ public class FireStarterTile extends BaseDeviceTile implements IRedstoneConnecto
             return true;
         }
 
-        if (AbstractFireBlock.canBePlacedAt(getLevel(), pos, Direction.NORTH)) {
+        if (FireBlock.canBePlacedAt(getLevel(), pos, Direction.NORTH)) {
             playFlintAndSteelSound(getLevel(), pos);
-            getLevel().setBlock(pos, AbstractFireBlock.getState(getLevel(), pos), 11);
+            getLevel().setBlock(pos, FireBlock.getState(getLevel(), pos), 11);
             return true;
         }
 
         return false;
     }
 
-    private static void playFlintAndSteelSound(World level, BlockPos pos) {
+    private static void playFlintAndSteelSound(Level level, BlockPos pos) {
         level.playSound(null,
                 pos.getX() + 0.5D,
                 pos.getY() + 0.5D,
                 pos.getZ() + 0.5D,
                 SoundEvents.FLINTANDSTEEL_USE,
-                SoundCategory.BLOCKS,
+                SoundSource.BLOCKS,
                 1.0F,
                 level.getRandom().nextFloat() * 0.4F + 0.8F);
     }

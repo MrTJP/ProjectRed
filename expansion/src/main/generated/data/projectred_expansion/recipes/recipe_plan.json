@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "item": "projectred_expansion:recipe_plan"
+  },
+  "ingredients": [
+    {
+      "tag": "forge:dyes/blue"
+    },
+    {
+      "item": "minecraft:paper"
+    }
+  ]
+}

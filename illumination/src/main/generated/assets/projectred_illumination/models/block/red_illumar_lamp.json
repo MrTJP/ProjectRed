@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "projectred_illumination:block/red_illumar_lamp"
+  }
+}

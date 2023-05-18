@@ -1,7 +1,7 @@
 package mrtjp.projectred.api;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * Interface that can be implemented by Blocks or by tile entities that have wish to have their own logic for when
@@ -22,5 +22,5 @@ public interface IConditionallyMovable
      * @param pos  The block's position.
      * @return True if this block is in a movable state.
      */
-    boolean isMovable(World w, BlockPos pos);
+    boolean isMovable(Level w, BlockPos pos);
 }

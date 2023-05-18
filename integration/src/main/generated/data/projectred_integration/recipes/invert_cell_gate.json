@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_integration:invert_cell_gate"
+  },
+  "pattern": [
+    "PWP",
+    "WFW",
+    "PCP"
+  ],
+  "key": {
+    "F": {
+      "item": "projectred_core:platformed_plate"
+    },
+    "C": {
+      "item": "projectred_core:cathode"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    },
+    "W": {
+      "item": "projectred_core:wired_plate"
+    }
+  }
+}

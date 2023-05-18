@@ -28,16 +28,16 @@ public class IlluminationItemModelProvider extends ItemModelProvider {
                 ModelFile offModel = new ModelFile.UncheckedModelFile(modLoc("block/" + type.getRegistryID(color, false)));
                 ModelFile onModel = new ModelFile.UncheckedModelFile(modLoc("block/" + type.getRegistryID(color, false) + "_on"));
 
-                generated(type.getBlock(color, false)).texture(null).parent(offModel);
-                generated(type.getBlock(color, true)).texture(null).parent(onModel);
+                generated(type.getBlock(color, false)).noTexture().parent(offModel);
+                generated(type.getBlock(color, true)).noTexture().parent(onModel);
             }
         }
 
         for (MultipartLightType type : MultipartLightType.values()) {
             ModelFile modelFile = getExistingFile(modLoc("item/" + type.getUnlocalBaseName()));
             for (int color = 0; color < 16; color++) {
-                getSimple(type.getItem(color, false)).texture(null).parent(modelFile);
-                getSimple(type.getItem(color, true)).texture(null).parent(modelFile);
+                getSimple(type.getItem(color, false)).noTexture().parent(modelFile);
+                getSimple(type.getItem(color, true)).noTexture().parent(modelFile);
             }
         }
     }

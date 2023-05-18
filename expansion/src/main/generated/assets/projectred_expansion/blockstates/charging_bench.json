@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "charged=false": {
+      "model": "projectred_expansion:block/charging_bench"
+    },
+    "charged=true": {
+      "model": "projectred_expansion:block/charging_bench_state1"
+    }
+  }
+}

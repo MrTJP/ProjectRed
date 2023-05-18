@@ -6,12 +6,12 @@ import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.packet.PacketCustomChannelBuilder;
 import mrtjp.projectred.core.tile.IPacketReceiverTile;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.play.IClientPlayNetHandler;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.play.IServerPlayNetHandler;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 
@@ -49,7 +49,7 @@ public class CoreNetwork {
     private static class ClientHandler implements ICustomPacketHandler.IClientPacketHandler {
 
         @Override
-        public void handlePacket(PacketCustom packet, Minecraft mc, IClientPlayNetHandler handler) {
+        public void handlePacket(PacketCustom packet, Minecraft mc, ClientPacketListener handler) {
             switch (packet.getType()) {
                 case NET_TILE_PACKET_TO_CLIENT:
                     handleTilePacket(mc.level, packet);
@@ -60,8 +60,8 @@ public class CoreNetwork {
             }
         }
 
-        private void handleTilePacket(World world, MCDataInput data) {
-            TileEntity tile = world.getBlockEntity(data.readPos());
+        private void handleTilePacket(Level world, MCDataInput data) {
+            BlockEntity tile = world.getBlockEntity(data.readPos());
             int key = data.readUByte();
             if (tile instanceof IPacketReceiverTile)
                 ((IPacketReceiverTile) tile).receiveUpdateFromServer(key, data);
@@ -71,7 +71,7 @@ public class CoreNetwork {
     private static class ServerHandler implements ICustomPacketHandler.IServerPacketHandler {
 
         @Override
-        public void handlePacket(PacketCustom packet, ServerPlayerEntity sender, IServerPlayNetHandler handler) {
+        public void handlePacket(PacketCustom packet, ServerPlayer sender, ServerGamePacketListenerImpl handler) {
             switch (packet.getType()) {
                 case NET_TILE_PACKET_TO_SERVER:
                     handleTilePacket(sender.getLevel(), packet, sender);
@@ -82,8 +82,8 @@ public class CoreNetwork {
             }
         }
 
-        private void handleTilePacket(World world, MCDataInput data, ServerPlayerEntity sender) {
-            TileEntity tile = world.getBlockEntity(data.readPos());
+        private void handleTilePacket(Level world, MCDataInput data, ServerPlayer sender) {
+            BlockEntity tile = world.getBlockEntity(data.readPos());
             int key = data.readUByte();
             if (tile instanceof IPacketReceiverTile)
                 ((IPacketReceiverTile) tile).receiveUpdateFromClient(key, data, sender);

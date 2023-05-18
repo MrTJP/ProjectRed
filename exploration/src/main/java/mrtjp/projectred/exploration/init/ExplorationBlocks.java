@@ -1,16 +1,15 @@
 package mrtjp.projectred.exploration.init;
 
 import mrtjp.projectred.exploration.block.ElectrotineOreBlock;
-import mrtjp.projectred.exploration.block.OreBlock;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.WallBlock;
-import net.minecraft.block.material.Material;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraftforge.common.ToolType;
-import net.minecraftforge.fml.RegistryObject;
+import mrtjp.projectred.exploration.block.ExplorationOreBlock;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.WallBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.Material;
+import net.minecraftforge.registries.RegistryObject;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.*;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
@@ -63,27 +62,27 @@ public class ExplorationBlocks {
         /* Blocks */
 
         // Ores
-        BLOCKS.register(ID_RUBY_ORE,        () -> new OreBlock(2, 2, 7));
-        BLOCKS.register(ID_SAPPHIRE_ORE,    () -> new OreBlock(2, 2, 7));
-        BLOCKS.register(ID_PERIDOT_ORE,     () -> new OreBlock(2, 2, 7));
-        BLOCKS.register(ID_COPPER_ORE,      () -> new OreBlock(1, 0, 0));
-        BLOCKS.register(ID_TIN_ORE,         () -> new OreBlock(1, 0, 0));
-        BLOCKS.register(ID_SILVER_ORE,      () -> new OreBlock(2, 0, 0));
-        BLOCKS.register(ID_ELECTROTINE_ORE, () -> new ElectrotineOreBlock(2, 1, 5));
+        BLOCKS.register(ID_RUBY_ORE,        () -> new ExplorationOreBlock(2, 7));
+        BLOCKS.register(ID_SAPPHIRE_ORE,    () -> new ExplorationOreBlock(2, 7));
+        BLOCKS.register(ID_PERIDOT_ORE,     () -> new ExplorationOreBlock(2, 7));
+        BLOCKS.register(ID_COPPER_ORE,      () -> new ExplorationOreBlock(0, 0));
+        BLOCKS.register(ID_TIN_ORE,         () -> new ExplorationOreBlock(0, 0));
+        BLOCKS.register(ID_SILVER_ORE,      () -> new ExplorationOreBlock(0, 0));
+        BLOCKS.register(ID_ELECTROTINE_ORE, () -> new ElectrotineOreBlock(1, 5));
 
         // Decorative blocks
-        MARBLE_BLOCK        = BLOCKS.register(ID_MARBLE,          () -> createDecorativeStoneBlock(2, 1F, 14F));
-        MARBLE_BRICK_BLOCK  = BLOCKS.register(ID_MARBLE_BRICK,    () -> createDecorativeStoneBlock(2, 1F, 14F));
-        BASALT_BLOCK        = BLOCKS.register(ID_BASALT,          () -> createDecorativeStoneBlock(2, 2.5F, 16F));
-        BASALT_COBBLE_BLOCK = BLOCKS.register(ID_BASALT_COBBLE,   () -> createDecorativeStoneBlock(2, 2.5F, 14F));
-        BASALT_BRICK_BLOCK  = BLOCKS.register(ID_BASALT_BRICK,    () -> createDecorativeStoneBlock(2, 2.5F, 20F));
-        RegistryObject<Block> rubyBlock         = BLOCKS.register(ID_RUBY_BLOCK,      () -> createDecorativeGemBlock(2, 5F, 10F));
-        RegistryObject<Block> sapphireBlock     = BLOCKS.register(ID_SAPPHIRE_BLOCK,  () -> createDecorativeGemBlock(2, 5F, 10F));
-        RegistryObject<Block> peridotBlock      = BLOCKS.register(ID_PERIDOT_BLOCK,   () -> createDecorativeGemBlock(2, 5F, 10F));
-        RegistryObject<Block> copperBlock       = BLOCKS.register(ID_COPPER_BLOCK,    () -> createDecorativeMetalBlock(2, 5F, 10F));
-        RegistryObject<Block> tinBlock          = BLOCKS.register(ID_TIN_BLOCK,       () -> createDecorativeMetalBlock(2, 5F, 10F));
-        RegistryObject<Block> silverBlock       = BLOCKS.register(ID_SILVER_BLOCK,    () -> createDecorativeMetalBlock(2, 5F, 10F));
-        RegistryObject<Block> electrotineBlock  = BLOCKS.register(ID_ELECTROTINE_BLOCK, () -> createDecorativeMetalBlock(2, 5F, 10F));
+        MARBLE_BLOCK        = BLOCKS.register(ID_MARBLE,          () -> createDecorativeStoneBlock(1F, 14F));
+        MARBLE_BRICK_BLOCK  = BLOCKS.register(ID_MARBLE_BRICK,    () -> createDecorativeStoneBlock(1F, 14F));
+        BASALT_BLOCK        = BLOCKS.register(ID_BASALT,          () -> createDecorativeStoneBlock(2.5F, 16F));
+        BASALT_COBBLE_BLOCK = BLOCKS.register(ID_BASALT_COBBLE,   () -> createDecorativeStoneBlock(2.5F, 14F));
+        BASALT_BRICK_BLOCK  = BLOCKS.register(ID_BASALT_BRICK,    () -> createDecorativeStoneBlock(2.5F, 20F));
+        RegistryObject<Block> rubyBlock         = BLOCKS.register(ID_RUBY_BLOCK,      () -> createDecorativeGemBlock(5F, 10F));
+        RegistryObject<Block> sapphireBlock     = BLOCKS.register(ID_SAPPHIRE_BLOCK,  () -> createDecorativeGemBlock(5F, 10F));
+        RegistryObject<Block> peridotBlock      = BLOCKS.register(ID_PERIDOT_BLOCK,   () -> createDecorativeGemBlock(5F, 10F));
+        RegistryObject<Block> copperBlock       = BLOCKS.register(ID_COPPER_BLOCK,    () -> createDecorativeMetalBlock(5F, 10F));
+        RegistryObject<Block> tinBlock          = BLOCKS.register(ID_TIN_BLOCK,       () -> createDecorativeMetalBlock(5F, 10F));
+        RegistryObject<Block> silverBlock       = BLOCKS.register(ID_SILVER_BLOCK,    () -> createDecorativeMetalBlock(5F, 10F));
+        RegistryObject<Block> electrotineBlock  = BLOCKS.register(ID_ELECTROTINE_BLOCK, () -> createDecorativeMetalBlock(5F, 10F));
 
         // Walls
         //Note: Direct refs used here bc ExplorationReferences isnt filled out when wall block suppliers are run
@@ -141,45 +140,39 @@ public class ExplorationBlocks {
     }
 
     private static Block createWallBlock(RegistryObject<Block> block) {
-        return new WallBlock(AbstractBlock.Properties.copy(block.get()));
+        return new WallBlock(BlockBehaviour.Properties.copy(block.get()));
     }
 
     private static Block createWallBlock(Block block) {
-        return new WallBlock(AbstractBlock.Properties.copy(block));
+        return new WallBlock(BlockBehaviour.Properties.copy(block));
     }
 
-    private static Block createDecorativeStoneBlock(int harvestLevel, float hardness, float resistance) {
-        return new Block(AbstractBlock.Properties.of(Material.STONE)
+    private static Block createDecorativeStoneBlock(float hardness, float resistance) {
+        return new Block(BlockBehaviour.Properties.of(Material.STONE)
                 .strength(hardness, resistance)
-                .harvestLevel(harvestLevel)
-                .harvestTool(ToolType.PICKAXE)
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.STONE));
     }
 
-    private static Block createDecorativeGemBlock(int harvestLevel, float hardness, float resistance) {
-        return new Block(AbstractBlock.Properties.of(Material.METAL)
+    private static Block createDecorativeGemBlock(float hardness, float resistance) {
+        return new Block(BlockBehaviour.Properties.of(Material.METAL)
                 .strength(hardness, resistance)
-                .harvestLevel(harvestLevel)
-                .harvestTool(ToolType.PICKAXE)
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.METAL));
     }
 
-    private static Block createDecorativeMetalBlock(int harvestLevel, float hardness, float resistance) {
-        return new Block(AbstractBlock.Properties.of(Material.METAL)
+    private static Block createDecorativeMetalBlock(float hardness, float resistance) {
+        return new Block(BlockBehaviour.Properties.of(Material.METAL)
                 .strength(hardness, resistance)
-                .harvestLevel(harvestLevel)
-                .harvestTool(ToolType.PICKAXE)
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.METAL));
     }
 
     private static Item createBlockItem(RegistryObject<Block> block) {
-        return new BlockItem(block.get(), new Item.Properties().tab(EXPLORATION_GROUP));
+        return new BlockItem(block.get(), new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
     }
 
     private static Item createBlockItem(Block block) {
-        return new BlockItem(block, new Item.Properties().tab(EXPLORATION_GROUP));
+        return new BlockItem(block, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
     }
 }

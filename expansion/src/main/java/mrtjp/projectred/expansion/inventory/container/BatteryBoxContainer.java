@@ -2,40 +2,42 @@ package mrtjp.projectred.expansion.inventory.container;
 
 import codechicken.lib.inventory.container.ICCLContainerFactory;
 import mrtjp.projectred.core.inventory.container.BasePoweredTileContainer;
+import mrtjp.projectred.core.inventory.container.SimpleDataSlot;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.item.IChargable;
 import mrtjp.projectred.expansion.item.IRechargableBattery;
 import mrtjp.projectred.expansion.tile.BatteryBoxTile;
 import mrtjp.projectred.lib.InventoryLib;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.IContainerListener;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class BatteryBoxContainer extends BasePoweredTileContainer {
 
     public static ICCLContainerFactory<BatteryBoxContainer> FACTORY = (windowId, inventory, packet) -> {
-        TileEntity tile = inventory.player.level.getBlockEntity(packet.readPos());
+        BlockEntity tile = inventory.player.level.getBlockEntity(packet.readPos());
         if (!(tile instanceof BatteryBoxTile)) return null;
 
         return new BatteryBoxContainer(inventory, (BatteryBoxTile) tile, windowId);
     };
 
-    private final PlayerInventory playerInventory;
+    private final Inventory playerInventory;
     private final BatteryBoxTile tile;
 
     protected int powerStored = 0;
 
-    public BatteryBoxContainer(PlayerInventory inventory, BatteryBoxTile tile, int windowId) {
+    public BatteryBoxContainer(Inventory inventory, BatteryBoxTile tile, int windowId) {
         super(ExpansionReferences.BATTERY_BOX_CONTAINER, windowId, tile);
         this.playerInventory = inventory;
         this.tile = tile;
 
         InventoryLib.addPlayerInventory(inventory, 8, 89, this::addSlot);
         addBatteryBoxInventory();
+
+        addDataSlot(new SimpleDataSlot(tile::getPowerStored, value -> powerStored = value));
     }
 
     private void addBatteryBoxInventory() {
@@ -44,32 +46,7 @@ public class BatteryBoxContainer extends BasePoweredTileContainer {
     }
 
     @Override
-    public void broadcastChanges() { //TODO switch to Minecraft's Data Slot system
-        super.broadcastChanges();
-
-        boolean needsPower = tile.getPowerStored() != powerStored;
-        powerStored = tile.getPowerStored();
-
-        if (needsPower) {
-            for (IContainerListener listener : containerListeners) {
-                listener.setContainerData(this, 300, powerStored);
-            }
-        }
-    }
-
-    @Override
-    public void setData(int id, int value) { //TODO switch to Minecraft's Data Slot system
-        switch (id) {
-            case 300:
-                powerStored = value;
-                break;
-            default:
-                super.setData(id, value);
-        }
-    }
-
-    @Override
-    public ItemStack quickMoveStack(PlayerEntity player, int slotIndex) {
+    public ItemStack quickMoveStack(Player player, int slotIndex) {
 
         Slot slot = slots.get(slotIndex);
         if (slot == null || !slot.hasItem()) return ItemStack.EMPTY;
@@ -144,7 +121,7 @@ public class BatteryBoxContainer extends BasePoweredTileContainer {
 
     private static class BatterySlot extends Slot {
 
-        public BatterySlot(IInventory inventory, int slot, int x, int y) {
+        public BatterySlot(Container inventory, int slot, int x, int y) {
             super(inventory, slot, x, y);
         }
 

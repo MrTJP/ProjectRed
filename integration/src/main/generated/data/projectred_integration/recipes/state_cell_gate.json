@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_integration:state_cell_gate"
+  },
+  "pattern": [
+    "PAC",
+    "WST",
+    "PWP"
+  ],
+  "key": {
+    "C": {
+      "item": "projectred_core:cathode"
+    },
+    "A": {
+      "item": "projectred_core:anode"
+    },
+    "S": {
+      "item": "projectred_core:silicon_chip"
+    },
+    "T": {
+      "item": "projectred_core:pointer"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    },
+    "W": {
+      "item": "projectred_core:conductive_plate"
+    }
+  }
+}

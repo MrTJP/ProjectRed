@@ -1,14 +1,14 @@
 package mrtjp.projectred.expansion.gui.screen.inventory;
 
-import codechicken.lib.texture.TextureUtils;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.expansion.inventory.container.BatteryBoxContainer;
 import mrtjp.projectred.lib.GuiLib;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.RedUIContainerScreen;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 
@@ -16,7 +16,7 @@ public class BatteryBoxScreen extends RedUIContainerScreen<BatteryBoxContainer> 
 
     public static final ResourceLocation BACKGROUND = new ResourceLocation(MOD_ID, "textures/gui/battery_box.png");
 
-    public BatteryBoxScreen(BatteryBoxContainer container, PlayerInventory playerInventory, ITextComponent title) {
+    public BatteryBoxScreen(BatteryBoxContainer container, Inventory playerInventory, Component title) {
         super(176, 171, container, playerInventory, title);
 
         inventoryLabelX = 8;
@@ -24,9 +24,9 @@ public class BatteryBoxScreen extends RedUIContainerScreen<BatteryBoxContainer> 
     }
 
     @Override
-    public void drawBack(MatrixStack stack, Point mouse, float partialFrame) {
+    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
 
-        TextureUtils.changeTexture(BACKGROUND);
+        RenderSystem.setShaderTexture(0, BACKGROUND);
         int x = getFrame().x();
         int y = getFrame().y();
 

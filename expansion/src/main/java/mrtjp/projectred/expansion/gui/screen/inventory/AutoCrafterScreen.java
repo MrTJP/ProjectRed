@@ -1,20 +1,20 @@
 package mrtjp.projectred.expansion.gui.screen.inventory;
 
 import codechicken.lib.colour.EnumColour;
-import codechicken.lib.texture.TextureUtils;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.expansion.inventory.container.AutoCrafterContainer;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.lib.GuiLib;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractButtonNode;
 import mrtjp.projectred.redui.RedUIContainerScreen;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
@@ -25,7 +25,7 @@ public class AutoCrafterScreen extends RedUIContainerScreen<AutoCrafterContainer
 
     private boolean isShiftDown = false;
 
-    public AutoCrafterScreen(AutoCrafterContainer container, PlayerInventory playerInventory, ITextComponent title) {
+    public AutoCrafterScreen(AutoCrafterContainer container, Inventory playerInventory, Component title) {
         super(176, 212, container, playerInventory, title);
 
         inventoryLabelX = 8;
@@ -42,8 +42,8 @@ public class AutoCrafterScreen extends RedUIContainerScreen<AutoCrafterContainer
             }
 
             @Override
-            protected void drawButtonBody(MatrixStack stack, boolean mouseover) {
-                TextureUtils.changeTexture(BACKGROUND);
+            protected void drawButtonBody(PoseStack stack, boolean mouseover) {
+                RenderSystem.setShaderTexture(0, BACKGROUND);
                 blit(stack, getPosition().x, getPosition().y, 176, 0, 14, 14);
             }
         };
@@ -53,10 +53,10 @@ public class AutoCrafterScreen extends RedUIContainerScreen<AutoCrafterContainer
     }
 
     @Override
-    public void drawBack(MatrixStack stack, Point mouse, float partialFrame) {
+    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
         super.drawBack(stack, mouse, partialFrame);
 
-        TextureUtils.changeTexture(BACKGROUND);
+        RenderSystem.setShaderTexture(0, BACKGROUND);
         int x = getFrame().x();
         int y = getFrame().y();
 
@@ -84,7 +84,7 @@ public class AutoCrafterScreen extends RedUIContainerScreen<AutoCrafterContainer
     }
 
     @Override
-    public void drawFront(MatrixStack stack, Point mouse, float partialFrame) {
+    public void drawFront(PoseStack stack, Point mouse, float partialFrame) {
         // Plan output overlays
         if (isShiftDown) {
             drawPlanOutputsOverlay(stack, getFrame().x(), getFrame().y());
@@ -94,8 +94,8 @@ public class AutoCrafterScreen extends RedUIContainerScreen<AutoCrafterContainer
         drawPlanSlotSelection(stack, getFrame().x() + 44, getFrame().y() + 22);
     }
 
-    private void drawPlanSlotSelection(MatrixStack stack, int xPos, int yPos) {
-        TextureUtils.changeTexture(BACKGROUND);
+    private void drawPlanSlotSelection(PoseStack stack, int xPos, int yPos) {
+        RenderSystem.setShaderTexture(0, BACKGROUND);
         int s = getMenu().getPlanSlot();
         int ix = s % 3;
         int iy = s / 3;
@@ -104,7 +104,7 @@ public class AutoCrafterScreen extends RedUIContainerScreen<AutoCrafterContainer
         blit(stack, x, y, 193, 0, 22, 22);
     }
 
-    private void drawPlanOutputsOverlay(MatrixStack mStack, int xPos, int yPos) {
+    private void drawPlanOutputsOverlay(PoseStack mStack, int xPos, int yPos) {
 
         for (Slot slot : getMenu().slots) {
             ItemStack stack = slot.getItem();

@@ -2,8 +2,8 @@ package mrtjp.projectred.integration.data;
 
 import codechicken.lib.datagen.recipe.RecipeProvider;
 import mrtjp.projectred.integration.GateType;
-import net.minecraft.block.Blocks;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
 
 import static mrtjp.projectred.core.init.CoreReferences.*;

@@ -1,17 +1,17 @@
 package mrtjp.projectred.redui;
 
-import codechicken.lib.texture.TextureUtils;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.GuiLib;
 import mrtjp.projectred.lib.Point;
-import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextProperties;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import static net.minecraft.client.gui.AbstractGui.blit;
+import static net.minecraft.client.gui.GuiComponent.blit;
 
 public abstract class AbstractButtonNode extends AbstractGuiNode {
 
@@ -25,7 +25,7 @@ public abstract class AbstractButtonNode extends AbstractGuiNode {
         return false;
     }
 
-    protected void buildTooltip(List<ITextProperties> tooltip) {
+    protected void buildTooltip(List<Component> tooltip) {
     }
 
     protected int getButtonState(boolean mouseover) {
@@ -33,11 +33,11 @@ public abstract class AbstractButtonNode extends AbstractGuiNode {
     }
 
     @Override
-    public void drawBack(MatrixStack stack, Point mouse, float partialFrame) {
+    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
 
         boolean mouseover = getFrame().contains(mouse) && isFirstHit(mouse);
 
-        TextureUtils.changeTexture(GuiLib.WIDGETS_TEXTURE);
+        RenderSystem.setShaderTexture(0, GuiLib.WIDGETS_TEXTURE);
         int state = getButtonState(mouseover);
 
         drawMCButton(stack, state);
@@ -45,12 +45,12 @@ public abstract class AbstractButtonNode extends AbstractGuiNode {
     }
 
     @Override
-    public void drawFront(MatrixStack stack, Point mouse, float partialFrame) {
+    public void drawFront(PoseStack stack, Point mouse, float partialFrame) {
 
         if (!isFirstHit(mouse))
             return;
 
-        List<ITextProperties> tooltip = new LinkedList<>();
+        List<Component> tooltip = new LinkedList<>();
         buildTooltip(tooltip);
 
         if (!tooltip.isEmpty())
@@ -60,16 +60,16 @@ public abstract class AbstractButtonNode extends AbstractGuiNode {
     @Override
     public boolean mouseClicked(Point p, int glfwMouseButton, boolean consumed) {
         if (!consumed && !isButtonDisabled() && isFirstHit(p)) {
-            getRoot().getMinecraft().getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1));
+            getRoot().getMinecraft().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1));
             onButtonClicked();
             return true;
         }
         return false;
     }
 
-    protected void drawMCButton(MatrixStack stack, int state) {
+    protected void drawMCButton(PoseStack stack, int state) {
 
-        TextureUtils.changeTexture(GuiLib.WIDGETS_TEXTURE);
+        RenderSystem.setShaderTexture(0, GuiLib.WIDGETS_TEXTURE);
 
         int x = getPosition().x;
         int y = getPosition().y;
@@ -82,5 +82,5 @@ public abstract class AbstractButtonNode extends AbstractGuiNode {
         blit(stack, x + width / 2,  y + height / 2, 200 - width / 2f, 46 + state * 20 + 20 - height / 2f, width / 2, height / 2, 256, 256);
     }
 
-    protected abstract void drawButtonBody(MatrixStack stack, boolean mouseover);
+    protected abstract void drawButtonBody(PoseStack stack, boolean mouseover);
 }

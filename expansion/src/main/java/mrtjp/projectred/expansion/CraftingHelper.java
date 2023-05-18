@@ -1,36 +1,36 @@
 package mrtjp.projectred.expansion;
 
 import mrtjp.projectred.lib.InventoryLib;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CraftResultInventory;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.util.LazyValue;
-import net.minecraft.util.NonNullList;
-import net.minecraft.world.World;
+import net.covers1624.quack.util.LazyValue;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.ResultContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeHooks;
 
 import java.util.function.Predicate;
 
 public class CraftingHelper {
 
-    private final CraftingInventory craftingInventory = new CraftingInventory(new Container(null, -1) {
+    private final CraftingContainer craftingInventory = new CraftingContainer(new AbstractContainerMenu(null, -1) {
         @Override
-        public boolean stillValid(PlayerEntity p_75145_1_) {
+        public boolean stillValid(Player p_75145_1_) {
             return false;
         }
     }, 3, 3);
 
-    private final CraftResultInventory craftResultInventory = new CraftResultInventory();
+    private final ResultContainer craftResultInventory = new ResultContainer();
 
     private final InventorySource inputSource;
 
-    private ICraftingRecipe recipe = null;
+    private CraftingRecipe recipe = null;
     private CraftingResult result = CraftingResult.EMPTY;
 
     public CraftingHelper(InventorySource inputSource) {
@@ -51,17 +51,17 @@ public class CraftingHelper {
     //endregion
 
     //region Container getters
-    public CraftingInventory getCraftingInventory() {
+    public CraftingContainer getCraftingInventory() {
         return craftingInventory;
     }
 
-    public CraftResultInventory getCraftResultInventory() {
+    public ResultContainer getCraftResultInventory() {
         return craftResultInventory;
     }
     //region
 
     public void loadInputs() {
-        IInventory craftingMatrix = inputSource.getCraftingMatrix();
+        Container craftingMatrix = inputSource.getCraftingMatrix();
         // Copy recipe matrix to internal Crafting Inventory
         for (int i = 0; i < 9; i++) {
             craftingInventory.setItem(i, craftingMatrix.getItem(i).copy());
@@ -70,7 +70,7 @@ public class CraftingHelper {
 
     public void loadRecipe() {
         recipe = inputSource.getWorld().getRecipeManager()
-                .getRecipeFor(IRecipeType.CRAFTING, craftingInventory, inputSource.getWorld()).orElse(null);
+                .getRecipeFor(RecipeType.CRAFTING, craftingInventory, inputSource.getWorld()).orElse(null);
 
         craftResultInventory.setItem(0, recipe == null ? ItemStack.EMPTY : recipe.assemble(craftingInventory));
     }
@@ -100,7 +100,7 @@ public class CraftingHelper {
         return result.missingIngredientMask;
     }
 
-    public boolean onCraftedByPlayer(PlayerEntity player, boolean leaveRemainingInGrid) {
+    public boolean onCraftedByPlayer(Player player, boolean leaveRemainingInGrid) {
         CraftingResult result = craftFromStorage(false);
 
         if (!result.isCraftable()) {
@@ -113,8 +113,8 @@ public class CraftingHelper {
         NonNullList<ItemStack> remainingStacks = recipe.getRemainingItems(craftingInventory); // Skip re-searching for recipe, should be ok
         ForgeHooks.setCraftingPlayer(null);
 
-        IInventory craftingGird = inputSource.getCraftingMatrix();
-        IInventory storage = inputSource.getStorage();
+        Container craftingGird = inputSource.getCraftingMatrix();
+        Container storage = inputSource.getStorage();
 
         for (int i = 0; i < 9; i++) {
             ItemStack remaining = remainingStacks.get(i);
@@ -156,7 +156,7 @@ public class CraftingHelper {
         ItemStack result = recipe.assemble(craftingInventory);
         if (result.isEmpty()) return CraftingResult.EMPTY;
 
-        IInventory storage = inputSource.getStorage();
+        Container storage = inputSource.getStorage();
         if (simulate) {
             storage = copyInventory(storage);
         }
@@ -216,7 +216,7 @@ public class CraftingHelper {
 //        return true;
 //    }
 
-    private boolean consumeIngredient(IInventory storage, int startIndex, Predicate<ItemStack> matchFunc) {
+    private boolean consumeIngredient(Container storage, int startIndex, Predicate<ItemStack> matchFunc) {
 
         int i = startIndex;
         do {
@@ -233,9 +233,9 @@ public class CraftingHelper {
         return false;
     }
 
-    private static IInventory copyInventory(IInventory inventory) {
+    private static Container copyInventory(Container inventory) {
         //TODO create more accurate copy
-        Inventory copy = new Inventory(inventory.getContainerSize());
+        SimpleContainer copy = new SimpleContainer(inventory.getContainerSize());
         for (int i = 0; i < inventory.getContainerSize(); i++) {
             copy.setItem(i, inventory.getItem(i).copy());
         }
@@ -249,11 +249,11 @@ public class CraftingHelper {
         public final ItemStack outputStack;
         public final NonNullList<ItemStack> remainingItems;
         public final int missingIngredientMask;
-        public final IInventory remainingStorage;
+        public final Container remainingStorage;
 
         private final LazyValue<Boolean> canStorageAcceptResults = new LazyValue<>(this::canFitResultsIntoStorage);
 
-        public CraftingResult(ItemStack outputStack, NonNullList<ItemStack> remainingItems, int missingIngredientMask, IInventory remainingStorage) {
+        public CraftingResult(ItemStack outputStack, NonNullList<ItemStack> remainingItems, int missingIngredientMask, Container remainingStorage) {
             this.outputStack = outputStack;
             this.remainingItems = remainingItems;
             this.missingIngredientMask = missingIngredientMask;
@@ -281,7 +281,7 @@ public class CraftingHelper {
         }
 
         private boolean canFitResultsIntoStorage() {
-            IInventory storage = copyInventory(remainingStorage); // Don't mutate original list
+            Container storage = copyInventory(remainingStorage); // Don't mutate original list
             return InventoryLib.injectAllItemStacks(storage, getCopyOfAllResults(), true);
         }
 
@@ -296,10 +296,10 @@ public class CraftingHelper {
 
     public interface InventorySource {
 
-        IInventory getCraftingMatrix();
+        Container getCraftingMatrix();
 
-        IInventory getStorage();
+        Container getStorage();
 
-        World getWorld(); // Required for recipe lookup
+        Level getWorld(); // Required for recipe lookup
     }
 }

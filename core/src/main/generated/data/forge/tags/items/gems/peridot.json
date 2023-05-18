@@ -1,6 +1,6 @@
 {
   "replace": false,
   "values": [
-    "projectred-core:peridot"
+    "projectred_core:peridot"
   ]
 }

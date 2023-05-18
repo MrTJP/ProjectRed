@@ -2,10 +2,10 @@ package mrtjp.projectred.core.init;
 
 import mrtjp.projectred.core.inventory.container.ElectrotineGeneratorContainer;
 import mrtjp.projectred.core.tile.ElectrotineGeneratorTile;
-import net.minecraft.block.Block;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
@@ -21,11 +21,11 @@ public class CoreReferences {
 
     // Containers
     @ObjectHolder(ID_ELECTROTINE_GENERATOR)
-    public static ContainerType<ElectrotineGeneratorContainer> ELECTROTINE_GENERATOR_CONTAINER = null;
+    public static MenuType<ElectrotineGeneratorContainer> ELECTROTINE_GENERATOR_CONTAINER = null;
 
     // Tile
     @ObjectHolder(ID_ELECTROTINE_GENERATOR)
-    public static TileEntityType<ElectrotineGeneratorTile> ELECTROTINE_GENERATOR_TILE = null;
+    public static BlockEntityType<ElectrotineGeneratorTile> ELECTROTINE_GENERATOR_TILE = null;
 
     // Items
     @ObjectHolder(ID_PLATE)

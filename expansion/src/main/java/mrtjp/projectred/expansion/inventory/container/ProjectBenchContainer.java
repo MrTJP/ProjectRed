@@ -5,27 +5,27 @@ import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.expansion.tile.ProjectBenchTile;
 import mrtjp.projectred.lib.InventoryLib;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.CraftingResultSlot;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ResultSlot;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
-public class ProjectBenchContainer extends Container {
+public class ProjectBenchContainer extends AbstractContainerMenu {
 
     public static final ICCLContainerFactory<ProjectBenchContainer> FACTORY = (windowId, playerInv, packet) -> {
-        TileEntity tile = playerInv.player.level.getBlockEntity(packet.readPos());
+        BlockEntity tile = playerInv.player.level.getBlockEntity(packet.readPos());
         if (!(tile instanceof ProjectBenchTile)) return null;
         return new ProjectBenchContainer(playerInv, (ProjectBenchTile) tile, windowId);
     };
 
     private final ProjectBenchTile tile;
-    private final PlayerInventory playerInventory;
+    private final Inventory playerInventory;
 
-    public ProjectBenchContainer(PlayerInventory playerInventory, ProjectBenchTile tile, int windowId) {
+    public ProjectBenchContainer(Inventory playerInventory, ProjectBenchTile tile, int windowId) {
         super(ExpansionReferences.PROJECT_BENCH_CONTAINER, windowId);
         this.playerInventory = playerInventory;
         this.tile = tile;
@@ -64,17 +64,17 @@ public class ProjectBenchContainer extends Container {
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return !tile.isRemoved(); //TODO
     }
 
     //region Utils
-    protected void addPlayerInventory(PlayerInventory playerInventory, int x, int y) {
+    protected void addPlayerInventory(Inventory playerInventory, int x, int y) {
         addInventory(playerInventory, 9, x, y, 9, 3); // Inventory (0 - 26)
         addInventory(playerInventory, 0, x, y + 58, 9, 1); // Hotbar slots (27 - 35)
     }
 
-    protected void addInventory(IInventory inventory, int i, int x, int y, int columns, int rows) {
+    protected void addInventory(Container inventory, int i, int x, int y, int columns, int rows) {
         for (int c = 0; c < columns; c++) {
             for (int r = 0; r < rows; r++) {
                 addSlot(new Slot(inventory, i + (r * columns + c), x + c * 18, y + r * 18));
@@ -94,7 +94,7 @@ public class ProjectBenchContainer extends Container {
 
     //region Quickmove
     @Override
-    public ItemStack quickMoveStack(PlayerEntity player, int slotIndex) {
+    public ItemStack quickMoveStack(Player player, int slotIndex) {
 
         Slot slot = slots.get(slotIndex);
         if (slot == null || !slot.hasItem()) return ItemStack.EMPTY;
@@ -193,7 +193,7 @@ public class ProjectBenchContainer extends Container {
 
     //endregion
 
-    private class ProjectBenchCraftingSlot extends CraftingResultSlot {
+    private class ProjectBenchCraftingSlot extends ResultSlot {
 
         public ProjectBenchCraftingSlot(int x, int y) {
             super(playerInventory.player, tile.getCraftingHelper().getCraftingInventory(),
@@ -201,16 +201,15 @@ public class ProjectBenchContainer extends Container {
         }
 
         @Override
-        public boolean mayPickup(PlayerEntity player) {
+        public boolean mayPickup(Player player) {
             return tile.getCraftingHelper().canTake();
         }
 
         @Override
-        public ItemStack onTake(PlayerEntity player, ItemStack stack) {
+        public void onTake(Player player, ItemStack stack) {
             checkTakeAchievements(stack);
             tile.getCraftingHelper().onCraftedByPlayer(player, !tile.isPlanRecipe());
             tile.updateRecipeIfNeeded();
-            return stack;
         }
     }
 }

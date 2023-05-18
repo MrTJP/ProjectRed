@@ -9,22 +9,18 @@ import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.inventory.container.BatteryBoxContainer;
 import mrtjp.projectred.expansion.item.IChargable;
 import mrtjp.projectred.expansion.item.IRechargableBattery;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.*;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
@@ -45,19 +41,19 @@ public class BatteryBoxTile extends LowLoadPoweredTile {
 
     private int powerStored = 0;
 
-    public BatteryBoxTile() {
-        super(ExpansionReferences.BATTERY_BOX_TILE);
+    public BatteryBoxTile(BlockPos pos, BlockState state) {
+        super(ExpansionReferences.BATTERY_BOX_TILE, pos, state);
     }
 
     @Override
-    public void saveToNBT(CompoundNBT tag) {
+    public void saveToNBT(CompoundTag tag) {
         super.saveToNBT(tag);
         tag.putInt("storage", powerStored);
         tag.put("inventory", inventory.createTag());
     }
 
     @Override
-    public void loadFromNBT(CompoundNBT tag) {
+    public void loadFromNBT(CompoundTag tag) {
         super.loadFromNBT(tag);
         powerStored = tag.getInt("storage");
         inventory.fromTag(tag.getList("inventory", 10));
@@ -74,17 +70,17 @@ public class BatteryBoxTile extends LowLoadPoweredTile {
     }
 
     @Override
-    public ActionResultType onBlockActivated(PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
         if (!getLevel().isClientSide) {
             ServerUtils.openContainer(
-                    (ServerPlayerEntity) player,
-                    new SimpleNamedContainerProvider(
+                    (ServerPlayer) player,
+                    new SimpleMenuProvider(
                             (id, inv, p) -> new BatteryBoxContainer(inv, this, id),
-                            new TranslationTextComponent(getBlockState().getBlock().getDescriptionId())),
+                            new TextComponent(getBlockState().getBlock().getDescriptionId())),
                     p -> p.writePos(getBlockPos()));
         }
 
-        return ActionResultType.sidedSuccess(getLevel().isClientSide);
+        return InteractionResult.sidedSuccess(getLevel().isClientSide);
     }
 
     @Override
@@ -105,7 +101,7 @@ public class BatteryBoxTile extends LowLoadPoweredTile {
     public ItemStack createStackWithStoredPower() {
         ItemStack stack = new ItemStack(BATTERY_BOX_BLOCK, 1);
         if (powerStored > 0) {
-            CompoundNBT tag = stack.getOrCreateTag();
+            CompoundTag tag = stack.getOrCreateTag();
             tag.putInt(TAG_KEY_POWER_STORED, powerStored);
             tag.putInt(TAG_KEY_CHARGE_LEVEL_STATE, getPowerStoredScaled(8));
         }
@@ -217,7 +213,7 @@ public class BatteryBoxTile extends LowLoadPoweredTile {
     }
 
     @Override
-    protected void invalidateCaps() {
+    public void invalidateCaps() {
         super.invalidateCaps();
         for (LazyOptional<?> handler : handlers) {
             handler.invalidate();
@@ -226,7 +222,7 @@ public class BatteryBoxTile extends LowLoadPoweredTile {
     //endregion
 
     //region Container getters
-    public IInventory getInventory() {
+    public Container getInventory() {
         return inventory;
     }
     public int getPowerStored() {
@@ -234,7 +230,7 @@ public class BatteryBoxTile extends LowLoadPoweredTile {
     }
     //endregion
 
-    private static class BatteryBoxInventory extends Inventory implements ISidedInventory {
+    private static class BatteryBoxInventory extends SimpleContainer implements WorldlyContainer {
 
         private static final int[] TOP_SLOTS = new int[]{0};
         private static final int[] BOTTOM_SLOTS = new int[]{1};

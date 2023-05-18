@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "rotation=0": {
+      "model": "projectred_expansion:block/project_bench"
+    },
+    "rotation=1": {
+      "model": "projectred_expansion:block/project_bench",
+      "y": 90
+    },
+    "rotation=2": {
+      "model": "projectred_expansion:block/project_bench",
+      "y": 180
+    },
+    "rotation=3": {
+      "model": "projectred_expansion:block/project_bench",
+      "y": 270
+    }
+  }
+}

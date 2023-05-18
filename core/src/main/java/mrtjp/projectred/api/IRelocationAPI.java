@@ -5,20 +5,19 @@
  */
 package mrtjp.projectred.api;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 
 public interface IRelocationAPI
 {
     /** The capability instance for {@link IFrame} */
-    @CapabilityInject(IFrame.class)
-    Capability<IFrame> FRAME_CAPABILITY = null;
+    Capability<IFrame> FRAME_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 
     /** The capability instance for {@link IConditionallyMovable} */
-    @CapabilityInject(IConditionallyMovable.class)
-    Capability<IConditionallyMovable> CONDITIONALLY_MOVABLE_CAPABILITY = null;
+    Capability<IConditionallyMovable> CONDITIONALLY_MOVABLE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 
     /**
      * Used to register a {@link ITileMover} class that manages the movement of certain tiles.
@@ -100,5 +99,5 @@ public interface IRelocationAPI
      * @param pos   The position of the block.
      * @return True if the block is currently moving.
      */
-    boolean isMoving(World world, BlockPos pos);
+    boolean isMoving(Level world, BlockPos pos);
 }

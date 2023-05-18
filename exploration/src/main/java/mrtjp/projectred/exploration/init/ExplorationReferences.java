@@ -1,11 +1,11 @@
 package mrtjp.projectred.exploration.init;
 
 import mrtjp.projectred.exploration.inventory.container.BackpackContainer;
-import net.minecraft.block.Block;
-import net.minecraft.block.WallBlock;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.Item;
-import net.minecraft.item.crafting.SpecialRecipeSerializer;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.WallBlock;
 import net.minecraftforge.registries.ObjectHolder;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
@@ -220,11 +220,11 @@ public class ExplorationReferences {
 
     /* Containers */
     @ObjectHolder(ID_BACKPACK_CONTAINER)
-    public static ContainerType<BackpackContainer> BACKPACK_CONTAINER = null;
+    public static MenuType<BackpackContainer> BACKPACK_CONTAINER = null;
 
     /* Recipe Serializers */
     @ObjectHolder(ID_BACKPACK_DYE)
-    public static SpecialRecipeSerializer<?> BACKPACK_DYE_RECIPE_SERIALIZER = null;
+    public static SimpleRecipeSerializer<?> BACKPACK_DYE_RECIPE_SERIALIZER = null;
 
     public static Item getBackpackByColor(int color) {
         switch (color) {

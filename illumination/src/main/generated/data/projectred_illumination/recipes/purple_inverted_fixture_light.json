@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_illumination:purple_inverted_fixture_light"
+  },
+  "pattern": [
+    "GGG",
+    "GIG",
+    "PCP"
+  ],
+  "key": {
+    "I": {
+      "item": "projectred_core:purple_illumar"
+    },
+    "C": {
+      "item": "projectred_core:cathode"
+    },
+    "G": {
+      "tag": "forge:glass_panes/colorless"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    }
+  }
+}

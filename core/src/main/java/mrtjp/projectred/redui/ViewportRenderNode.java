@@ -2,13 +2,14 @@ package mrtjp.projectred.redui;
 
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.vec.Vector3;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.lib.Size;
 import mrtjp.projectred.lib.Vec2;
-import net.minecraft.util.text.ITextProperties;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -20,9 +21,9 @@ public abstract class ViewportRenderNode extends AbstractGuiNode {
 
     private final PVMMatrix pvMatrix = new PVMMatrix();
 
-    protected abstract void renderInViewport(MatrixStack renderStack, Vec2 ndcMouse, float partialFrame, boolean isFirstHit);
+    protected abstract void renderInViewport(PoseStack renderStack, Vec2 ndcMouse, float partialFrame, boolean isFirstHit);
 
-    protected abstract List<ITextProperties> getToolTip(Point mousePosition, boolean isFirstHit);
+    protected abstract List<Component> getToolTip(Point mousePosition, boolean isFirstHit);
 
     protected abstract double getTargetPlaneDistance();
 
@@ -58,26 +59,30 @@ public abstract class ViewportRenderNode extends AbstractGuiNode {
     }
 
     @Override
-    public void drawBack(MatrixStack stack, Point mouse, float partialFrame) {
+    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
 
         // Set up projection and view matrices
         Rect glFrame = getGlFrame();
         pvMatrix.setProjection(getVerticalFOV(), glFrame.width(), glFrame.height(), 0.2F, getMaxRenderDist());
         pvMatrix.setView(getCameraPosition().x, getCameraPosition().y, getCameraPosition().z, 90 * MathHelper.torad, 0);
 
+        // Save viewport state
+        int glvpH = GlStateManager.Viewport.height();
+        int glvpW = GlStateManager.Viewport.width();
+        int glvpX = GlStateManager.Viewport.x();
+        int glvpY = GlStateManager.Viewport.y();
+
         // Create a new viewport
-        GL11.glPushAttrib(GL11.GL_VIEWPORT_BIT);
         RenderSystem.viewport(glFrame.x(), glFrame.y(), glFrame.width(), glFrame.height());
 
         // Apply projection matrix
-        RenderSystem.matrixMode(GL11.GL_PROJECTION);
-        RenderSystem.pushMatrix();
-        RenderSystem.loadIdentity();
-        RenderSystem.multMatrix(pvMatrix.getProjectionMatrix().toMatrix4f());
+        RenderSystem.backupProjectionMatrix();
+        RenderSystem.setProjectionMatrix(pvMatrix.getProjectionMatrix().toMatrix4f());
 
-        RenderSystem.matrixMode(GL11.GL_MODELVIEW);
-        RenderSystem.pushMatrix();
-        RenderSystem.loadIdentity();
+        PoseStack mvStack = RenderSystem.getModelViewStack();
+        mvStack.pushPose();
+        mvStack.setIdentity();
+        RenderSystem.applyModelViewMatrix();
 
         /*
           TODO Figure out how to sandwich the viewport at this node's z position, +- some small range.
@@ -87,24 +92,23 @@ public abstract class ViewportRenderNode extends AbstractGuiNode {
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
 
         // Render
-        renderInViewport(pvMatrix.getModelViewMatrixStack(), getFrame().ndc(mouse), partialFrame, isFirstHit(mouse));
+        PoseStack pStack = pvMatrix.getModelViewMatrixStack();
+        renderInViewport(pStack, getFrame().ndc(mouse), partialFrame, isFirstHit(mouse));
 
         // Restore previous matrices
-        RenderSystem.matrixMode(GL11.GL_PROJECTION);
-        RenderSystem.popMatrix();
+        mvStack.popPose();
+        RenderSystem.applyModelViewMatrix();
 
-        RenderSystem.matrixMode(GL11.GL_MODELVIEW);
-
-        RenderSystem.popMatrix();
+        RenderSystem.restoreProjectionMatrix();
 
         // Restore previous viewport
-        GL11.glPopAttrib();
+        RenderSystem.viewport(glvpX, glvpY, glvpW, glvpH);
     }
 
     @Override
-    public void drawFront(MatrixStack stack, Point mouse, float partialFrame) {
+    public void drawFront(PoseStack stack, Point mouse, float partialFrame) {
 
-        List<ITextProperties> tooltip = getToolTip(mouse, isFirstHit(mouse));
+        List<Component> tooltip = getToolTip(mouse, isFirstHit(mouse));
 
         renderTooltip(stack, mouse, tooltip);
     }

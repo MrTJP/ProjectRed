@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_core:bundled_plate"
+  },
+  "pattern": [
+    "W",
+    "P"
+  ],
+  "key": {
+    "P": {
+      "item": "projectred_core:plate"
+    },
+    "W": {
+      "tag": "projectred_transmission:bundled_wire"
+    }
+  }
+}

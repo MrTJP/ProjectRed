@@ -1,26 +1,28 @@
 package mrtjp.projectred.expansion.block;
 
 import mrtjp.projectred.core.block.ProjectRedBlock;
+import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.tile.BatteryBoxTile;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.state.IntegerProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.HitResult;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,26 +36,32 @@ public class BatteryBoxBlock extends ProjectRedBlock {
         super(WOODEN_PROPERTIES);
     }
 
+    @Nullable
     @Override
-    protected TileEntity createTileEntityInstance(BlockState state, IBlockReader world) {
-        return new BatteryBoxTile();
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new BatteryBoxTile(pos, state);
+    }
+
+    @Override
+    protected BlockEntityType<?> getBlockEntityType() {
+        return ExpansionReferences.BATTERY_BOX_TILE;
     }
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState()
                 .setValue(CHARGE_LEVEL, 0); // Tile takes care of updating state if placed with power
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(CHARGE_LEVEL);
     }
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
-        TileEntity tile = builder.getParameter(LootParameters.BLOCK_ENTITY);
+        BlockEntity tile = builder.getParameter(LootContextParams.BLOCK_ENTITY);
         if (tile instanceof BatteryBoxTile) {
             BatteryBoxTile batteryBoxTile = (BatteryBoxTile) tile;
             return Collections.singletonList(batteryBoxTile.createStackWithStoredPower()); // Retain power inside itemstack
@@ -62,20 +70,20 @@ public class BatteryBoxBlock extends ProjectRedBlock {
     }
 
     @Override
-    public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-        TileEntity tile = world.getBlockEntity(pos);
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+        BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof BatteryBoxTile)
             return ((BatteryBoxTile) tile).createStackWithStoredPower(); // Pick block with stored power
 
-        return super.getPickBlock(state, target, world, pos, player);
+        return super.getCloneItemStack(state, target, world, pos, player);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable IBlockReader level, List<ITextComponent> toolTip, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> toolTip, TooltipFlag flag) {
         super.appendHoverText(stack, level, toolTip, flag);
         if (stack.hasTag()) {
             int power = stack.getTag().getInt(BatteryBoxTile.TAG_KEY_POWER_STORED);
-            toolTip.add(new TranslationTextComponent(UL_STORED_POWER_TOOLTIP).append(": " + power + " / " + 8000).withStyle(TextFormatting.GRAY)); //TODO make this static constant
+            toolTip.add(new TranslatableComponent(UL_STORED_POWER_TOOLTIP).append(": " + power + " / " + 8000).withStyle(ChatFormatting.GRAY)); //TODO make this static constant
         }
     }
 }

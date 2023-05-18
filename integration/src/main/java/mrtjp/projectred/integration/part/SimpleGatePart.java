@@ -4,9 +4,9 @@ import codechicken.multipart.util.PartRayTraceResult;
 import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.part.IOrientableFacePart;
 import mrtjp.projectred.integration.GateType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.LightType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LightLayer;
 
 import java.util.Random;
 
@@ -435,10 +435,10 @@ public abstract class SimpleGatePart extends RedstoneGatePart {
         }
 
         @Override
-        protected boolean gateLogicActivate(PlayerEntity player, ItemStack held, PartRayTraceResult hit) {
+        protected boolean gateLogicActivate(Player player, ItemStack held, PartRayTraceResult hit) {
             // Allow configuring without screwdriver
             if (held.isEmpty() || !(held.getItem() instanceof IScrewdriver)) {
-                if (!world().isClientSide) {
+                if (!level().isClientSide) {
                     configure();
                 }
                 return true;
@@ -553,16 +553,16 @@ public abstract class SimpleGatePart extends RedstoneGatePart {
         }
 
         private int calcSkyLight() {
-            return world().getBrightness(LightType.SKY, pos()) - world().getSkyDarken();
+            return level().getBrightness(LightLayer.SKY, pos()) - level().getSkyDarken();
         }
 
         private int calcBlockLight() {
-            return world().getBrightness(LightType.BLOCK, pos());
+            return level().getBrightness(LightLayer.BLOCK, pos());
         }
 
         @Override
         protected void gateLogicOnTick() {
-            if (world().isClientSide) return;
+            if (level().isClientSide) return;
 
             int newOutput = shape() == 1 ? calcSkyLight() : shape() == 2 ? calcBlockLight() : Math.max(calcSkyLight(), calcBlockLight());
 
@@ -583,7 +583,7 @@ public abstract class SimpleGatePart extends RedstoneGatePart {
         }
 
         @Override
-        public int getLightValue() {
+        public int getLightEmission() {
             return 0;
         }
     }
@@ -611,9 +611,9 @@ public abstract class SimpleGatePart extends RedstoneGatePart {
 
         @Override
         protected void gateLogicOnTick() {
-            if (world().isClientSide) return;
+            if (level().isClientSide) return;
 
-            int newOutput = world().isRaining() && world().canSeeSky(pos()) ? 4 : 0;
+            int newOutput = level().isRaining() && level().canSeeSky(pos()) ? 4 : 0;
             int oldOutput = state() >> 4;
             if (newOutput != oldOutput) {
                 setState(newOutput << 4 | state() & 0xF);
@@ -622,7 +622,7 @@ public abstract class SimpleGatePart extends RedstoneGatePart {
         }
 
         @Override
-        public int getLightValue() {
+        public int getLightEmission() {
             return 0;
         }
     }

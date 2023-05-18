@@ -5,9 +5,9 @@
  */
 package mrtjp.projectred.api;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import java.util.Collections;
 import java.util.Set;
@@ -34,7 +34,7 @@ public interface IFrame
      * @param side The side of this block.
      * @return True if the side can grab another block.
      */
-    boolean stickOut(World w, BlockPos pos, Direction side);
+    boolean stickOut(Level w, BlockPos pos, Direction side);
 
     /**
      * Used to check if this frame block can be grabbed on the
@@ -48,7 +48,7 @@ public interface IFrame
      * @param side The side of this block.
      * @return True if the side can be grabbed by a frame block.
      */
-    boolean stickIn(World w, BlockPos pos, Direction side);
+    boolean stickIn(Level w, BlockPos pos, Direction side);
 
     /**
      * Optional method used to declare additional blocks that need to move along

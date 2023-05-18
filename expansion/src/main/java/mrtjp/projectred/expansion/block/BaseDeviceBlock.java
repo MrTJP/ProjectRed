@@ -1,12 +1,11 @@
 package mrtjp.projectred.expansion.block;
 
 import mrtjp.projectred.core.block.ProjectRedBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.StateContainer;
-
-import javax.annotation.Nullable;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class BaseDeviceBlock extends ProjectRedBlock {
 
@@ -16,7 +15,7 @@ public abstract class BaseDeviceBlock extends ProjectRedBlock {
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
         int s = context.getClickedFace().ordinal() ^ 1; // Place bottom of block on the side clicked
         return defaultBlockState()
                 .setValue(SIDE, s)
@@ -24,7 +23,7 @@ public abstract class BaseDeviceBlock extends ProjectRedBlock {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(SIDE, ACTIVE);
     }

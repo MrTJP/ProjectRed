@@ -1,7 +1,7 @@
 package mrtjp.projectred.exploration.init;
 
 import mrtjp.projectred.exploration.gui.screen.inventory.BackpackScreen;
-import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -19,6 +19,6 @@ public class ExplorationClientInit {
     private static void clientSetup(final FMLClientSetupEvent event) {
 
         // Register screens
-        ScreenManager.register(BACKPACK_CONTAINER, BackpackScreen::new);
+        MenuScreens.register(BACKPACK_CONTAINER, BackpackScreen::new);
     }
 }

@@ -1,6 +1,6 @@
 package mrtjp.projectred.api;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 /**
  * Allows adding of special tile entities that point to other BasicPipeParts.
@@ -19,7 +19,7 @@ public interface ISpecialLinkState
      * @param tile The tile in question
      * @return True if this special link state applies to the tile.
      */
-    boolean matches(TileEntity tile);
+    boolean matches(BlockEntity tile);
 
     /**
      * This method should utilize the given tile to find all other tiles that
@@ -33,5 +33,5 @@ public interface ISpecialLinkState
      * @param tile The tile in question.
      * @return The connected pipe (as a TileMultipart).
      */
-    TileEntity getLink(TileEntity tile);
+    BlockEntity getLink(BlockEntity tile);
 }

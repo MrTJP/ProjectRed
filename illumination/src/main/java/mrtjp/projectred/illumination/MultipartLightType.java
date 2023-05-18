@@ -1,17 +1,14 @@
 package mrtjp.projectred.illumination;
 
 import codechicken.lib.colour.EnumColour;
-import codechicken.multipart.api.MultiPartType;
-import codechicken.multipart.api.SimpleMultiPartType;
+import codechicken.multipart.api.MultipartType;
+import codechicken.multipart.api.SimpleMultipartType;
 import mrtjp.projectred.illumination.item.MultipartLightPartItem;
-import mrtjp.projectred.illumination.part.CageLightProperties;
-import mrtjp.projectred.illumination.part.FalloutLightProperties;
-import mrtjp.projectred.illumination.part.FixtureLightProperties;
-import mrtjp.projectred.illumination.part.LanternLightProperties;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.RegistryObject;
+import mrtjp.projectred.illumination.part.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +27,8 @@ public enum MultipartLightType {
     private final List<RegistryObject<Item>> itemSuppliers = new ArrayList<>();
     private final List<RegistryObject<Item>> invertedItemSuppliers = new ArrayList<>();
 
-    private final List<RegistryObject<MultiPartType<?>>> partSuppliers = new ArrayList<>();
-    private final List<RegistryObject<MultiPartType<?>>> invertedPartSuppliers = new ArrayList<>();
+    private final List<RegistryObject<MultipartType<MultipartLightPart>>> partSuppliers = new ArrayList<>();
+    private final List<RegistryObject<MultipartType<MultipartLightPart>>> invertedPartSuppliers = new ArrayList<>();
 
     MultipartLightType(String unlocalName, String localName, MultipartLightProperties properties) {
         this.unlocalName = unlocalName;
@@ -43,13 +40,13 @@ public enum MultipartLightType {
         return properties;
     }
 
-    public void registerParts(DeferredRegister<MultiPartType<?>> partRegistry, DeferredRegister<Item> itemRegistry) {
+    public void registerParts(DeferredRegister<MultipartType<?>> partRegistry, DeferredRegister<Item> itemRegistry) {
         // Non-inverted
         for (int color = 0; color < 16; color++) {
             final int colorFinal = color;
             String regID = getRegistryID(unlocalName, color, false);
             itemSuppliers.add(color, itemRegistry.register(regID, () -> new MultipartLightPartItem(properties, colorFinal, false)));
-            partSuppliers.add(color, partRegistry.register(regID, () -> new SimpleMultiPartType<>(isClient -> properties.partFactory(colorFinal, false))));
+            partSuppliers.add(color, partRegistry.register(regID, () -> new SimpleMultipartType<>(isClient -> properties.partFactory(colorFinal, false))));
         }
 
         // Inverted
@@ -57,7 +54,7 @@ public enum MultipartLightType {
             final int colorFinal = color;
             String invRegID = getRegistryID(unlocalName, color, true);
             invertedItemSuppliers.add(color, itemRegistry.register(invRegID, () -> new MultipartLightPartItem(properties, colorFinal, true)));
-            invertedPartSuppliers.add(color, partRegistry.register(invRegID, () -> new SimpleMultiPartType<>(isClient -> properties.partFactory(colorFinal, true))));
+            invertedPartSuppliers.add(color, partRegistry.register(invRegID, () -> new SimpleMultipartType<>(isClient -> properties.partFactory(colorFinal, true))));
         }
     }
 
@@ -70,7 +67,7 @@ public enum MultipartLightType {
         return new ItemStack(item);
     }
 
-    public MultiPartType<?> getPartType(int color, boolean inverted) {
+    public MultipartType<MultipartLightPart> getPartType(int color, boolean inverted) {
         return inverted ? invertedPartSuppliers.get(color).get() : partSuppliers.get(color).get();
     }
 

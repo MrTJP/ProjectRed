@@ -1,20 +1,21 @@
 package mrtjp.projectred.transmission.client;
 
 import codechicken.lib.render.CCRenderState;
-import codechicken.microblock.CommonMicroFactory;
-import codechicken.microblock.IMicroHighlightRenderer;
+import codechicken.microblock.api.MicroHighlightRenderer;
 import codechicken.microblock.api.MicroMaterial;
-import codechicken.multipart.block.BlockMultiPart;
-import codechicken.multipart.block.TileMultiPart;
+import codechicken.microblock.init.CBMicroblockModContent;
+import codechicken.microblock.part.StandardMicroFactory;
+import codechicken.multipart.block.BlockMultipart;
+import codechicken.multipart.block.TileMultipart;
 import codechicken.multipart.util.PartRayTraceResult;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.transmission.part.BaseCenterWirePart;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.BlockHitResult;
 
-public class FramedWireHighlightRenderer implements IMicroHighlightRenderer {
+public class FramedWireHighlightRenderer implements MicroHighlightRenderer {
 
     public static final FramedWireHighlightRenderer INSTANCE = new FramedWireHighlightRenderer();
 
@@ -22,16 +23,17 @@ public class FramedWireHighlightRenderer implements IMicroHighlightRenderer {
     }
 
     @Override
-    public boolean renderHighlight(PlayerEntity player, Hand hand, BlockRayTraceResult hit, CommonMicroFactory mcrFactory, int size, MicroMaterial material, MatrixStack mStack, IRenderTypeBuffer getter, float partialTicks) {
+    public boolean renderHighlight(Player player, InteractionHand hand, BlockHitResult hit, StandardMicroFactory mcrFactory, int size, MicroMaterial material, PoseStack mStack, MultiBufferSource getter, float partialTicks) {
 
-        if (mcrFactory.getFactoryID() != 0 || size != 1 || player.isCrouching() || material.isTransparent()) {
+
+        if (mcrFactory != CBMicroblockModContent.FACE_MICROBLOCK_PART.get() || size != 1 || player.isCrouching() || material.isTransparent()) {
             return false;
         }
 
         if (!(hit instanceof PartRayTraceResult)) return false;
         PartRayTraceResult partHit = (PartRayTraceResult) hit;
 
-        TileMultiPart tile = BlockMultiPart.getTile(player.level, hit.getBlockPos());
+        TileMultipart tile = BlockMultipart.getTile(player.level, hit.getBlockPos());
         if (tile == null) return false;
 
         if (partHit.part instanceof BaseCenterWirePart) {

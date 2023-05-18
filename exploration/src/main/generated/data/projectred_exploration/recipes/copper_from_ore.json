@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "result": {
+    "item": "projectred_core:copper_ingot"
+  },
+  "ingredient": {
+    "item": "projectred_exploration:copper_ore"
+  },
+  "experience": 0.7,
+  "cookingtime": 200
+}

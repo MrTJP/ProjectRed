@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_core:platformed_plate"
+  },
+  "pattern": [
+    " R ",
+    "SPS",
+    "PRP"
+  ],
+  "key": {
+    "P": {
+      "item": "projectred_core:plate"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    },
+    "R": {
+      "item": "projectred_core:conductive_plate"
+    }
+  }
+}

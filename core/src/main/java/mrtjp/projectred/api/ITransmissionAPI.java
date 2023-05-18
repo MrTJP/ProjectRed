@@ -1,8 +1,8 @@
 package mrtjp.projectred.api;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 public interface ITransmissionAPI
 {
@@ -24,7 +24,7 @@ public interface ITransmissionAPI
      * @param side The side of the block
      * @return A bundled signal {@link IBundledEmitter}
      */
-    byte[] getBundledInput(World world, BlockPos pos, Direction side);
+    byte[] getBundledInput(Level world, BlockPos pos, Direction side);
 
     /**
      * Checks to see if the position specified contains a bundled cable.
@@ -34,7 +34,7 @@ public interface ITransmissionAPI
      * @param side The side to check
      * @return If the given position contains a bundled cable on the given side.
      */
-    boolean containsBundledCable(World world, BlockPos pos, Direction side);
+    boolean containsBundledCable(Level world, BlockPos pos, Direction side);
 
     /**
      * Checks to see if there is a framed wire at this coordinate.
@@ -43,7 +43,7 @@ public interface ITransmissionAPI
      * @param pos The coordinates of the block/tile querying signal
      * @return True if there is a framed wire within the block
      */
-    boolean containsFramedWire(World world, BlockPos pos);
+    boolean containsFramedWire(Level world, BlockPos pos);
 
     /**
      * Retreives the connection mask of the framed wire at the blockspace
@@ -53,5 +53,5 @@ public interface ITransmissionAPI
      * @param pos The coordinates of the block/tile querying signal
      * @return The connmask within 0x3F for the wire if exists, else -1
      */
-    int getFramedWireConnectionMask(World world, BlockPos pos);
+    int getFramedWireConnectionMask(Level world, BlockPos pos);
 }

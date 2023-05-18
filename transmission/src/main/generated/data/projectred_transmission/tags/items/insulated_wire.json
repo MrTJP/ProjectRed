@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "projectred_transmission:white_insulated_wire",
+    "projectred_transmission:orange_insulated_wire",
+    "projectred_transmission:magenta_insulated_wire",
+    "projectred_transmission:light_blue_insulated_wire",
+    "projectred_transmission:yellow_insulated_wire",
+    "projectred_transmission:lime_insulated_wire",
+    "projectred_transmission:pink_insulated_wire",
+    "projectred_transmission:gray_insulated_wire",
+    "projectred_transmission:light_gray_insulated_wire",
+    "projectred_transmission:cyan_insulated_wire",
+    "projectred_transmission:purple_insulated_wire",
+    "projectred_transmission:blue_insulated_wire",
+    "projectred_transmission:brown_insulated_wire",
+    "projectred_transmission:green_insulated_wire",
+    "projectred_transmission:red_insulated_wire",
+    "projectred_transmission:black_insulated_wire"
+  ]
+}

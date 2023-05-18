@@ -1,10 +1,10 @@
 package mrtjp.projectred.transmission.client;
 
-import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.vec.*;
 import codechicken.lib.vec.uv.UVTransformation;
 import codechicken.lib.vec.uv.UVTranslation;
+import codechicken.microblock.util.MaskedCuboid;
 import mrtjp.projectred.transmission.part.BaseCenterWirePart;
 
 import java.util.LinkedList;
@@ -56,8 +56,8 @@ public class FramedJacketedWireModelBuilder {
         i = 0;
 
         CCModel ccModel = generateJacketedWireModel();
-        IndexedCuboid6[] jacketedBoxes = generateJacketedBoxes();
-        IndexedCuboid6[] highlightBoxes = generateHighlightBoxes();
+        MaskedCuboid[] jacketedBoxes = generateJacketedBoxes();
+        MaskedCuboid[] highlightBoxes = generateHighlightBoxes();
 
         model = new FramedJacketedWireModel(ccModel, jacketedBoxes, highlightBoxes);
     }
@@ -108,13 +108,13 @@ public class FramedJacketedWireModelBuilder {
         return verts;
     }
 
-    private IndexedCuboid6[] generateJacketedBoxes() {
-        if (connCount == 0) return new IndexedCuboid6[] { new IndexedCuboid6(0, BaseCenterWirePart.fOBounds[6]) };
+    private MaskedCuboid[] generateJacketedBoxes() {
+        if (connCount == 0) return new MaskedCuboid[] { new MaskedCuboid(BaseCenterWirePart.fOBounds[6], 0) };
 
         int n = 0;
         for (int a = 0; a < 3; a++) { if ((connMap & 3 << a * 2) != 0) n += 1; }
 
-        IndexedCuboid6[] boxes = new IndexedCuboid6[n];
+        MaskedCuboid[] boxes = new MaskedCuboid[n];
         i = 0;
 
         boolean first = true;
@@ -127,27 +127,27 @@ public class FramedJacketedWireModelBuilder {
         return boxes;
     }
 
-    private IndexedCuboid6[] generateHighlightBoxes() {
-        if (connCount == 0) return new IndexedCuboid6[] { new IndexedCuboid6(0, BaseCenterWirePart.fOBounds[6]) };
+    private MaskedCuboid[] generateHighlightBoxes() {
+        if (connCount == 0) return new MaskedCuboid[] { new MaskedCuboid(BaseCenterWirePart.fOBounds[6], 0) };
 
-        LinkedList<IndexedCuboid6> boxes = new LinkedList<>();
+        LinkedList<MaskedCuboid> boxes = new LinkedList<>();
 
         for (int s = 0; s < 6; s++) {
             if ((connMap & 1 << s) != 0) {
                 Cuboid6 box = BaseCenterWirePart.fOBounds[0].copy();
                 box.apply(Rotation.sideRotations[s].at(Vector3.CENTER));
                 int fMask = 1 << (s ^ 1);
-                boxes.add(new IndexedCuboid6(fMask, box)); // Cull face opposite of connection, it will be occluded by center box
+                boxes.add(new MaskedCuboid(box, fMask)); // Cull face opposite of connection, it will be occluded by center box
             }
         }
 
         // center box
-        boxes.add(new IndexedCuboid6(connMap, BaseCenterWirePart.fOBounds[6])); // Cull faces with connections
+        boxes.add(new MaskedCuboid(BaseCenterWirePart.fOBounds[6], connMap)); // Cull faces with connections
 
-        return boxes.toArray(new IndexedCuboid6[0]);
+        return boxes.toArray(new MaskedCuboid[0]);
     }
 
-    private boolean generateAxialJacketedBoxes(int a, boolean first, IndexedCuboid6[] boxes) {
+    private boolean generateAxialJacketedBoxes(int a, boolean first, MaskedCuboid[] boxes) {
 
         int mask = connMap >> a * 2 & 3;
         if (mask == 0) return false;
@@ -174,7 +174,7 @@ public class FramedJacketedWireModelBuilder {
                 : mask == 1 ? 1 << 2 * a + 1
                 : 1 << 2 * a;
 
-        boxes[i++] = new IndexedCuboid6(fMask, box);
+        boxes[i++] = new MaskedCuboid(box, fMask);
         return true;
     }
 

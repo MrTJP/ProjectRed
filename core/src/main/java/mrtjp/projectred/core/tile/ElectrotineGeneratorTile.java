@@ -8,18 +8,19 @@ import mrtjp.projectred.core.inventory.container.ElectrotineGeneratorContainer;
 import mrtjp.projectred.core.power.ILowLoadMachine;
 import mrtjp.projectred.core.power.ILowLoadPowerLine;
 import mrtjp.projectred.core.power.PowerConductor;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
@@ -43,12 +44,12 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
     private int burnTimeRemaining = 0;
     private int powerStored = 0;
 
-    public ElectrotineGeneratorTile() {
-        super(ELECTROTINE_GENERATOR_TILE);
+    public ElectrotineGeneratorTile(BlockPos pos, BlockState state) {
+        super(ELECTROTINE_GENERATOR_TILE, pos, state);
     }
 
     @Override
-    public void saveToNBT(CompoundNBT tag) {
+    public void saveToNBT(CompoundTag tag) {
         super.saveToNBT(tag);
         conductor.save(tag);
         tag.put("inventory", inventory.createTag());
@@ -57,17 +58,12 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
     }
 
     @Override
-    public void loadFromNBT(CompoundNBT tag) {
+    public void loadFromNBT(CompoundTag tag) {
         super.loadFromNBT(tag);
         conductor.load(tag);
         inventory.fromTag(tag.getList("inventory", 10));
         burnTimeRemaining = tag.getInt("burnTime");
         powerStored = tag.getInt("stored");
-    }
-
-    @Override
-    public void loadBlockState(BlockState state) {
-        super.loadBlockState(state);
     }
 
     @Override
@@ -78,15 +74,15 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
     }
 
     @Override
-    public ActionResultType onBlockActivated(PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
         if (!getLevel().isClientSide) {
-            ServerUtils.openContainer((ServerPlayerEntity) player, new SimpleNamedContainerProvider(
+            ServerUtils.openContainer((ServerPlayer) player, new SimpleMenuProvider(
                             (id, inv, p) -> new ElectrotineGeneratorContainer(inv, this, id),
-                            new TranslationTextComponent(getBlockState().getBlock().getDescriptionId())),
+                            new TranslatableComponent(getBlockState().getBlock().getDescriptionId())),
                     p -> p.writePos(getBlockPos()));
         }
 
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -219,14 +215,14 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
     }
 
     @Override
-    protected void invalidateCaps() {
+    public void invalidateCaps() {
         super.invalidateCaps();
         handler.invalidate();
     }
     //endregion
 
     //region Container getters
-    public Inventory getInventory() {
+    public SimpleContainer getInventory() {
         return inventory;
     }
 
@@ -239,7 +235,7 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
     }
     //endregion
 
-    private static class ElectrotineGeneratorInventory extends Inventory {
+    private static class ElectrotineGeneratorInventory extends SimpleContainer {
 
         public ElectrotineGeneratorInventory() {
             super(1);

@@ -3,24 +3,24 @@ package mrtjp.projectred.integration.part;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.Rotation;
-import codechicken.multipart.api.part.INeighborTileChangePart;
+import codechicken.multipart.api.part.NeighborTileChangePart;
 import codechicken.multipart.util.PartRayTraceResult;
 import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.gui.screen.CounterScreen;
 import mrtjp.projectred.integration.gui.screen.TimerScreen;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.RedstoneWireBlock;
-import net.minecraft.entity.item.ItemFrameEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RedStoneWireBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
@@ -51,13 +51,13 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
     //region save/load
     @Override
-    public void save(CompoundNBT tag) {
+    public void save(CompoundTag tag) {
         super.save(tag);
         tag.putByte("state2", state2);
     }
 
     @Override
-    public void load(CompoundNBT tag) {
+    public void load(CompoundTag tag) {
         super.load(tag);
         state2 = tag.getByte("state2");
     }
@@ -171,7 +171,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
                     scheduleTick(2);
                     return 0;
                 }
-                stateInput = input == 0 ? world().random.nextBoolean() ? 2 : 8 : input;
+                stateInput = input == 0 ? level().random.nextBoolean() ? 2 : 8 : input;
                 setState2((shape() & 1) != 0 ? flipMaskZ(stateInput) : stateInput);
             }
 
@@ -235,9 +235,9 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         }
 
         @Override
-        protected boolean gateLogicActivate(PlayerEntity player, ItemStack held, PartRayTraceResult hit) {
+        protected boolean gateLogicActivate(Player player, ItemStack held, PartRayTraceResult hit) {
             if (held.isEmpty() || !(held.getItem() instanceof IScrewdriver)) {
-                if (!world().isClientSide) toggle();
+                if (!level().isClientSide) toggle();
                 return true;
             }
             return false;
@@ -290,14 +290,14 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
         //region save/load
         @Override
-        public void save(CompoundNBT tag) {
+        public void save(CompoundTag tag) {
             super.save(tag);
             tag.putInt("pmax", pointer_max);
-            tag.putLong("pelapsed", pointer_start < 0 ? -1L : world().getGameTime() - pointer_start);
+            tag.putLong("pelapsed", pointer_start < 0 ? -1L : level().getGameTime() - pointer_start);
         }
 
         @Override
-        public void load(CompoundNBT tag) {
+        public void load(CompoundTag tag) {
             super.load(tag);
             pointer_max = tag.getInt("pmax");
             pointer_start = tag.getLong("pelapsed");
@@ -332,7 +332,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
                     break;
                 case KEY_POINTER_START:
                     pointer_start = packet.readInt();
-                    if (pointer_start >= 0) pointer_start = world().getGameTime() - pointer_start;
+                    if (pointer_start >= 0) pointer_start = level().getGameTime() - pointer_start;
                     break;
                 default:
                     super.read(packet, key);
@@ -369,19 +369,19 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         @Override
         protected void gateLogicOnTick() {
             if (pointer_start >= 0) {
-                if (world().getGameTime() >= pointer_start + pointer_max) {
+                if (level().getGameTime() >= pointer_start + pointer_max) {
                     pointerTick();
-                } else if (pointer_start > world().getGameTime()) {
-                    pointer_start = world().getGameTime();
+                } else if (pointer_start > level().getGameTime()) {
+                    pointer_start = level().getGameTime();
                 }
             }
         }
 
         protected void startPointer() {
             if (pointer_start < 0) {
-                pointer_start = world().getGameTime();
+                pointer_start = level().getGameTime();
                 tile().setChanged();
-                if (!world().isClientSide) sendPointerUpdate();
+                if (!level().isClientSide) sendPointerUpdate();
             }
         }
 
@@ -389,7 +389,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
             if (pointer_start >= 0) {
                 pointer_start = -1;
                 tile().setChanged();
-                if (!world().isClientSide) sendPointerUpdate();
+                if (!level().isClientSide) sendPointerUpdate();
             }
         }
 
@@ -409,14 +409,14 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
         @Override
         public int pointerValue() {
-            return pointer_start < 0 ? 0 : (int) (world().getGameTime() - pointer_start);
+            return pointer_start < 0 ? 0 : (int) (level().getGameTime() - pointer_start);
         }
         //endregion
 
         @Override
-        protected boolean gateLogicActivate(PlayerEntity player, ItemStack held, PartRayTraceResult hit) {
+        protected boolean gateLogicActivate(Player player, ItemStack held, PartRayTraceResult hit) {
             if (held.isEmpty() || !(held.getItem() instanceof IScrewdriver)) {
-                if (!world().isClientSide) {
+                if (!level().isClientSide) {
                     TimerScreen.open(player, this);
                 }
                 return true;
@@ -471,7 +471,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         @Override
         protected void pointerTick() {
             resetPointer();
-            if (!world().isClientSide) {
+            if (!level().isClientSide) {
                 scheduleTick(2);
                 setState(0xB0 | state() & 0xF);
                 onOutputChange(0xB);
@@ -492,13 +492,13 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
         //region save/load
         @Override
-        public void save(CompoundNBT tag) {
+        public void save(CompoundTag tag) {
             super.save(tag);
             tag.putInt("pmax", pointer_max);
         }
 
         @Override
-        public void load(CompoundNBT tag) {
+        public void load(CompoundTag tag) {
             super.load(tag);
             pointer_max = tag.getInt("pmax");
         }
@@ -558,7 +558,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
         @Override
         public int pointerValue() {
-            return (int) (world().getDayTime() % (pointer_max * 4L));
+            return (int) (level().getDayTime() % (pointer_max * 4L));
         }
 
         @Override
@@ -583,10 +583,10 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
         @Override
         protected void gateLogicOnTick() {
-            if (world().isClientSide) return;
+            if (level().isClientSide) return;
 
             int oldOut = state() >> 4;
-            int out = 1 << world().getDayTime() % (pointer_max * 4L) / pointer_max;
+            int out = 1 << level().getDayTime() % (pointer_max * 4L) / pointer_max;
             if (shape() == 1) out = flipMaskZ(out);
             if (oldOut != out) {
                 setState(out << 4);
@@ -602,9 +602,9 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         }
 
         @Override
-        protected boolean gateLogicActivate(PlayerEntity player, ItemStack held, PartRayTraceResult hit) {
+        protected boolean gateLogicActivate(Player player, ItemStack held, PartRayTraceResult hit) {
             if (held.isEmpty() || !(held.getItem() instanceof IScrewdriver)) {
-                if (!world().isClientSide) {
+                if (!level().isClientSide) {
                     TimerScreen.open(player, this);
                 }
                 return true;
@@ -631,7 +631,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
         //region save/load
         @Override
-        public void save(CompoundNBT tag) {
+        public void save(CompoundTag tag) {
             super.save(tag);
             tag.putInt("val", value);
             tag.putInt("max", max);
@@ -640,7 +640,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         }
 
         @Override
-        public void load(CompoundNBT tag) {
+        public void load(CompoundTag tag) {
             super.load(tag);
             value = tag.getInt("val");
             max = tag.getInt("max");
@@ -835,9 +835,9 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         //endregion
 
         @Override
-        protected boolean gateLogicActivate(PlayerEntity player, ItemStack held, PartRayTraceResult hit) {
+        protected boolean gateLogicActivate(Player player, ItemStack held, PartRayTraceResult hit) {
             if (held.isEmpty() || !(held.getItem() instanceof IScrewdriver)) {
-                if (!world().isClientSide) {
+                if (!level().isClientSide) {
                     CounterScreen.open(player, this);
                 }
                 return true;
@@ -900,7 +900,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         @Override
         protected void pointerTick() {
             resetPointer();
-            if (!world().isClientSide) {
+            if (!level().isClientSide) {
                 setState2(0);
                 sendState2Update();
                 setState(0x10 | state() & 0xF);
@@ -986,7 +986,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         }
     }
 
-    public static class Comparator extends RedstoneGatePart implements INeighborTileChangePart {
+    public static class Comparator extends RedstoneGatePart implements NeighborTileChangePart {
 
         public static final int KEY_STATE2 = 20;
 
@@ -1006,13 +1006,13 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
         //region save/load
         @Override
-        public void save(CompoundNBT tag) {
+        public void save(CompoundTag tag) {
             super.save(tag);
             tag.putShort("state2", lState2);
         }
 
         @Override
-        public void load(CompoundNBT tag) {
+        public void load(CompoundTag tag) {
             super.load(tag);
             lState2 = tag.getShort("state2");
         }
@@ -1050,21 +1050,21 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
             Direction absDir = Direction.values()[Rotation.rotateSide(getSide(), toAbsolute(2))];
             BlockPos pos1 = tile().getBlockPos().relative(absDir);
-            BlockState state1 = world().getBlockState(pos1);
+            BlockState state1 = level().getBlockState(pos1);
 
             int i = getDiodeSignal(2);
 
             if (state1.hasAnalogOutputSignal()) {
-                i = state1.getAnalogOutputSignal(world(), pos1);
-            } else if (i < 15 && state1.isRedstoneConductor(world(), pos1)) {
+                i = state1.getAnalogOutputSignal(level(), pos1);
+            } else if (i < 15 && state1.isRedstoneConductor(level(), pos1)) {
                 BlockPos pos2 = pos1.relative(absDir);
-                BlockState state2 = world().getBlockState(pos2);
+                BlockState state2 = level().getBlockState(pos2);
 
                 if (state2.hasAnalogOutputSignal()) {
-                    i = Math.max(state2.getAnalogOutputSignal(world(), pos2), i);
+                    i = Math.max(state2.getAnalogOutputSignal(level(), pos2), i);
                 }
 
-                ItemFrameEntity entityitemframe = getItemFrame(world(), absDir, pos2);
+                ItemFrame entityitemframe = getItemFrame(level(), absDir, pos2);
                 if (entityitemframe != null) {
                     i = Math.max(entityitemframe.getAnalogOutput(), i);
                 }
@@ -1078,14 +1078,14 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         private int getDiodeSignal(int r) {
             Direction absDir = Direction.values()[Rotation.rotateSide(getSide(), toAbsolute(r))];
             BlockPos pos = tile().getBlockPos().relative(absDir);
-            BlockState state = world().getBlockState(pos);
+            BlockState state = level().getBlockState(pos);
 
             // Check signal
-            int i = world().getSignal(pos, absDir);
+            int i = level().getSignal(pos, absDir);
             if (i >= 15) return i;
 
             if (state.is(Blocks.REDSTONE_WIRE)) {
-                i = Math.max(i, state.getValue(RedstoneWireBlock.POWER));
+                i = Math.max(i, state.getValue(RedStoneWireBlock.POWER));
             }
 
             return i;
@@ -1094,8 +1094,8 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         /*
          * Copied from ComparatorBlock#getItemFrame(World, Direction, BlockPos)
          */
-        private ItemFrameEntity getItemFrame(World world, Direction facing, BlockPos pos) {
-            List<ItemFrameEntity> list = world.getEntitiesOfClass(ItemFrameEntity.class, new AxisAlignedBB((double) pos.getX(), (double) pos.getY(), (double) pos.getZ(), (double) (pos.getX() + 1), (double) (pos.getY() + 1), (double) (pos.getZ() + 1)), (p_210304_1_) -> {
+        private ItemFrame getItemFrame(Level world, Direction facing, BlockPos pos) {
+            List<ItemFrame> list = world.getEntitiesOfClass(ItemFrame.class, new AABB((double) pos.getX(), (double) pos.getY(), (double) pos.getZ(), (double) (pos.getX() + 1), (double) (pos.getY() + 1), (double) (pos.getZ() + 1)), (p_210304_1_) -> {
                 return p_210304_1_ != null && p_210304_1_.getDirection() == facing;
             });
             return list.size() == 1 ? list.get(0) : null;

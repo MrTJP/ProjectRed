@@ -1,13 +1,15 @@
 package mrtjp.projectred.expansion.block;
 
 import mrtjp.projectred.core.tile.IBlockEventTile;
+import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.tile.FireStarterTile;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 public class FireStarterBlock extends BaseDeviceBlock {
 
@@ -15,16 +17,22 @@ public class FireStarterBlock extends BaseDeviceBlock {
         super(STONE_PROPERTIES);
     }
 
+    @Nullable
     @Override
-    protected TileEntity createTileEntityInstance(BlockState state, IBlockReader world) {
-        return new FireStarterTile();
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new FireStarterTile(pos, state);
     }
 
     @Override
-    public boolean isFireSource(BlockState state, IWorldReader world, BlockPos pos, Direction side) {
+    protected BlockEntityType<?> getBlockEntityType() {
+        return ExpansionReferences.FIRE_STARTER_TILE;
+    }
+
+    @Override
+    public boolean isFireSource(BlockState state, LevelReader world, BlockPos pos, Direction side) {
         if (super.isFireSource(state, world, pos, side)) return true;
 
-        TileEntity tile = world.getBlockEntity(pos);
+        BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof IBlockEventTile) return ((IBlockEventTile) tile).isFireSource(side.ordinal());
         return false;
     }
