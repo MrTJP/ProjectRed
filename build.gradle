@@ -32,7 +32,6 @@ subprojects { p ->
     // Jar settings
     jar {
         archiveClassifier = p.name
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
 
     // Add datagen resources to source set

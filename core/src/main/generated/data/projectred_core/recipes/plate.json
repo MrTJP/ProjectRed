@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "result": {
+    "item": "projectred_core:plate",
+    "count": 2
+  },
+  "ingredient": {
+    "item": "minecraft:smooth_stone"
+  },
+  "experience": 0.0,
+  "cookingtime": 200
+}

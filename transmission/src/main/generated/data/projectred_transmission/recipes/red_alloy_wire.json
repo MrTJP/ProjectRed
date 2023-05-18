@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_transmission:red_alloy_wire",
+    "count": 12
+  },
+  "pattern": [
+    " R ",
+    " R ",
+    " R "
+  ],
+  "key": {
+    "R": {
+      "tag": "forge:ingots/red_alloy"
+    }
+  }
+}

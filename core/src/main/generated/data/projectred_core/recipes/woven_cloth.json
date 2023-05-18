@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_core:woven_cloth"
+  },
+  "pattern": [
+    "SSS",
+    "SWS",
+    "SSS"
+  ],
+  "key": {
+    "S": {
+      "tag": "forge:string"
+    },
+    "W": {
+      "tag": "forge:rods/wooden"
+    }
+  }
+}

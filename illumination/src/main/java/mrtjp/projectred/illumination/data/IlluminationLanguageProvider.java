@@ -21,7 +21,7 @@ public class IlluminationLanguageProvider extends LanguageProvider {
     protected void addTranslations() {
 
         // Creative tab
-        add("itemGroup.projectred-illumination", "Project Red: Illumination");
+        add("itemGroup." + MOD_ID, "Project Red: Illumination");
 
         // Block lights
         for (BlockLightType type : BlockLightType.values()) {

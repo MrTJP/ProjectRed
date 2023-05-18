@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "projectred_transmission:neutral_framed_bundled_wire",
+    "projectred_transmission:white_framed_bundled_wire",
+    "projectred_transmission:orange_framed_bundled_wire",
+    "projectred_transmission:magenta_framed_bundled_wire",
+    "projectred_transmission:light_blue_framed_bundled_wire",
+    "projectred_transmission:yellow_framed_bundled_wire",
+    "projectred_transmission:lime_framed_bundled_wire",
+    "projectred_transmission:pink_framed_bundled_wire",
+    "projectred_transmission:gray_framed_bundled_wire",
+    "projectred_transmission:light_gray_framed_bundled_wire",
+    "projectred_transmission:cyan_framed_bundled_wire",
+    "projectred_transmission:purple_framed_bundled_wire",
+    "projectred_transmission:blue_framed_bundled_wire",
+    "projectred_transmission:brown_framed_bundled_wire",
+    "projectred_transmission:green_framed_bundled_wire",
+    "projectred_transmission:red_framed_bundled_wire",
+    "projectred_transmission:black_framed_bundled_wire"
+  ]
+}

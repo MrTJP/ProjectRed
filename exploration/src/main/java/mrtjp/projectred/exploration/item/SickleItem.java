@@ -1,25 +1,24 @@
 package mrtjp.projectred.exploration.item;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.IItemTier;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolItem;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.DiggerItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.Collections;
+public class SickleItem extends DiggerItem {
 
-public class SickleItem extends ToolItem {
-
-    public SickleItem(IItemTier itemTier, float attackDamage, float attackSpeed, Properties properties) {
-        super(attackDamage, attackSpeed, itemTier, Collections.emptySet(), properties);
+    public SickleItem(Tier itemTier, float attackDamage, float attackSpeed, Properties properties) {
+        super(attackDamage, attackSpeed, itemTier, BlockTags.REPLACEABLE_PLANTS, properties);
     }
 
-    //TODO
+    //TODO !!!!
 
     @Override
-    public boolean mineBlock(ItemStack p_179218_1_, World p_179218_2_, BlockState p_179218_3_, BlockPos p_179218_4_, LivingEntity p_179218_5_) {
+    public boolean mineBlock(ItemStack p_179218_1_, Level p_179218_2_, BlockState p_179218_3_, BlockPos p_179218_4_, LivingEntity p_179218_5_) {
         return super.mineBlock(p_179218_1_, p_179218_2_, p_179218_3_, p_179218_4_, p_179218_5_);
     }
 

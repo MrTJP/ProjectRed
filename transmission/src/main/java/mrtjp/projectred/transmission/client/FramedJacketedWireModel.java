@@ -1,23 +1,32 @@
 package mrtjp.projectred.transmission.client;
 
-import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
-import codechicken.microblock.MicroblockRender;
 import codechicken.microblock.api.MicroMaterial;
+import codechicken.microblock.api.MicroMaterialClient;
+import codechicken.microblock.util.MaskedCuboid;
 import net.minecraft.client.renderer.RenderType;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class FramedJacketedWireModel {
 
     private final CCModel wireModel;
-    private final IndexedCuboid6[] wireBoxes;
-    private final IndexedCuboid6[] highlightBoxes;
+    private final MaskedCuboid[] wireBoxes;
+    private final MaskedCuboid[] highlightBoxes;
 
-    public FramedJacketedWireModel(CCModel wireModel, IndexedCuboid6[] wireBoxes, IndexedCuboid6[] highlightBoxes) {
+    private final List<MaskedCuboid> wireBoxList;
+    private final List<MaskedCuboid> highlightBoxList;
+
+    public FramedJacketedWireModel(CCModel wireModel, MaskedCuboid[] wireBoxes, MaskedCuboid[] highlightBoxes) {
         this.wireModel = wireModel;
         this.wireBoxes = wireBoxes;
         this.highlightBoxes = highlightBoxes;
+
+        wireBoxList = Arrays.asList(wireBoxes);
+        highlightBoxList = Arrays.asList(highlightBoxes);
     }
 
     public void renderWire(CCRenderState ccrs, IVertexOperation... ops) {
@@ -26,16 +35,12 @@ public class FramedJacketedWireModel {
 
     public void renderMaterial(CCRenderState ccrs, MicroMaterial material, boolean inventory) {
         RenderType layer = inventory ? null : RenderType.solid();
-        for (IndexedCuboid6 box : wireBoxes) {
-            MicroblockRender.renderCuboid(ccrs, material, layer, box, (int) box.data);
-        }
+        MicroMaterialClient.get(material).renderCuboids(ccrs, layer, wireBoxList);
     }
 
     public void renderHighlight(CCRenderState ccrs, MicroMaterial material, boolean inventory) {
         RenderType layer = inventory ? null : RenderType.solid();
-        for (IndexedCuboid6 box : highlightBoxes) {
-            MicroblockRender.renderCuboid(ccrs, material, layer, box, (int) box.data);
-        }
+        MicroMaterialClient.get(material).renderCuboids(ccrs, layer, highlightBoxList);
     }
 
     public FramedJacketedWireModel copy() {

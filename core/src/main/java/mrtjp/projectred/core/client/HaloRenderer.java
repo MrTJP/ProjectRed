@@ -6,24 +6,26 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderState;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 
 import java.util.LinkedList;
 
 public class HaloRenderer {
 
     public static final RenderType HALO_RENDER_TYPE = RenderType.create("projectred-core:halo",
-            DefaultVertexFormats.POSITION_COLOR, 7, 8192, false, true,
-            RenderType.State.builder().setTransparencyState(RenderState.LIGHTNING_TRANSPARENCY)
-                    .setTextureState(RenderState.NO_TEXTURE)
-                    .setCullState(RenderState.CULL)
-                    .setOutputState(RenderState.TRANSLUCENT_TARGET)
+            DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 8192, false, true,
+            RenderType.CompositeState.builder().setTransparencyState(RenderStateShard.LIGHTNING_TRANSPARENCY)
+                    .setShaderState(RenderType.POSITION_COLOR_SHADER)
+                    .setTextureState(RenderStateShard.NO_TEXTURE)
+                    .setCullState(RenderStateShard.CULL)
+                    .setOutputState(RenderStateShard.TRANSLUCENT_TARGET)
                     .createCompositeState(false));
 
     private static final LinkedList<WorldLight> worldLights = new LinkedList<>();
@@ -33,7 +35,7 @@ public class HaloRenderer {
         worldLights.add(new WorldLight(pos, colour, box));
     }
 
-    public static void onRenderWorldLastEvent(final RenderWorldLastEvent event) {
+    public static void onRenderWorldLastEvent(final RenderLevelStageEvent event) {
 
         WorldLight light = null;
         while ((light = worldLights.poll()) != null) {
@@ -44,7 +46,7 @@ public class HaloRenderer {
     //endregion
 
     //region Render functions
-    public static void prepareRenderState(CCRenderState ccrs, MatrixStack mStack, IRenderTypeBuffer buffers) {
+    public static void prepareRenderState(CCRenderState ccrs, PoseStack mStack, MultiBufferSource buffers) {
         ccrs.reset();
         ccrs.bind(HALO_RENDER_TYPE, buffers, mStack);
     }
@@ -56,7 +58,7 @@ public class HaloRenderer {
         BlockRenderer.renderCuboid(ccrs, cuboid, 0);
     }
 
-    public static void renderHalo(CCRenderState ccrs, MatrixStack mStack, IRenderTypeBuffer buffers, Cuboid6 cuboid, int colour, Vector3 pos) {
+    public static void renderHalo(CCRenderState ccrs, PoseStack mStack, MultiBufferSource buffers, Cuboid6 cuboid, int colour, Vector3 pos) {
         prepareRenderState(ccrs, mStack, buffers);
         renderToCCRS(ccrs, cuboid, colour, pos.translation());
     }

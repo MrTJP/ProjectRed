@@ -7,20 +7,18 @@ import codechicken.lib.texture.AtlasRegistrar;
 import codechicken.lib.vec.RedundantTransformation;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.part.GatePart;
 import mrtjp.projectred.integration.part.IGateRenderData;
 import mrtjp.projectred.lib.VecLib;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particles.RedstoneParticleData;
-import net.minecraft.resources.IResourceManager;
-import net.minecraftforge.resource.IResourceType;
-import net.minecraftforge.resource.VanillaResourceType;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 import static mrtjp.projectred.core.part.IOrientableFacePart.flipMaskZ;
 import static mrtjp.projectred.integration.client.GateComponentModels.*;
@@ -72,7 +70,7 @@ public class GateModelRenderer {
 
     //region Static rendering
     public void renderStatic(CCRenderState ccrs, GatePart gate) {
-        renderStatic(ccrs, gate.getGateType(), gate, gate.getOrientation(), new RedundantTransformation());
+        renderStatic(ccrs, gate.getGateType(), gate, gate.getOrientation(), RedundantTransformation.INSTANCE);
     }
 
     public void renderStatic(CCRenderState ccrs, GateType type, IGateRenderData key, int orientation, Transformation t) {
@@ -88,7 +86,7 @@ public class GateModelRenderer {
 
     //region Dynamic rendering
     public void renderDynamic(CCRenderState ccrs, GatePart gate, float partialFrame) {
-        renderDynamic(ccrs, gate.getGateType(), gate, gate.getOrientation(), new RedundantTransformation(), partialFrame);
+        renderDynamic(ccrs, gate.getGateType(), gate, gate.getOrientation(), RedundantTransformation.INSTANCE, partialFrame);
     }
 
     public void renderDynamic(CCRenderState ccrs, GateType type, IGateRenderData key, int orientation, Transformation t, float partialTicks) {
@@ -105,15 +103,15 @@ public class GateModelRenderer {
     //endregion
 
     //region Custom dynamic rendering
-    public void renderCustomDynamic(CCRenderState ccrs, GatePart gate, MatrixStack mStack, IRenderTypeBuffer buffers, int packedLight, int packedOverlay, float partialTicks) {
-        renderCustomDynamic(ccrs, gate.getGateType(), gate, gate.getOrientation(), new RedundantTransformation(), mStack, buffers, packedLight, packedOverlay, partialTicks);
+    public void renderCustomDynamic(CCRenderState ccrs, GatePart gate, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
+        renderCustomDynamic(ccrs, gate.getGateType(), gate, gate.getOrientation(), RedundantTransformation.INSTANCE, mStack, buffers, packedLight, packedOverlay, partialTicks);
     }
 
-    public void renderCustomDynamic(CCRenderState ccrs, GateType type, IGateRenderData key, int orientation, Transformation t, MatrixStack mStack, IRenderTypeBuffer buffers, int packedLight, int packedOverlay, float partialTicks) {
+    public void renderCustomDynamic(CCRenderState ccrs, GateType type, IGateRenderData key, int orientation, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
         renderCustomDynamic(ccrs, type.ordinal(), key, orientation, t, mStack, buffers, packedLight, packedOverlay, partialTicks);
     }
 
-    public void renderCustomDynamic(CCRenderState ccrs, int renderIndex, IGateRenderData key, int orientation, Transformation t, MatrixStack mStack, IRenderTypeBuffer buffers, int packedLight, int packedOverlay, float partialTicks) {
+    public void renderCustomDynamic(CCRenderState ccrs, int renderIndex, IGateRenderData key, int orientation, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
         GateRenderer r = getRenderer(renderIndex);
         r.renderCustomDynamic(ccrs, key, VecLib.orientT(orientation).with(t), mStack, buffers, packedLight, packedOverlay, partialTicks);
     }
@@ -157,10 +155,8 @@ public class GateModelRenderer {
         //      (it was only used for 2d wires)
     }
 
-    public static void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
-        if (resourcePredicate.test(VanillaResourceType.TEXTURES)) {
-            WireModel3D.regenerateModels();
-        }
+    public static void onResourceManagerReload(ResourceManager resourceManager) {
+        WireModel3D.regenerateModels();
     }
 
     public static abstract class GateRenderer {
@@ -205,7 +201,7 @@ public class GateModelRenderer {
                     float f2 = Math.max(0.0F, f * f * 0.7F - 0.5F);
                     float f3 = Math.max(0.0F, f * f * 0.6F - 0.7F);
 
-                    gate.world().addParticle(new RedstoneParticleData(f1, f2, f3, 1.0F), pos.x, pos.y, pos.z, 0, 0, 0);
+                    gate.level().addParticle(new DustParticleOptions(new Vector3f(f1, f2, f3), 1.0F), pos.x, pos.y, pos.z, 0, 0, 0);
                 }
             }
         }
@@ -217,7 +213,7 @@ public class GateModelRenderer {
         public void renderDynamic(CCRenderState ccrs, Transformation t) {
         }
 
-        public void renderCustomDynamic(CCRenderState ccrs, IGateRenderData key, Transformation t, MatrixStack mStack, IRenderTypeBuffer buffers, int packedLight, int packedOverlay, float partialTicks) {
+        public void renderCustomDynamic(CCRenderState ccrs, IGateRenderData key, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
         }
     }
 
@@ -1720,7 +1716,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        public void renderCustomDynamic(CCRenderState ccrs, IGateRenderData gate, Transformation t, MatrixStack mStack, IRenderTypeBuffer buffers, int packedLight, int packedOverlay, float partialTicks) {
+        public void renderCustomDynamic(CCRenderState ccrs, IGateRenderData gate, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
             buttons.pressMask = gate.bInput0();
             buttons.renderLights(ccrs, mStack, buffers, t);
         }

@@ -1,9 +1,9 @@
 package mrtjp.projectred.expansion.inventory.container;
 
 import mrtjp.projectred.core.inventory.container.BasePoweredTileContainer;
+import mrtjp.projectred.core.inventory.container.SimpleDataSlot;
 import mrtjp.projectred.expansion.tile.BaseMachineTile;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.IContainerListener;
+import net.minecraft.world.inventory.MenuType;
 
 import javax.annotation.Nullable;
 
@@ -14,43 +14,12 @@ public abstract class BaseMachineContainer extends BasePoweredTileContainer {
     private int remainingWork;
     private int totalWork;
 
-    public BaseMachineContainer(@Nullable ContainerType<?> containerType, int windowId, BaseMachineTile tile) {
+    public BaseMachineContainer(@Nullable MenuType<?> containerType, int windowId, BaseMachineTile tile) {
         super(containerType, windowId, tile);
         this.tile = tile;
-    }
 
-    @Override
-    public void broadcastChanges() {
-        super.broadcastChanges();
-
-        boolean needsRemainingWork = remainingWork != tile.getRemainingWork();
-        boolean needsTotalWork = totalWork != tile.getTotalWork();
-
-        remainingWork = tile.getRemainingWork();
-        totalWork = tile.getTotalWork();
-
-        for (IContainerListener listener : containerListeners) {
-            if (needsRemainingWork) {
-                listener.setContainerData(this, 110, remainingWork);
-            }
-            if (needsTotalWork) {
-                listener.setContainerData(this, 111, totalWork);
-            }
-        }
-    }
-
-    @Override
-    public void setData(int id, int value) {
-        switch (id) {
-            case 110:
-                remainingWork = value;
-                break;
-            case 111:
-                totalWork = value;
-                break;
-            default:
-                super.setData(id, value);
-        }
+        addDataSlot(new SimpleDataSlot(tile::getRemainingWork, value -> remainingWork = value));
+        addDataSlot(new SimpleDataSlot(tile::getTotalWork, value -> totalWork = value));
     }
 
     public int getProgressScaled(int scale) {

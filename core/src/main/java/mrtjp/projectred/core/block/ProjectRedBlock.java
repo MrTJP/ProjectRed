@@ -1,28 +1,33 @@
 package mrtjp.projectred.core.block;
 
+import codechicken.multipart.api.TickableTile;
+import codechicken.multipart.init.CBMultipartModContent;
 import mrtjp.projectred.core.tile.IBlockEventTile;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.IntegerProperty;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import mrtjp.projectred.core.tile.ProjectRedTile;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-
-public abstract class ProjectRedBlock extends Block {
+public abstract class ProjectRedBlock extends Block implements EntityBlock {
 
     public static final IntegerProperty SIDE = IntegerProperty.create("side", 0, 5);
     public static final IntegerProperty ROTATION = IntegerProperty.create("rotation", 0, 3);
@@ -30,50 +35,48 @@ public abstract class ProjectRedBlock extends Block {
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
 
-    public static final AbstractBlock.Properties WOODEN_PROPERTIES = AbstractBlock.Properties.of(Material.WOOD).strength(2.0F, 3.0F).sound(SoundType.WOOD);
-    public static final AbstractBlock.Properties STONE_PROPERTIES = AbstractBlock.Properties.of(Material.STONE).requiresCorrectToolForDrops().strength(3.0F, 3.0F).sound(SoundType.STONE);
+    public static final BlockBehaviour.Properties WOODEN_PROPERTIES = BlockBehaviour.Properties.of(Material.WOOD).strength(2.0F, 3.0F).sound(SoundType.WOOD);
+    public static final BlockBehaviour.Properties STONE_PROPERTIES = BlockBehaviour.Properties.of(Material.STONE).requiresCorrectToolForDrops().strength(3.0F, 3.0F).sound(SoundType.STONE);
 
-    public ProjectRedBlock(AbstractBlock.Properties properties) {
+    public ProjectRedBlock(BlockBehaviour.Properties properties) {
         super(properties);
     }
 
-    protected abstract TileEntity createTileEntityInstance(BlockState state, IBlockReader world);
-
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
+    protected abstract BlockEntityType<?> getBlockEntityType();
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        TileEntity tile = createTileEntityInstance(state, world);
-        if (tile instanceof IBlockEventTile) ((IBlockEventTile) tile).loadBlockState(state);
-        return tile;
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        if (type != getBlockEntityType()) return null;
+        return (level1, pos, state1, tile) -> {
+            if (tile instanceof IBlockEventTile t) {
+                t.tick();
+            }
+        };
     }
 
     @Override
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos neighbor, boolean isMoving) {
-        TileEntity tile = world.getBlockEntity(pos);
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos neighbor, boolean isMoving) {
+        BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof IBlockEventTile) ((IBlockEventTile) tile).onNeighborBlockChanged(neighbor);
     }
 
     @Override
-    public void onNeighborChange(BlockState state, IWorldReader world, BlockPos pos, BlockPos neighbor) {
-        TileEntity tile = world.getBlockEntity(pos);
+    public void onNeighborChange(BlockState state, LevelReader world, BlockPos pos, BlockPos neighbor) {
+        BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof IBlockEventTile) ((IBlockEventTile) tile).onNeighborTileChanged(neighbor);
     }
 
     @Override
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        TileEntity tile = world.getBlockEntity(pos);
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof IBlockEventTile) return ((IBlockEventTile) tile).onBlockActivated(player, hand, hit);
-        return ActionResultType.FAIL; //TODO pass?
+        return InteractionResult.FAIL; //TODO pass?
     }
 
     @Override
-    public void onRemove(BlockState oldState, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-        TileEntity tile = world.getBlockEntity(pos);
+    public void onRemove(BlockState oldState, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+        BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof IBlockEventTile) {
             if (oldState.is(newState.getBlock())) {
                 ((IBlockEventTile) tile).onBlockStateReplaced(newState);
@@ -85,8 +88,8 @@ public abstract class ProjectRedBlock extends Block {
     }
 
     @Override
-    public void setPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity player, ItemStack stack) {
-        TileEntity tile = world.getBlockEntity(pos);
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity player, ItemStack stack) {
+        BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof IBlockEventTile) ((IBlockEventTile) tile).onBlockPlaced(player, stack);
     }
 }

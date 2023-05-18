@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_exploration:peridot_shovel",
+    "nbt": "{Damage:0}"
+  },
+  "pattern": [
+    "M",
+    "S",
+    "S"
+  ],
+  "key": {
+    "M": {
+      "tag": "forge:gems/peridot"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    }
+  }
+}

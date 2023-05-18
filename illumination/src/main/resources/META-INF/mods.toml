@@ -4,7 +4,7 @@ issueTrackerURL="https://github.com/MrTJP/ProjectRed"
 license="MIT"
 
 [[mods]]
-    modId="projectred-illumination"
+    modId="projectred_illumination"
     displayName="ProjectRed Illumination"
     version="${file.jarVersion}"
 
@@ -14,38 +14,38 @@ license="MIT"
     description='''
 Redstone. The way it was meant to be.
     '''
-[[dependencies.projectred-illumination]]
+[[dependencies.projectred_illumination]]
     modId="forge"
     mandatory=true
     versionRange="[${forge_version},)"
     ordering="NONE"
     side="BOTH"
-[[dependencies.projectred-illumination]]
+[[dependencies.projectred_illumination]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.5]"
+    versionRange="[1.18.2]"
     ordering="NONE"
     side="BOTH"
-[[dependencies.projectred-illumination]]
+[[dependencies.projectred_illumination]]
     modId="codechickenlib"
     mandatory=true
     versionRange="[${ccl_version},)"
     ordering="AFTER"
     side="BOTH"
-[[dependencies.projectred-illumination]]
+[[dependencies.projectred_illumination]]
     modId="cb_multipart"
     mandatory=true
     versionRange="[${cbm_version},)"
     ordering="AFTER"
     side="BOTH"
-[[dependencies.projectred-illumination]]
+[[dependencies.projectred_illumination]]
     modId="cb_microblock"
     mandatory=true
     versionRange="[${cbm_version},)"
     ordering="AFTER"
     side="BOTH"
-[[dependencies.projectred-illumination]]
-    modId="projectred-core"
+[[dependencies.projectred_illumination]]
+    modId="projectred_core"
     mandatory=true
     versionRange="[${file.jarVersion},)"
     ordering="AFTER"

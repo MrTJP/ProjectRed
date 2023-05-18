@@ -1,13 +1,13 @@
 package mrtjp.projectred.exploration.gui.screen.inventory;
 
-import codechicken.lib.texture.TextureUtils;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.exploration.inventory.container.BackpackContainer;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.RedUIContainerScreen;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 
@@ -15,7 +15,7 @@ public class BackpackScreen extends RedUIContainerScreen<BackpackContainer> {
 
     public static final ResourceLocation BACKGROUND = new ResourceLocation(MOD_ID, "textures/gui/backpack.png");
 
-    public BackpackScreen(BackpackContainer container, PlayerInventory playerInventory, ITextComponent title) {
+    public BackpackScreen(BackpackContainer container, Inventory playerInventory, Component title) {
         super(176, 168, container, playerInventory, title);
 
         inventoryLabelX = 8;
@@ -23,10 +23,10 @@ public class BackpackScreen extends RedUIContainerScreen<BackpackContainer> {
     }
 
     @Override
-    public void drawBack(MatrixStack stack, Point mouse, float partialFrame) {
+    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
         super.drawBack(stack, mouse, partialFrame);
 
-        TextureUtils.changeTexture(BACKGROUND);
+        RenderSystem.setShaderTexture(0, BACKGROUND);
         int x = getFrame().x();
         int y = getFrame().y();
 

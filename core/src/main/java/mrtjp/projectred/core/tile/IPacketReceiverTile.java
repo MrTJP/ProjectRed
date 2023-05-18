@@ -4,7 +4,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.packet.PacketCustom;
 import mrtjp.projectred.core.CoreNetwork;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -23,21 +23,21 @@ public interface IPacketReceiverTile extends IBlockEventTile {
         packet.sendToChunk(getBlockLevel(), getBlockPosition());
     }
 
-    default void sendUpdateToPlayer(int key, Consumer<MCDataOutput> writer, ServerPlayerEntity player) {
+    default void sendUpdateToPlayer(int key, Consumer<MCDataOutput> writer, ServerPlayer player) {
         PacketCustom packet = CoreNetwork.createTileClientPacket(this, (byte) key);
         writer.accept(packet);
         packet.sendToPlayer(player);
     }
 
-    default void sendUpdateToPlayerList(int key, Consumer<MCDataOutput> writer, Collection<ServerPlayerEntity> players) {
+    default void sendUpdateToPlayerList(int key, Consumer<MCDataOutput> writer, Collection<ServerPlayer> players) {
         PacketCustom packet = CoreNetwork.createTileClientPacket(this, (byte) key);
         writer.accept(packet);
-        for (ServerPlayerEntity player : players) {
+        for (ServerPlayer player : players) {
             packet.sendToPlayer(player);
         }
     }
 
     void receiveUpdateFromServer(int key, MCDataInput input);
 
-    void receiveUpdateFromClient(int key, MCDataInput input, ServerPlayerEntity player);
+    void receiveUpdateFromClient(int key, MCDataInput input, ServerPlayer player);
 }

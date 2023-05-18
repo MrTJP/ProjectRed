@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_exploration:basalt_brick",
+    "count": 4
+  },
+  "pattern": [
+    "BB",
+    "BB"
+  ],
+  "key": {
+    "B": {
+      "item": "projectred_exploration:basalt"
+    }
+  }
+}

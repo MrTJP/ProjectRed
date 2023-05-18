@@ -6,9 +6,9 @@ import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.BlockRenderer;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.OBJParser;
 import codechicken.lib.render.lighting.LightModel;
 import codechicken.lib.render.lighting.PlanarLightModel;
+import codechicken.lib.render.model.OBJParser;
 import codechicken.lib.render.pipeline.ColourMultiplier;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.texture.AtlasRegistrar;
@@ -16,13 +16,12 @@ import codechicken.lib.texture.TextureUtils;
 import codechicken.lib.vec.*;
 import codechicken.lib.vec.uv.*;
 import com.google.common.collect.ImmutableSet;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.core.BundledSignalsLib;
 import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.lib.VecLib;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -141,7 +140,10 @@ public class GateComponentModels {
     }
 
     public static Map<String, CCModel> loadModels(String path, BiConsumer<String, CCModel> operation) {
-        Map<String, CCModel> models = OBJParser.parseModels(new ResourceLocation(MOD_ID, "obj/" + path + ".obj"), GL11.GL_QUADS, null);
+        Map<String, CCModel> models = new OBJParser(new ResourceLocation(MOD_ID, "obj/" + path + ".obj"))
+                .ignoreMtl()
+                .quads()
+                .parse();
         models.replaceAll((k, v) -> v.backfacedCopy());
 
         for (Map.Entry<String, CCModel> m : models.entrySet()) {
@@ -173,7 +175,7 @@ public class GateComponentModels {
     }
 
     public static Transformation dynamicT(int orient) {
-        return orient == 0 ? new RedundantTransformation() : new Scale(-1, 1, 1).at(Vector3.CENTER);
+        return orient == 0 ? RedundantTransformation.INSTANCE : new Scale(-1, 1, 1).at(Vector3.CENTER);
     }
 
     public static CCModel bakeCopy(CCModel base, int orient) {
@@ -837,7 +839,7 @@ public class GateComponentModels {
                 boolean reflect = orient >= 24;
                 boolean rotate = (r + BundledSignalsLib.bundledCableBaseRotationMap[side]) % 4 >= 2;
 
-                UVTransformation t = new RedundantUVTransformation();
+                UVTransformation t = RedundantUVTransformation.INSTANCE;
                 if (reflect) {
                     t = t.with(new UVScale(-1, 1));
                 }
@@ -1063,7 +1065,7 @@ public class GateComponentModels {
             }
         }
 
-        public void renderLights(CCRenderState ccrs, MatrixStack mStack, IRenderTypeBuffer buffers, Transformation t) {
+        public void renderLights(CCRenderState ccrs, PoseStack mStack, MultiBufferSource buffers, Transformation t) {
             for (int i = 0; i < 16; i++) {
                 if ((pressMask & 1 << i) != 0) {
                     HaloRenderer.prepareRenderState(ccrs, mStack, buffers);
@@ -1427,6 +1429,11 @@ public class GateComponentModels {
 
     private static class RedundantUVTransformation extends UVTransformation {
 
+        public static final RedundantUVTransformation INSTANCE = new RedundantUVTransformation();
+
+        private RedundantUVTransformation() {
+        }
+
         @Override
         public void apply(UV vec) {
         }
@@ -1454,6 +1461,11 @@ public class GateComponentModels {
         @Override
         public String toString() {
             return "Nothing()";
+        }
+
+        @Override
+        public UVTransformation copy() {
+            return this;
         }
     }
 

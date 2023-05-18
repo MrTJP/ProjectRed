@@ -1,0 +1,31 @@
+{
+  "variants": {
+    "charge_level=0": {
+      "model": "projectred_expansion:block/battery_box"
+    },
+    "charge_level=1": {
+      "model": "projectred_expansion:block/battery_box_charge1"
+    },
+    "charge_level=2": {
+      "model": "projectred_expansion:block/battery_box_charge2"
+    },
+    "charge_level=3": {
+      "model": "projectred_expansion:block/battery_box_charge3"
+    },
+    "charge_level=4": {
+      "model": "projectred_expansion:block/battery_box_charge4"
+    },
+    "charge_level=5": {
+      "model": "projectred_expansion:block/battery_box_charge5"
+    },
+    "charge_level=6": {
+      "model": "projectred_expansion:block/battery_box_charge6"
+    },
+    "charge_level=7": {
+      "model": "projectred_expansion:block/battery_box_charge7"
+    },
+    "charge_level=8": {
+      "model": "projectred_expansion:block/battery_box_charge8"
+    }
+  }
+}

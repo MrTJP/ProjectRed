@@ -1,14 +1,14 @@
 package mrtjp.projectred.redui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.lib.Size;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.network.chat.Component;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
 
     private long lastClickTime = 0;
 
-    public RedUIScreen(int backgroundWidth, int backgroundHeight, ITextComponent title) {
+    public RedUIScreen(int backgroundWidth, int backgroundHeight, Component title) {
         super(title);
 
         // These frames are fully set during init() call, when the bounds of the entire screen are known
@@ -50,7 +50,7 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialFrame) {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialFrame) {
         super.render(matrixStack, mouseX, mouseY, partialFrame);
 
         RenderSystem.enableDepthTest(); // Nodes render out of order, so depth test is needed
@@ -68,6 +68,11 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
         // Draw the UI
         drawBackForSubtree(matrixStack, mousePoint, partialFrame);
         drawFrontForSubtree(matrixStack, mousePoint, partialFrame);
+    }
+
+    @Override
+    public void renderTooltipScreenSpace(PoseStack stack, Point screenSpacePoint, List<Component> tooltip) {
+        renderComponentTooltip(stack, tooltip, screenSpacePoint.x, screenSpacePoint.y);
     }
 
     @Override
@@ -170,7 +175,7 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
     }
 
     @Override
-    public FontRenderer getFontRenderer() {
+    public Font getFontRenderer() {
         return font;
     }
     //endregion

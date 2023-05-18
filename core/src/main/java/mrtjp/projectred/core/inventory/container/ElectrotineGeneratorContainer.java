@@ -3,12 +3,11 @@ package mrtjp.projectred.core.inventory.container;
 import codechicken.lib.inventory.container.ICCLContainerFactory;
 import mrtjp.projectred.core.tile.ElectrotineGeneratorTile;
 import mrtjp.projectred.lib.InventoryLib;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.IContainerListener;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import static mrtjp.projectred.core.init.CoreReferences.ELECTROTINE_DUST_ITEM;
 import static mrtjp.projectred.core.init.CoreReferences.ELECTROTINE_GENERATOR_CONTAINER;
@@ -16,19 +15,19 @@ import static mrtjp.projectred.core.init.CoreReferences.ELECTROTINE_GENERATOR_CO
 public class ElectrotineGeneratorContainer extends BasePoweredTileContainer {
 
     public static ICCLContainerFactory<ElectrotineGeneratorContainer> FACTORY = (windowId, inventory, packet) -> {
-        TileEntity tile = inventory.player.level.getBlockEntity(packet.readPos());
+        BlockEntity tile = inventory.player.level.getBlockEntity(packet.readPos());
         if (!(tile instanceof ElectrotineGeneratorTile)) return null;
 
         return new ElectrotineGeneratorContainer(inventory, (ElectrotineGeneratorTile) tile, windowId);
     };
 
-    private final PlayerInventory playerInventory;
+    private final Inventory playerInventory;
     private final ElectrotineGeneratorTile tile;
 
     private int burnTimeRemaining = 0;
     private int powerStored = 0;
 
-    public ElectrotineGeneratorContainer(PlayerInventory playerInventory, ElectrotineGeneratorTile tile, int windowId) {
+    public ElectrotineGeneratorContainer(Inventory playerInventory, ElectrotineGeneratorTile tile, int windowId) {
         super(ELECTROTINE_GENERATOR_CONTAINER, windowId, tile);
 
         this.playerInventory = playerInventory;
@@ -36,6 +35,9 @@ public class ElectrotineGeneratorContainer extends BasePoweredTileContainer {
 
         InventoryLib.addPlayerInventory(playerInventory, 8, 89, this::addSlot);
         addElectrotineGeneratorInventory();
+
+        addDataSlot(new SimpleDataSlot(tile::getBurnTimeRemaining, value -> burnTimeRemaining = value));
+        addDataSlot(new SimpleDataSlot(tile::getPowerStored, value -> powerStored = value));
     }
 
     private void addElectrotineGeneratorInventory() {
@@ -48,41 +50,7 @@ public class ElectrotineGeneratorContainer extends BasePoweredTileContainer {
     }
 
     @Override
-    public void broadcastChanges() {
-        super.broadcastChanges();
-
-        boolean needsBurnTimeRemaining = burnTimeRemaining != tile.getBurnTimeRemaining();
-        boolean needsPowerStored = powerStored != tile.getPowerStored();
-
-        burnTimeRemaining = tile.getBurnTimeRemaining();
-        powerStored = tile.getPowerStored();
-
-        for (IContainerListener listener : containerListeners) {
-            if (needsBurnTimeRemaining) {
-                listener.setContainerData(this, 110, burnTimeRemaining);
-            }
-            if (needsPowerStored) {
-                listener.setContainerData(this, 111, powerStored);
-            }
-        }
-    }
-
-    @Override
-    public void setData(int id, int value) {
-        switch (id) {
-            case 110:
-                burnTimeRemaining = value;
-                break;
-            case 111:
-                powerStored = value;
-                break;
-            default:
-                super.setData(id, value);
-        }
-    }
-
-    @Override
-    public ItemStack quickMoveStack(PlayerEntity player, int slotIndex) {
+    public ItemStack quickMoveStack(Player player, int slotIndex) {
 
         Slot slot = slots.get(slotIndex);
         if (slot == null || !slot.hasItem()) return ItemStack.EMPTY;

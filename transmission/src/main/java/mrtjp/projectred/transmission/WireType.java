@@ -2,20 +2,20 @@ package mrtjp.projectred.transmission;
 
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.texture.SpriteRegistryHelper;
-import codechicken.multipart.api.MultiPartType;
-import codechicken.multipart.api.SimpleMultiPartType;
+import codechicken.multipart.api.MultipartType;
+import codechicken.multipart.api.SimpleMultipartType;
 import com.google.common.collect.ImmutableList;
 import mrtjp.projectred.transmission.item.CenterWirePartItem;
 import mrtjp.projectred.transmission.item.FaceWirePartItem;
 import mrtjp.projectred.transmission.part.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +120,7 @@ public enum WireType {
     private final List<String> textureNames;
 
     private RegistryObject<Item> itemSupplier;
-    private RegistryObject<MultiPartType<BaseWirePart>> partSupplier;
+    private RegistryObject<MultipartType<BaseWirePart>> partSupplier;
 
     @OnlyIn (Dist.CLIENT)
     private List<TextureAtlasSprite> textures;
@@ -163,7 +163,7 @@ public enum WireType {
         return new ItemStack(getItem());
     }
 
-    public MultiPartType<BaseWirePart> getPartType() {
+    public MultipartType<BaseWirePart> getPartType() {
         return partSupplier.get();
     }
 
@@ -210,8 +210,8 @@ public enum WireType {
         });
     }
 
-    public void registerParts(DeferredRegister<MultiPartType<?>> partRegistry, DeferredRegister<Item> itemRegistry) {
+    public void registerParts(DeferredRegister<MultipartType<?>> partRegistry, DeferredRegister<Item> itemRegistry) {
         itemSupplier = itemRegistry.register(unlocalName, isCenterPart ? () -> new CenterWirePartItem(this) : () -> new FaceWirePartItem(this));
-        partSupplier = partRegistry.register(unlocalName, () -> new SimpleMultiPartType<>(isClient -> partFactory.apply(this)));
+        partSupplier = partRegistry.register(unlocalName, () -> new SimpleMultipartType<>(isClient -> partFactory.apply(this)));
     }
 }

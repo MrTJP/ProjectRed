@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_integration:dec_randomizer_gate"
+  },
+  "pattern": [
+    "SCA",
+    "CCC",
+    "EWE"
+  ],
+  "key": {
+    "C": {
+      "item": "projectred_core:cathode"
+    },
+    "E": {
+      "item": "projectred_core:energized_silicon_chip"
+    },
+    "A": {
+      "item": "projectred_core:anode"
+    },
+    "S": {
+      "item": "projectred_core:silicon_chip"
+    },
+    "W": {
+      "item": "projectred_core:conductive_plate"
+    }
+  }
+}

@@ -2,20 +2,20 @@ package mrtjp.projectred.exploration.data;
 
 import codechicken.lib.datagen.recipe.RecipeProvider;
 import codechicken.lib.datagen.recipe.ShapedRecipeBuilder;
-import codechicken.microblock.handler.MicroblockModContent;
+import codechicken.microblock.init.CBMicroblockModContent;
 import mrtjp.projectred.exploration.item.BackpackItem;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.tags.ITag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
 
-import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 import static mrtjp.projectred.core.init.CoreReferences.*;
 import static mrtjp.projectred.core.init.CoreTags.*;
+import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
 import static mrtjp.projectred.exploration.init.ExplorationTags.*;
 
@@ -283,7 +283,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
         special(BACKPACK_DYE_RECIPE_SERIALIZER, new ResourceLocation(MOD_ID, "backpack_dye"));
     }
 
-    private void axeRecipe(Item axe, ITag<Item> material) {
+    private void axeRecipe(Item axe, TagKey<Item> material) {
         shapedRecipe(axe)
                 .key('M', material)
                 .key('S', Tags.Items.RODS_WOODEN)
@@ -292,7 +292,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .patternLine(" S");
     }
 
-    private void pickaxeRecipe(Item pickaxe, ITag<Item> material) {
+    private void pickaxeRecipe(Item pickaxe, TagKey<Item> material) {
         shapedRecipe(pickaxe)
                 .key('M', material)
                 .key('S', Tags.Items.RODS_WOODEN)
@@ -301,7 +301,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .patternLine(" S ");
     }
 
-    private void shovelRecipe(Item shovel, ITag<Item> material) {
+    private void shovelRecipe(Item shovel, TagKey<Item> material) {
         shapedRecipe(shovel)
                 .key('M', material)
                 .key('S', Tags.Items.RODS_WOODEN)
@@ -310,7 +310,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .patternLine("S");
     }
 
-    private void hoeRecipe(Item hoe, ITag<Item> material) {
+    private void hoeRecipe(Item hoe, TagKey<Item> material) {
         shapedRecipe(hoe)
                 .key('M', material)
                 .key('S', Tags.Items.RODS_WOODEN)
@@ -319,7 +319,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .patternLine(" S");
     }
 
-    private void swordRecipe(Item sword, ITag<Item> material) {
+    private void swordRecipe(Item sword, TagKey<Item> material) {
         shapedRecipe(sword)
                 .key('M', material)
                 .key('S', Tags.Items.RODS_WOODEN)
@@ -328,16 +328,16 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .patternLine("S");
     }
 
-    private void sawRecipe(Item saw, ITag<Item> material) {
+    private void sawRecipe(Item saw, TagKey<Item> material) {
         shapedRecipe(saw)
                 .key('M', material)
                 .key('S', Tags.Items.RODS_WOODEN)
-                .key('R', MicroblockModContent.stoneRodTag())
+                .key('R', CBMicroblockModContent.STONE_ROD_ITEM.get())
                 .patternLine("SRR")
                 .patternLine("SMM");
     }
 
-    private void sickleRecipe(Item sickle, ITag<Item> material) {
+    private void sickleRecipe(Item sickle, TagKey<Item> material) {
         shapedRecipe(sickle)
                 .key('M', material)
                 .key('S', Tags.Items.RODS_WOODEN)
@@ -346,14 +346,14 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .patternLine("SM ");
     }
 
-    private void helmetRecipe(Item helmet, ITag<Item> material) {
+    private void helmetRecipe(Item helmet, TagKey<Item> material) {
         shapedRecipe(helmet)
                 .key('M', material)
                 .patternLine("MMM")
                 .patternLine("M M");
     }
 
-    private void chestplateRecipe(Item chestplate, ITag<Item> material) {
+    private void chestplateRecipe(Item chestplate, TagKey<Item> material) {
         shapedRecipe(chestplate)
                 .key('M', material)
                 .patternLine("M M")
@@ -361,7 +361,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .patternLine("MMM");
     }
 
-    private void leggingsRecipe(Item leggings, ITag<Item> material) {
+    private void leggingsRecipe(Item leggings, TagKey<Item> material) {
         shapedRecipe(leggings)
                 .key('M', material)
                 .patternLine("MMM")
@@ -369,7 +369,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .patternLine("M M");
     }
 
-    private void bootsRecipe(Item boots, ITag<Item> material) {
+    private void bootsRecipe(Item boots, TagKey<Item> material) {
         shapedRecipe(boots)
                 .key('M', material)
                 .patternLine("M M")

@@ -1,14 +1,14 @@
 package mrtjp.projectred.core;
 
-import codechicken.multipart.api.part.TMultiPart;
-import codechicken.multipart.block.TileMultiPart;
+import codechicken.multipart.api.part.MultiPart;
+import codechicken.multipart.block.TileMultipart;
 import codechicken.multipart.init.CBMultipartModContent;
 import com.google.common.collect.HashMultimap;
 import mrtjp.projectred.core.part.IPropagationPart;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.RedstoneWireBlock;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RedStoneWireBlock;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -56,7 +56,7 @@ public class RedstonePropagator {
         return canRedwiresProvidePower;
     }
     public static void setDustProvidesPower(boolean dustProvidesPower) {
-        ((RedstoneWireBlock)Blocks.REDSTONE_WIRE).shouldSignal = dustProvidesPower;
+        ((RedStoneWireBlock) Blocks.REDSTONE_WIRE).shouldSignal = dustProvidesPower;
     }
     public static void setRedwiresProvidePower(boolean canRedwiresProvidePower) {
         RedstonePropagator.canRedwiresProvidePower = canRedwiresProvidePower;
@@ -68,11 +68,11 @@ public class RedstonePropagator {
         setCanConnectRedwires(true);
     }
 
-    public static void addNeighborChange(World world, BlockPos pos) {
+    public static void addNeighborChange(Level world, BlockPos pos) {
         currentRun.neighborChanges.put(world, pos);
     }
 
-    public static void addPartChange(TMultiPart part) {
+    public static void addPartChange(MultiPart part) {
         currentRun.partChanges.put(part.tile(), part);
     }
 
@@ -107,8 +107,8 @@ public class RedstonePropagator {
         private int count = 0;
         private int recalcs = 0;
 
-        HashMultimap<TileMultiPart, TMultiPart> partChanges = HashMultimap.create();
-        HashMultimap<World, BlockPos> neighborChanges = HashMultimap.create();
+        HashMultimap<TileMultipart, MultiPart> partChanges = HashMultimap.create();
+        HashMultimap<Level, BlockPos> neighborChanges = HashMultimap.create();
         List<Runnable> propagationTasks = new LinkedList<>();
         List<Runnable> analogDropPropagationTasks = new LinkedList<>();
 
@@ -154,20 +154,20 @@ public class RedstonePropagator {
             RedstonePropagator.finishingRun = this;
 
             // Notify part changes in bulk
-            for (Map.Entry<TileMultiPart, Collection<TMultiPart>> entry : partChanges.asMap().entrySet()) {
-                Collection<TMultiPart> parts = entry.getValue();
-                for (TMultiPart part : parts) {
+            for (Map.Entry<TileMultipart, Collection<MultiPart>> entry : partChanges.asMap().entrySet()) {
+                Collection<MultiPart> parts = entry.getValue();
+                for (MultiPart part : parts) {
                     ((IPropagationPart) part).onSignalUpdate();
                 }
                 entry.getKey().multiPartChange(parts);
             }
 
             // Notify normal neighbor changes in bulk
-            for (Map.Entry<World, Collection<BlockPos>> entry : neighborChanges.asMap().entrySet()) {
-                World world = entry.getKey();
+            for (Map.Entry<Level, Collection<BlockPos>> entry : neighborChanges.asMap().entrySet()) {
+                Level world = entry.getKey();
                 Collection<BlockPos> positions = entry.getValue();
                 for (BlockPos pos : positions) {
-                    world.neighborChanged(pos, CBMultipartModContent.blockMultipart, pos);
+                    world.neighborChanged(pos, CBMultipartModContent.MULTIPART_BLOCK.get(), pos);
                 }
             }
 

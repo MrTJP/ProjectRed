@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_integration:toggle_latch_gate"
+  },
+  "pattern": [
+    "CPP",
+    "WLW",
+    "CPP"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:lever"
+    },
+    "C": {
+      "item": "projectred_core:cathode"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    },
+    "W": {
+      "item": "projectred_core:conductive_plate"
+    }
+  }
+}

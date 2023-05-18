@@ -5,8 +5,8 @@
  */
 package mrtjp.projectred.api;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import java.util.Set;
 
@@ -24,5 +24,5 @@ public abstract class StickResolver {
      *                   generally, one of these is the motor block that moved the structure.
      * @return A set of all block coordinates that are part of the structure that the input block was in.
      */
-    public abstract Set<BlockPos> getStructure(World world, BlockPos pos, BlockPos... exclusions);
+    public abstract Set<BlockPos> getStructure(Level world, BlockPos pos, BlockPos... exclusions);
 }

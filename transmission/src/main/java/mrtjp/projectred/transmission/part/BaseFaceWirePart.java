@@ -7,10 +7,10 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.api.NormalOcclusionTest;
-import codechicken.multipart.api.part.TFacePart;
-import codechicken.multipart.api.part.TMultiPart;
-import codechicken.multipart.api.part.TNormalOcclusionPart;
-import codechicken.multipart.block.TileMultiPart;
+import codechicken.multipart.api.part.FacePart;
+import codechicken.multipart.api.part.MultiPart;
+import codechicken.multipart.api.part.NormalOcclusionPart;
+import codechicken.multipart.block.TileMultipart;
 import codechicken.multipart.util.PartMap;
 import codechicken.multipart.util.PartRayTraceResult;
 import mrtjp.projectred.api.IConnectable;
@@ -18,18 +18,18 @@ import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.PlacementLib;
 import mrtjp.projectred.core.part.IConnectableFacePart;
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.block.SoundType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
-public abstract class BaseFaceWirePart extends BaseWirePart implements IConnectableFacePart, TNormalOcclusionPart, TFacePart {
+public abstract class BaseFaceWirePart extends BaseWirePart implements IConnectableFacePart, NormalOcclusionPart, FacePart {
 
     public static final Cuboid6[][] sBounds = new Cuboid6[3][6];
     public static final Cuboid6[][] oBounds = new Cuboid6[3][6];
@@ -59,11 +59,6 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     }
 
     //region Trait fields
-    @Override
-    public World level() {
-        return world();
-    }
-
     @Override
     public int getConnMap() {
         return connMap;
@@ -96,14 +91,14 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     //endregion
 
     @Override
-    public void save(CompoundNBT tag) {
+    public void save(CompoundTag tag) {
         super.save(tag);
         tag.putInt("connMap", connMap);
         tag.putByte("side", side);
     }
 
     @Override
-    public void load(CompoundNBT tag) {
+    public void load(CompoundTag tag) {
         super.load(tag);
         connMap = tag.getInt("connMap");
         side = tag.getByte("side");
@@ -148,14 +143,14 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     }
 
     @Override
-    public SoundType getPlacementSound(ItemUseContext context) {
+    public SoundType getPlacementSound(UseOnContext context) {
         return SoundType.GLASS;
     }
 
     @Override
-    public void onPartChanged(TMultiPart part) {
+    public void onPartChanged(MultiPart part) {
         super.onPartChanged(part);
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             if (updateOutward()) {
                 onMaskChanged();
             }
@@ -165,7 +160,7 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     @Override
     public void onNeighborBlockChanged(BlockPos from) {
         super.onNeighborBlockChanged(from);
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             if (dropIfCantStay()) return;
             if (updateExternalConns()) {
                 onMaskChanged();
@@ -176,7 +171,7 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     @Override
     public void onAdded() {
         super.onAdded();
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             if (updateInward()) onMaskChanged();
         }
     }
@@ -184,24 +179,24 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     @Override
     public void onRemoved() {
         super.onRemoved();
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             notifyAllExternals();
         }
     }
 
     @Override
-    public float getStrength(PlayerEntity player, PartRayTraceResult hit) {
+    public float getStrength(Player player, PartRayTraceResult hit) {
         return 2/30F;
     }
 
     @Override
-    public VoxelShape getShape(ISelectionContext context) {
+    public VoxelShape getShape(CollisionContext context) {
         return sShapes[getWireType().getThickness()][getSide()];
     }
 
     @Override
-    public VoxelShape getCollisionShape(ISelectionContext context) {
-        return VoxelShapes.empty();
+    public VoxelShape getCollisionShape(CollisionContext context) {
+        return Shapes.empty();
     }
 
     //region Occlusion
@@ -209,17 +204,7 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     public VoxelShape getOcclusionShape() {
         return oShapes[getWireType().getThickness()][getSide()];
     }
-
-    @Override
-    public boolean occlusionTest(TMultiPart npart) {
-        return NormalOcclusionTest.test(this, npart);
-    }
     //endregion
-
-    @Override
-    public boolean solid(int side) {
-        return false;
-    }
 
     @Override
     public int redstoneConductionMap() {
@@ -232,7 +217,7 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     }
 
     private boolean canStay() {
-        return PlacementLib.canPlaceWireOnSide(world(),
+        return PlacementLib.canPlaceWireOnSide(level(),
                 pos().relative(Direction.values()[getSide()]), Direction.values()[getSide()^1]);
     }
 
@@ -245,7 +230,7 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     }
 
     private void drop() {
-        TileMultiPart.dropItem(getItem(), world(), Vector3.fromTileCenter(tile()));
+        TileMultipart.dropItem(getItem(), level(), Vector3.fromTileCenter(tile()));
         tile().remPart(this);
     }
 
@@ -276,11 +261,11 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     @Override
     public boolean discoverOpen(int r) {
         // Condition 1: Edge must be empty (this is where strips go)
-        TMultiPart edgePart = tile().getSlottedPart(PartMap.edgeBetween(getSide(), absoluteDir(r)));
+        MultiPart edgePart = tile().getSlottedPart(PartMap.edgeBetween(getSide(), absoluteDir(r)));
         if (edgePart != null) return false;
 
         // Condition 2: Part on inside face must not consume the connection
-        TMultiPart insidePart = tile().getSlottedPart(absoluteDir(r));
+        MultiPart insidePart = tile().getSlottedPart(absoluteDir(r));
         if (insidePart instanceof IConnectable) {
             //TODO this seems sus. Why let part connect inside AND outside?
             return canConnectPart((IConnectable) insidePart, r);

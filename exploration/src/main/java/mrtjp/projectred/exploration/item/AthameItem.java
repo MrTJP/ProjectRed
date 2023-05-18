@@ -1,16 +1,16 @@
 package mrtjp.projectred.exploration.item;
 
 import mrtjp.projectred.exploration.ProjectRedExploration;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.IItemTier;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Tier;
 
 public class AthameItem extends SwordItem {
 
-    public AthameItem(IItemTier itemTier, int attackDamage, float attackSpeed) {
-        super(itemTier, attackDamage, attackSpeed, new Item.Properties().tab(ProjectRedExploration.EXPLORATION_GROUP));
+    public AthameItem(Tier itemTier, int attackDamage, float attackSpeed) {
+        super(itemTier, attackDamage, attackSpeed, new Item.Properties().tab(ProjectRedExploration.EXPLORATION_CREATIVE_TAB));
     }
 
     @Override

@@ -1,22 +1,22 @@
 package mrtjp.projectred.integration.item;
 
-import codechicken.multipart.api.ItemMultiPart;
-import codechicken.multipart.api.part.TMultiPart;
-import mrtjp.projectred.integration.ProjectRedIntegration;
+import codechicken.multipart.api.ItemMultipart;
+import codechicken.multipart.api.part.MultiPart;
 import mrtjp.projectred.core.PlacementLib;
 import mrtjp.projectred.integration.GateType;
+import mrtjp.projectred.integration.ProjectRedIntegration;
 import mrtjp.projectred.integration.part.GatePart;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.context.UseOnContext;
 
-public class GatePartItem extends ItemMultiPart {
+public class GatePartItem extends ItemMultipart {
 
     private final GateType gateType;
 
     public GatePartItem(GateType gateType) {
-        super(new Item.Properties().tab(ProjectRedIntegration.INTEGRATION_GROUP));
+        super(new Item.Properties().tab(ProjectRedIntegration.CREATIVE_TAB));
         this.gateType = gateType;
     }
 
@@ -25,7 +25,7 @@ public class GatePartItem extends ItemMultiPart {
     }
 
     @Override
-    public TMultiPart newPart(ItemUseContext context) {
+    public MultiPart newPart(UseOnContext context) {
         Direction side = context.getClickedFace();
         BlockPos onPos = context.getClickedPos().relative(side.getOpposite());
         if (!PlacementLib.canPlaceGateOnSide(context.getLevel(), onPos, side)) {

@@ -3,25 +3,23 @@ package mrtjp.projectred.transmission.part;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.Cuboid6;
-import codechicken.multipart.api.MultiPartType;
-import codechicken.multipart.api.part.IconHitEffects;
-import codechicken.multipart.api.part.TIconHitEffectsPart;
-import codechicken.multipart.api.part.TMultiPart;
+import codechicken.multipart.api.MultipartType;
+import codechicken.multipart.api.part.BaseMultipart;
+import codechicken.multipart.api.part.IconHitEffectsPart;
 import codechicken.multipart.util.PartRayTraceResult;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Collections;
 import java.util.function.Consumer;
 
-public abstract class BaseWirePart extends TMultiPart implements TIconHitEffectsPart {
+public abstract class BaseWirePart extends BaseMultipart implements IconHitEffectsPart {
 
     protected static final int KEY_UPDATE = 0;
 
@@ -38,7 +36,7 @@ public abstract class BaseWirePart extends TMultiPart implements TIconHitEffects
     }
 
     @Override
-    public MultiPartType<?> getType() {
+    public MultipartType<?> getType() {
         return getWireType().getPartType();
     }
 
@@ -52,7 +50,7 @@ public abstract class BaseWirePart extends TMultiPart implements TIconHitEffects
     }
 
     @Override
-    public ItemStack pickItem(PartRayTraceResult hit) {
+    public ItemStack getCloneStack(PartRayTraceResult hit) {
         return getItem();
     }
 
@@ -103,7 +101,7 @@ public abstract class BaseWirePart extends TMultiPart implements TIconHitEffects
 
     @Override
     public Cuboid6 getBounds() {
-        return new Cuboid6(getShape(ISelectionContext.empty()).bounds());
+        return new Cuboid6(getShape(CollisionContext.empty()).bounds());
     }
 
     @Override
@@ -116,18 +114,6 @@ public abstract class BaseWirePart extends TMultiPart implements TIconHitEffects
     @OnlyIn(Dist.CLIENT)
     public TextureAtlasSprite getBrokenIcon(int side) {
         return getIcon();
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void addHitEffects(PartRayTraceResult hit, ParticleManager manager) {
-        IconHitEffects.addHitEffects(this, hit, manager);
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void addDestroyEffects(PartRayTraceResult hit, ParticleManager manager) {
-        IconHitEffects.addDestroyEffects(this, manager);
     }
     //endregion
 }

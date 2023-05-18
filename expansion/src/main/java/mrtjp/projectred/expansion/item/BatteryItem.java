@@ -2,7 +2,7 @@ package mrtjp.projectred.expansion.item;
 
 import mrtjp.projectred.expansion.ProjectRedExpansion;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 public class BatteryItem extends Item implements IRechargableBattery {
 

@@ -5,9 +5,9 @@
  */
 package mrtjp.projectred.api;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * Interface for an object that manages the movement of blocks and tiles that are
@@ -27,7 +27,7 @@ public interface ITileMover {
      * @param pos The position of the block to move.
      * @return True if the block at the given position is able to move.
      */
-    boolean canMove(World w, BlockPos pos);
+    boolean canMove(Level w, BlockPos pos);
 
     /**
      * Method used to actually move the tile. Called after the animation
@@ -42,7 +42,7 @@ public interface ITileMover {
      * @param pos The position of the block to move.
      * @param dir The ForgeDirection the structure is moving in.
      */
-    void move(World w, BlockPos pos, Direction dir);
+    void move(Level w, BlockPos pos, Direction dir);
 
     /**
      * Called after all blocks in the group have moved to their
@@ -54,5 +54,5 @@ public interface ITileMover {
      * @param w The world.
      * @param pos The position of the block to move.
      */
-    void postMove(World w, BlockPos pos);
+    void postMove(Level w, BlockPos pos);
 }

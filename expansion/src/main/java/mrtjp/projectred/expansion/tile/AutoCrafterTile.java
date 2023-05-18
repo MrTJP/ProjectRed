@@ -7,28 +7,30 @@ import mrtjp.projectred.expansion.CraftingHelper;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.inventory.container.AutoCrafterContainer;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class AutoCrafterTile extends BaseMachineTile implements CraftingHelper.InventorySource {
 
     private static final int KEY_CYCLE_PLAN = 2;
 
-    private final Inventory planInventory = new Inventory(9) {
+    private final SimpleContainer planInventory = new SimpleContainer(9) {
         @Override
         public boolean canPlaceItem(int slot, ItemStack stack) {
             return RecipePlanItem.hasRecipeInside(stack);
         }
     };
-    private final Inventory storageInventory = new Inventory(18);
-    private final Inventory craftingGrid = new Inventory(9);
+    private final SimpleContainer storageInventory = new SimpleContainer(18);
+    private final SimpleContainer craftingGrid = new SimpleContainer(9);
 
     private final CraftingHelper craftingHelper = new CraftingHelper(this);
 
@@ -36,14 +38,14 @@ public class AutoCrafterTile extends BaseMachineTile implements CraftingHelper.I
     private int planSlot = 0;
     private int idleTicksOnPlan = 0;
 
-    public AutoCrafterTile() {
-        super(ExpansionReferences.AUTO_CRAFTER_TILE);
+    public AutoCrafterTile(BlockPos pos, BlockState state) {
+        super(ExpansionReferences.AUTO_CRAFTER_TILE, pos, state);
         planInventory.addListener(this::onInventoryChanged);
         storageInventory.addListener(this::onInventoryChanged);
     }
 
     @Override
-    public void saveToNBT(CompoundNBT tag) {
+    public void saveToNBT(CompoundTag tag) {
         super.saveToNBT(tag);
         tag.put("storage_inv", storageInventory.createTag());
         tag.put("plan_inv", planInventory.createTag());
@@ -51,7 +53,7 @@ public class AutoCrafterTile extends BaseMachineTile implements CraftingHelper.I
     }
 
     @Override
-    public void loadFromNBT(CompoundNBT tag) {
+    public void loadFromNBT(CompoundTag tag) {
         super.loadFromNBT(tag);
         storageInventory.fromTag(tag.getList("storage_inv", 10));
         planInventory.fromTag(tag.getList("plan_inv", 10));
@@ -74,7 +76,7 @@ public class AutoCrafterTile extends BaseMachineTile implements CraftingHelper.I
     }
 
     @Override
-    public void receiveUpdateFromClient(int key, MCDataInput input, ServerPlayerEntity player) {
+    public void receiveUpdateFromClient(int key, MCDataInput input, ServerPlayer player) {
         switch (key) {
             case KEY_CYCLE_PLAN:
                 cyclePlan();
@@ -89,7 +91,7 @@ public class AutoCrafterTile extends BaseMachineTile implements CraftingHelper.I
     }
 
     @Override
-    protected Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
+    protected AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
         return new AutoCrafterContainer(playerInventory, this, windowId);
     }
 
@@ -101,7 +103,7 @@ public class AutoCrafterTile extends BaseMachineTile implements CraftingHelper.I
         dropInventory(storageInventory, getLevel(), pos);
     }
 
-    private void onInventoryChanged(IInventory inventory) {
+    private void onInventoryChanged(Container inventory) {
         recipeNeedsUpdate = true;
         setChanged();
     }
@@ -152,27 +154,27 @@ public class AutoCrafterTile extends BaseMachineTile implements CraftingHelper.I
 
     //region CraftingHelper.InventorySource
     @Override
-    public IInventory getCraftingMatrix() {
+    public Container getCraftingMatrix() {
         return craftingGrid;
     }
 
     @Override
-    public IInventory getStorage() {
+    public Container getStorage() {
         return storageInventory;
     }
 
     @Override
-    public World getWorld() {
+    public Level getWorld() {
         return getLevel();
     }
     //endregion
 
     //region Container getters
-    public Inventory getPlanInventory() {
+    public SimpleContainer getPlanInventory() {
         return planInventory;
     }
 
-    public Inventory getStorageInventory() {
+    public SimpleContainer getStorageInventory() {
         return storageInventory;
     }
 

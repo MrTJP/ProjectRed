@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_exploration:ruby_axe",
+    "nbt": "{Damage:0}"
+  },
+  "pattern": [
+    "MM",
+    "MS",
+    " S"
+  ],
+  "key": {
+    "M": {
+      "tag": "forge:gems/ruby"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    }
+  }
+}

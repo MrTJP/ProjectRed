@@ -1,12 +1,14 @@
 package mrtjp.projectred.transmission.data;
 
+import codechicken.lib.colour.EnumColour;
 import codechicken.lib.datagen.recipe.RecipeProvider;
 import codechicken.lib.util.CCLTags;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.Item;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.common.Tags;
 
 import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
@@ -40,7 +42,7 @@ public class TransmissionRecipeProvider extends RecipeProvider {
         for (WireType type : WireType.INSULATED_WIRES) {
             Item w = type.getItem();
             shapedRecipe(w, 12)
-                    .key('W', ItemTags.bind(type.getColour().getWoolTagName().toString()))
+                    .key('W', getWoolTag(type.getColour()))
                     .key('R', RED_ALLOY_INGOT_TAG)
                     .patternLine("WRW")
                     .patternLine("WRW")
@@ -48,7 +50,7 @@ public class TransmissionRecipeProvider extends RecipeProvider {
             // Re-colouring recipe
             shapelessRecipe(w, 1, new ResourceLocation(w.getRegistryName() + "_re_color"))
                     .addIngredient(INSULATED_WIRE_ITEM_TAG)
-                    .addIngredient(ItemTags.bind(type.getColour().getDyeTagName().toString()));
+                    .addIngredient(getDyeTag(type.getColour()));
         }
 
         // Bundled cables
@@ -63,7 +65,7 @@ public class TransmissionRecipeProvider extends RecipeProvider {
             // Recolouring recipe
             shapelessRecipe(w, 1, new ResourceLocation(w.getRegistryName() + "_re_color"))
                     .addIngredient(BUNDLED_WIRE_ITEM_TAG)
-                    .addIngredient(ItemTags.bind(type.getColour().getDyeTagName().toString()));
+                    .addIngredient(getDyeTag(type.getColour()));
         }
 
         // Low Load power line
@@ -89,7 +91,7 @@ public class TransmissionRecipeProvider extends RecipeProvider {
             // Re-colouring recipe
             shapelessRecipe(w, 1, new ResourceLocation(w.getRegistryName() + "_re_color"))
                     .addIngredient(FRAMED_INSULATED_WIRE_ITEM_TAG)
-                    .addIngredient(ItemTags.bind(type.getColour().getDyeTagName().toString()));
+                    .addIngredient(getDyeTag(type.getColour()));
         }
 
         // Framed bundled wires
@@ -103,7 +105,7 @@ public class TransmissionRecipeProvider extends RecipeProvider {
             // Re-colouring recipe
             shapelessRecipe(w, 1, new ResourceLocation(w.getRegistryName() + "_re_color"))
                     .addIngredient(FRAMED_BUNDLED_WIRE_ITEM_TAG)
-                    .addIngredient(ItemTags.bind(type.getColour().getDyeTagName().toString()));
+                    .addIngredient(getDyeTag(type.getColour()));
         }
 
         // Framed low load power line
@@ -131,5 +133,13 @@ public class TransmissionRecipeProvider extends RecipeProvider {
                 .patternLine("SSS")
                 .patternLine("SIS")
                 .patternLine("SSS");
+    }
+
+    private TagKey<Item> getWoolTag(EnumColour colour) {
+        return ItemTags.create(colour.getWoolTagName());
+    }
+
+    private TagKey<Item> getDyeTag(EnumColour colour) {
+        return ItemTags.create(colour.getDyeTagName());
     }
 }

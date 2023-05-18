@@ -4,23 +4,23 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.raytracer.VoxelShapeCache;
 import codechicken.lib.vec.Cuboid6;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public interface IBlockEventTile {
 
-    World getBlockLevel();
+    Level getBlockLevel();
     BlockPos getBlockPosition();
 
     default void onBlockPlaced(LivingEntity player, ItemStack item) {}
@@ -29,8 +29,9 @@ public interface IBlockEventTile {
 
     default void onBlockRemoved() {}
 
-    default void loadBlockState(BlockState state) { }
     default BlockState storeBlockState(BlockState defaultState) { return defaultState; }
+
+    default void tick() { }
 
     default VoxelShape getOutlineShape() { return VoxelShapeCache.getShape(Cuboid6.full); }
     default VoxelShape getCollisionShape() { return getOutlineShape(); }
@@ -38,7 +39,7 @@ public interface IBlockEventTile {
     default VoxelShape getRayTraceShape() { return getOutlineShape(); }
 
     default float getExplosionResistance(Entity exploder, Explosion explosion) { return 0; }
-    default float getPlayerRelativeBlockHardness(PlayerEntity player) { return 1/30F; }
+    default float getPlayerRelativeBlockHardness(Player player) { return 1/30F; }
 
     default int getLightValue() { return 0; }
 
@@ -47,8 +48,8 @@ public interface IBlockEventTile {
 //    default List<ItemStack> getDrops() { return Collections.emptyList(); }
 //    ItemStack getPickBlock();
 
-    default ActionResultType onBlockActivated(PlayerEntity player, Hand hand, BlockRayTraceResult hit) { return ActionResultType.PASS; }
-    default void onBlockClicked(PlayerEntity player) { }
+    default InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) { return InteractionResult.PASS; }
+    default void onBlockClicked(Player player) { }
 
     default void onEntityCollision(Entity entity) { }
     default void onEntityWalk(Entity entity) { }
@@ -62,8 +63,8 @@ public interface IBlockEventTile {
     default int getStrongPower(int side) { return 0; }
     default int getWeakPower(int side) { return 0; }
 
-    void saveToNBT(CompoundNBT tag);
-    void loadFromNBT(CompoundNBT tag);
+    void saveToNBT(CompoundTag tag);
+    void loadFromNBT(CompoundTag tag);
 
     void writeDesc(MCDataOutput out);
     void readDesc(MCDataInput in);

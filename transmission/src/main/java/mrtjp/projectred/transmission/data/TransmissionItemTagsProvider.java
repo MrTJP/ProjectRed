@@ -1,11 +1,11 @@
 package mrtjp.projectred.transmission.data;
 
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.ItemTagsProvider;
-import net.minecraft.data.TagsProvider;
-import net.minecraft.item.Item;
+import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.data.tags.TagsProvider;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nullable;
@@ -27,7 +27,7 @@ public class TransmissionItemTagsProvider extends ItemTagsProvider {
     @Override
     protected void addTags() {
         // Insulated wires
-        TagsProvider.Builder<Item> b = tag(INSULATED_WIRE_ITEM_TAG);
+        TagsProvider.TagAppender<Item> b = tag(INSULATED_WIRE_ITEM_TAG);
         for (WireType type : WireType.INSULATED_WIRES) {
             b.add(type.getItem());
         }

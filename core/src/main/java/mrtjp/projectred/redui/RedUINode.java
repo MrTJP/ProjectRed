@@ -1,11 +1,10 @@
 package mrtjp.projectred.redui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.lib.Size;
-import net.minecraft.util.text.ITextProperties;
-import net.minecraftforge.fml.client.gui.GuiUtils;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
@@ -542,7 +541,7 @@ public interface RedUINode {
      * Recursive render call for this node and its subtree. This will render the background layer of this node
      * and entire subtree. The call order is as follows:
      * <ul>
-     *     <li>This node's {@link RedUINode#drawBack(MatrixStack, Point, float)} method </li>
+     *     <li>This node's {@link RedUINode#drawBack(PoseStack, Point, float)} method </li>
      *     <li>This node's {@link RedUINode#onSubTreePreDrawBack()} method</li>
      *     <li>Each child's renderBackForSubtree method. Note that MatrixStack pose and
      *         mouse positions are translated to correct position and depth for each child. </li>
@@ -552,7 +551,7 @@ public interface RedUINode {
      * @param mouse Current mouse position, relative to the parent
      * @param partialFrame Partial frames between ticks
      */
-    default void renderBackForSubtree(MatrixStack stack, Point mouse, float partialFrame) {
+    default void renderBackForSubtree(PoseStack stack, Point mouse, float partialFrame) {
         drawBack(stack, mouse, partialFrame);
 
         onSubTreePreDrawBack();
@@ -574,9 +573,9 @@ public interface RedUINode {
     /**
      * Similar to background render call, but for foreground layer.
      *
-     * @see RedUINode#renderBackForSubtree(MatrixStack, Point, float)
+     * @see RedUINode#renderBackForSubtree(PoseStack, Point, float)
      */
-    default void renderFrontForSubtree(MatrixStack stack, Point mouse, float partialFrame) {
+    default void renderFrontForSubtree(PoseStack stack, Point mouse, float partialFrame) {
         drawFront(stack, mouse, partialFrame);
 
         onSubTreePreDrawFront();
@@ -611,7 +610,7 @@ public interface RedUINode {
     default void update() { }
 
     /**
-     * Called once per render call prior to rendering the background via {@link RedUINode#drawBack(MatrixStack, Point, float)}
+     * Called once per render call prior to rendering the background via {@link RedUINode#drawBack(PoseStack, Point, float)}
      *
      * @param mouse        Mouse position in parent's coordinate space
      * @param partialFrame Partial value representing the progress from one tick to the next
@@ -707,22 +706,22 @@ public interface RedUINode {
     default boolean onCharTyped(char ch, int glfwFlags, boolean consumed) { return false; }
 
     /**
-     * @see RedUINode#renderBackForSubtree(MatrixStack, Point, float)
+     * @see RedUINode#renderBackForSubtree(PoseStack, Point, float)
      */
     default void onSubTreePreDrawBack() { }
 
     /**
-     * @see RedUINode#renderBackForSubtree(MatrixStack, Point, float)
+     * @see RedUINode#renderBackForSubtree(PoseStack, Point, float)
      */
     default void onSubTreePostDrawBack() { }
 
     /**
-     * @see RedUINode#renderFrontForSubtree(MatrixStack, Point, float)
+     * @see RedUINode#renderFrontForSubtree(PoseStack, Point, float)
      */
     default void onSubTreePreDrawFront() { }
 
     /**
-     * @see RedUINode#renderFrontForSubtree(MatrixStack, Point, float)
+     * @see RedUINode#renderFrontForSubtree(PoseStack, Point, float)
      */
     default void onSubTreePostDrawFront() { }
 
@@ -734,7 +733,7 @@ public interface RedUINode {
      * @param mouse        Current mouse position, relative to the parent
      * @param partialFrame Partial frames between ticks
      */
-    default void drawBack(MatrixStack stack, Point mouse, float partialFrame) { }
+    default void drawBack(PoseStack stack, Point mouse, float partialFrame) { }
 
     /**
      * Draw call for the foreground layer, typically used to render items, tooltips, etc.
@@ -743,7 +742,7 @@ public interface RedUINode {
      * @param mouse        Current mouse position, relative to the parent
      * @param partialFrame Partial frames between ticks
      */
-    default void drawFront(MatrixStack stack, Point mouse, float partialFrame) { }
+    default void drawFront(PoseStack stack, Point mouse, float partialFrame) { }
 
     /**
      * Node operation function that can be run over an entire graph
@@ -767,7 +766,7 @@ public interface RedUINode {
 
     // Utility methods
 
-    default void renderTooltip(MatrixStack stack, Point mouse, List<ITextProperties> tooltip) {
+    default void renderTooltip(PoseStack stack, Point mouse, List<Component> tooltip) {
 
         if (tooltip.isEmpty()) return;
 
@@ -779,7 +778,8 @@ public interface RedUINode {
         stack.pushPose();
         stack.translate(-screenOffset.x, -screenOffset.y, 0);
 
-        GuiUtils.drawHoveringText(stack, tooltip, mouseScreenSpace.x, mouseScreenSpace.y, getRoot().getScreenFrame().width(), getRoot().getScreenFrame().height(), -1, getRoot().getFontRenderer());
+//        GuiUtils.drawHoveringText(stack, tooltip, mouseScreenSpace.x, mouseScreenSpace.y, getRoot().getScreenFrame().width(), getRoot().getScreenFrame().height(), -1, getRoot().getFontRenderer());
+        getRoot().renderTooltipScreenSpace(stack, mouseScreenSpace, tooltip);
 
         stack.popPose();
     }

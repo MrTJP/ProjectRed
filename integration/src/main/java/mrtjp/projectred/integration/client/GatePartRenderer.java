@@ -1,14 +1,14 @@
 package mrtjp.projectred.integration.client;
 
 import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.buffer.TransformingVertexBuilder;
+import codechicken.lib.render.buffer.TransformingVertexConsumer;
 import codechicken.multipart.api.part.render.PartRenderer;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.integration.part.GatePart;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
 import javax.annotation.Nullable;
 
@@ -22,7 +22,7 @@ public class GatePartRenderer implements PartRenderer<GatePart> {
     @Override
     public boolean renderStatic(GatePart part, @Nullable RenderType layer, CCRenderState ccrs) {
         if (layer == null || (layer == RenderType.cutout() && Configurator.staticGates)) {
-            ccrs.setBrightness(part.world(), part.pos());
+            ccrs.setBrightness(part.level(), part.pos());
             GateModelRenderer.instance().renderStatic(ccrs, part);
             return true;
         }
@@ -30,12 +30,12 @@ public class GatePartRenderer implements PartRenderer<GatePart> {
     }
 
     @Override
-    public void renderDynamic(GatePart part, MatrixStack mStack, IRenderTypeBuffer buffers, int packedLight, int packedOverlay, float partialTicks) {
+    public void renderDynamic(GatePart part, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
         CCRenderState ccrs = CCRenderState.instance();
         ccrs.reset();
         ccrs.brightness = packedLight;
         ccrs.overlay = packedOverlay;
-        ccrs.bind(new TransformingVertexBuilder(buffers.getBuffer(RenderType.cutout()), mStack), DefaultVertexFormats.BLOCK);
+        ccrs.bind(new TransformingVertexConsumer(buffers.getBuffer(RenderType.cutout()), mStack), DefaultVertexFormat.BLOCK);
         GateModelRenderer.instance().renderDynamic(ccrs, part, partialTicks);
         GateModelRenderer.instance().renderCustomDynamic(ccrs, part, mStack, buffers, packedLight, packedOverlay, partialTicks);
     }

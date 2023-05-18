@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_integration:counter_gate"
+  },
+  "pattern": [
+    "PCP",
+    "WWT",
+    "PCP"
+  ],
+  "key": {
+    "C": {
+      "item": "projectred_core:cathode"
+    },
+    "T": {
+      "item": "projectred_core:pointer"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    },
+    "W": {
+      "item": "projectred_core:conductive_plate"
+    }
+  }
+}

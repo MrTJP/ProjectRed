@@ -2,17 +2,16 @@ package mrtjp.projectred.core.data;
 
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.datagen.recipe.RecipeProvider;
-import codechicken.microblock.EdgeMicroFactory;
-import codechicken.microblock.FaceMicroFactory$;
-import codechicken.microblock.ItemMicroBlock;
-import codechicken.microblock.MicroMaterialRegistry;
-import codechicken.microblock.handler.MicroblockModContent;
-import net.minecraft.block.Blocks;
+import codechicken.microblock.api.BlockMicroMaterial;
+import codechicken.microblock.init.CBMicroblockModContent;
+import codechicken.microblock.item.ItemMicroBlock;
+import codechicken.microblock.util.MicroMaterialRegistry;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.crafting.NBTIngredient;
 
 import static mrtjp.projectred.core.init.CoreReferences.*;
@@ -151,7 +150,7 @@ public class CoreRecipeProvider extends RecipeProvider {
                 .patternLine("BBB");
 
         shapedRecipe(SILICON_ITEM, 8)
-                .key('S', MicroblockModContent.itemDiamondSaw())
+                .key('S', CBMicroblockModContent.DIAMOND_SAW.get())
                 .key('B', SILICON_BOULE_ITEM)
                 .patternLine("S")
                 .patternLine("B");
@@ -219,8 +218,8 @@ public class CoreRecipeProvider extends RecipeProvider {
         }
 
         shapedRecipe(DRAW_PLATE_ITEM)
-                .key('I', new PublicNBTIngredient(ItemMicroBlock.create(EdgeMicroFactory.getFactoryID(), 2, MicroMaterialRegistry.findMaterial(new ItemStack(Items.IRON_BLOCK)))))
-                .key('D', new PublicNBTIngredient(ItemMicroBlock.create(FaceMicroFactory$.MODULE$.getFactoryID(), 2, MicroMaterialRegistry.findMaterial(new ItemStack(Items.DIAMOND_BLOCK)))))
+                .key('I', new PublicNBTIngredient(ItemMicroBlock.create(3, 2, MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.IRON_BLOCK.defaultBlockState())))))
+                .key('D', new PublicNBTIngredient(ItemMicroBlock.create(0, 2, MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.DIAMOND_BLOCK.defaultBlockState())))))
                 .patternLine(" I ")
                 .patternLine("IDI")
                 .patternLine(" I ");
@@ -246,7 +245,7 @@ public class CoreRecipeProvider extends RecipeProvider {
     private void addIllumarRecipe(Item illumarItem, EnumColour color) {
         shapelessRecipe(illumarItem)
                 .addIngredient(DUSTS_GLOWSTONE, 2)
-                .addIngredient(ItemTags.bind(color.getDyeTagName().toString()), 2);
+                .addIngredient(ItemTags.create(color.getDyeTagName()), 2);
     }
 
     // Forge PLS :(

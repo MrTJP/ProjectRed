@@ -1,10 +1,10 @@
 package mrtjp.projectred.expansion.data;
 
 import codechicken.lib.datagen.recipe.RecipeProvider;
-import net.minecraft.block.Blocks;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.Items;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
 
 import static mrtjp.projectred.core.init.CoreReferences.COPPER_COIL_ITEM;

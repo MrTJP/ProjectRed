@@ -1,26 +1,26 @@
 package mrtjp.projectred.exploration.item.crafting;
 
 import mrtjp.projectred.exploration.item.BackpackItem;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.SpecialRecipe;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.Tags;
 
 import static mrtjp.projectred.exploration.init.ExplorationReferences.BACKPACK_DYE_RECIPE_SERIALIZER;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.getBackpackByColor;
 
-public class BackpackDyeRecipe extends SpecialRecipe {
+public class BackpackDyeRecipe extends CustomRecipe {
 
     public BackpackDyeRecipe(ResourceLocation id) {
         super(id);
     }
 
     @Override
-    public boolean matches(CraftingInventory inventory, World world) {
+    public boolean matches(CraftingContainer inventory, Level world) {
 
         ItemStack backpack = ItemStack.EMPTY;
         ItemStack dye = ItemStack.EMPTY;
@@ -35,7 +35,7 @@ public class BackpackDyeRecipe extends SpecialRecipe {
             if (stack.getItem() instanceof BackpackItem) {
                 if (!backpack.isEmpty()) return false;
                 backpack = stack;
-            } else if (stack.getItem().is(Tags.Items.DYES)) {
+            } else if (stack.is(Tags.Items.DYES)) {
                 if (!dye.isEmpty()) return false;
                 dye = stack;
             }
@@ -52,7 +52,7 @@ public class BackpackDyeRecipe extends SpecialRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInventory inventory) {
+    public ItemStack assemble(CraftingContainer inventory) {
         ItemStack backpack = ItemStack.EMPTY;
         ItemStack dye = ItemStack.EMPTY;
         int itemCount = 0;
@@ -66,7 +66,7 @@ public class BackpackDyeRecipe extends SpecialRecipe {
             if (stack.getItem() instanceof BackpackItem) {
                 if (!backpack.isEmpty()) return ItemStack.EMPTY;
                 backpack = stack;
-            } else if (stack.getItem().is(Tags.Items.DYES)) {
+            } else if (stack.is(Tags.Items.DYES)) {
                 if (!dye.isEmpty()) return ItemStack.EMPTY;
                 dye = stack;
             }
@@ -93,7 +93,7 @@ public class BackpackDyeRecipe extends SpecialRecipe {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return BACKPACK_DYE_RECIPE_SERIALIZER;
     }
 }

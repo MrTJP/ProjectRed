@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_integration:and_cell_gate"
+  },
+  "pattern": [
+    "CwC",
+    "WSW",
+    "PwC"
+  ],
+  "key": {
+    "w": {
+      "item": "projectred_core:conductive_plate"
+    },
+    "C": {
+      "item": "projectred_core:cathode"
+    },
+    "S": {
+      "item": "projectred_core:platformed_plate"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    },
+    "W": {
+      "item": "projectred_core:wired_plate"
+    }
+  }
+}

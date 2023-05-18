@@ -1,27 +1,27 @@
 package mrtjp.projectred.exploration.item;
 
 import codechicken.lib.util.ServerUtils;
-import mrtjp.projectred.exploration.ProjectRedExploration;
 import mrtjp.projectred.core.inventory.BaseInventory;
+import mrtjp.projectred.exploration.ProjectRedExploration;
 import mrtjp.projectred.exploration.init.ExplorationTags;
 import mrtjp.projectred.exploration.inventory.container.BackpackContainer;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -35,40 +35,40 @@ public class BackpackItem extends Item {
     public BackpackItem(int colour) {
         super(new Item.Properties()
                 .stacksTo(1)
-                .tab(ProjectRedExploration.EXPLORATION_GROUP));
+                .tab(ProjectRedExploration.EXPLORATION_CREATIVE_TAB));
 
         this.colour = colour;
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
+    public InteractionResult useOn(UseOnContext context) {
 
         if (!context.getLevel().isClientSide) {
-            ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
+            ServerPlayer player = (ServerPlayer) context.getPlayer();
             openGui(player);
         }
-        return ActionResultType.sidedSuccess(context.getLevel().isClientSide);
+        return InteractionResult.sidedSuccess(context.getLevel().isClientSide);
     }
 
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         if (!world.isClientSide) {
-            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+            ServerPlayer serverPlayer = (ServerPlayer) player;
             openGui(serverPlayer);
         }
-        return ActionResult.success(player.getItemInHand(hand));
+        return InteractionResultHolder.success(player.getItemInHand(hand));
     }
 
-    private void openGui(ServerPlayerEntity player) {
+    private void openGui(ServerPlayer player) {
         ServerUtils.openContainer(player,
-                new SimpleNamedContainerProvider((windowId, playerInventory, playerEntity) -> new BackpackContainer(windowId, playerInventory),
-                        new TranslationTextComponent(this.getDescriptionId())));
+                new SimpleMenuProvider((windowId, playerInventory, playerEntity) -> new BackpackContainer(windowId, playerInventory),
+                        new TranslatableComponent(this.getDescriptionId())));
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
         int itemCount = getBackpackItemCount(stack);
-        tooltip.add(new StringTextComponent(itemCount + " / 27").withStyle(TextFormatting.GRAY));
+        tooltip.add(new TextComponent(itemCount + " / 27").withStyle(ChatFormatting.GRAY));
     }
 
     public DyeColor getDyeColor() {
@@ -83,11 +83,11 @@ public class BackpackItem extends Item {
         return isBackpack(stack) && stack.hasTag() && stack.getTag().contains(TAG_INVENTORY);
     }
 
-    public static CompoundNBT getBackpackInventoryTag(ItemStack stack) {
+    public static CompoundTag getBackpackInventoryTag(ItemStack stack) {
         if (hasBackpackInventory(stack)) {
             return stack.getTag().getCompound(TAG_INVENTORY);
         }
-        return new CompoundNBT();
+        return new CompoundTag();
     }
 
     public static int getBackpackItemCount(ItemStack stack) {
@@ -97,7 +97,7 @@ public class BackpackItem extends Item {
         return 0;
     }
 
-    public static void saveBackpackInventory(ItemStack stack, CompoundNBT inventoryTag) {
+    public static void saveBackpackInventory(ItemStack stack, CompoundTag inventoryTag) {
         stack.getOrCreateTag().put(TAG_INVENTORY, inventoryTag);
     }
 
@@ -108,6 +108,6 @@ public class BackpackItem extends Item {
     }
 
     public static boolean isItemAllowedInBackpack(ItemStack stack) {
-        return !ExplorationTags.BACKPACKS_DISALLOWED_TAG.contains(stack.getItem());
+        return !stack.is(ExplorationTags.BACKPACKS_DISALLOWED_TAG);
     }
 }

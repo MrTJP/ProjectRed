@@ -34,10 +34,10 @@ minecraft {
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-    implementation "codechicken:CodeChickenLib:${mc_version}-${ccl_version}:deobf"
-    implementation "codechicken:CBMultipart:${mc_version}-${cbm_version}:deobf"
+    implementation fg.deobf("codechicken:CodeChickenLib:${mc_version}-${ccl_version}:universal")
+    implementation fg.deobf("codechicken:CBMultipart:${mc_version}-${cbm_version}:universal")
 
-    implementation project(":core")
+    compileOnly project(":core")
 }
 
 curseforge {
@@ -52,5 +52,9 @@ curseforge {
         relations {
             requiredDependency 'project-red-core'
         }
+
+        // Java/ForgeGradle integrations don't work after 1.18.2 port
+        addGameVersion "${mc_version}"
+        addGameVersion "Java ${java_lang_version}"
     }
 }

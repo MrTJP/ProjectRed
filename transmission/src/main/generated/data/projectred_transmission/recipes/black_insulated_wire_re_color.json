@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "item": "projectred_transmission:black_insulated_wire"
+  },
+  "ingredients": [
+    {
+      "tag": "projectred_transmission:insulated_wire"
+    },
+    {
+      "tag": "forge:dyes/black"
+    }
+  ]
+}

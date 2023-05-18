@@ -3,9 +3,9 @@ package mrtjp.projectred.transmission.part;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.multipart.api.RedstoneInteractions;
-import codechicken.multipart.api.part.TMultiPart;
-import codechicken.multipart.api.part.redstone.IMaskedRedstonePart;
-import codechicken.multipart.api.part.redstone.IRedstonePart;
+import codechicken.multipart.api.part.MultiPart;
+import codechicken.multipart.api.part.redstone.MaskedRedstonePart;
+import codechicken.multipart.api.part.redstone.RedstonePart;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.CenterLookup;
 import mrtjp.projectred.core.RedstonePropagator;
@@ -14,13 +14,13 @@ import mrtjp.projectred.core.part.IRedstonePropagationPart;
 import mrtjp.projectred.core.part.IRedwireEmitter;
 import mrtjp.projectred.core.part.IRedwirePart;
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 
 import static mrtjp.projectred.core.RedstonePropagator.FORCE;
 import static mrtjp.projectred.core.RedstonePropagator.RISING;
 
-public abstract class FramedRedwirePart extends BaseCenterWirePart implements IRedstonePropagationPart, IPropagationCenterPart, IMaskedRedstonePart, IRedwirePart {
+public abstract class FramedRedwirePart extends BaseCenterWirePart implements IRedstonePropagationPart, IPropagationCenterPart, MaskedRedstonePart, IRedwirePart {
 
     private static final int KEY_SIGNAL = 10;
 
@@ -31,13 +31,13 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
     }
 
     @Override
-    public void save(CompoundNBT tag) {
+    public void save(CompoundTag tag) {
         super.save(tag);
         tag.putByte("signal", signal);
     }
 
     @Override
-    public void load(CompoundNBT tag) {
+    public void load(CompoundTag tag) {
         super.load(tag);
         signal = tag.getByte("signal");
     }
@@ -70,8 +70,8 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
     }
 
     @Override
-    public void onPartChanged(TMultiPart part) {
-        if (!world().isClientSide) {
+    public void onPartChanged(MultiPart part) {
+        if (!level().isClientSide) {
             RedstonePropagator.logCalculation();
             if (updateOutward()) {
                 onMaskChanged();
@@ -84,7 +84,7 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
 
     @Override
     public void onNeighborBlockChanged(BlockPos from) {
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             RedstonePropagator.logCalculation();
             if (updateExternalConns()) {
                 onMaskChanged();
@@ -98,7 +98,7 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
     @Override
     public void onAdded() {
         super.onAdded();
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             RedstonePropagator.propagateTo(this, RISING);
         }
     }
@@ -139,7 +139,7 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
     public boolean discoverStraightOverride(int s) {
         boolean prevCanConnectRW = RedstonePropagator.canConnectRedwires();
         RedstonePropagator.setCanConnectRedwires(false);
-        boolean discovered = (RedstoneInteractions.otherConnectionMask(world(), pos(), s, false) &
+        boolean discovered = (RedstoneInteractions.otherConnectionMask(level(), pos(), s, false) &
                 RedstoneInteractions.connectionMask(this, s)) != 0;
         RedstonePropagator.setCanConnectRedwires(prevCanConnectRW);
         return discovered;
@@ -147,9 +147,9 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
 
     @Override
     public boolean discoverInternalOverride(int s) {
-        TMultiPart part = tile().getSlottedPart(s);
-        if (part instanceof IRedstonePart) {
-            return ((IRedstonePart) part).canConnectRedstone(s ^ 1);
+        MultiPart part = tile().getSlottedPart(s);
+        if (part instanceof RedstonePart) {
+            return ((RedstonePart) part).canConnectRedstone(s ^ 1);
         }
         return false;
     }
@@ -194,7 +194,7 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
     public void propagateOther(int mode) {
         for (int s = 0; s < 6; s++) {
             if (!maskConnects(s)) {
-                RedstonePropagator.addNeighborChange(world(), posOfStraight(s));
+                RedstonePropagator.addNeighborChange(level(), posOfStraight(s));
             }
         }
     }
@@ -213,7 +213,7 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
     //endregion
 
     protected int calculateStraightSignal(int s) {
-        CenterLookup lookup = CenterLookup.lookupStraightCenter(world(), pos(), s);
+        CenterLookup lookup = CenterLookup.lookupStraightCenter(level(), pos(), s);
         if (lookup.part != null) {
             return resolveSignal(lookup);
         }
@@ -223,14 +223,14 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
     }
 
     protected int calculateInternalSignal(int s) {
-        CenterLookup lookup = CenterLookup.lookupInsideFace(world(), pos(), s);
+        CenterLookup lookup = CenterLookup.lookupInsideFace(level(), pos(), s);
         int signal = resolveSignal(lookup);
         if (signal > 0) {
             return signal;
         }
 
-        if (lookup.part instanceof IRedstonePart) {
-            IRedstonePart rw = (IRedstonePart) lookup.part;
+        if (lookup.part instanceof RedstonePart) {
+            RedstonePart rw = (RedstonePart) lookup.part;
             return Math.max(rw.strongPowerLevel(lookup.otherDirection), rw.weakPowerLevel(lookup.otherDirection));
         }
 

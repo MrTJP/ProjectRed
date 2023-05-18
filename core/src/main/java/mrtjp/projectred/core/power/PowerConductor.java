@@ -1,6 +1,6 @@
 package mrtjp.projectred.core.power;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 import java.util.List;
 
@@ -25,12 +25,12 @@ public class PowerConductor {
     }
 
     //region Save/load
-    public void save(CompoundNBT tag) {
+    public void save(CompoundTag tag) {
         tag.putDouble("vCap", vCap);
         tag.putDouble("iCap", iCap);
     }
 
-    public void load(CompoundNBT tag) {
+    public void load(CompoundTag tag) {
         if (tag.contains("vCap")) {
             vCap = tag.getDouble("vCap");
             iCap = tag.getDouble("iCap");

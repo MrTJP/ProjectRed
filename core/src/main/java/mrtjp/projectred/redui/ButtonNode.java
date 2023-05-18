@@ -1,12 +1,12 @@
 package mrtjp.projectred.redui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.util.text.ITextProperties;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-import static net.minecraft.client.gui.AbstractGui.drawCenteredString;
+import static net.minecraft.client.gui.GuiComponent.drawCenteredString;
 
 public class ButtonNode extends AbstractButtonNode {
 
@@ -14,7 +14,7 @@ public class ButtonNode extends AbstractButtonNode {
     public static final int BUTTON_TEXT_COLOR_HIGHLIGHT = 0xFFFFFFA0;
 
     private Runnable clickFunction = () -> { };
-    private Consumer<List<ITextProperties>> tooltipBuilder = c -> { };
+    private Consumer<List<Component>> tooltipBuilder = c -> { };
 
     private String buttonText = "";
 
@@ -22,7 +22,7 @@ public class ButtonNode extends AbstractButtonNode {
         this.clickFunction = clickFunction;
     }
 
-    public void setTooltipBuilder(Consumer<List<ITextProperties>> tooltipBuilder) {
+    public void setTooltipBuilder(Consumer<List<Component>> tooltipBuilder) {
         this.tooltipBuilder = tooltipBuilder;
     }
 
@@ -41,7 +41,7 @@ public class ButtonNode extends AbstractButtonNode {
     }
 
     @Override
-    protected void buildTooltip(List<ITextProperties> tooltip) {
+    protected void buildTooltip(List<Component> tooltip) {
         tooltipBuilder.accept(tooltip);
     }
 
@@ -50,7 +50,7 @@ public class ButtonNode extends AbstractButtonNode {
     }
 
     @Override
-    protected void drawButtonBody(MatrixStack stack, boolean mouseover) {
+    protected void drawButtonBody(PoseStack stack, boolean mouseover) {
 
         drawCenteredString(stack, getRoot().getFontRenderer(), buttonText,
                 getPosition().x + getFrame().width()/2,

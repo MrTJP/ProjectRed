@@ -1,16 +1,16 @@
 package mrtjp.projectred.core;
 
 import codechicken.lib.vec.Rotation;
-import codechicken.multipart.api.part.TMultiPart;
-import codechicken.multipart.block.TileMultiPart;
+import codechicken.multipart.api.part.MultiPart;
+import codechicken.multipart.block.TileMultipart;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IBundledTile;
 import mrtjp.projectred.api.IBundledTileInteraction;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -30,23 +30,23 @@ public class BundledSignalsLib {
         interactions.add(interaction);
     }
 
-    public static byte[] getBundledInput(World world, BlockPos pos, Direction facing) {
+    public static byte[] getBundledInput(Level world, BlockPos pos, Direction facing) {
 
         int side = facing.ordinal();
-        TileEntity tile = world.getBlockEntity(pos.relative(facing));
+        BlockEntity tile = world.getBlockEntity(pos.relative(facing));
 
         if (tile instanceof IBundledTile) {
             return ((IBundledTile) tile).getBundledSignal(side ^ 1);
         }
 
-        if (tile instanceof TileMultiPart) {
-            TileMultiPart tmp = (TileMultiPart) tile;
+        if (tile instanceof TileMultipart) {
+            TileMultipart tmp = (TileMultipart) tile;
             byte[] signal = null;
 
             // Source signal from all 4 perpendicular faces
             for (int r = 0; r < 4; r++) {
                 int pside = Rotation.rotateSide(side, r);
-                TMultiPart part = tmp.getSlottedPart(pside);
+                MultiPart part = tmp.getSlottedPart(pside);
                 if (part instanceof IBundledEmitter) {
                     int pr = Rotation.rotationTo(pside, side ^ 1);
                     signal = raiseSignal(signal, ((IBundledEmitter) part).getBundledSignal(pr));
@@ -54,7 +54,7 @@ public class BundledSignalsLib {
             }
 
             // Source signal from center part
-            TMultiPart part = tmp.getSlottedPart(6);
+            MultiPart part = tmp.getSlottedPart(6);
             if (part instanceof IBundledEmitter) {
                 signal = raiseSignal(signal, ((IBundledEmitter) part).getBundledSignal(side ^ 1));
             }
@@ -65,7 +65,7 @@ public class BundledSignalsLib {
         return null;
     }
 
-    public static boolean canConnectBundledViaInteraction(World world, BlockPos pos, Direction side) {
+    public static boolean canConnectBundledViaInteraction(Level world, BlockPos pos, Direction side) {
         for (IBundledTileInteraction interaction : interactions) {
             if (interaction.isValidInteractionFor(world, pos, side)) {
                 return interaction.canConnectBundled(world, pos, side);
@@ -74,14 +74,14 @@ public class BundledSignalsLib {
         return false;
     }
 
-    public static boolean isValidInteractionFor(World world, BlockPos pos, Direction side) {
+    public static boolean isValidInteractionFor(Level world, BlockPos pos, Direction side) {
         for (IBundledTileInteraction interaction : interactions) {
             if (interaction.isValidInteractionFor(world, pos, side)) return true;
         }
         return false;
     }
 
-    public static byte[] getBundledSignalViaInteraction(World world, BlockPos pos, Direction side) {
+    public static byte[] getBundledSignalViaInteraction(Level world, BlockPos pos, Direction side) {
         for (IBundledTileInteraction interaction : interactions) {
             if (interaction.isValidInteractionFor(world, pos, side)) {
                 return interaction.getBundledSignal(world, pos, side);
@@ -154,11 +154,11 @@ public class BundledSignalsLib {
         return signal == null ? null : signal.clone();
     }
 
-    public static void saveSignal(CompoundNBT tag, String key, byte[] signal) {
+    public static void saveSignal(CompoundTag tag, String key, byte[] signal) {
         if (signal != null) tag.putByteArray(key, signal);
     }
 
-    public static byte[] loadSignal(CompoundNBT tag, String key) {
+    public static byte[] loadSignal(CompoundTag tag, String key) {
         if (tag.contains(key)) return tag.getByteArray(key).clone();
         return null;
     }

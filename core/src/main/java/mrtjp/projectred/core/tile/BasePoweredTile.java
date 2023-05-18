@@ -1,20 +1,21 @@
 package mrtjp.projectred.core.tile;
 
+import codechicken.multipart.api.TickableTile;
 import mrtjp.projectred.core.power.PowerConductor;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class BasePoweredTile extends BaseConnectableTile implements IPoweredTile, ITickableTileEntity {
+public abstract class BasePoweredTile extends BaseConnectableTile implements IPoweredTile {
 
     private final List<PowerConductor> connectedConductors = new LinkedList<>();
     private boolean cacheInvalid = true;
 
-    public BasePoweredTile(TileEntityType<?> type) {
-        super(type);
+    public BasePoweredTile(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     protected void invalidateConductorCache() {

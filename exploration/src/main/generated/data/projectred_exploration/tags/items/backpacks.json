@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "#projectred_exploration:backpacks/white",
+    "#projectred_exploration:backpacks/orange",
+    "#projectred_exploration:backpacks/magenta",
+    "#projectred_exploration:backpacks/light_blue",
+    "#projectred_exploration:backpacks/yellow",
+    "#projectred_exploration:backpacks/lime",
+    "#projectred_exploration:backpacks/pink",
+    "#projectred_exploration:backpacks/gray",
+    "#projectred_exploration:backpacks/light_gray",
+    "#projectred_exploration:backpacks/cyan",
+    "#projectred_exploration:backpacks/purple",
+    "#projectred_exploration:backpacks/blue",
+    "#projectred_exploration:backpacks/brown",
+    "#projectred_exploration:backpacks/green",
+    "#projectred_exploration:backpacks/red",
+    "#projectred_exploration:backpacks/black"
+  ]
+}

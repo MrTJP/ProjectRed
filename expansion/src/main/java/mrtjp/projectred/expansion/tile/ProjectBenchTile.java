@@ -4,6 +4,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
+import codechicken.multipart.api.TickableTile;
 import mrtjp.projectred.core.tile.IPacketReceiverTile;
 import mrtjp.projectred.core.tile.ProjectRedTile;
 import mrtjp.projectred.expansion.CraftingHelper;
@@ -11,21 +12,18 @@ import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.inventory.container.ProjectBenchContainer;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.lib.InventoryLib;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.*;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
@@ -34,20 +32,20 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ProjectBenchTile extends ProjectRedTile implements ITickableTileEntity, IPacketReceiverTile, CraftingHelper.InventorySource {
+public class ProjectBenchTile extends ProjectRedTile implements IPacketReceiverTile, CraftingHelper.InventorySource {
 
     private static final int KEY_WRITE_PLAN = 2;
     private static final int KEY_CLEAR_GRID = 3;
 
-    private final Inventory planInventory = new Inventory(1) {
+    private final SimpleContainer planInventory = new SimpleContainer(1) {
         @Override
         public boolean canPlaceItem(int slot, ItemStack stack) {
             return stack.getItem() instanceof RecipePlanItem;
         }
     };
-    private final Inventory craftingGrid = new Inventory(9);
-    private final Inventory storageInventory = new Inventory(18);
-    private final Inventory planCraftingGrid = new Inventory(9);
+    private final SimpleContainer craftingGrid = new SimpleContainer(9);
+    private final SimpleContainer storageInventory = new SimpleContainer(18);
+    private final SimpleContainer planCraftingGrid = new SimpleContainer(9);
 
     private final CraftingHelper craftingHelper = new CraftingHelper(this);
     private final LazyOptional<?> storageInventoryCap = LazyOptional.of(this::createStorageInventoryCap);
@@ -55,8 +53,8 @@ public class ProjectBenchTile extends ProjectRedTile implements ITickableTileEnt
     private boolean isPlanRecipe = false;
     private boolean recipeNeedsUpdate = true;
 
-    public ProjectBenchTile() {
-        super(ExpansionReferences.PROJECT_BENCH_TILE);
+    public ProjectBenchTile(BlockPos pos, BlockState state) {
+        super(ExpansionReferences.PROJECT_BENCH_TILE, pos, state);
 
         planInventory.addListener(this::onInventoryChanged);
         craftingGrid.addListener(this::onInventoryChanged);
@@ -65,7 +63,7 @@ public class ProjectBenchTile extends ProjectRedTile implements ITickableTileEnt
     }
 
     @Override
-    public void saveToNBT(CompoundNBT tag) {
+    public void saveToNBT(CompoundTag tag) {
         tag.put("plan_inv", planInventory.createTag());
         tag.put("crafting_inv", craftingGrid.createTag());
         tag.put("storage_inv", storageInventory.createTag());
@@ -73,7 +71,7 @@ public class ProjectBenchTile extends ProjectRedTile implements ITickableTileEnt
     }
 
     @Override
-    public void loadFromNBT(CompoundNBT tag) {
+    public void loadFromNBT(CompoundTag tag) {
         planInventory.fromTag(tag.getList("plan_inv", 10));
         craftingGrid.fromTag(tag.getList("crafting_inv", 10));
         storageInventory.fromTag(tag.getList("storage_inv", 10));
@@ -93,7 +91,7 @@ public class ProjectBenchTile extends ProjectRedTile implements ITickableTileEnt
     }
 
     @Override
-    public void receiveUpdateFromClient(int key, MCDataInput input, ServerPlayerEntity player) {
+    public void receiveUpdateFromClient(int key, MCDataInput input, ServerPlayer player) {
         switch (key) {
             case KEY_WRITE_PLAN:
                 writePlan();
@@ -115,17 +113,17 @@ public class ProjectBenchTile extends ProjectRedTile implements ITickableTileEnt
     }
 
     @Override
-    public ActionResultType onBlockActivated(PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
         if (!getLevel().isClientSide) {
             ServerUtils.openContainer(
-                    (ServerPlayerEntity) player,
-                    new SimpleNamedContainerProvider(
+                    (ServerPlayer) player,
+                    new SimpleMenuProvider(
                             (id, inv, p) -> new ProjectBenchContainer(inv, this, id),
-                            new TranslationTextComponent(getBlockState().getBlock().getDescriptionId())),
+                            new TextComponent(getBlockState().getBlock().getDescriptionId())),
                     p -> p.writePos(getBlockPos()));
         }
 
-        return ActionResultType.sidedSuccess(getLevel().isClientSide);
+        return InteractionResult.sidedSuccess(getLevel().isClientSide);
     }
 
     @Override
@@ -174,7 +172,7 @@ public class ProjectBenchTile extends ProjectRedTile implements ITickableTileEnt
         }
     }
 
-    private void onInventoryChanged(IInventory inventory) {
+    private void onInventoryChanged(Container inventory) {
         recipeNeedsUpdate = true;
         setChanged();
     }
@@ -211,10 +209,10 @@ public class ProjectBenchTile extends ProjectRedTile implements ITickableTileEnt
         }
     }
 
-    private void clearGrid(ServerPlayerEntity player) {
+    private void clearGrid(ServerPlayer player) {
         // Target this player's container specifically in case clearing grid will require
         // items to spill into player inventory
-        Container container = player.containerMenu;
+        AbstractContainerMenu container = player.containerMenu;
         if (container instanceof ProjectBenchContainer) {
             ((ProjectBenchContainer) container).transferAllFromGrid();
             updateRecipeIfNeeded();
@@ -223,31 +221,31 @@ public class ProjectBenchTile extends ProjectRedTile implements ITickableTileEnt
 
     //region CraftingHelper.InventorySource
     @Override
-    public IInventory getCraftingMatrix() {
+    public Container getCraftingMatrix() {
         return isPlanRecipe ? planCraftingGrid : craftingGrid;
     }
 
     @Override
-    public IInventory getStorage() {
+    public Container getStorage() {
         return storageInventory;
     }
 
     @Override
-    public World getWorld() {
+    public Level getWorld() {
         return getLevel();
     }
     //endregion
 
     //region Container getters
-    public Inventory getPlanInventory() {
+    public SimpleContainer getPlanInventory() {
         return planInventory;
     }
 
-    public Inventory getCraftingGridInventory() {
+    public SimpleContainer getCraftingGridInventory() {
         return craftingGrid;
     }
 
-    public Inventory getStorageInventory() {
+    public SimpleContainer getStorageInventory() {
         return storageInventory;
     }
 
@@ -270,7 +268,7 @@ public class ProjectBenchTile extends ProjectRedTile implements ITickableTileEnt
     }
 
     @Override
-    protected void invalidateCaps() {
+    public void invalidateCaps() {
         super.invalidateCaps();
         storageInventoryCap.invalidate();
     }

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_integration:bus_converter_gate"
+  },
+  "pattern": [
+    "PBP",
+    "RSR",
+    "PRP"
+  ],
+  "key": {
+    "B": {
+      "item": "projectred_core:bundled_plate"
+    },
+    "S": {
+      "item": "projectred_core:silicon_chip"
+    },
+    "R": {
+      "item": "projectred_core:conductive_plate"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    }
+  }
+}

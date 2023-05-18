@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_core:copper_coil"
+  },
+  "pattern": [
+    "CD"
+  ],
+  "key": {
+    "D": {
+      "item": "projectred_core:draw_plate"
+    },
+    "C": {
+      "tag": "forge:ingots/copper"
+    }
+  }
+}

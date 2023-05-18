@@ -1,14 +1,14 @@
 package mrtjp.projectred.core.part;
 
 import codechicken.lib.vec.Rotation;
-import codechicken.multipart.api.part.TMultiPart;
-import codechicken.multipart.block.BlockMultiPart;
-import codechicken.multipart.block.TileMultiPart;
+import codechicken.multipart.api.part.MultiPart;
+import codechicken.multipart.block.BlockMultipart;
+import codechicken.multipart.block.TileMultipart;
 import codechicken.multipart.util.PartMap;
 import mrtjp.projectred.api.IConnectable;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 
 /**
  * Default implementation of Connectable face part. Manages connection mask and facilitates connections with
@@ -30,7 +30,7 @@ import net.minecraft.world.World;
  * <p>
  * F = Render corner connections. Like corner connections but set to low if the other wire part is smaller than this (they render to us not us to them)
  */
-public interface IConnectableFacePart extends MultiPartInterface, IConnectablePart, IOrientableFacePart {
+public interface IConnectableFacePart extends MultiPart, IConnectablePart, IOrientableFacePart {
 
     //region Neighbor Positions
     default BlockPos posOfCorner(int r) {
@@ -63,23 +63,23 @@ public interface IConnectableFacePart extends MultiPartInterface, IConnectablePa
                 .relative(Direction.values()[absDir])
                 .relative(Direction.values()[getSide()]);
 
-        TMultiPart part = BlockMultiPart.getPart(level(), pos, absDir ^ 1);
+        MultiPart part = BlockMultipart.getPart(level(), pos, absDir ^ 1);
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
 
     default IConnectable getStraight(int r) {
         BlockPos pos = pos().relative(Direction.values()[absoluteDir(r)]);
-        TMultiPart part = BlockMultiPart.getPart(level(), pos, getSide());
+        MultiPart part = BlockMultipart.getPart(level(), pos, getSide());
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
 
     default IConnectable getInternal(int r) {
-        TMultiPart part = tile().getSlottedPart(absoluteDir(r));
+        MultiPart part = tile().getSlottedPart(absoluteDir(r));
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
 
     default IConnectable getCenter() {
-        TMultiPart part = tile().getSlottedPart(6);
+        MultiPart part = tile().getSlottedPart(6);
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
     //endregion
@@ -183,7 +183,7 @@ public interface IConnectableFacePart extends MultiPartInterface, IConnectablePa
         int side1 = absDir ^ 1;
         int side2 = getSide();
 
-        TileMultiPart t = BlockMultiPart.getTile(level(), pos);
+        TileMultipart t = BlockMultipart.getTile(level(), pos);
         if (t == null) return false; // Non-multipart block is here. We cant go through it.
 
         // Tile may have parts, but at least all slots that take up this edge must be empty.

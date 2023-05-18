@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_exploration:sapphire_helmet",
+    "nbt": "{Damage:0}"
+  },
+  "pattern": [
+    "MMM",
+    "M M"
+  ],
+  "key": {
+    "M": {
+      "tag": "forge:gems/sapphire"
+    }
+  }
+}

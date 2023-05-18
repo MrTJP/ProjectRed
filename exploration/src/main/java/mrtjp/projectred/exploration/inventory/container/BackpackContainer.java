@@ -4,25 +4,25 @@ import codechicken.lib.inventory.container.ICCLContainerFactory;
 import mrtjp.projectred.exploration.inventory.BackpackInventory;
 import mrtjp.projectred.exploration.item.BackpackItem;
 import mrtjp.projectred.lib.InventoryLib;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.ClickType;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 import static mrtjp.projectred.exploration.init.ExplorationReferences.BACKPACK_CONTAINER;
 
-public class BackpackContainer extends Container {
+public class BackpackContainer extends AbstractContainerMenu {
 
     public static final ICCLContainerFactory<BackpackContainer> FACTORY = (windowId, playerInv, packet) -> new BackpackContainer(windowId, playerInv);
 
     private final BackpackInventory inventory = new BackpackInventory(27);
 
-    private final PlayerInventory playerInventory;
+    private final Inventory playerInventory;
 
-    public BackpackContainer(int windowId, PlayerInventory playerInventory) {
+    public BackpackContainer(int windowId, Inventory playerInventory) {
         super(BACKPACK_CONTAINER, windowId);
 
         this.playerInventory = playerInventory;
@@ -35,47 +35,50 @@ public class BackpackContainer extends Container {
     }
 
     @Override
-    public ItemStack clicked(int slotId, int dragType, ClickType clickType, PlayerEntity player) {
+    public void clicked(int slotId, int dragType, ClickType clickType, Player player) {
         // Required because vanilla's shyte handling of number hotbar quick swap.
-        // Apparently it only asks the target slot (the one hovered over) if it can accept the item, but it does not ask the
+        // Apparently it only asks the non-hotbar slot if it can accept the item, but it does not ask the
         // hotbar slot (corresponding to number pressed) if it can take the stack (which would be denied by the custom slot class's canTakeStack implemented above).
-        // Additionally, if the target slot is empty, it calls that empty slot's canTakeStack. This is almost certainly
+        // Additionally, if the non-hotbar slot is empty, it calls that empty slot's canTakeStack. This is almost certainly
         // a bug. canTakeStack should be called on BOTH slots, and isItemValid should be called on BOTH slots with the other slots contents.
+        //
+        // Update 1.18.2: Still, only the non-hotbar slot is checked for mayPickup/mayPlace results. Empty non-hotbar slot is no longer asked for
+        //                canTakeStack (instead its correctly asked mayPlace) but the hotbar slot is still not asked for canTakeStack.
 
         if (isHotbar(slotId)) {
             int hotbarIndex = slotId - 27;
-            if (hotbarIndex == player.inventory.selected) {
-                return ItemStack.EMPTY;
+            if (hotbarIndex == player.getInventory().selected) {
+                return;
             }
         }
 
         if (clickType == ClickType.SWAP) {
-            if (dragType == player.inventory.selected) {
-                return ItemStack.EMPTY;
+            if (dragType == player.getInventory().selected) {
+                return;
             }
         }
 
-        return super.clicked(slotId, dragType, clickType, player);
+        super.clicked(slotId, dragType, clickType, player);
     }
 
     @Override
-    public void removed(PlayerEntity player) {
+    public void removed(Player player) {
         super.removed(player);
         inventory.saveInventoryToMainHand(playerInventory);
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         ItemStack stack = player.getMainHandItem();
         return BackpackItem.isBackpack(stack);
     }
 
-    protected void onBackpackInventoryChanged(IInventory backpackInventory) {
+    protected void onBackpackInventoryChanged(Container backpackInventory) {
         // Note: no need to save here. Inventory is saved on container close
     }
 
     @Override
-    public ItemStack quickMoveStack(PlayerEntity player, int slotIndex) {
+    public ItemStack quickMoveStack(Player player, int slotIndex) {
         Slot slot = slots.get(slotIndex);
         if (slot == null || !slot.hasItem()) return ItemStack.EMPTY;
 
@@ -131,13 +134,13 @@ public class BackpackContainer extends Container {
      * Slot for the actual player inventory. Disables picking up backpack from hotbar.
      */
     private static class BackpackPlayerSlot extends Slot {
-        public BackpackPlayerSlot(IInventory inventory, int slotIndex, int x, int y) {
+        public BackpackPlayerSlot(Container inventory, int slotIndex, int x, int y) {
             super(inventory, slotIndex, x, y);
         }
         @Override
-        public boolean mayPickup(PlayerEntity player) {
+        public boolean mayPickup(Player player) {
             // Dont allow pickup if this is the slot containing the selected backpack
-            return getSlotIndex() != player.inventory.selected;
+            return getSlotIndex() != player.getInventory().selected;
         }
     }
 
@@ -145,7 +148,7 @@ public class BackpackContainer extends Container {
      * Slot for the backpack contents inventory. Enforces the backpack blacklist.
      */
     private static class BackpackSlot extends Slot {
-        public BackpackSlot(IInventory inventory, int slotIndex, int x, int y) {
+        public BackpackSlot(Container inventory, int slotIndex, int x, int y) {
             super(inventory, slotIndex, x, y);
         }
 

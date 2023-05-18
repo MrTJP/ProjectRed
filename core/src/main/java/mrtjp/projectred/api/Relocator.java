@@ -5,8 +5,8 @@
  */
 package mrtjp.projectred.api;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import java.util.Set;
 
@@ -31,7 +31,7 @@ public abstract class Relocator {
      * @param world The world in which the movement will occure.
      * @throws IllegalStateException If the world was already set.
      */
-    public abstract void setWorld(World world);
+    public abstract void setWorld(Level world);
 
     /**
      * Sets the direction towards which all the queued blocks will move.

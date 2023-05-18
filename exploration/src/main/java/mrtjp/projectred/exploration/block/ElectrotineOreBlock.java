@@ -1,63 +1,63 @@
 package mrtjp.projectred.exploration.block;
 
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particles.RedstoneParticleData;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.ToolType;
+import com.mojang.math.Vector3f;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.Random;
 
 /**
  * All methods lifted straight from RedstoneOreBlock
  */
-public class ElectrotineOreBlock extends OreBlock {
+public class ElectrotineOreBlock extends ExplorationOreBlock {
 
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
-    public static final RedstoneParticleData ELECTROTINE_PARTICLE = new RedstoneParticleData(
-            15 / 255F, 103 / 255F, 178 / 255F, 0.6F);
+    public static final DustParticleOptions ELECTROTINE_PARTICLE = new DustParticleOptions(
+            new Vector3f(15 / 255F, 103 / 255F, 178 / 255F), 0.6F);
 
-    public ElectrotineOreBlock(int harvestLevel, int minExp, int maxExp) {
-        super(AbstractBlock.Properties.of(Material.STONE)
+    public ElectrotineOreBlock(int minExp, int maxExp) {
+        super(BlockBehaviour.Properties.of(Material.STONE)
                 .strength(3.0F, 3.0F)
-                .harvestLevel(harvestLevel)
                 .requiresCorrectToolForDrops()
-                .harvestTool(ToolType.PICKAXE)
                 .sound(SoundType.STONE)
-                .lightLevel(s -> s.getValue(LIT) ? 9 : 0), harvestLevel, minExp, maxExp);
+                .lightLevel(s -> s.getValue(LIT) ? 9 : 0), minExp, maxExp);
 
         registerDefaultState(defaultBlockState().setValue(LIT, false));
     }
 
-    public void attack(BlockState state, World world, BlockPos pos, PlayerEntity player) {
+    @Override
+    public void attack(BlockState state, Level world, BlockPos pos, Player player) {
         interact(state, world, pos);
         super.attack(state, world, pos, player);
     }
 
-    public void stepOn(World world, BlockPos pos, Entity player) {
+    @Override
+    public void stepOn(Level world, BlockPos pos, BlockState state, Entity player) {
         interact(world.getBlockState(pos), world, pos);
-        super.stepOn(world, pos, player);
+        super.stepOn(world, pos, state, player);
     }
 
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTraceResult) {
         if (world.isClientSide) {
             spawnParticles(world, pos);
         } else {
@@ -65,10 +65,10 @@ public class ElectrotineOreBlock extends OreBlock {
         }
 
         ItemStack itemstack = player.getItemInHand(hand);
-        return itemstack.getItem() instanceof BlockItem && (new BlockItemUseContext(player, hand, itemstack, rayTraceResult)).canPlace() ? ActionResultType.PASS : ActionResultType.SUCCESS;
+        return itemstack.getItem() instanceof BlockItem && (new BlockPlaceContext(player, hand, itemstack, rayTraceResult)).canPlace() ? InteractionResult.PASS : InteractionResult.SUCCESS;
     }
 
-    private static void interact(BlockState state, World world, BlockPos pos) {
+    private static void interact(BlockState state, Level world, BlockPos pos) {
         spawnParticles(world, pos);
         if (!state.getValue(LIT)) {
             world.setBlock(pos, state.setValue(LIT, true), 3);
@@ -79,20 +79,20 @@ public class ElectrotineOreBlock extends OreBlock {
         return state.getValue(LIT);
     }
 
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
         if (state.getValue(LIT)) {
             world.setBlock(pos, state.setValue(LIT, false), 3);
         }
     }
 
     @Override
-    public void animateTick(BlockState state, World world, BlockPos pos, Random random) {
+    public void animateTick(BlockState state, Level world, BlockPos pos, Random random) {
         if (state.getValue(LIT)) {
             spawnParticles(world, pos);
         }
     }
 
-    private static void spawnParticles(World world, BlockPos pos) {
+    private static void spawnParticles(Level world, BlockPos pos) {
         double d0 = 0.5625D;
         Random random = world.random;
 
@@ -108,7 +108,7 @@ public class ElectrotineOreBlock extends OreBlock {
         }
     }
 
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> stateBuilder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> stateBuilder) {
         stateBuilder.add(LIT);
     }
 }

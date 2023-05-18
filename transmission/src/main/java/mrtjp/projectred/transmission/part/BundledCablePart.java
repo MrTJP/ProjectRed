@@ -1,7 +1,7 @@
 package mrtjp.projectred.transmission.part;
 
 import codechicken.lib.vec.Rotation;
-import codechicken.multipart.api.part.TMultiPart;
+import codechicken.multipart.api.part.MultiPart;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IBundledTile;
 import mrtjp.projectred.api.IConnectable;
@@ -11,10 +11,10 @@ import mrtjp.projectred.core.FaceLookup;
 import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.core.part.IPropagationFacePart;
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.Arrays;
 
@@ -61,20 +61,20 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
 
     //region TMultiPart overrides
     @Override
-    public void save(CompoundNBT tag) {
+    public void save(CompoundTag tag) {
         super.save(tag);
         tag.putByteArray("signal", signal);
     }
 
     @Override
-    public void load(CompoundNBT tag) {
+    public void load(CompoundTag tag) {
         super.load(tag);
         setSignal(tag.getByteArray("signal"));
     }
 
     @Override
-    public void onPartChanged(TMultiPart part) {
-        if (!world().isClientSide) {
+    public void onPartChanged(MultiPart part) {
+        if (!level().isClientSide) {
             RedstonePropagator.logCalculation();
             if (updateOutward()) {
                 onMaskChanged();
@@ -87,7 +87,7 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
 
     @Override
     public void onNeighborBlockChanged(BlockPos from) {
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             if (dropIfCantStay()) {
                 return;
             }
@@ -104,7 +104,7 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
     @Override
     public void onAdded() {
         super.onAdded();
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             RedstonePropagator.propagateTo(this, RISING);
         }
     }
@@ -130,7 +130,7 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
     @Override
     public boolean discoverStraightOverride(int absDir) {
         BlockPos pos = pos().relative(Direction.values()[absDir]);
-        TileEntity tile = world().getBlockEntity(pos);
+        BlockEntity tile = level().getBlockEntity(pos);
         if (tile instanceof IMaskedBundledTile) {
             IMaskedBundledTile b = (IMaskedBundledTile) tile;
             int r = Rotation.rotationTo(absDir, getSide());
@@ -141,7 +141,7 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
             return ((IBundledTile) tile).canConnectBundled(absDir^1);
         }
 
-        return BundledSignalsLib.canConnectBundledViaInteraction(world(), pos, Direction.values()[absDir^1]);
+        return BundledSignalsLib.canConnectBundledViaInteraction(level(), pos, Direction.values()[absDir^1]);
     }
     //endregion
 
@@ -189,22 +189,22 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
     }
 
     protected void calcCornerSignal(int r) {
-        FaceLookup lookup = FaceLookup.lookupCorner(world(), pos(), getSide(), r);
+        FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
         resolveSignal(lookup);
     }
 
     protected void calcStraightSignal(int r) {
-        FaceLookup lookup = FaceLookup.lookupStraight(world(), pos(), getSide(), r);
+        FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
         resolveSignal(lookup);
     }
 
     protected void calcInsideSignal(int r) {
-        FaceLookup lookup = FaceLookup.lookupInsideFace(world(), pos(), getSide(), r);
+        FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
         resolveSignal(lookup);
     }
 
     protected void calcCenterSignal() {
-        FaceLookup lookup = FaceLookup.lookupInsideCenter(world(), pos(), getSide());
+        FaceLookup lookup = FaceLookup.lookupInsideCenter(level(), pos(), getSide());
         resolveSignal(lookup);
     }
 

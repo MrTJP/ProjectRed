@@ -3,19 +3,20 @@ package mrtjp.projectred.expansion.tile;
 import codechicken.lib.util.ServerUtils;
 import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.block.ProjectRedBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
 public abstract class BaseMachineTile extends LowLoadPoweredTile {
 
@@ -24,12 +25,12 @@ public abstract class BaseMachineTile extends LowLoadPoweredTile {
     private int remainingWork = 0;
     private int totalWork = 0;
 
-    public BaseMachineTile(TileEntityType<?> type) {
-        super(type);
+    public BaseMachineTile(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     @Override
-    public void saveToNBT(CompoundNBT tag) {
+    public void saveToNBT(CompoundTag tag) {
         super.saveToNBT(tag);
         tag.putInt("remaining_work", remainingWork);
         tag.putInt("total_work", totalWork);
@@ -38,7 +39,7 @@ public abstract class BaseMachineTile extends LowLoadPoweredTile {
     }
 
     @Override
-    public void loadFromNBT(CompoundNBT tag) {
+    public void loadFromNBT(CompoundTag tag) {
         super.loadFromNBT(tag);
         remainingWork = tag.getInt("remaining_work");
         totalWork = tag.getInt("total_work");
@@ -97,7 +98,7 @@ public abstract class BaseMachineTile extends LowLoadPoweredTile {
     }
 
     @Override
-    public ActionResultType onBlockActivated(PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack held = player.getItemInHand(hand);
 
         // Try to rotate block
@@ -109,7 +110,7 @@ public abstract class BaseMachineTile extends LowLoadPoweredTile {
                     rotateBlock();
                     screwdriver.damageScrewdriver(player, held);
                 }
-                return ActionResultType.sidedSuccess(level.isClientSide);
+                return InteractionResult.sidedSuccess(level.isClientSide);
             }
         }
 
@@ -117,7 +118,7 @@ public abstract class BaseMachineTile extends LowLoadPoweredTile {
         if (!level.isClientSide) {
             openGui(player);
         }
-        return ActionResultType.sidedSuccess(level.isClientSide);
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     private void rotateBlock() {
@@ -127,16 +128,16 @@ public abstract class BaseMachineTile extends LowLoadPoweredTile {
         getLevel().setBlockAndUpdate(getBlockPos(), state.setValue(ProjectRedBlock.ROTATION, newRotation));
     }
 
-    private void openGui(PlayerEntity player) {
+    private void openGui(Player player) {
         ServerUtils.openContainer(
-                (ServerPlayerEntity) player,
-                new SimpleNamedContainerProvider(
+                (ServerPlayer) player,
+                new SimpleMenuProvider(
                         this::createMenu,
-                        new TranslationTextComponent(getBlockState().getBlock().getDescriptionId())),
+                        new TextComponent(getBlockState().getBlock().getDescriptionId())),
                 p -> p.writePos(getBlockPos()));
     }
 
-    protected abstract Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player);
+    protected abstract AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player);
 
     public int getRemainingWork() {
         return remainingWork;

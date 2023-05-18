@@ -1,88 +1,88 @@
 package mrtjp.projectred.transmission;
 
 import codechicken.lib.vec.Rotation;
-import codechicken.multipart.api.part.TMultiPart;
-import codechicken.multipart.block.BlockMultiPart;
-import codechicken.multipart.block.TileMultiPart;
+import codechicken.multipart.api.part.MultiPart;
+import codechicken.multipart.block.BlockMultipart;
+import codechicken.multipart.block.TileMultipart;
 import codechicken.multipart.util.PartMap;
 import mrtjp.projectred.api.IConnectable;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class ConnectionsLib {
 
     //region Neighbor part lookup
-    public static TMultiPart getFaceCornerPart(World world, BlockPos pos, int side, int r) {
+    public static MultiPart getFaceCornerPart(Level world, BlockPos pos, int side, int r) {
         int absDir = Rotation.rotateSide(side, r);
         BlockPos pos2 = pos
                 .relative(Direction.values()[absDir])
                 .relative(Direction.values()[side]);
-        return BlockMultiPart.getPart(world, pos2, absDir ^ 1);
+        return BlockMultipart.getPart(world, pos2, absDir ^ 1);
     }
 
-    public static TMultiPart getFaceStraightPart(World world, BlockPos pos, int side, int r) {
+    public static MultiPart getFaceStraightPart(Level world, BlockPos pos, int side, int r) {
         BlockPos pos2 = pos.relative(Direction.values()[r]);
-        return BlockMultiPart.getPart(world, pos2, side);
+        return BlockMultipart.getPart(world, pos2, side);
     }
 
-    public static TMultiPart getFaceInternalPart(World world, BlockPos pos, int side, int r) {
+    public static MultiPart getFaceInternalPart(Level world, BlockPos pos, int side, int r) {
         int absDir = Rotation.rotateSide(side, r);
-        return BlockMultiPart.getPart(world, pos, absDir);
+        return BlockMultipart.getPart(world, pos, absDir);
     }
 
-    public static TMultiPart getCenterPart(World world, BlockPos pos) {
-        return BlockMultiPart.getPart(world, pos, 6);
+    public static MultiPart getCenterPart(Level world, BlockPos pos) {
+        return BlockMultipart.getPart(world, pos, 6);
     }
 
     //region Internal multipart lookup
-    public static TMultiPart getFaceInternalPart(TileMultiPart tile, int side, int r) {
+    public static MultiPart getFaceInternalPart(TileMultipart tile, int side, int r) {
         int absDir = Rotation.rotateSide(side, r);
         return tile.getSlottedPart(absDir);
     }
 
-    public static TMultiPart getCenterPart(TileMultiPart tile) {
+    public static MultiPart getCenterPart(TileMultipart tile) {
         return tile.getSlottedPart(6);
     }
     //endregion
     //endregion
 
     //region Connectable lookups
-    public static IConnectable getFaceCornerConnectable(World world, BlockPos pos, int side, int r) {
-        TMultiPart part = getFaceCornerPart(world, pos, side, r);
+    public static IConnectable getFaceCornerConnectable(Level world, BlockPos pos, int side, int r) {
+        MultiPart part = getFaceCornerPart(world, pos, side, r);
         if (part instanceof IConnectable) {
             return (IConnectable) part;
         }
         return null;
     }
 
-    public static IConnectable getFaceStraightConnectable(World world, BlockPos pos, int side, int r) {
-        TMultiPart part = getFaceStraightPart(world, pos, side, r);
+    public static IConnectable getFaceStraightConnectable(Level world, BlockPos pos, int side, int r) {
+        MultiPart part = getFaceStraightPart(world, pos, side, r);
         if (part instanceof IConnectable) {
             return (IConnectable) part;
         }
         return null;
     }
 
-    public static IConnectable getFaceInternalConnectable(World world, BlockPos pos, int side, int r) {
-        TMultiPart part = getFaceInternalPart(world, pos, side, r);
+    public static IConnectable getFaceInternalConnectable(Level world, BlockPos pos, int side, int r) {
+        MultiPart part = getFaceInternalPart(world, pos, side, r);
         if (part instanceof IConnectable) {
             return (IConnectable) part;
         }
         return null;
     }
 
-    public static IConnectable getFaceInternalConnectable(TileMultiPart tile, int side, int r) {
-        TMultiPart part = getFaceInternalPart(tile, side, r);
+    public static IConnectable getFaceInternalConnectable(TileMultipart tile, int side, int r) {
+        MultiPart part = getFaceInternalPart(tile, side, r);
         if (part instanceof IConnectable) {
             return (IConnectable) part;
         }
         return null;
     }
 
-    public static IConnectable getCenterConnectable(World world, BlockPos pos) {
-        TMultiPart part = getCenterPart(world, pos);
+    public static IConnectable getCenterConnectable(Level world, BlockPos pos) {
+        MultiPart part = getCenterPart(world, pos);
         if (part instanceof IConnectable) {
             return (IConnectable) part;
         }
@@ -90,17 +90,17 @@ public class ConnectionsLib {
     }
 
     //region Internal multipart lookup
-    public static IConnectable getCenterConnectable(TileMultiPart tile) {
-        TMultiPart part = getCenterPart(tile);
+    public static IConnectable getCenterConnectable(TileMultipart tile) {
+        MultiPart part = getCenterPart(tile);
         if (part instanceof IConnectable) {
             return (IConnectable) part;
         }
         return null;
     }
 
-    public static IConnectable getCenterConnectable(TileEntity tile) {
-        if (tile instanceof TileMultiPart) {
-            return getCenterConnectable((TileMultiPart) tile);
+    public static IConnectable getCenterConnectable(BlockEntity tile) {
+        if (tile instanceof TileMultipart) {
+            return getCenterConnectable((TileMultipart) tile);
         }
         return null;
     }
@@ -108,14 +108,14 @@ public class ConnectionsLib {
     //endregion
 
     //region Clearance checks
-    public static boolean outsideCornerEdgeOpen(World world, BlockPos pos, int side, int r) {
+    public static boolean outsideCornerEdgeOpen(Level world, BlockPos pos, int side, int r) {
         int dir = Rotation.rotateSide(side, r);
         BlockPos straightPos = pos.relative(Direction.values()[dir]);
         if (world.isEmptyBlock(straightPos)) return true;
 
         int perpSide = dir ^ 1;
 
-        TileMultiPart t = BlockMultiPart.getTile(world, straightPos);
+        TileMultipart t = BlockMultipart.getTile(world, straightPos);
         if (t == null) return false; // Non-multipart block is here. We cant go through it.
 
         // Tile may have parts, but at least all slots that take up this edge must be empty.
@@ -123,9 +123,9 @@ public class ConnectionsLib {
                 t.getSlottedPart(PartMap.edgeBetween(perpSide, side)) == null;
     }
 
-    public static boolean insideCornerEdgeOpen(World world, BlockPos pos, int side, int r) {
+    public static boolean insideCornerEdgeOpen(Level world, BlockPos pos, int side, int r) {
         int absDir = Rotation.rotateSide(side, r);
-        return BlockMultiPart.getPart(world, pos, PartMap.edgeBetween(absDir, side)) == null;
+        return BlockMultipart.getPart(world, pos, PartMap.edgeBetween(absDir, side)) == null;
     }
     //endregion
 

@@ -3,7 +3,7 @@ plugins {
     id 'com.matthewprenger.cursegradle'
 }
 
-String mod_id = 'projectred-core'
+String mod_id = 'projectred_core'
 
 minecraft {
     mappings channel: mcp_mappings, version: mc_version
@@ -34,16 +34,17 @@ minecraft {
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-    implementation "codechicken:CodeChickenLib:${mc_version}-${ccl_version}:deobf"
-    implementation "codechicken:CBMultipart:${mc_version}-${cbm_version}:deobf"
+    implementation fg.deobf("codechicken:CodeChickenLib:${mc_version}-${ccl_version}:universal")
+    implementation fg.deobf("codechicken:CBMultipart:${mc_version}-${cbm_version}:universal")
 
-    // compile against the JEI API but do not include it at runtime
-    compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")
-    // at runtime, use the full JEI jar
-    runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
+    // JEI
+    compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
+    compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}"))
+    runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}"))
 
-    // TODO compileOnly against API jar, runtimeOnly against distro
-    implementation fg.deobf("org.squiddev:cc-tweaked-${mc_version}:${cct_version}")
+    // CCTweaked
+    compileOnly fg.deobf("org.squiddev:cc-tweaked-${mc_version}:${cct_version}:api")
+    runtimeOnly fg.deobf("org.squiddev:cc-tweaked-${mc_version}:${cct_version}")
 }
 
 curseforge {
@@ -59,5 +60,9 @@ curseforge {
             requiredDependency 'codechicken-lib-1-8' // CCL is required for everything
             requiredDependency 'cb-multipart' // CBMultipart is required for everything
         }
+
+        // Java/ForgeGradle integrations don't work after 1.18.2 port
+        addGameVersion "${mc_version}"
+        addGameVersion "Java ${java_lang_version}"
     }
 }

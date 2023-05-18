@@ -1,12 +1,12 @@
 package mrtjp.projectred.api;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 public interface IScrewdriver
 {
-    boolean canUse(PlayerEntity player, ItemStack stack);
+    boolean canUse(Player player, ItemStack stack);
 
     //TODO, Improve context here
-    void damageScrewdriver(PlayerEntity player, ItemStack stack); // Damage the item on usage
+    void damageScrewdriver(Player player, ItemStack stack); // Damage the item on usage
 }

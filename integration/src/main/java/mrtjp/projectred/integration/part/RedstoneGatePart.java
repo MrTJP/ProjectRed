@@ -4,7 +4,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.multipart.api.RedstoneInteractions;
 import codechicken.multipart.api.part.AnimateTickPart;
-import codechicken.multipart.api.part.redstone.IFaceRedstonePart;
+import codechicken.multipart.api.part.redstone.FaceRedstonePart;
 import codechicken.multipart.init.CBMultipartModContent;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.Configurator;
@@ -12,17 +12,17 @@ import mrtjp.projectred.core.FaceLookup;
 import mrtjp.projectred.core.part.IRedwireEmitter;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.client.GateModelRenderer;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.RedstoneWireBlock;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RedStoneWireBlock;
 
 import java.util.Random;
 
-public abstract class RedstoneGatePart extends GatePart implements IFaceRedstonePart, AnimateTickPart {
+public abstract class RedstoneGatePart extends GatePart implements FaceRedstonePart, AnimateTickPart {
 
     public static final int KEY_STATE = 10;
 
@@ -53,13 +53,13 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
 
     //region Save/load and description
     @Override
-    public void save(CompoundNBT tag) {
+    public void save(CompoundTag tag) {
         super.save(tag);
         tag.putByte("state", gateState);
     }
 
     @Override
-    public void load(CompoundNBT tag) {
+    public void load(CompoundTag tag) {
         super.load(tag);
         gateState = tag.getByte("state");
     }
@@ -106,11 +106,11 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
             int absSide = absoluteDir(r);
             BlockPos pos2 = pos().relative(Direction.values()[absSide]);
 
-            world().neighborChanged(pos2, CBMultipartModContent.blockMultipart, pos());
+            level().neighborChanged(pos2, CBMultipartModContent.MULTIPART_BLOCK.get(), pos());
             for (int s = 0; s < 6; s++) {
                 if (s != (absSide ^ 1) && (smask & 1 << s) == 0) {
-                    world().neighborChanged(
-                            pos2.relative(Direction.values()[s]), CBMultipartModContent.blockMultipart, pos2);
+                    level().neighborChanged(
+                            pos2.relative(Direction.values()[s]), CBMultipartModContent.MULTIPART_BLOCK.get(), pos2);
                 }
             }
             smask |= 1 << absSide;
@@ -150,11 +150,11 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
 
         FaceLookup lookup = null;
         if (maskConnectsCorner(ar)) {
-            lookup = FaceLookup.lookupCorner(world(), pos(), getSide(), ar);
+            lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), ar);
         } else if (maskConnectsStraight(ar)) {
-            lookup = FaceLookup.lookupStraight(world(), pos(), getSide(), ar);
+            lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), ar);
         } else if (maskConnectsInside(ar)) {
-            lookup = FaceLookup.lookupInsideFace(world(), pos(), getSide(), ar);
+            lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), ar);
         }
 
         return lookup == null ? getVanillaSignal(ar, true, false) : resolveSignal(lookup);
@@ -172,12 +172,12 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
     }
 
     protected int getVanillaSignal(int r, boolean strong, boolean limitDust) {
-        FaceLookup lookup = FaceLookup.lookupStraight(world(), pos(), getSide(), r);
+        FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
         int signal = 0;
 
         // Dust signal
         if (lookup.block == Blocks.REDSTONE_WIRE) {
-            signal = Math.max(lookup.state.getValue(RedstoneWireBlock.POWER) - 1, 0);
+            signal = Math.max(lookup.state.getValue(RedStoneWireBlock.POWER) - 1, 0);
             if (limitDust) {
                 return signal;
             }
@@ -191,8 +191,8 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
         }
 
         // Weak signal
-        if (lookup.state.isRedstoneConductor(world(), lookup.otherPos)) {
-            signal = world().getBestNeighborSignal(lookup.otherPos) * 17;
+        if (lookup.state.isRedstoneConductor(level(), lookup.otherPos)) {
+            signal = level().getBestNeighborSignal(lookup.otherPos) * 17;
         }
 
         return signal;
@@ -214,7 +214,7 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
 
     protected void tickSound() {
         if (Configurator.logicGateSounds) {
-            world().playSound(null, pos(), SoundEvents.LEVER_CLICK, SoundCategory.BLOCKS, 0.15F, 0.5f);
+            level().playSound(null, pos(), SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.15F, 0.5f);
         }
     }
 

@@ -1,6 +1,6 @@
 package mrtjp.projectred.core.part;
 
-import codechicken.multipart.api.part.TMultiPart;
+import codechicken.multipart.api.part.MultiPart;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.RedstonePropagator;
 
@@ -10,7 +10,7 @@ public interface IPropagationFacePart extends IPropagationHooks, IConnectableFac
 
     default void propagateForward(IPropagationPart prev, int mode) {
         if (mode != RedstonePropagator.FORCED) {
-            RedstonePropagator.addPartChange((TMultiPart) this);
+            RedstonePropagator.addPartChange((MultiPart) this);
         }
 
         for (int r = 0; r < 4; r++) {

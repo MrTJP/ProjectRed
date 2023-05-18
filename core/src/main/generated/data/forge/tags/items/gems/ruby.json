@@ -1,6 +1,6 @@
 {
   "replace": false,
   "values": [
-    "projectred-core:ruby"
+    "projectred_core:ruby"
   ]
 }

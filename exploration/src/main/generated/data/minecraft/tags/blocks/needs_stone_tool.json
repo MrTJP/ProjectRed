@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "projectred_exploration:copper_ore",
+    "projectred_exploration:tin_ore",
+    "projectred_exploration:marble",
+    "projectred_exploration:marble_brick",
+    "projectred_exploration:basalt",
+    "projectred_exploration:basalt_cobble",
+    "projectred_exploration:basalt_brick",
+    "projectred_exploration:copper_block",
+    "projectred_exploration:tin_block",
+    "projectred_exploration:marble_wall",
+    "projectred_exploration:marble_brick_wall",
+    "projectred_exploration:basalt_wall",
+    "projectred_exploration:basalt_cobble_wall",
+    "projectred_exploration:basalt_brick_wall",
+    "projectred_exploration:copper_block_wall",
+    "projectred_exploration:tin_block_wall"
+  ]
+}

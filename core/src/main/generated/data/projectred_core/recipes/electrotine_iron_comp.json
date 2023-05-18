@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_core:electrotine_iron_comp"
+  },
+  "pattern": [
+    "BBB",
+    "BIB",
+    "BBB"
+  ],
+  "key": {
+    "B": {
+      "tag": "forge:dusts/electrotine"
+    },
+    "I": {
+      "tag": "forge:ingots/iron"
+    }
+  }
+}

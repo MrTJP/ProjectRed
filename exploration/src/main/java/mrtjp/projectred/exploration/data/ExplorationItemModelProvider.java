@@ -1,9 +1,8 @@
 package mrtjp.projectred.exploration.data;
 
 import codechicken.lib.datagen.ItemModelProvider;
-import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
@@ -139,13 +138,7 @@ public class ExplorationItemModelProvider extends ItemModelProvider {
 
     private void wallItemBlock(Block wallBlock, Block textureBlock) {
         getSimple(wallBlock)
-                .texture(null)
+                .noTexture()
                 .parent(wallInventory(wallBlock.getRegistryName() + "_inventory", blockTexture(textureBlock)));
-    }
-
-    //TODO temporary override until super's method is fixed
-    @Override
-    protected ResourceLocation blockTexture(Block block) {
-        return blockTexture(block, "");
     }
 }

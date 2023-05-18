@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_integration:comparator_gate"
+  },
+  "pattern": [
+    "WCW",
+    "QWQ",
+    "PWP"
+  ],
+  "key": {
+    "C": {
+      "item": "projectred_core:cathode"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    },
+    "W": {
+      "item": "projectred_core:conductive_plate"
+    },
+    "Q": {
+      "tag": "forge:gems/quartz"
+    }
+  }
+}

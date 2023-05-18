@@ -8,9 +8,9 @@ import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.api.RedstoneInteractions;
-import codechicken.multipart.api.part.TMultiPart;
-import codechicken.multipart.api.part.redstone.IFaceRedstonePart;
-import codechicken.multipart.block.BlockMultiPart;
+import codechicken.multipart.api.part.MultiPart;
+import codechicken.multipart.api.part.redstone.FaceRedstonePart;
+import codechicken.multipart.block.BlockMultipart;
 import com.google.common.collect.ImmutableSet;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.Configurator;
@@ -18,14 +18,14 @@ import mrtjp.projectred.core.FaceLookup;
 import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.core.part.*;
 import mrtjp.projectred.integration.GateType;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.RedstoneWireBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RedStoneWireBlock;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwirePart, IPropagationFacePart, IRedstonePropagationPart {
 
@@ -67,7 +67,7 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
         }
 
         if (uMask == 0) {
-            RedstonePropagator.addNeighborChange(world(), pos());
+            RedstonePropagator.addNeighborChange(level(), pos());
         }
         propagationMask = 0xF;
     }
@@ -79,11 +79,11 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
     }
 
     private int sideDiff(IPropagationPart p) {
-        if (!(p instanceof TMultiPart)) return 0xF;
+        if (!(p instanceof MultiPart)) return 0xF;
 
-        if (!(p instanceof IOrientableFacePart) || ((TMultiPart) p).tile() == null) return 0xF;
+        if (!(p instanceof IOrientableFacePart) || ((MultiPart) p).tile() == null) return 0xF;
 
-        TMultiPart part = (TMultiPart) p;
+        MultiPart part = (MultiPart) p;
         IOrientableFacePart facePart = (IOrientableFacePart) p;
         BlockPos here = pos();
         BlockPos there = part.pos();
@@ -139,12 +139,12 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
     }
 
     protected int calcCornerSignal(int r) {
-        FaceLookup lookup = FaceLookup.lookupCorner(world(), pos(), getSide(), r);
+        FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
         return resolveSignal(lookup);
     }
 
     protected int calcStraightSignal(int r) {
-        FaceLookup lookup = FaceLookup.lookupStraight(world(), pos(), getSide(), r);
+        FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
         int signal = resolveSignal(lookup);
         if (signal > 0) {
             return signal;
@@ -153,7 +153,7 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
     }
 
     protected int calcInsideSignal(int r) {
-        FaceLookup lookup = FaceLookup.lookupInsideFace(world(), pos(), getSide(), r);
+        FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
         return resolveSignal(lookup);
     }
 
@@ -172,8 +172,8 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
         }
 
         // Shouldn't matter, no space for a face part inside
-        if (lookup.part instanceof IFaceRedstonePart) {
-            IFaceRedstonePart faceRsPart = (IFaceRedstonePart) lookup.part;
+        if (lookup.part instanceof FaceRedstonePart) {
+            FaceRedstonePart faceRsPart = (FaceRedstonePart) lookup.part;
             int s = Rotation.rotateSide(lookup.otherSide, lookup.otherRotation);
             return Math.max(faceRsPart.strongPowerLevel(s), faceRsPart.weakPowerLevel(s)) * 17;
         }
@@ -182,12 +182,12 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
     }
 
     protected int getVanillaSignal(int r, boolean strong, boolean limitDust) {
-        FaceLookup lookup = FaceLookup.lookupStraight(world(), pos(), getSide(), r);
+        FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
         int signal = 0;
 
         // Dust signal
         if (lookup.block == Blocks.REDSTONE_WIRE) {
-            signal = Math.max(lookup.state.getValue(RedstoneWireBlock.POWER) - 1, 0);
+            signal = Math.max(lookup.state.getValue(RedStoneWireBlock.POWER) - 1, 0);
             if (limitDust) {
                 return signal;
             }
@@ -201,8 +201,8 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
         }
 
         // Weak signal
-        if (lookup.state.isRedstoneConductor(world(), lookup.otherPos)) {
-            signal = world().getBestNeighborSignal(lookup.otherPos) * 17;
+        if (lookup.state.isRedstoneConductor(level(), lookup.otherPos)) {
+            signal = level().getBestNeighborSignal(lookup.otherPos) * 17;
         }
 
         return signal;
@@ -252,11 +252,11 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
 
     //region Multipart properties
     @Override
-    public void preparePlacement(PlayerEntity player, BlockPos pos, int side) {
+    public void preparePlacement(Player player, BlockPos pos, int side) {
         super.preparePlacement(player, pos, side);
         if (canCross()) {
             // Note: tile() is not available yet, must access from player.level
-            TMultiPart tpart = BlockMultiPart.getPart(player.level, pos, getSide()^1);
+            MultiPart tpart = BlockMultipart.getPart(player.level, pos, getSide()^1);
             if (tpart instanceof ArrayGatePart) {
                 ArrayGatePart part = (ArrayGatePart) tpart;
                 if (part.getGateType() == getGateType() && (part.getRotation() & 1) == (getRotation() & 1)) {
@@ -267,7 +267,7 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
     }
 
     @Override
-    public boolean occlusionTest(TMultiPart npart) {
+    public boolean occlusionTest(MultiPart npart) {
         if (npart instanceof ArrayGatePart) {
             ArrayGatePart part = (ArrayGatePart) npart;
             if (part.getGateType() == getGateType()
@@ -394,14 +394,14 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
 
         //region save/load
         @Override
-        public void save(CompoundNBT tag) {
+        public void save(CompoundTag tag) {
             super.save(tag);
             tag.putByte("s1", signal1);
             tag.putByte("s2", signal2);
         }
 
         @Override
-        public void load(CompoundNBT tag) {
+        public void load(CompoundTag tag) {
             super.load(tag);
             signal1 = tag.getByte("s1");
             signal2 = tag.getByte("s2");
@@ -443,12 +443,12 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
 
         //region Multipart properties
         @Override
-        public VoxelShape getCollisionShape(ISelectionContext context) {
+        public VoxelShape getCollisionShape(CollisionContext context) {
             return cShapes[getSide()];
         }
 
         @Override
-        public VoxelShape getShape(ISelectionContext context) {
+        public VoxelShape getShape(CollisionContext context) {
             return getCollisionShape(context);
         }
 
@@ -579,7 +579,7 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
         }
 
         @Override
-        public int getLightValue() {
+        public int getLightEmission() {
             // No redstone torch in model
             return 0;
         }
@@ -621,13 +621,13 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
 
         //region save/load
         @Override
-        public void save(CompoundNBT tag) {
+        public void save(CompoundTag tag) {
             super.save(tag);
             tag.putByte("signal", signal);
         }
 
         @Override
-        public void load(CompoundNBT tag) {
+        public void load(CompoundTag tag) {
             super.load(tag);
             signal = tag.getByte("signal");
         }
@@ -665,12 +665,12 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
 
         //region Multipart properties
         @Override
-        public VoxelShape getCollisionShape(ISelectionContext context) {
+        public VoxelShape getCollisionShape(CollisionContext context) {
             return ArrayGatePartCrossing.cShapes[getSide()];
         }
 
         @Override
-        public VoxelShape getShape(ISelectionContext context) {
+        public VoxelShape getShape(CollisionContext context) {
             return getCollisionShape(context);
         }
 

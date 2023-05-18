@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "item": "projectred_core:orange_illumar"
+  },
+  "ingredients": [
+    {
+      "tag": "forge:dusts/glowstone"
+    },
+    {
+      "tag": "forge:dusts/glowstone"
+    },
+    {
+      "tag": "forge:dyes/orange"
+    },
+    {
+      "tag": "forge:dyes/orange"
+    }
+  ]
+}

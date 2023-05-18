@@ -7,11 +7,11 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
-import codechicken.microblock.FaceMicroFactory;
-import codechicken.multipart.api.MultiPartType;
+import codechicken.microblock.part.face.FaceMicroblockPart;
+import codechicken.multipart.api.MultipartType;
 import codechicken.multipart.api.NormalOcclusionTest;
 import codechicken.multipart.api.part.*;
-import codechicken.multipart.block.TileMultiPart;
+import codechicken.multipart.block.TileMultipart;
 import codechicken.multipart.util.PartRayTraceResult;
 import com.google.common.collect.ImmutableSet;
 import mrtjp.projectred.api.IConnectable;
@@ -21,21 +21,21 @@ import mrtjp.projectred.core.PlacementLib;
 import mrtjp.projectred.core.part.IConnectableFacePart;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.client.GateComponentModels;
-import net.minecraft.block.SoundType;
-import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -44,7 +44,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public abstract class GatePart extends TMultiPart implements IConnectableFacePart, ITickablePart, TFacePart, TNormalOcclusionPart, TIconHitEffectsPart, IGateRenderData {
+public abstract class GatePart extends BaseMultipart implements IConnectableFacePart, TickablePart, FacePart, NormalOcclusionPart, IconHitEffectsPart, IGateRenderData {
 
     private static final int KEY_UPDATE = 0;
     private static final int KEY_ORIENTATION = 1;
@@ -82,7 +82,7 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
         this.type = type;
     }
 
-    public void preparePlacement(PlayerEntity player, BlockPos pos, int side) {
+    public void preparePlacement(Player player, BlockPos pos, int side) {
         setSide(side ^ 1);
         setRotation((Rotation.getSidedRotation(player, side) + 2) % 4);
     }
@@ -105,11 +105,6 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
     }
 
     //region Trait variables
-    @Override
-    public World level() {
-        return world();
-    }
-
     @Override
     public int getConnMap() {
         return connMap;
@@ -143,7 +138,7 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
 
     //region Save/load and descriptions
     @Override
-    public void save(CompoundNBT tag) {
+    public void save(CompoundTag tag) {
         super.save(tag);
         tag.putByte("orient", orientation);
         tag.putByte("shape", gateShape);
@@ -152,7 +147,7 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
     }
 
     @Override
-    public void load(CompoundNBT tag) {
+    public void load(CompoundTag tag) {
         super.load(tag);
         orientation = tag.getByte("orient");
         gateShape = tag.getByte("shape");
@@ -226,9 +221,9 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
 
     //region Neighbor/part changes
     @Override
-    public void onPartChanged(TMultiPart part) {
+    public void onPartChanged(MultiPart part) {
         super.onPartChanged(part);
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             updateOutward();
             onChange();
         }
@@ -237,7 +232,7 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
     @Override
     public void onNeighborBlockChanged(BlockPos from) {
         super.onNeighborBlockChanged(from);
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             if (dropIfCantStay()) {
                 return;
             }
@@ -249,7 +244,7 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
     @Override
     public void onAdded() {
         super.onAdded();
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             gateLogicSetup();
             updateInward();
             onChange();
@@ -259,13 +254,13 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
     @Override
     public void onRemoved() {
         super.onRemoved();
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             notifyAllExternals();
         }
     }
 
     @Override
-    public void onChunkLoad(Chunk chunk) {
+    public void onChunkLoad(LevelChunk chunk) {
         super.onChunkLoad(chunk);
         if (tile() != null) {
             gateLogicOnWorldLoad();
@@ -273,8 +268,8 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
     }
 
     private boolean dropIfCantStay() {
-        if (!PlacementLib.canPlaceGateOnSide(world(), pos().relative(Direction.values()[getSide()]), Direction.values()[getSide() ^ 1])) {
-            TileMultiPart.dropItem(getGateType().makeStack(), world(), Vector3.fromTileCenter(tile()));
+        if (!PlacementLib.canPlaceGateOnSide(level(), pos().relative(Direction.values()[getSide()]), Direction.values()[getSide() ^ 1])) {
+            TileMultipart.dropItem(getGateType().makeStack(), level(), Vector3.fromTileCenter(tile()));
             tile().remPart(this);
             return true;
         }
@@ -305,7 +300,7 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
      */
     @Override
     public void scheduleTick(int ticks) {
-        if (scheduledTime < 0) scheduledTime = world().getGameTime() + ticks;
+        if (scheduledTime < 0) scheduledTime = level().getGameTime() + ticks;
     }
 
     public boolean isTickScheduled() {
@@ -313,7 +308,7 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
     }
 
     private void processScheduled() {
-        if (scheduledTime >= 0 && world().getGameTime() >= scheduledTime) {
+        if (scheduledTime >= 0 && level().getGameTime() >= scheduledTime) {
             scheduledTime = -1;
             scheduledTick();
         }
@@ -321,7 +316,7 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
 
     @Override
     public void tick() {
-        if (!world().isClientSide) {
+        if (!level().isClientSide) {
             processScheduled();
         }
         gateLogicOnTick();
@@ -355,13 +350,13 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
 
     //region Part properties and overrides
     @Override
-    public MultiPartType<?> getType() {
+    public MultipartType<?> getType() {
         return getGateType().getPartType();
     }
 
     //region Items and drops
     @Override
-    public ItemStack pickItem(PartRayTraceResult hit) {
+    public ItemStack getCloneStack(PartRayTraceResult hit) {
         return getGateType().makeStack();
     }
 
@@ -373,12 +368,12 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
 
     //region Gate shapes and bounds
     @Override
-    public VoxelShape getCollisionShape(ISelectionContext context) {
-        return FaceMicroFactory.aShapes()[0x10 | getSide()]; //TODO bring this in-house. No need to use cover's shape
+    public VoxelShape getCollisionShape(CollisionContext context) {
+        return FaceMicroblockPart.aShapes[0x10 | getSide()]; //TODO bring this in-house. No need to use cover's shape
     }
 
     @Override
-    public VoxelShape getShape(ISelectionContext context) {
+    public VoxelShape getShape(CollisionContext context) {
         return getCollisionShape(context);
     }
 
@@ -386,35 +381,24 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
     public VoxelShape getOcclusionShape() {
         return oShapes[getSide()];
     }
-
-    @Override
-    public boolean occlusionTest(TMultiPart npart) {
-        return NormalOcclusionTest.test(this, npart) && super.occlusionTest(npart);
-    }
     //endregion
 
     @Override
-    public float getStrength(PlayerEntity player, PartRayTraceResult hit) {
+    public float getStrength(Player player, PartRayTraceResult hit) {
         return 2/30f;
     }
 
     @Override
-    public int getLightValue() {
+    public int getLightEmission() {
         return Configurator.logicGateLights ? 7 : 0;
     }
 
     @Override
-    public SoundType getPlacementSound(ItemUseContext context) {
+    public SoundType getPlacementSound(UseOnContext context) {
         return SoundType.GLASS;
     }
 
     //region Faces and slots
-
-    @Override
-    public boolean solid(int side) {
-        return false;
-    }
-
     @Override
     public int getSlotMask() {
         return 1 << getSide();
@@ -424,12 +408,12 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
 
     //region Activation handling
     @Override
-    public ActionResultType activate(PlayerEntity player, PartRayTraceResult hit, ItemStack held, Hand hand) {
-        if (gateLogicActivate(player, held, hit)) return ActionResultType.SUCCESS;
+    public InteractionResult activate(Player player, PartRayTraceResult hit, ItemStack held, InteractionHand hand) {
+        if (gateLogicActivate(player, held, hit)) return InteractionResult.SUCCESS;
 
         if (!held.isEmpty() && held.getItem() instanceof IScrewdriver) {
             IScrewdriver screwdriver = (IScrewdriver) held.getItem();
-            if (!world().isClientSide) {
+            if (!level().isClientSide) {
                 if (player.isCrouching()) {
                     configure();
                 } else {
@@ -437,10 +421,10 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
                 }
                 screwdriver.damageScrewdriver(player, held);
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 
     protected void configure() {
@@ -468,7 +452,7 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
     //region Breaking and hit effect
     @Override
     public Cuboid6 getBounds() {
-        return new Cuboid6(getShape(ISelectionContext.empty()).bounds());
+        return new Cuboid6(getShape(CollisionContext.empty()).bounds());
     }
 
     @Override
@@ -481,18 +465,6 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
     @OnlyIn(Dist.CLIENT)
     public TextureAtlasSprite getBrokenIcon(int side) {
         return GateComponentModels.baseIcon.icon;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void addHitEffects(PartRayTraceResult hit, ParticleManager manager) {
-        IconHitEffects.addHitEffects(this, hit, manager);
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void addDestroyEffects(PartRayTraceResult hit, ParticleManager manager) {
-        IconHitEffects.addDestroyEffects(this, manager);
     }
     //endregion
 
@@ -514,7 +486,7 @@ public abstract class GatePart extends TMultiPart implements IConnectableFacePar
     protected void gateLogicOnWorldLoad() {
     }
 
-    protected boolean gateLogicActivate(PlayerEntity player, ItemStack held, PartRayTraceResult hit) {
+    protected boolean gateLogicActivate(Player player, ItemStack held, PartRayTraceResult hit) {
         return false;
     }
     //endregion

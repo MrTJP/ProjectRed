@@ -1,8 +1,7 @@
 package mrtjp.projectred.transmission;
 
-import codechicken.lib.gui.SimpleItemGroup;
-import codechicken.lib.util.SneakyUtils;
-import codechicken.multipart.api.MultiPartType;
+import codechicken.lib.gui.SimpleCreativeTab;
+import codechicken.multipart.api.MultipartType;
 import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.transmission.data.TransmissionItemModelProvider;
@@ -12,17 +11,17 @@ import mrtjp.projectred.transmission.data.TransmissionRecipeProvider;
 import mrtjp.projectred.transmission.init.TransmissionClientInit;
 import mrtjp.projectred.transmission.init.TransmissionParts;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -31,12 +30,12 @@ import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 @Mod(MOD_ID)
 public class ProjectRedTransmission {
 
-    public static final String MOD_ID = "projectred-transmission";
+    public static final String MOD_ID = "projectred_transmission";
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
-    public static final DeferredRegister<MultiPartType<?>> PARTS = DeferredRegister.create(SneakyUtils.<Class<MultiPartType<?>>>unsafeCast(MultiPartType.class), MOD_ID);
+    public static final DeferredRegister<MultipartType<?>> PARTS = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
 
-    public static final SimpleItemGroup TRANSMISSION_GROUP = new SimpleItemGroup(MOD_ID, WireType.RED_ALLOY::makeStack);
+    public static final SimpleCreativeTab TRANSMISSION_GROUP = new SimpleCreativeTab(MOD_ID, WireType.RED_ALLOY::makeStack);
 
     static {
         ProjectRedAPI.transmissionAPI = TransmissionAPI.INSTANCE;
@@ -77,7 +76,7 @@ public class ProjectRedTransmission {
 
     }
 
-    private void onServerStartEvent(final FMLServerAboutToStartEvent event) {
+    private void onServerStartEvent(final ServerAboutToStartEvent event) {
         RedstonePropagator.resetPowerFlags();
     }
 }

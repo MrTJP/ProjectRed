@@ -1,6 +1,6 @@
 package mrtjp.projectred.core.part;
 
-import codechicken.multipart.api.part.TMultiPart;
+import codechicken.multipart.api.part.MultiPart;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.RedstonePropagator;
 
@@ -11,7 +11,7 @@ public interface IPropagationCenterPart extends IPropagationHooks, IConnectableC
     default void propagateOther(int mode) { }
 
     default void propagateForward(IPropagationPart prev, int mode) {
-        if (mode != FORCED) RedstonePropagator.addPartChange((TMultiPart) this);
+        if (mode != FORCED) RedstonePropagator.addPartChange((MultiPart) this);
 
         for (int s = 0; s < 6; s++) {
             if ((getPropagationMask() & 1 << s) != 0) {

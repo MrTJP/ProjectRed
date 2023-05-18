@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_exploration:wool_gin",
+    "nbt": "{Damage:0}"
+  },
+  "pattern": [
+    "SIS",
+    "SSS",
+    " S "
+  ],
+  "key": {
+    "I": {
+      "item": "projectred_core:iron_coil"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    }
+  }
+}

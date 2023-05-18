@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "projectred_core:white_illumar",
+    "projectred_core:orange_illumar",
+    "projectred_core:magenta_illumar",
+    "projectred_core:light_blue_illumar",
+    "projectred_core:yellow_illumar",
+    "projectred_core:lime_illumar",
+    "projectred_core:pink_illumar",
+    "projectred_core:gray_illumar",
+    "projectred_core:light_gray_illumar",
+    "projectred_core:cyan_illumar",
+    "projectred_core:purple_illumar",
+    "projectred_core:blue_illumar",
+    "projectred_core:brown_illumar",
+    "projectred_core:green_illumar",
+    "projectred_core:red_illumar",
+    "projectred_core:black_illumar"
+  ]
+}

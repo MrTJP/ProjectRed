@@ -2,9 +2,9 @@ package mrtjp.projectred.expansion.init;
 
 import mrtjp.projectred.expansion.block.*;
 import mrtjp.projectred.expansion.tile.*;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.*;
 import static mrtjp.projectred.expansion.init.ExpansionReferences.*;
@@ -41,11 +41,11 @@ public class ExpansionBlocks {
 //        ITEMS.register(ID_TELEPOSER, () -> new BlockItem(TELEPOSER_BLOCK, new Item.Properties().tab(EXPANSION_GROUP)));
 
         // Tiles
-        TILE_ENTITIES.register(ID_PROJECT_BENCH, () -> TileEntityType.Builder.of(ProjectBenchTile::new, PROJECT_BENCH_BLOCK).build(null));
-        TILE_ENTITIES.register(ID_BATTERY_BOX, () -> TileEntityType.Builder.of(BatteryBoxTile::new, BATTERY_BOX_BLOCK).build(null));
-        TILE_ENTITIES.register(ID_AUTO_CRAFTER, () -> TileEntityType.Builder.of(AutoCrafterTile::new, AUTO_CRAFTER_BLOCK).build(null));
-        TILE_ENTITIES.register(ID_CHARGING_BENCH, () -> TileEntityType.Builder.of(ChargingBenchTile::new, CHARGING_BENCH_BLOCK).build(null));
-        TILE_ENTITIES.register(ID_FIRE_STARTER, () -> TileEntityType.Builder.of(FireStarterTile::new, FIRE_STARTER_BLOCK).build(null));
+        BLOCK_ENTITIES.register(ID_PROJECT_BENCH, () -> BlockEntityType.Builder.of(ProjectBenchTile::new, PROJECT_BENCH_BLOCK).build(null));
+        BLOCK_ENTITIES.register(ID_BATTERY_BOX, () -> BlockEntityType.Builder.of(BatteryBoxTile::new, BATTERY_BOX_BLOCK).build(null));
+        BLOCK_ENTITIES.register(ID_AUTO_CRAFTER, () -> BlockEntityType.Builder.of(AutoCrafterTile::new, AUTO_CRAFTER_BLOCK).build(null));
+        BLOCK_ENTITIES.register(ID_CHARGING_BENCH, () -> BlockEntityType.Builder.of(ChargingBenchTile::new, CHARGING_BENCH_BLOCK).build(null));
+        BLOCK_ENTITIES.register(ID_FIRE_STARTER, () -> BlockEntityType.Builder.of(FireStarterTile::new, FIRE_STARTER_BLOCK).build(null));
 //        TILE_ENTITIES.register(ID_INDUCTION_FURNACE, () -> TileEntityType.Builder.of(InductionFurnaceTile::new, INDUCTION_FURNACE_BLOCK).build(null));
 //        TILE_ENTITIES.register(ID_TELEPOSER, () -> TileEntityType.Builder.of(TeleposerTile::new, TELEPOSER_BLOCK).build(null));
     }

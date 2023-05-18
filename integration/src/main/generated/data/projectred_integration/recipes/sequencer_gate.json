@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_integration:sequencer_gate"
+  },
+  "pattern": [
+    "PCP",
+    "CTC",
+    "PCP"
+  ],
+  "key": {
+    "C": {
+      "item": "projectred_core:cathode"
+    },
+    "T": {
+      "item": "projectred_core:pointer"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    }
+  }
+}

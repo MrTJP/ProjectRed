@@ -3,25 +3,25 @@ package mrtjp.projectred.illumination.client;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Vector3;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.illumination.block.IllumarLampBlock;
 import mrtjp.projectred.illumination.tile.IllumarLampTile;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.world.level.block.state.BlockState;
 
-public class IllumarLampTileRenderer extends TileEntityRenderer<IllumarLampTile> {
+public class IllumarLampTileRenderer implements BlockEntityRenderer<IllumarLampTile> {
+
+    public static final IllumarLampTileRenderer INSTANCE = new IllumarLampTileRenderer();
+
+    private IllumarLampTileRenderer() {
+    }
 
     private static final Cuboid6 GLOW_BOUNDS = Cuboid6.full.copy().expand(0.05D);
 
-    public IllumarLampTileRenderer(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
-    }
-
     @Override
-    public void render(IllumarLampTile tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffers, int combinedLight, int combinedOverlay) {
+    public void render(IllumarLampTile tile, float partialTicks, PoseStack matrixStack, MultiBufferSource buffers, int combinedLight, int combinedOverlay) {
 
         int g = (tile.getBlockPos().getX() + tile.getBlockPos().getY() + tile.getBlockPos().getZ()) % 4;
 

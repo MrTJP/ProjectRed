@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_exploration:diamond_sickle",
+    "nbt": "{Damage:0}"
+  },
+  "pattern": [
+    " M ",
+    "  M",
+    "SM "
+  ],
+  "key": {
+    "M": {
+      "tag": "forge:gems/diamond"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    }
+  }
+}

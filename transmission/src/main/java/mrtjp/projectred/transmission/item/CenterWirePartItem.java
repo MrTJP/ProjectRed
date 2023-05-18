@@ -1,15 +1,15 @@
 package mrtjp.projectred.transmission.item;
 
-import codechicken.multipart.api.ItemMultiPart;
-import codechicken.multipart.api.part.TMultiPart;
+import codechicken.multipart.api.ItemMultipart;
+import codechicken.multipart.api.part.MultiPart;
 import mrtjp.projectred.transmission.ProjectRedTransmission;
 import mrtjp.projectred.transmission.WireType;
 import mrtjp.projectred.transmission.part.BaseWirePart;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.context.UseOnContext;
 
-public class CenterWirePartItem extends ItemMultiPart {
+public class CenterWirePartItem extends ItemMultipart {
 
     private final WireType type;
 
@@ -23,7 +23,7 @@ public class CenterWirePartItem extends ItemMultiPart {
     }
 
     @Override
-    public TMultiPart newPart(ItemUseContext context) {
+    public MultiPart newPart(UseOnContext context) {
         Direction side = context.getClickedFace();
         BaseWirePart wire = type.newPart();
         wire.preparePlacement(side);

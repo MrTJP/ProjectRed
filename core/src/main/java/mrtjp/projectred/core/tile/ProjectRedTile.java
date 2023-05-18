@@ -2,38 +2,37 @@ package mrtjp.projectred.core.tile;
 
 import codechicken.lib.data.MCDataByteBuf;
 import codechicken.lib.vec.Vector3;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
-public abstract class ProjectRedTile extends TileEntity implements IBlockEventTile {
+public abstract class ProjectRedTile extends BlockEntity implements IBlockEventTile {
 
-    public ProjectRedTile(TileEntityType<?> type) {
-        super(type);
+    public ProjectRedTile(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     @Override
-    public final CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         saveToNBT(tag);
-        return tag;
     }
 
     @Override
-    public final void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         loadFromNBT(tag);
     }
 
     @Override
-    public final CompoundNBT getUpdateTag() {
-        CompoundNBT tag = super.getUpdateTag();
+    public final CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag();
         MCDataByteBuf out = new MCDataByteBuf();
         writeDesc(out);
         out.writeToNBT(tag, "descpkt");
@@ -41,8 +40,8 @@ public abstract class ProjectRedTile extends TileEntity implements IBlockEventTi
     }
 
     @Override
-    public final void handleUpdateTag(BlockState state, CompoundNBT tag) {
-        super.handleUpdateTag(state, tag);
+    public void handleUpdateTag(CompoundTag tag) {
+        super.handleUpdateTag(tag);
         MCDataByteBuf in = MCDataByteBuf.readFromNBT(tag, "descpkt");
         readDesc(in);
     }
@@ -57,7 +56,7 @@ public abstract class ProjectRedTile extends TileEntity implements IBlockEventTi
 
     // Obfuscation bug: cant use getLevel name
     @Override
-    public World getBlockLevel() {
+    public Level getBlockLevel() {
         return getLevel();
     }
 
@@ -67,14 +66,14 @@ public abstract class ProjectRedTile extends TileEntity implements IBlockEventTi
         return getBlockPos();
     }
 
-    public static void dropItem(ItemStack stack, World world, Vector3 pos) {
+    public static void dropItem(ItemStack stack, Level world, Vector3 pos) {
         ItemEntity item = new ItemEntity(world, pos.x, pos.y, pos.z, stack);
         item.setDeltaMovement(world.random.nextGaussian() * 0.05, world.random.nextGaussian() * 0.05 + 0.2, world.random.nextGaussian() * 0.05);
         item.setPickUpDelay(10);
         world.addFreshEntity(item);
     }
 
-    public static void dropInventory(IInventory inventory, World world, Vector3 pos) {
+    public static void dropInventory(Container inventory, Level world, Vector3 pos) {
         for (int i = 0; i < inventory.getContainerSize(); i++) {
             ItemStack stack = inventory.getItem(i);
             if (!stack.isEmpty()) {
