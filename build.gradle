@@ -4,18 +4,13 @@ plugins {
     id 'maven-publish'
 }
 
-String parsed_mod_version = System.getenv("AUTO_GENERATED_VERSION") ?: "${mod_version}.${Instant.now().getEpochSecond()}"
-println "Starting build of ${name}, Version: ${parsed_mod_version}"
-println "Using Forge: ${forge_version}, for Minecraft: ${mc_version}, with Mappings: ${mcp_mappings}"
-
+// Get mod version from CI, else suffix a timestamp (calculated here bc timestamp can change if done separately in each subproject)
+mod_version = System.getenv("AUTO_GENERATED_VERSION") ?: "${mod_version}.${Instant.now().getEpochSecond()}"
 group = 'mrtjp'
-version = "${mc_version}-${parsed_mod_version}"
+version = "${mc_version}-${mod_version}"
 
-// Global configuration
-allprojects {
-    group = 'mrtjp'
-    version = "${mc_version}-${parsed_mod_version}"
-}
+println "Starting build of ${name}, Version: ${mod_version}"
+println "Using Forge: ${forge_version}, for Minecraft: ${mc_version}, with Mappings: ${mcp_mappings}"
 
 // Common submodule configurations
 subprojects { p ->
@@ -26,14 +21,19 @@ subprojects { p ->
     // Select Java version
     java.toolchain.languageVersion = JavaLanguageVersion.of(java_lang_version)
 
+    // Copy properties from root
+    group = rootProject.group
+    mod_version = rootProject.mod_version
+    version = rootProject.version
+
+    // ForgeGradle version settings
+    archivesBaseName = rootProject.name
+
     // Jar settings
     jar {
         archiveClassifier = p.name
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
-
-    // ForgeGradle version settings
-    archivesBaseName = rootProject.name
 
     // Add datagen resources to source set
     sourceSets.main.resources.srcDirs += "src/main/generated"
@@ -46,18 +46,18 @@ subprojects { p ->
     }
 
     // Replace version tokens in mods.toml
-    processResources { task ->
-        from(sourceSets.main.resources.srcDirs) { spec ->
-            spec.include 'META-INF/mods.toml'
-            spec.duplicatesStrategy = DuplicatesStrategy.INCLUDE
-            task.doFirst {
-                println "Replacing version tokens in mods.toml"
-                spec.expand 'version': mod_version,
-                        'mc_version': mc_version,
-                        'ccl_version': ccl_version,
-                        'cbm_version': cbm_version,
-                        'cct_version': cct_version
-            }
+    processResources {
+        inputs.property 'mod_version', mod_version
+        inputs.property 'mc_version', mc_version
+
+        filesMatching('META-INF/mods.toml') {
+            expand 'file': ['jarVersion': mod_version],
+                    'mc_version': mc_version,
+                    'forge_version': forge_version,
+                    'lang_version': forge_version.split('\\.')[0],
+                    'ccl_version': ccl_version,
+                    'cbm_version': cbm_version,
+                    'cct_version': cct_version
         }
     }
 }
