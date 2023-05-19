@@ -25,6 +25,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
 import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
@@ -519,7 +520,7 @@ public class GateComponentModels {
 
     public static class WireModel3D extends WireModel {
 
-        private static final HashMap<String, CCModel[]> cache = new HashMap<>();
+        private static final ConcurrentHashMap<String, CCModel[]> cache = new ConcurrentHashMap<>();
 
         private final String textureName;
 
