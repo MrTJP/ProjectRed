@@ -32,9 +32,6 @@ public class CoreItemModelProvider extends ItemModelProvider {
         generated(POINTER_ITEM);
         generated(SILICON_CHIP_ITEM);
         generated(ENERGIZED_SILICON_CHIP_ITEM);
-        generated(COPPER_INGOT_ITEM);
-        generated(TIN_INGOT_ITEM);
-        generated(SILVER_INGOT_ITEM);
         generated(RED_ALLOY_INGOT_ITEM);
         generated(ELECTROTINE_ALLOY_INGOT_ITEM);
         generated(ELECTROTINE_DUST_ITEM);

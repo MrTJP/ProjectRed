@@ -14,13 +14,13 @@ public class ExplorationTags {
     /* Block Tags */
 
     // Ores
-    public static final TagKey<Block> RUBY_ORE_BLOCK_TAG           = BlockTags.create(new ResourceLocation("forge:ores/ruby"));
-    public static final TagKey<Block> SAPPHIRE_ORE_BLOCK_TAG       = BlockTags.create(new ResourceLocation("forge:ores/sapphire"));
-    public static final TagKey<Block> PERIDOT_ORE_BLOCK_TAG        = BlockTags.create(new ResourceLocation("forge:ores/peridot"));
-    public static final TagKey<Block> COPPER_ORE_BLOCK_TAG         = BlockTags.create(new ResourceLocation("forge:ores/copper"));
-    public static final TagKey<Block> TIN_ORE_BLOCK_TAG            = BlockTags.create(new ResourceLocation("forge:ores/tin"));
-    public static final TagKey<Block> SILVER_ORE_BLOCK_TAG         = BlockTags.create(new ResourceLocation("forge:ores/silver"));
-    public static final TagKey<Block> ELECTROTINE_ORE_BLOCK_TAG    = BlockTags.create(new ResourceLocation("forge:ores/electrotine"));
+    public static final TagKey<Block> RUBY_ORES_BLOCK_TAG           = BlockTags.create(new ResourceLocation("forge:ores/ruby"));
+    public static final TagKey<Block> SAPPHIRE_ORES_BLOCK_TAG       = BlockTags.create(new ResourceLocation("forge:ores/sapphire"));
+    public static final TagKey<Block> PERIDOT_ORES_BLOCK_TAG        = BlockTags.create(new ResourceLocation("forge:ores/peridot"));
+    public static final TagKey<Block> COPPER_ORES_BLOCK_TAG         = BlockTags.create(new ResourceLocation("forge:ores/copper"));
+    public static final TagKey<Block> TIN_ORES_BLOCK_TAG            = BlockTags.create(new ResourceLocation("forge:ores/tin"));
+    public static final TagKey<Block> SILVER_ORES_BLOCK_TAG         = BlockTags.create(new ResourceLocation("forge:ores/silver"));
+    public static final TagKey<Block> ELECTROTINE_ORES_BLOCK_TAG    = BlockTags.create(new ResourceLocation("forge:ores/electrotine"));
 
     // Decorative blocks
     public static final TagKey<Block> MARBLE_BLOCK_TAG              = BlockTags.create(new ResourceLocation("forge:stone/marble"));
@@ -29,20 +29,22 @@ public class ExplorationTags {
     public static final TagKey<Block> SAPPHIRE_STORAGE_BLOCK_TAG    = BlockTags.create(new ResourceLocation("forge:storage_blocks/sapphire"));
     public static final TagKey<Block> PERIDOT_STORAGE_BLOCK_TAG     = BlockTags.create(new ResourceLocation("forge:storage_blocks/peridot"));
     public static final TagKey<Block> COPPER_STORAGE_BLOCK_TAG      = BlockTags.create(new ResourceLocation("forge:storage_blocks/copper"));
-    public static final TagKey<Block> TIN_STORAGE_BLOCK_TAG         = BlockTags.create(new ResourceLocation("forge:storage_blocks/tin"));
-    public static final TagKey<Block> SILVER_STORAGE_BLOCK_TAG      = BlockTags.create(new ResourceLocation("forge:storage_blocks/silver"));
     public static final TagKey<Block> ELECTROTINE_STORAGE_BLOCK_TAG = BlockTags.create(new ResourceLocation("forge:storage_blocks/electrotine"));
+    public static final TagKey<Block> RAW_TIN_STORAGE_BLOCK_TAG     = BlockTags.create(new ResourceLocation("forge:storage_blocks/raw_tin"));
+    public static final TagKey<Block> TIN_STORAGE_BLOCK_TAG         = BlockTags.create(new ResourceLocation("forge:storage_blocks/tin"));
+    public static final TagKey<Block> RAW_SILVER_STORAGE_BLOCK_TAG  = BlockTags.create(new ResourceLocation("forge:storage_blocks/raw_silver"));
+    public static final TagKey<Block> SILVER_STORAGE_BLOCK_TAG      = BlockTags.create(new ResourceLocation("forge:storage_blocks/silver"));
 
     /* Item Tags */
 
     // Ore Item Blocks
-    public static final TagKey<Item> RUBY_ORE_BLOCK_ITEM_TAG           = ItemTags.create(new ResourceLocation("forge:ores/ruby"));
-    public static final TagKey<Item> SAPPHIRE_ORE_BLOCK_ITEM_TAG       = ItemTags.create(new ResourceLocation("forge:ores/sapphire"));
-    public static final TagKey<Item> PERIDOT_ORE_BLOCK_ITEM_TAG        = ItemTags.create(new ResourceLocation("forge:ores/peridot"));
-    public static final TagKey<Item> COPPER_ORE_BLOCK_ITEM_TAG         = ItemTags.create(new ResourceLocation("forge:ores/copper"));
-    public static final TagKey<Item> TIN_ORE_BLOCK_ITEM_TAG            = ItemTags.create(new ResourceLocation("forge:ores/tin"));
-    public static final TagKey<Item> SILVER_ORE_BLOCK_ITEM_TAG         = ItemTags.create(new ResourceLocation("forge:ores/silver"));
-    public static final TagKey<Item> ELECTROTINE_ORE_BLOCK_ITEM_TAG    = ItemTags.create(new ResourceLocation("forge:ores/electrotine"));
+    public static final TagKey<Item> RUBY_ORES_BLOCK_ITEM_TAG           = ItemTags.create(new ResourceLocation("forge:ores/ruby"));
+    public static final TagKey<Item> SAPPHIRE_ORES_BLOCK_ITEM_TAG       = ItemTags.create(new ResourceLocation("forge:ores/sapphire"));
+    public static final TagKey<Item> PERIDOT_ORES_BLOCK_ITEM_TAG        = ItemTags.create(new ResourceLocation("forge:ores/peridot"));
+    public static final TagKey<Item> COPPER_ORES_BLOCK_ITEM_TAG         = ItemTags.create(new ResourceLocation("forge:ores/copper"));
+    public static final TagKey<Item> TIN_ORES_BLOCK_ITEM_TAG            = ItemTags.create(new ResourceLocation("forge:ores/tin"));
+    public static final TagKey<Item> SILVER_ORES_BLOCK_ITEM_TAG         = ItemTags.create(new ResourceLocation("forge:ores/silver"));
+    public static final TagKey<Item> ELECTROTINE_ORES_BLOCK_ITEM_TAG    = ItemTags.create(new ResourceLocation("forge:ores/electrotine"));
 
     // Decorative Item Blocks
     public static final TagKey<Item> MARBLE_BLOCK_ITEM_TAG              = ItemTags.create(new ResourceLocation("forge:stone/marble"));
@@ -50,10 +52,15 @@ public class ExplorationTags {
     public static final TagKey<Item> RUBY_STORAGE_BLOCK_ITEM_TAG        = ItemTags.create(new ResourceLocation("forge:storage_blocks/ruby"));
     public static final TagKey<Item> SAPPHIRE_STORAGE_BLOCK_ITEM_TAG    = ItemTags.create(new ResourceLocation("forge:storage_blocks/sapphire"));
     public static final TagKey<Item> PERIDOT_STORAGE_BLOCK_ITEM_TAG     = ItemTags.create(new ResourceLocation("forge:storage_blocks/peridot"));
-    public static final TagKey<Item> COPPER_STORAGE_BLOCK_ITEM_TAG      = ItemTags.create(new ResourceLocation("forge:storage_blocks/copper"));
+    public static final TagKey<Item> ELECTROTINE_STORAGE_BLOCK_ITEM_TAG = ItemTags.create(new ResourceLocation("forge:storage_blocks/electrotine"));
+    public static final TagKey<Item> RAW_TIN_STORAGE_BLOCK_ITEM_TAG     = ItemTags.create(new ResourceLocation("forge:storage_blocks/tin"));
+    public static final TagKey<Item> RAW_SILVER_STORAGE_BLOCK_ITEM_TAG  = ItemTags.create(new ResourceLocation("forge:storage_blocks/raw_silver"));
     public static final TagKey<Item> TIN_STORAGE_BLOCK_ITEM_TAG         = ItemTags.create(new ResourceLocation("forge:storage_blocks/tin"));
     public static final TagKey<Item> SILVER_STORAGE_BLOCK_ITEM_TAG      = ItemTags.create(new ResourceLocation("forge:storage_blocks/silver"));
-    public static final TagKey<Item> ELECTROTINE_STORAGE_BLOCK_ITEM_TAG = ItemTags.create(new ResourceLocation("forge:storage_blocks/electrotine"));
+
+    // Items
+    public static final TagKey<Item> RAW_MATERIALS_TIN_TAG      = ItemTags.create(new ResourceLocation("forge:raw_materials/tin"));
+    public static final TagKey<Item> RAW_MATERIALS_SILVER_TAG   = ItemTags.create(new ResourceLocation("forge:raw_materials/silver"));
 
     // Backpacks
     public static final TagKey<Item> BACKPACKS_TAG             = ItemTags.create(new ResourceLocation(MOD_ID, "backpacks"));

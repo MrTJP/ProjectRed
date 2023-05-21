@@ -27,9 +27,6 @@ public class CoreItemTagsProvider extends ItemTagsProvider {
     protected void addTags() {
 
         tag(Tags.Items.INGOTS)
-                .addTag(COPPER_INGOT_TAG)
-                .addTag(TIN_INGOT_TAG)
-                .addTag(SILVER_INGOT_TAG)
                 .addTag(RED_ALLOY_INGOT_TAG)
                 .addTag(ELECTROTINE_ALLOY_INGOT_TAG);
 
@@ -41,9 +38,6 @@ public class CoreItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.DUSTS)
                 .addTag(ELECTROTINE_DUST_TAG);
 
-        tag(COPPER_INGOT_TAG).add(COPPER_INGOT_ITEM);
-        tag(TIN_INGOT_TAG).add(TIN_INGOT_ITEM);
-        tag(SILVER_INGOT_TAG).add(SILVER_INGOT_ITEM);
         tag(RED_ALLOY_INGOT_TAG).add(RED_ALLOY_INGOT_ITEM);
         tag(ELECTROTINE_ALLOY_INGOT_TAG).add(ELECTROTINE_ALLOY_INGOT_ITEM);
         tag(RUBY_GEM_TAG).add(RUBY_ITEM);

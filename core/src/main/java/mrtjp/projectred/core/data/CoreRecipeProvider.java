@@ -177,7 +177,7 @@ public class CoreRecipeProvider extends RecipeProvider {
                 .patternLine("EEE");
 
         shapedRecipe(COPPER_COIL_ITEM)
-                .key('C', COPPER_INGOT_TAG)
+                .key('C', INGOTS_COPPER)
                 .key('D', DRAW_PLATE_ITEM)
                 .patternLine("CD");
 

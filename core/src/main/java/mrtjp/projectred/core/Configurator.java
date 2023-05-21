@@ -32,8 +32,6 @@ public class Configurator {
     public static int gen_SapphireVeinSize = 8;
     public static boolean gen_Peridot = true;
     public static int gen_PeridotVeinSize = 10;
-    public static boolean gen_Copper = true;
-    public static int gen_CopperVeinSize = 8;
     public static boolean gen_Tin = true;
     public static int gen_TinVeinSize = 8;
     public static boolean gen_Silver = true;
@@ -78,8 +76,6 @@ public class Configurator {
         gen_SapphireVeinSize    = gen.getValue("sapphire_ore_vein_size").setDefaultInt(gen_SapphireVeinSize).setComment("Sapphire Ore vein size").getInt();
         gen_Peridot             = gen.getValue("peridot_ore").setDefaultBoolean(gen_Peridot).setComment("Enable Peridot Ore generation").getBoolean();
         gen_PeridotVeinSize     = gen.getValue("peridot_ore_vein_size").setDefaultInt(gen_PeridotVeinSize).setComment("Peridot Ore vein size").getInt();
-        gen_Copper              = gen.getValue("copper_ore").setDefaultBoolean(gen_Copper).setComment("Enable Copper Ore generation").getBoolean();
-        gen_CopperVeinSize      = gen.getValue("copper_ore_vein_size").setDefaultInt(gen_CopperVeinSize).setComment("Copper Ore vein size").getInt();
         gen_Tin                 = gen.getValue("tin_ore").setDefaultBoolean(gen_Tin).setComment("Enable Tin Ore generation").getBoolean();
         gen_TinVeinSize         = gen.getValue("tin_ore_vein_size").setDefaultInt(gen_TinVeinSize).setComment("Tin Ore vein size").getInt();
         gen_Silver              = gen.getValue("silver_ore").setDefaultBoolean(gen_Silver).setComment("Enable Silver Ore generation").getBoolean();
@@ -122,8 +118,6 @@ public class Configurator {
         gen_SapphireVeinSize    = gen.getValue("Sapphire Ore vein size").setDefaultInt(gen_SapphireVeinSize).getInt();
         gen_Peridot             = gen.getValue("Peridot Ore").setDefaultBoolean(gen_Peridot).getBoolean();
         gen_PeridotVeinSize     = gen.getValue("Peridot Ore vein size").setDefaultInt(gen_PeridotVeinSize).getInt();
-        gen_Copper              = gen.getValue("Copper Ore").setDefaultBoolean(gen_Copper).getBoolean();
-        gen_CopperVeinSize      = gen.getValue("Copper Ore vein size").setDefaultInt(gen_CopperVeinSize).getInt();
         gen_Tin                 = gen.getValue("Tin Ore").setDefaultBoolean(gen_Tin).getBoolean();
         gen_TinVeinSize         = gen.getValue("Tin Ore vein size").setDefaultInt(gen_TinVeinSize).getInt();
         gen_Silver              = gen.getValue("Silver Ore").setDefaultBoolean(gen_Silver).getBoolean();

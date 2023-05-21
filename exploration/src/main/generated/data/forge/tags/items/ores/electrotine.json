@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "projectred_exploration:electrotine_ore"
+    "projectred_exploration:electrotine_ore",
+    "projectred_exploration:deepslate_electrotine_ore"
   ]
 }

@@ -34,39 +34,43 @@ public class ExplorationBlockTagsProvider extends BlockTagsProvider {
                 RUBY_BLOCK_WALL,
                 SAPPHIRE_BLOCK_WALL,
                 PERIDOT_BLOCK_WALL,
-                COPPER_BLOCK_WALL,
-                TIN_BLOCK_WALL,
-                SILVER_BLOCK_WALL,
                 ELECTROTINE_BLOCK_WALL);
 
         tag(Tags.Blocks.ORES)
-                .addTag(RUBY_ORE_BLOCK_TAG)
-                .addTag(SAPPHIRE_ORE_BLOCK_TAG)
-                .addTag(PERIDOT_ORE_BLOCK_TAG)
-                .addTag(COPPER_ORE_BLOCK_TAG)
-                .addTag(TIN_ORE_BLOCK_TAG)
-                .addTag(SILVER_ORE_BLOCK_TAG)
-                .addTag(ELECTROTINE_ORE_BLOCK_TAG);
+                .addTag(RUBY_ORES_BLOCK_TAG)
+                .addTag(SAPPHIRE_ORES_BLOCK_TAG)
+                .addTag(PERIDOT_ORES_BLOCK_TAG)
+                .addTag(COPPER_ORES_BLOCK_TAG)
+                .addTag(TIN_ORES_BLOCK_TAG)
+                .addTag(SILVER_ORES_BLOCK_TAG)
+                .addTag(ELECTROTINE_ORES_BLOCK_TAG);
 
         tag(Tags.Blocks.STORAGE_BLOCKS)
                 .addTag(RUBY_STORAGE_BLOCK_TAG)
                 .addTag(SAPPHIRE_STORAGE_BLOCK_TAG)
                 .addTag(PERIDOT_STORAGE_BLOCK_TAG)
                 .addTag(COPPER_STORAGE_BLOCK_TAG)
+                .addTag(ELECTROTINE_STORAGE_BLOCK_TAG)
+                .addTag(RAW_TIN_STORAGE_BLOCK_TAG)
                 .addTag(TIN_STORAGE_BLOCK_TAG)
-                .addTag(SILVER_STORAGE_BLOCK_TAG)
-                .addTag(ELECTROTINE_STORAGE_BLOCK_TAG);
+                .addTag(RAW_SILVER_STORAGE_BLOCK_TAG)
+                .addTag(SILVER_STORAGE_BLOCK_TAG);
 
         /* Attach blocks to tags */
 
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(RUBY_ORE_BLOCK)
+                .add(DEEPSLATE_RUBY_ORE_BLOCK)
                 .add(SAPPHIRE_ORE_BLOCK)
+                .add(DEEPSLATE_SAPPHIRE_ORE_BLOCK)
                 .add(PERIDOT_ORE_BLOCK)
-                .add(COPPER_ORE_BLOCK)
-                .add(TIN_ORE_BLOCK)
-                .add(SILVER_ORE_BLOCK)
+                .add(DEEPSLATE_PERIDOT_ORE_BLOCK)
                 .add(ELECTROTINE_ORE_BLOCK)
+                .add(DEEPSLATE_ELECTROTINE_ORE_BLOCK)
+                .add(TIN_ORE_BLOCK)
+                .add(DEEPSLATE_TIN_ORE_BLOCK)
+                .add(SILVER_ORE_BLOCK)
+                .add(DEEPSLATE_SILVER_ORE_BLOCK)
                 .add(MARBLE_BLOCK)
                 .add(MARBLE_BRICK_BLOCK)
                 .add(BASALT_BLOCK)
@@ -74,10 +78,11 @@ public class ExplorationBlockTagsProvider extends BlockTagsProvider {
                 .add(RUBY_BLOCK)
                 .add(SAPPHIRE_BLOCK)
                 .add(PERIDOT_BLOCK)
-                .add(COPPER_BLOCK)
-                .add(TIN_BLOCK)
-                .add(SILVER_BLOCK)
                 .add(ELECTROTINE_BLOCK)
+                .add(RAW_TIN_BLOCK)
+                .add(TIN_BLOCK)
+                .add(RAW_SILVER_BLOCK)
+                .add(SILVER_BLOCK)
                 .add(MARBLE_WALL)
                 .add(MARBLE_BRICK_WALL)
                 .add(BASALT_WALL)
@@ -86,62 +91,84 @@ public class ExplorationBlockTagsProvider extends BlockTagsProvider {
                 .add(RUBY_BLOCK_WALL)
                 .add(SAPPHIRE_BLOCK_WALL)
                 .add(PERIDOT_BLOCK_WALL)
-                .add(COPPER_BLOCK_WALL)
-                .add(TIN_BLOCK_WALL)
-                .add(SILVER_BLOCK_WALL)
                 .add(ELECTROTINE_BLOCK_WALL);
 
         tag(BlockTags.NEEDS_STONE_TOOL)
-                .add(COPPER_ORE_BLOCK)
+                // Ores
                 .add(TIN_ORE_BLOCK)
+                .add(DEEPSLATE_TIN_ORE_BLOCK)
+                // Decorative blocks
                 .add(MARBLE_BLOCK)
                 .add(MARBLE_BRICK_BLOCK)
                 .add(BASALT_BLOCK)
                 .add(BASALT_COBBLE_BLOCK)
                 .add(BASALT_BRICK_BLOCK)
-                .add(COPPER_BLOCK)
+                .add(ELECTROTINE_BLOCK)
+                .add(RAW_TIN_BLOCK)
                 .add(TIN_BLOCK)
+                // Walls
                 .add(MARBLE_WALL)
                 .add(MARBLE_BRICK_WALL)
                 .add(BASALT_WALL)
                 .add(BASALT_COBBLE_WALL)
                 .add(BASALT_BRICK_WALL)
-                .add(COPPER_BLOCK_WALL)
-                .add(TIN_BLOCK_WALL);
+                .add(ELECTROTINE_BLOCK_WALL);
 
         tag(BlockTags.NEEDS_IRON_TOOL)
+                // Ores
                 .add(RUBY_ORE_BLOCK)
+                .add(DEEPSLATE_RUBY_ORE_BLOCK)
                 .add(SAPPHIRE_ORE_BLOCK)
+                .add(DEEPSLATE_SAPPHIRE_ORE_BLOCK)
                 .add(PERIDOT_ORE_BLOCK)
-                .add(SILVER_ORE_BLOCK)
+                .add(DEEPSLATE_PERIDOT_ORE_BLOCK)
                 .add(ELECTROTINE_ORE_BLOCK)
+                .add(DEEPSLATE_ELECTROTINE_ORE_BLOCK)
+                .add(SILVER_ORE_BLOCK)
+                .add(DEEPSLATE_SILVER_ORE_BLOCK)
+                // Decorative blocks
                 .add(RUBY_BLOCK)
                 .add(SAPPHIRE_BLOCK)
                 .add(PERIDOT_BLOCK)
+                .add(RAW_SILVER_BLOCK)
                 .add(SILVER_BLOCK)
-                .add(ELECTROTINE_BLOCK)
+                // Walls
                 .add(RUBY_BLOCK_WALL)
                 .add(SAPPHIRE_BLOCK_WALL)
-                .add(PERIDOT_BLOCK_WALL)
-                .add(SILVER_BLOCK_WALL)
-                .add(ELECTROTINE_BLOCK_WALL);
+                .add(PERIDOT_BLOCK_WALL);
 
-        tag(RUBY_ORE_BLOCK_TAG).add(RUBY_ORE_BLOCK);
-        tag(SAPPHIRE_ORE_BLOCK_TAG).add(SAPPHIRE_ORE_BLOCK);
-        tag(PERIDOT_ORE_BLOCK_TAG).add(PERIDOT_ORE_BLOCK);
-        tag(COPPER_ORE_BLOCK_TAG).add(COPPER_ORE_BLOCK);
-        tag(TIN_ORE_BLOCK_TAG).add(TIN_ORE_BLOCK);
-        tag(SILVER_ORE_BLOCK_TAG).add(SILVER_ORE_BLOCK);
-        tag(ELECTROTINE_ORE_BLOCK_TAG).add(ELECTROTINE_ORE_BLOCK);
+        tag(RUBY_ORES_BLOCK_TAG).add(RUBY_ORE_BLOCK).add(DEEPSLATE_RUBY_ORE_BLOCK);
+        tag(SAPPHIRE_ORES_BLOCK_TAG).add(SAPPHIRE_ORE_BLOCK).add(DEEPSLATE_SAPPHIRE_ORE_BLOCK);
+        tag(PERIDOT_ORES_BLOCK_TAG).add(PERIDOT_ORE_BLOCK).add(DEEPSLATE_PERIDOT_ORE_BLOCK);
+        tag(TIN_ORES_BLOCK_TAG).add(TIN_ORE_BLOCK).add(DEEPSLATE_TIN_ORE_BLOCK);
+        tag(SILVER_ORES_BLOCK_TAG).add(SILVER_ORE_BLOCK).add(DEEPSLATE_SILVER_ORE_BLOCK);
+        tag(ELECTROTINE_ORES_BLOCK_TAG).add(ELECTROTINE_ORE_BLOCK).add(DEEPSLATE_ELECTROTINE_ORE_BLOCK);
+
+        tag(Tags.Blocks.ORES_IN_GROUND_STONE)
+                .add(RUBY_ORE_BLOCK)
+                .add(SAPPHIRE_ORE_BLOCK)
+                .add(PERIDOT_ORE_BLOCK)
+                .add(TIN_ORE_BLOCK)
+                .add(SILVER_ORE_BLOCK)
+                .add(ELECTROTINE_ORE_BLOCK);
+
+        tag(Tags.Blocks.ORES_IN_GROUND_DEEPSLATE)
+                .add(DEEPSLATE_RUBY_ORE_BLOCK)
+                .add(DEEPSLATE_SAPPHIRE_ORE_BLOCK)
+                .add(DEEPSLATE_PERIDOT_ORE_BLOCK)
+                .add(DEEPSLATE_TIN_ORE_BLOCK)
+                .add(DEEPSLATE_SILVER_ORE_BLOCK)
+                .add(DEEPSLATE_ELECTROTINE_ORE_BLOCK);
 
         tag(MARBLE_BLOCK_TAG).add(MARBLE_BLOCK);
         tag(BASALT_BLOCK_TAG).add(BASALT_BLOCK);
         tag(RUBY_STORAGE_BLOCK_TAG).add(RUBY_BLOCK);
         tag(SAPPHIRE_STORAGE_BLOCK_TAG).add(SAPPHIRE_BLOCK);
         tag(PERIDOT_STORAGE_BLOCK_TAG).add(PERIDOT_BLOCK);
-        tag(COPPER_STORAGE_BLOCK_TAG).add(COPPER_BLOCK);
-        tag(TIN_STORAGE_BLOCK_TAG).add(TIN_BLOCK);
-        tag(SILVER_STORAGE_BLOCK_TAG).add(SILVER_BLOCK);
         tag(ELECTROTINE_STORAGE_BLOCK_TAG).add(ELECTROTINE_BLOCK);
+        tag(RAW_TIN_STORAGE_BLOCK_TAG).add(RAW_TIN_BLOCK);
+        tag(TIN_STORAGE_BLOCK_TAG).add(TIN_BLOCK);
+        tag(RAW_SILVER_STORAGE_BLOCK_TAG).add(RAW_SILVER_BLOCK);
+        tag(SILVER_STORAGE_BLOCK_TAG).add(SILVER_BLOCK);
     }
 }

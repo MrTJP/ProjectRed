@@ -12,7 +12,6 @@ public class CoreTags {
     /* Block Tags */
 
     /* Item Tags */
-    public static final TagKey<Item> COPPER_INGOT_TAG = ItemTags.create(new ResourceLocation("forge:ingots/copper"));
     public static final TagKey<Item> TIN_INGOT_TAG = ItemTags.create(new ResourceLocation("forge:ingots/tin"));
     public static final TagKey<Item> SILVER_INGOT_TAG = ItemTags.create(new ResourceLocation("forge:ingots/silver"));
     public static final TagKey<Item> RED_ALLOY_INGOT_TAG = ItemTags.create(new ResourceLocation("forge:ingots/red_alloy"));

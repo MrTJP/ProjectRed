@@ -48,12 +48,6 @@ public class CoreReferences {
     public static Item SILICON_CHIP_ITEM;
     @ObjectHolder(ID_ENERGIZED_SILICON_CHIP)
     public static Item ENERGIZED_SILICON_CHIP_ITEM;
-    @ObjectHolder(ID_COPPER_INGOT)
-    public static Item COPPER_INGOT_ITEM;
-    @ObjectHolder(ID_TIN_INGOT)
-    public static Item TIN_INGOT_ITEM;
-    @ObjectHolder(ID_SILVER_INGOT)
-    public static Item SILVER_INGOT_ITEM;
     @ObjectHolder(ID_RED_ALLOY_INGOT)
     public static Item RED_ALLOY_INGOT_ITEM;
     @ObjectHolder(ID_ELECTROTINE_ALLOY_INGOT)

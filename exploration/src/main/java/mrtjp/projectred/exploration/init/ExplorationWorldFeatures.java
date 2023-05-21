@@ -42,17 +42,16 @@ public class ExplorationWorldFeatures {
     // Marble Cave world carver
     private static RegistryObject<WorldCarver<CaveCarverConfiguration>> MARBLE_CAVE_CARVER;
 
-    // Ore features
-    public static Holder<PlacedFeature> RUBY_ORE_FEATURE;
-    public static Holder<PlacedFeature> SAPPHIRE_ORE_FEATURE;
-    public static Holder<PlacedFeature> PERIDOT_ORE_FEATURE;
-    public static Holder<PlacedFeature> COPPER_ORE_FEATURE;
-    public static Holder<PlacedFeature> TIN_ORE_FEATURE;
-    public static Holder<PlacedFeature> SILVER_ORE_FEATURE;
-    public static Holder<PlacedFeature> ELECTROTINE_ORE_FEATURE;
+    // Ore placements
+    public static Holder<PlacedFeature> RUBY_ORE_PLACED_FEATURE;
+    public static Holder<PlacedFeature> SAPPHIRE_ORE_PLACED_FEATURE;
+    public static Holder<PlacedFeature> PERIDOT_ORE_PLACED_FEATURE;
+    public static Holder<PlacedFeature> ELECTROTINE_ORE_PLACED_FEATURE;
+    public static Holder<PlacedFeature> TIN_ORE_PLACED_FEATURE;
+    public static Holder<PlacedFeature> SILVER_ORE_PLACED_FEATURE;
 
     // Carver features
-    private static Holder<ConfiguredWorldCarver<?>> MARBLE_CAVE_FEATURE;
+    private static Holder<ConfiguredWorldCarver<?>> MARBLE_CAVE_CONFIGURED_CARVER;
 
     public static void register() {
 
@@ -62,17 +61,23 @@ public class ExplorationWorldFeatures {
     public static void load() {
         // Load configurations of Ore features and world carvers. Happens during common init because there is no Forge registry for this
 
-        RUBY_ORE_FEATURE        = registerOreConfiguration(RUBY_ORE_BLOCK,          Configurator.gen_RubyVeinSize,        12, 20, 1);
-        SAPPHIRE_ORE_FEATURE    = registerOreConfiguration(SAPPHIRE_ORE_BLOCK,      Configurator.gen_SapphireVeinSize,    12, 20, 1);
-        PERIDOT_ORE_FEATURE     = registerOreConfiguration(PERIDOT_ORE_BLOCK,       Configurator.gen_PeridotVeinSize,     18, 26, 1);
+        // Create features
+        Holder<ConfiguredFeature<OreConfiguration, ?>> RUBY_ORE_CONFIGURED_FEATURE          = registerOreConfiguration("ruby_ore",        RUBY_ORE_BLOCK, DEEPSLATE_RUBY_ORE_BLOCK,         Configurator.gen_RubyVeinSize);
+        Holder<ConfiguredFeature<OreConfiguration, ?>> SAPPHIRE_ORE_CONFIGURED_FEATURE      = registerOreConfiguration("sapphire_ore",    SAPPHIRE_ORE_BLOCK, DEEPSLATE_SAPPHIRE_ORE_BLOCK, Configurator.gen_SapphireVeinSize);
+        Holder<ConfiguredFeature<OreConfiguration, ?>> PERIDOT_ORE_CONFIGURED_FEATURE       = registerOreConfiguration("peridot_ore",     PERIDOT_ORE_BLOCK, DEEPSLATE_PERIDOT_ORE_BLOCK,   Configurator.gen_PeridotVeinSize);
+        Holder<ConfiguredFeature<OreConfiguration, ?>> ELECTROTINE_ORE_CONFIGURED_FEATURE   = registerOreConfiguration("electrotine_ore", ELECTROTINE_ORE_BLOCK, DEEPSLATE_ELECTROTINE_ORE_BLOCK, Configurator.gen_ElectrotineVeinSize);
+        Holder<ConfiguredFeature<OreConfiguration, ?>> TIN_ORE_CONFIGURED_FEATURE           = registerOreConfiguration("tin_ore",         TIN_ORE_BLOCK, DEEPSLATE_TIN_ORE_BLOCK,           Configurator.gen_TinVeinSize);
+        Holder<ConfiguredFeature<OreConfiguration, ?>> SILVER_ORE_CONFIGURED_FEATURE        = registerOreConfiguration("silver_ore",      SILVER_ORE_BLOCK, DEEPSLATE_SILVER_ORE_BLOCK,     Configurator.gen_SilverVeinSize);
 
-        COPPER_ORE_FEATURE      = registerOreConfiguration(COPPER_ORE_BLOCK,        Configurator.gen_CopperVeinSize,      0, 64, 16);
-        TIN_ORE_FEATURE         = registerOreConfiguration(TIN_ORE_BLOCK,           Configurator.gen_TinVeinSize,         0, 48, 10);
-        SILVER_ORE_FEATURE      = registerOreConfiguration(SILVER_ORE_BLOCK,        Configurator.gen_SilverVeinSize,      0, 32, 8);
+        // Create placements
+        RUBY_ORE_PLACED_FEATURE         = createOrePlacements("ruby_ore",        RUBY_ORE_CONFIGURED_FEATURE,        -80, 80, 1);
+        SAPPHIRE_ORE_PLACED_FEATURE     = createOrePlacements("sapphire_ore",    SAPPHIRE_ORE_CONFIGURED_FEATURE,    -80, 80, 1);
+        PERIDOT_ORE_PLACED_FEATURE      = createOrePlacements("peridot_ore",     PERIDOT_ORE_CONFIGURED_FEATURE,     -80, 80, 1);
+        ELECTROTINE_ORE_PLACED_FEATURE  = createOrePlacements("electrotine_ore", ELECTROTINE_ORE_CONFIGURED_FEATURE, -32, 32, 4);
+        TIN_ORE_PLACED_FEATURE          = createOrePlacements("tin_ore",         TIN_ORE_CONFIGURED_FEATURE,         -24, 56, 8);
+        SILVER_ORE_PLACED_FEATURE       = createOrePlacements("silver_ore",      SILVER_ORE_CONFIGURED_FEATURE,      -64, 32, 6);
 
-        ELECTROTINE_ORE_FEATURE = registerOreConfiguration(ELECTROTINE_ORE_BLOCK,   Configurator.gen_ElectrotineVeinSize, 0, 16, 4);
-
-        MARBLE_CAVE_FEATURE = registerMarbleCaveCarverConfiguration(0.02F);
+        MARBLE_CAVE_CONFIGURED_CARVER = registerMarbleCaveCarverConfiguration(0.02F);
     }
 
     public static void onBiomeLoadingEvent(final BiomeLoadingEvent event) {
@@ -81,31 +86,33 @@ public class ExplorationWorldFeatures {
 
         if (category != NONE && category != THEEND && category != NETHER) { // if overworld
 
-            if (Configurator.gen_Ruby)        builder.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, RUBY_ORE_FEATURE);
-            if (Configurator.gen_Sapphire)    builder.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, SAPPHIRE_ORE_FEATURE);
-            if (Configurator.gen_Peridot)     builder.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, PERIDOT_ORE_FEATURE);
-            if (Configurator.gen_Copper)      builder.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, COPPER_ORE_FEATURE);
-            if (Configurator.gen_Tin)         builder.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, TIN_ORE_FEATURE);
-            if (Configurator.gen_Silver)      builder.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, SILVER_ORE_FEATURE);
-            if (Configurator.gen_Electrotine) builder.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, ELECTROTINE_ORE_FEATURE);
+            if (Configurator.gen_Ruby)        builder.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, RUBY_ORE_PLACED_FEATURE);
+            if (Configurator.gen_Sapphire)    builder.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, SAPPHIRE_ORE_PLACED_FEATURE);
+            if (Configurator.gen_Peridot)     builder.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, PERIDOT_ORE_PLACED_FEATURE);
+            if (Configurator.gen_Electrotine) builder.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, ELECTROTINE_ORE_PLACED_FEATURE);
+            if (Configurator.gen_Tin)         builder.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, TIN_ORE_PLACED_FEATURE);
+            if (Configurator.gen_Silver)      builder.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, SILVER_ORE_PLACED_FEATURE);
 
-            if (Configurator.gen_MarbleCave)  builder.addCarver(GenerationStep.Carving.AIR, MARBLE_CAVE_FEATURE);
+            if (Configurator.gen_MarbleCave)  builder.addCarver(GenerationStep.Carving.AIR, MARBLE_CAVE_CONFIGURED_CARVER);
         }
     }
 
-    private static Holder<PlacedFeature> registerOreConfiguration(Block block, int veinSize, int minY, int maxY, int count) {
-
-        String id = new ResourceLocation(MOD_ID, block.getRegistryName().getPath()).toString();
-
-        Holder<ConfiguredFeature<OreConfiguration, ?>> configuredFeature = FeatureUtils.register(
+    // Registers the actual ore feature. This describes a single cluster of this specific ore type
+    private static Holder<ConfiguredFeature<OreConfiguration, ?>> registerOreConfiguration(String id, Block standard, Block deepslate, int veinSize) {
+        return FeatureUtils.register(
                 id,
                 Feature.ORE,
-                new OreConfiguration(ImmutableList.of(OreConfiguration.target(OreFeatures.STONE_ORE_REPLACEABLES, block.defaultBlockState())), veinSize));
+                new OreConfiguration(ImmutableList.of(
+                        OreConfiguration.target(OreFeatures.STONE_ORE_REPLACEABLES, standard.defaultBlockState()),
+                        OreConfiguration.target(OreFeatures.DEEPSLATE_ORE_REPLACEABLES, deepslate.defaultBlockState())), veinSize));
+    }
 
+    // Registers a placement for the given feature. This controls how many of said features spawn and where
+    private static Holder<PlacedFeature> createOrePlacements(String id, Holder<ConfiguredFeature<OreConfiguration, ?>> configuredFeature, int minY, int maxY, int count) {
         List<PlacementModifier> modifiers = ImmutableList.of(
                 CountPlacement.of(count),
                 InSquarePlacement.spread(),
-                HeightRangePlacement.uniform(VerticalAnchor.absolute(minY), VerticalAnchor.absolute(maxY)));
+                HeightRangePlacement.triangle(VerticalAnchor.absolute(minY), VerticalAnchor.absolute(maxY)));
 
         return PlacementUtils.register(
                 id,

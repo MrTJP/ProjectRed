@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "projectred_exploration:silver_ore"
+    "projectred_exploration:silver_ore",
+    "projectred_exploration:deepslate_silver_ore"
   ]
 }

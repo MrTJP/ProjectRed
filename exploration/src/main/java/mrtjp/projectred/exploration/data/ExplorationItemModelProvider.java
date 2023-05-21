@@ -26,12 +26,17 @@ public class ExplorationItemModelProvider extends ItemModelProvider {
 
         // Ore Blocks
         simpleItemBlock(RUBY_ORE_BLOCK);
+        simpleItemBlock(DEEPSLATE_RUBY_ORE_BLOCK);
         simpleItemBlock(SAPPHIRE_ORE_BLOCK);
+        simpleItemBlock(DEEPSLATE_SAPPHIRE_ORE_BLOCK);
         simpleItemBlock(PERIDOT_ORE_BLOCK);
-        simpleItemBlock(COPPER_ORE_BLOCK);
+        simpleItemBlock(DEEPSLATE_PERIDOT_ORE_BLOCK);
         simpleItemBlock(TIN_ORE_BLOCK);
+        simpleItemBlock(DEEPSLATE_TIN_ORE_BLOCK);
         simpleItemBlock(SILVER_ORE_BLOCK);
+        simpleItemBlock(DEEPSLATE_SILVER_ORE_BLOCK);
         simpleItemBlock(ELECTROTINE_ORE_BLOCK);
+        simpleItemBlock(DEEPSLATE_ELECTROTINE_ORE_BLOCK);
 
         // Decorative Blocks
         simpleItemBlock(MARBLE_BLOCK);
@@ -42,10 +47,11 @@ public class ExplorationItemModelProvider extends ItemModelProvider {
         simpleItemBlock(RUBY_BLOCK);
         simpleItemBlock(SAPPHIRE_BLOCK);
         simpleItemBlock(PERIDOT_BLOCK);
-        simpleItemBlock(COPPER_BLOCK);
-        simpleItemBlock(TIN_BLOCK);
-        simpleItemBlock(SILVER_BLOCK);
         simpleItemBlock(ELECTROTINE_BLOCK);
+        simpleItemBlock(RAW_TIN_BLOCK);
+        simpleItemBlock(TIN_BLOCK);
+        simpleItemBlock(RAW_SILVER_BLOCK);
+        simpleItemBlock(SILVER_BLOCK);
 
         // Walls
         wallItemBlock(MARBLE_WALL, MARBLE_BLOCK);
@@ -56,10 +62,15 @@ public class ExplorationItemModelProvider extends ItemModelProvider {
         wallItemBlock(RUBY_BLOCK_WALL, RUBY_BLOCK);
         wallItemBlock(SAPPHIRE_BLOCK_WALL, SAPPHIRE_BLOCK);
         wallItemBlock(PERIDOT_BLOCK_WALL, PERIDOT_BLOCK);
-        wallItemBlock(COPPER_BLOCK_WALL, COPPER_BLOCK);
-        wallItemBlock(TIN_BLOCK_WALL, TIN_BLOCK);
-        wallItemBlock(SILVER_BLOCK_WALL, SILVER_BLOCK);
         wallItemBlock(ELECTROTINE_BLOCK_WALL, ELECTROTINE_BLOCK);
+
+        /* Items */
+
+        // Ingots / dusts / gems
+        generated(RAW_TIN_ITEM);
+        generated(TIN_INGOT_ITEM);
+        generated(RAW_SILVER_ITEM);
+        generated(SILVER_INGOT_ITEM);
 
         /* Tools */
 

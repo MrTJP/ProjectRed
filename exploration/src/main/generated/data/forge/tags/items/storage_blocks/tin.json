@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "projectred_exploration:tin_block"
+    "projectred_exploration:tin_block",
+    "projectred_exploration:raw_tin_block"
   ]
 }

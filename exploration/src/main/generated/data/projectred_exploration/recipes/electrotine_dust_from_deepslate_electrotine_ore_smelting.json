@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "result": {
+    "item": "projectred_core:electrotine_dust"
+  },
+  "ingredient": {
+    "item": "projectred_exploration:deepslate_electrotine_ore"
+  },
+  "experience": 0.7,
+  "cookingtime": 200
+}

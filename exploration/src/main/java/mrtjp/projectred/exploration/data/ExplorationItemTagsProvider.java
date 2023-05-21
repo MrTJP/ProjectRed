@@ -7,6 +7,8 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nullable;
 
+import static mrtjp.projectred.core.init.CoreTags.SILVER_INGOT_TAG;
+import static mrtjp.projectred.core.init.CoreTags.TIN_INGOT_TAG;
 import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
 import static mrtjp.projectred.exploration.init.ExplorationTags.*;
@@ -22,23 +24,29 @@ public class ExplorationItemTagsProvider extends ItemTagsProvider {
 
         /* Attach tags to other tags */
 
+        tag(Tags.Items.INGOTS)
+                //Note: Defined in Core
+                .addTag(TIN_INGOT_TAG)
+                .addTag(SILVER_INGOT_TAG);
+
         tag(Tags.Items.ORES)
-                .addTag(RUBY_ORE_BLOCK_ITEM_TAG)
-                .addTag(SAPPHIRE_ORE_BLOCK_ITEM_TAG)
-                .addTag(PERIDOT_ORE_BLOCK_ITEM_TAG)
-                .addTag(COPPER_ORE_BLOCK_ITEM_TAG)
-                .addTag(TIN_ORE_BLOCK_ITEM_TAG)
-                .addTag(SILVER_ORE_BLOCK_ITEM_TAG)
-                .addTag(ELECTROTINE_ORE_BLOCK_ITEM_TAG);
+                .addTag(RUBY_ORES_BLOCK_ITEM_TAG)
+                .addTag(SAPPHIRE_ORES_BLOCK_ITEM_TAG)
+                .addTag(PERIDOT_ORES_BLOCK_ITEM_TAG)
+                .addTag(COPPER_ORES_BLOCK_ITEM_TAG)
+                .addTag(TIN_ORES_BLOCK_ITEM_TAG)
+                .addTag(SILVER_ORES_BLOCK_ITEM_TAG)
+                .addTag(ELECTROTINE_ORES_BLOCK_ITEM_TAG);
 
         tag(Tags.Items.STORAGE_BLOCKS)
                 .addTag(RUBY_STORAGE_BLOCK_ITEM_TAG)
                 .addTag(SAPPHIRE_STORAGE_BLOCK_ITEM_TAG)
                 .addTag(PERIDOT_STORAGE_BLOCK_ITEM_TAG)
-                .addTag(COPPER_STORAGE_BLOCK_ITEM_TAG)
+                .addTag(ELECTROTINE_STORAGE_BLOCK_ITEM_TAG)
+                .addTag(RAW_TIN_STORAGE_BLOCK_ITEM_TAG)
                 .addTag(TIN_STORAGE_BLOCK_ITEM_TAG)
-                .addTag(SILVER_STORAGE_BLOCK_ITEM_TAG)
-                .addTag(ELECTROTINE_STORAGE_BLOCK_ITEM_TAG);
+                .addTag(RAW_SILVER_STORAGE_BLOCK_ITEM_TAG)
+                .addTag(SILVER_STORAGE_BLOCK_ITEM_TAG);
 
         tag(BACKPACKS_TAG)
                 .addTag(WHITE_BACKPACK_TAG)
@@ -62,23 +70,27 @@ public class ExplorationItemTagsProvider extends ItemTagsProvider {
 
         /* Attach items to tags */
 
-        tag(RUBY_ORE_BLOCK_ITEM_TAG).add(RUBY_ORE_BLOCK.asItem());
-        tag(SAPPHIRE_ORE_BLOCK_ITEM_TAG).add(SAPPHIRE_ORE_BLOCK.asItem());
-        tag(PERIDOT_ORE_BLOCK_ITEM_TAG).add(PERIDOT_ORE_BLOCK.asItem());
-        tag(COPPER_ORE_BLOCK_ITEM_TAG).add(COPPER_ORE_BLOCK.asItem());
-        tag(TIN_ORE_BLOCK_ITEM_TAG).add(TIN_ORE_BLOCK.asItem());
-        tag(SILVER_ORE_BLOCK_ITEM_TAG).add(SILVER_ORE_BLOCK.asItem());
-        tag(ELECTROTINE_ORE_BLOCK_ITEM_TAG).add(ELECTROTINE_ORE_BLOCK.asItem());
+        //Note: Defined in Core
+        tag(TIN_INGOT_TAG).add(TIN_INGOT_ITEM);
+        tag(SILVER_INGOT_TAG).add(SILVER_INGOT_ITEM);
+
+        tag(RUBY_ORES_BLOCK_ITEM_TAG).add(RUBY_ORE_BLOCK.asItem()).add(DEEPSLATE_RUBY_ORE_BLOCK.asItem());
+        tag(SAPPHIRE_ORES_BLOCK_ITEM_TAG).add(SAPPHIRE_ORE_BLOCK.asItem()).add(DEEPSLATE_SAPPHIRE_ORE_BLOCK.asItem());
+        tag(PERIDOT_ORES_BLOCK_ITEM_TAG).add(PERIDOT_ORE_BLOCK.asItem()).add(DEEPSLATE_PERIDOT_ORE_BLOCK.asItem());
+        tag(TIN_ORES_BLOCK_ITEM_TAG).add(TIN_ORE_BLOCK.asItem()).add(DEEPSLATE_TIN_ORE_BLOCK.asItem());
+        tag(SILVER_ORES_BLOCK_ITEM_TAG).add(SILVER_ORE_BLOCK.asItem()).add(DEEPSLATE_SILVER_ORE_BLOCK.asItem());
+        tag(ELECTROTINE_ORES_BLOCK_ITEM_TAG).add(ELECTROTINE_ORE_BLOCK.asItem()).add(DEEPSLATE_ELECTROTINE_ORE_BLOCK.asItem());
 
         tag(MARBLE_BLOCK_ITEM_TAG).add(MARBLE_BLOCK.asItem());
         tag(BASALT_BLOCK_ITEM_TAG).add(BASALT_BLOCK.asItem());
         tag(RUBY_STORAGE_BLOCK_ITEM_TAG).add(RUBY_BLOCK.asItem());
         tag(SAPPHIRE_STORAGE_BLOCK_ITEM_TAG).add(SAPPHIRE_BLOCK.asItem());
         tag(PERIDOT_STORAGE_BLOCK_ITEM_TAG).add(PERIDOT_BLOCK.asItem());
-        tag(COPPER_STORAGE_BLOCK_ITEM_TAG).add(COPPER_BLOCK.asItem());
-        tag(TIN_STORAGE_BLOCK_ITEM_TAG).add(TIN_BLOCK.asItem());
-        tag(SILVER_STORAGE_BLOCK_ITEM_TAG).add(SILVER_BLOCK.asItem());
         tag(ELECTROTINE_STORAGE_BLOCK_ITEM_TAG).add(ELECTROTINE_BLOCK.asItem());
+        tag(TIN_STORAGE_BLOCK_ITEM_TAG).add(TIN_BLOCK.asItem());
+        tag(RAW_TIN_STORAGE_BLOCK_ITEM_TAG).add(RAW_TIN_BLOCK.asItem());
+        tag(SILVER_STORAGE_BLOCK_ITEM_TAG).add(SILVER_BLOCK.asItem());
+        tag(RAW_SILVER_STORAGE_BLOCK_ITEM_TAG).add(RAW_SILVER_BLOCK.asItem());
 
         tag(WHITE_BACKPACK_TAG).add(WHITE_BACKPACK);
         tag(ORANGE_BACKPACK_TAG).add(ORANGE_BACKPACK);

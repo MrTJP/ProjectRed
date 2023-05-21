@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "projectred_exploration:tin_ore"
+    "projectred_exploration:tin_ore",
+    "projectred_exploration:deepslate_tin_ore"
   ]
 }

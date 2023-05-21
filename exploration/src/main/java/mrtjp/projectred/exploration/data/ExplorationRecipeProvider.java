@@ -11,7 +11,11 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
+
+import java.util.Collection;
+import java.util.List;
 
 import static mrtjp.projectred.core.init.CoreReferences.*;
 import static mrtjp.projectred.core.init.CoreTags.*;
@@ -34,39 +38,18 @@ public class ExplorationRecipeProvider extends RecipeProvider {
     protected void registerRecipes() {
 
         // Ores
+        oreSmeltingRecipe(RUBY_ITEM, List.of(RUBY_ORE_BLOCK, DEEPSLATE_RUBY_ORE_BLOCK), 1F);
+        oreSmeltingRecipe(SAPPHIRE_ITEM, List.of(SAPPHIRE_ORE_BLOCK, DEEPSLATE_SAPPHIRE_ORE_BLOCK), 1F);
+        oreSmeltingRecipe(PERIDOT_ITEM, List.of(PERIDOT_ORE_BLOCK, DEEPSLATE_PERIDOT_ORE_BLOCK), 1F);
+        oreSmeltingRecipe(ELECTROTINE_DUST_ITEM, List.of(ELECTROTINE_ORE_BLOCK, DEEPSLATE_ELECTROTINE_ORE_BLOCK), 0.7F);
+        oreSmeltingRecipe(TIN_INGOT_ITEM, List.of(TIN_ORE_BLOCK, DEEPSLATE_TIN_ORE_BLOCK, RAW_TIN_ITEM), 0.7F);
+        oreSmeltingRecipe(SILVER_INGOT_ITEM, List.of(SILVER_ORE_BLOCK, DEEPSLATE_SILVER_ORE_BLOCK, RAW_TIN_ITEM), 0.7F);
+
+        // Decorative blocks
         smelting(BASALT_BLOCK)
                 .ingredient(BASALT_COBBLE_BLOCK)
                 .experience(0.1F);
 
-        smelting(RUBY_ITEM, 1, new ResourceLocation(MOD_ID, "ruby_from_ore")) //Note: Special names for json bc multiple recipes here producing same item
-                .ingredient(RUBY_ORE_BLOCK)
-                .experience(1F);
-
-        smelting(SAPPHIRE_ITEM, 1, new ResourceLocation(MOD_ID, "sapphire_from_ore"))
-                .ingredient(SAPPHIRE_ORE_BLOCK)
-                .experience(1F);
-
-        smelting(PERIDOT_ITEM, 1, new ResourceLocation(MOD_ID, "peridot_from_ore"))
-                .ingredient(PERIDOT_ORE_BLOCK)
-                .experience(1F);
-
-        smelting(COPPER_INGOT_ITEM, 1, new ResourceLocation(MOD_ID, "copper_from_ore"))
-                .ingredient(COPPER_ORE_BLOCK)
-                .experience(0.7F);
-
-        smelting(TIN_INGOT_ITEM, 1, new ResourceLocation(MOD_ID, "tin_from_ore"))
-                .ingredient(TIN_ORE_BLOCK)
-                .experience(0.7F);
-
-        smelting(SILVER_INGOT_ITEM, 1, new ResourceLocation(MOD_ID, "silver_from_ore"))
-                .ingredient(SILVER_ORE_BLOCK)
-                .experience(0.7F);
-
-        smelting(ELECTROTINE_DUST_ITEM, 1, new ResourceLocation(MOD_ID, "electrotine_from_ore"))
-                .ingredient(ELECTROTINE_ORE_BLOCK)
-                .experience(0.7F);
-
-        // Decorative blocks
         shapedRecipe(MARBLE_BRICK_BLOCK, 4)
                 .key('B', MARBLE_BLOCK)
                 .patternLine("BB")
@@ -77,129 +60,25 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .patternLine("BB")
                 .patternLine("BB");
 
-        shapedRecipe(RUBY_BLOCK)
-                .key('S', RUBY_GEM_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapelessRecipe(RUBY_ITEM, 9, new ResourceLocation(MOD_ID, "ruby_from_block"))
-                .addIngredient(RUBY_STORAGE_BLOCK_ITEM_TAG);
-
-        shapedRecipe(SAPPHIRE_BLOCK)
-                .key('S', SAPPHIRE_GEM_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapelessRecipe(SAPPHIRE_ITEM, 9, new ResourceLocation(MOD_ID, "sapphire_from_block"))
-                .addIngredient(SAPPHIRE_STORAGE_BLOCK_ITEM_TAG);
-
-        shapedRecipe(PERIDOT_BLOCK)
-                .key('S', PERIDOT_GEM_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapelessRecipe(PERIDOT_ITEM, 9, new ResourceLocation(MOD_ID, "peridot_from_block"))
-                .addIngredient(PERIDOT_STORAGE_BLOCK_ITEM_TAG);
-
-        shapedRecipe(COPPER_BLOCK)
-                .key('S', COPPER_INGOT_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapelessRecipe(COPPER_INGOT_ITEM, 9, new ResourceLocation(MOD_ID, "copper_from_block"))
-                .addIngredient(COPPER_STORAGE_BLOCK_ITEM_TAG);
-
-        shapedRecipe(TIN_BLOCK)
-                .key('S', TIN_INGOT_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapelessRecipe(TIN_INGOT_ITEM, 9, new ResourceLocation(MOD_ID, "tin_from_block"))
-                .addIngredient(TIN_ORE_BLOCK_ITEM_TAG);
-
-        shapedRecipe(SILVER_BLOCK)
-                .key('S', SILVER_INGOT_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapelessRecipe(SILVER_INGOT_ITEM, 9, new ResourceLocation(MOD_ID, "silver_from_block"))
-                .addIngredient(SILVER_STORAGE_BLOCK_ITEM_TAG);
-
-        shapedRecipe(ELECTROTINE_BLOCK)
-                .key('S', ELECTROTINE_DUST_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapelessRecipe(ELECTROTINE_DUST_ITEM, 9, new ResourceLocation(MOD_ID, "electrotine_from_block"))
-                .addIngredient(ELECTROTINE_STORAGE_BLOCK_ITEM_TAG);
+        nineBlockStorageRecipes(RUBY_GEM_TAG, RUBY_BLOCK, RUBY_ITEM);
+        nineBlockStorageRecipes(SAPPHIRE_GEM_TAG, SAPPHIRE_BLOCK, SAPPHIRE_ITEM);
+        nineBlockStorageRecipes(PERIDOT_GEM_TAG, PERIDOT_BLOCK, PERIDOT_ITEM);
+        nineBlockStorageRecipes(ELECTROTINE_DUST_TAG, ELECTROTINE_BLOCK, ELECTROTINE_DUST_ITEM);
+        nineBlockStorageRecipes(RAW_MATERIALS_TIN_TAG, RAW_TIN_BLOCK, RAW_TIN_ITEM);
+        nineBlockStorageRecipes(TIN_INGOT_TAG, TIN_BLOCK, TIN_INGOT_ITEM);
+        nineBlockStorageRecipes(RAW_MATERIALS_SILVER_TAG, RAW_SILVER_BLOCK, RAW_SILVER_ITEM);
+        nineBlockStorageRecipes(SILVER_INGOT_TAG, SILVER_BLOCK, SILVER_INGOT_ITEM);
 
         // Walls
-        shapedRecipe(MARBLE_WALL, 6)
-                .key('S', MARBLE_BLOCK_ITEM_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapedRecipe(MARBLE_BRICK_WALL, 6)
-                .key('S', MARBLE_BRICK_BLOCK)
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapedRecipe(BASALT_WALL, 6)
-                .key('S', BASALT_BLOCK_ITEM_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapedRecipe(BASALT_COBBLE_WALL, 6)
-                .key('S', BASALT_COBBLE_BLOCK)
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapedRecipe(BASALT_BRICK_WALL, 6)
-                .key('S', BASALT_BRICK_BLOCK)
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapedRecipe(RUBY_BLOCK_WALL, 6)
-                .key('S', RUBY_STORAGE_BLOCK_ITEM_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapedRecipe(SAPPHIRE_BLOCK_WALL, 6)
-                .key('S', SAPPHIRE_STORAGE_BLOCK_ITEM_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapedRecipe(PERIDOT_BLOCK_WALL, 6)
-                .key('S', PERIDOT_STORAGE_BLOCK_ITEM_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapedRecipe(COPPER_BLOCK_WALL, 6)
-                .key('S', COPPER_STORAGE_BLOCK_ITEM_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapedRecipe(TIN_BLOCK_WALL, 6)
-                .key('S', TIN_STORAGE_BLOCK_ITEM_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapedRecipe(SILVER_BLOCK_WALL, 6)
-                .key('S', SILVER_STORAGE_BLOCK_ITEM_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS");
-
-        shapedRecipe(ELECTROTINE_BLOCK_WALL, 6)
-                .key('S', ELECTROTINE_STORAGE_BLOCK_ITEM_TAG)
-                .patternLine("SSS")
-                .patternLine("SSS");
+        wallRecipe(MARBLE_WALL, MARBLE_BLOCK_ITEM_TAG);
+        wallRecipe(MARBLE_BRICK_WALL, MARBLE_BRICK_BLOCK);
+        wallRecipe(BASALT_WALL, BASALT_BLOCK_ITEM_TAG);
+        wallRecipe(BASALT_COBBLE_WALL, BASALT_COBBLE_BLOCK);
+        wallRecipe(BASALT_BRICK_WALL, BASALT_BRICK_BLOCK);
+        wallRecipe(RUBY_BLOCK_WALL, RUBY_STORAGE_BLOCK_ITEM_TAG);
+        wallRecipe(SAPPHIRE_BLOCK_WALL, SAPPHIRE_STORAGE_BLOCK_ITEM_TAG);
+        wallRecipe(PERIDOT_BLOCK_WALL, PERIDOT_STORAGE_BLOCK_ITEM_TAG);
+        wallRecipe(ELECTROTINE_BLOCK_WALL, ELECTROTINE_STORAGE_BLOCK_ITEM_TAG);
 
         // Wool gin
 
@@ -281,6 +160,45 @@ public class ExplorationRecipeProvider extends RecipeProvider {
         }
 
         special(BACKPACK_DYE_RECIPE_SERIALIZER, new ResourceLocation(MOD_ID, "backpack_dye"));
+    }
+
+    private void oreSmeltingRecipe(ItemLike result, Collection<ItemLike> sources, float xp) {
+        String resultName = result.asItem().getRegistryName().getPath();
+
+        for (ItemLike source : sources) {
+            String sourceName = source.asItem().getRegistryName().getPath();
+
+            smelting(result, 1, new ResourceLocation(MOD_ID, resultName + "_from_" + sourceName + "_smelting"))
+                    .ingredient(source)
+                    .experience(xp);
+        }
+    }
+
+    private void nineBlockStorageRecipes(TagKey<Item> itemTag, ItemLike block, ItemLike item) {
+        // Item to block
+        shapedRecipe(block)
+                .key('S', itemTag)
+                .patternLine("SSS")
+                .patternLine("SSS")
+                .patternLine("SSS");
+
+        // Block to item
+        shapelessRecipe(item, 9, new ResourceLocation(MOD_ID, item.asItem().getRegistryName().getPath() + "_from_nineblock"))
+                .addIngredient(block);
+    }
+
+    private void wallRecipe(ItemLike result, ItemLike input) {
+        shapedRecipe(result, 6)
+                .key('S', input)
+                .patternLine("SSS")
+                .patternLine("SSS");
+    }
+
+    private void wallRecipe(ItemLike result, TagKey<Item> input) {
+        shapedRecipe(result, 6)
+                .key('S', input)
+                .patternLine("SSS")
+                .patternLine("SSS");
     }
 
     private void axeRecipe(Item axe, TagKey<Item> material) {

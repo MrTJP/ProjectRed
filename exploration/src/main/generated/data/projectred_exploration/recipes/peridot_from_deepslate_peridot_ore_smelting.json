@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "result": {
+    "item": "projectred_core:peridot"
+  },
+  "ingredient": {
+    "item": "projectred_exploration:deepslate_peridot_ore"
+  },
+  "experience": 1.0,
+  "cookingtime": 200
+}

@@ -22,9 +22,6 @@ public class CoreItems {
     public static final String ID_POINTER = "pointer";
     public static final String ID_SILICON_CHIP = "silicon_chip";
     public static final String ID_ENERGIZED_SILICON_CHIP = "energized_silicon_chip";
-    public static final String ID_COPPER_INGOT = "copper_ingot";
-    public static final String ID_TIN_INGOT = "tin_ingot";
-    public static final String ID_SILVER_INGOT = "silver_ingot";
     public static final String ID_RED_ALLOY_INGOT = "red_ingot";
     public static final String ID_ELECTROTINE_ALLOY_INGOT = "electrotine_ingot";
     public static final String ID_ELECTROTINE_DUST = "electrotine_dust";
@@ -72,9 +69,6 @@ public class CoreItems {
     public static void register() {
 
         // Ingots/dusts/gems
-        ITEMS.register(ID_COPPER_INGOT, createSimpleItemSupplier());
-        ITEMS.register(ID_TIN_INGOT, createSimpleItemSupplier());
-        ITEMS.register(ID_SILVER_INGOT, createSimpleItemSupplier());
         ITEMS.register(ID_RED_ALLOY_INGOT, createSimpleItemSupplier());
         ITEMS.register(ID_ELECTROTINE_ALLOY_INGOT, createSimpleItemSupplier());
         ITEMS.register(ID_ELECTROTINE_DUST, createSimpleItemSupplier());

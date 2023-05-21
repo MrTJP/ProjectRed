@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "projectred_exploration:deepslate_ruby_ore",
+    "projectred_exploration:deepslate_sapphire_ore",
+    "projectred_exploration:deepslate_peridot_ore",
+    "projectred_exploration:deepslate_tin_ore",
+    "projectred_exploration:deepslate_silver_ore",
+    "projectred_exploration:deepslate_electrotine_ore"
+  ]
+}
