@@ -22,18 +22,28 @@ public class ExplorationReferences {
     // Ores
     @ObjectHolder(ID_RUBY_ORE)
     public static Block RUBY_ORE_BLOCK = null;
+    @ObjectHolder(ID_DEEPSLATE_RUBY_ORE)
+    public static Block DEEPSLATE_RUBY_ORE_BLOCK = null;
     @ObjectHolder(ID_SAPPHIRE_ORE)
     public static Block SAPPHIRE_ORE_BLOCK = null;
+    @ObjectHolder(ID_DEEPSLATE_SAPPHIRE_ORE)
+    public static Block DEEPSLATE_SAPPHIRE_ORE_BLOCK = null;
     @ObjectHolder(ID_PERIDOT_ORE)
     public static Block PERIDOT_ORE_BLOCK = null;
-    @ObjectHolder(ID_COPPER_ORE)
-    public static Block COPPER_ORE_BLOCK = null;
+    @ObjectHolder(ID_DEEPSLATE_PERIDOT_ORE)
+    public static Block DEEPSLATE_PERIDOT_ORE_BLOCK = null;
     @ObjectHolder(ID_TIN_ORE)
     public static Block TIN_ORE_BLOCK = null;
+    @ObjectHolder(ID_DEEPSLATE_TIN_ORE)
+    public static Block DEEPSLATE_TIN_ORE_BLOCK = null;
     @ObjectHolder(ID_SILVER_ORE)
     public static Block SILVER_ORE_BLOCK = null;
+    @ObjectHolder(ID_DEEPSLATE_SILVER_ORE)
+    public static Block DEEPSLATE_SILVER_ORE_BLOCK = null;
     @ObjectHolder(ID_ELECTROTINE_ORE)
     public static Block ELECTROTINE_ORE_BLOCK = null;
+    @ObjectHolder(ID_DEEPSLATE_ELECTROTINE_ORE)
+    public static Block DEEPSLATE_ELECTROTINE_ORE_BLOCK = null;
 
     // Decorative blocks
     @ObjectHolder(ID_MARBLE)
@@ -52,14 +62,16 @@ public class ExplorationReferences {
     public static Block SAPPHIRE_BLOCK = null;
     @ObjectHolder(ID_PERIDOT_BLOCK)
     public static Block PERIDOT_BLOCK = null;
-    @ObjectHolder(ID_COPPER_BLOCK)
-    public static Block COPPER_BLOCK = null;
+    @ObjectHolder(ID_ELECTROTINE_BLOCK)
+    public static Block ELECTROTINE_BLOCK = null;
+    @ObjectHolder(ID_RAW_TIN_BLOCK)
+    public static Block RAW_TIN_BLOCK = null;
+    @ObjectHolder(ID_RAW_SILVER_BLOCK)
+    public static Block RAW_SILVER_BLOCK = null;
     @ObjectHolder(ID_TIN_BLOCK)
     public static Block TIN_BLOCK = null;
     @ObjectHolder(ID_SILVER_BLOCK)
     public static Block SILVER_BLOCK = null;
-    @ObjectHolder(ID_ELECTROTINE_BLOCK)
-    public static Block ELECTROTINE_BLOCK = null;
 
     // Walls
     @ObjectHolder(ID_MARBLE_WALL)
@@ -78,16 +90,21 @@ public class ExplorationReferences {
     public static WallBlock SAPPHIRE_BLOCK_WALL = null;
     @ObjectHolder(ID_PERIDOT_BLOCK_WALL)
     public static WallBlock PERIDOT_BLOCK_WALL = null;
-    @ObjectHolder(ID_COPPER_BLOCK_WALL)
-    public static WallBlock COPPER_BLOCK_WALL = null;
-    @ObjectHolder(ID_TIN_BLOCK_WALL)
-    public static WallBlock TIN_BLOCK_WALL = null;
-    @ObjectHolder(ID_SILVER_BLOCK_WALL)
-    public static WallBlock SILVER_BLOCK_WALL = null;
     @ObjectHolder(ID_ELECTROTINE_BLOCK_WALL)
     public static WallBlock ELECTROTINE_BLOCK_WALL = null;
 
     /* Items */
+
+    // Ingots / dusts / gems
+    @ObjectHolder(ID_RAW_TIN)
+    public static Item RAW_TIN_ITEM = null;
+    @ObjectHolder(ID_TIN_INGOT)
+    public static Item TIN_INGOT_ITEM = null;
+    @ObjectHolder(ID_RAW_SILVER)
+    public static Item RAW_SILVER_ITEM = null;
+    @ObjectHolder(ID_SILVER_INGOT)
+    public static Item SILVER_INGOT_ITEM = null;
+
     @ObjectHolder(ID_WOOL_GIN)
     public static Item WOOL_GIN = null;
     @ObjectHolder(ID_ATHAME)

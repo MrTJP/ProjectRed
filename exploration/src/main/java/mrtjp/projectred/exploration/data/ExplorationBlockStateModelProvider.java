@@ -26,12 +26,17 @@ public class ExplorationBlockStateModelProvider extends BlockStateProvider {
 
         // Ores
         simpleBlock(RUBY_ORE_BLOCK);
+        simpleBlock(DEEPSLATE_RUBY_ORE_BLOCK);
         simpleBlock(SAPPHIRE_ORE_BLOCK);
+        simpleBlock(DEEPSLATE_SAPPHIRE_ORE_BLOCK);
         simpleBlock(PERIDOT_ORE_BLOCK);
-        simpleBlock(COPPER_ORE_BLOCK);
+        simpleBlock(DEEPSLATE_PERIDOT_ORE_BLOCK);
         simpleBlock(TIN_ORE_BLOCK);
+        simpleBlock(DEEPSLATE_TIN_ORE_BLOCK);
         simpleBlock(SILVER_ORE_BLOCK);
+        simpleBlock(DEEPSLATE_SILVER_ORE_BLOCK);
         simpleBlock(ELECTROTINE_ORE_BLOCK);
+        simpleBlock(DEEPSLATE_ELECTROTINE_ORE_BLOCK);
 
         // Decorative blocks
         simpleBlock(MARBLE_BLOCK);
@@ -42,10 +47,11 @@ public class ExplorationBlockStateModelProvider extends BlockStateProvider {
         simpleBlock(RUBY_BLOCK);
         simpleBlock(SAPPHIRE_BLOCK);
         simpleBlock(PERIDOT_BLOCK);
-        simpleBlock(COPPER_BLOCK);
+        simpleBlock(ELECTROTINE_BLOCK);
+        simpleBlock(RAW_TIN_BLOCK);
+        simpleBlock(RAW_SILVER_BLOCK);
         simpleBlock(TIN_BLOCK);
         simpleBlock(SILVER_BLOCK);
-        simpleBlock(ELECTROTINE_BLOCK);
 
         // Walls
         wallBlock(MARBLE_WALL, blockTexture(MARBLE_BLOCK));
@@ -56,9 +62,6 @@ public class ExplorationBlockStateModelProvider extends BlockStateProvider {
         wallBlock(RUBY_BLOCK_WALL, blockTexture(RUBY_BLOCK));
         wallBlock(SAPPHIRE_BLOCK_WALL, blockTexture(SAPPHIRE_BLOCK));
         wallBlock(PERIDOT_BLOCK_WALL, blockTexture(PERIDOT_BLOCK));
-        wallBlock(COPPER_BLOCK_WALL, blockTexture(COPPER_BLOCK));
-        wallBlock(TIN_BLOCK_WALL, blockTexture(TIN_BLOCK));
-        wallBlock(SILVER_BLOCK_WALL, blockTexture(SILVER_BLOCK));
         wallBlock(ELECTROTINE_BLOCK_WALL, blockTexture(ELECTROTINE_BLOCK));
     }
 }

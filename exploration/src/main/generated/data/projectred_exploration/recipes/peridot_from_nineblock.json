@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "item": "projectred_core:peridot",
+    "count": 9
+  },
+  "ingredients": [
+    {
+      "item": "projectred_exploration:peridot_block"
+    }
+  ]
+}

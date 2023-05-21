@@ -25,12 +25,17 @@ public class ExplorationLanguageProvider extends LanguageProvider {
 
         // Ores
         add(RUBY_ORE_BLOCK, "Ruby Ore");
+        add(DEEPSLATE_RUBY_ORE_BLOCK, "Deepslate Ruby Ore");
         add(SAPPHIRE_ORE_BLOCK, "Sapphire Ore");
+        add(DEEPSLATE_SAPPHIRE_ORE_BLOCK, "Deepslate Sapphire Ore");
         add(PERIDOT_ORE_BLOCK, "Peridot Ore");
-        add(COPPER_ORE_BLOCK, "Copper Ore");
+        add(DEEPSLATE_PERIDOT_ORE_BLOCK, "Deepslate Peridot Ore");
         add(TIN_ORE_BLOCK, "Tin Ore");
+        add(DEEPSLATE_TIN_ORE_BLOCK, "Deepslate Tin Ore");
         add(SILVER_ORE_BLOCK, "Silver Ore");
+        add(DEEPSLATE_SILVER_ORE_BLOCK, "Deepslate Silver Ore");
         add(ELECTROTINE_ORE_BLOCK, "Electrotine Ore");
+        add(DEEPSLATE_ELECTROTINE_ORE_BLOCK, "Deepslate Electrotine Ore");
 
         // Decorative blocks
         add(MARBLE_BLOCK, "Marble");
@@ -41,10 +46,11 @@ public class ExplorationLanguageProvider extends LanguageProvider {
         add(RUBY_BLOCK, "Ruby Block");
         add(SAPPHIRE_BLOCK, "Sapphire Block");
         add(PERIDOT_BLOCK, "Peridot Block");
-        add(COPPER_BLOCK, "Copper Block");
+        add(ELECTROTINE_BLOCK, "Electrotine Block");
+        add(RAW_TIN_BLOCK, "Raw Tin Block");
+        add(RAW_SILVER_BLOCK, "Raw Silver Block");
         add(TIN_BLOCK, "Tin Block");
         add(SILVER_BLOCK, "Silver Block");
-        add(ELECTROTINE_BLOCK, "Electrotine Block");
 
         // Walls
         add(MARBLE_WALL, "Marble Wall");
@@ -55,12 +61,13 @@ public class ExplorationLanguageProvider extends LanguageProvider {
         add(RUBY_BLOCK_WALL, "Ruby Wall");
         add(SAPPHIRE_BLOCK_WALL, "Sapphire Wall");
         add(PERIDOT_BLOCK_WALL, "Peridot Wall");
-        add(COPPER_BLOCK_WALL, "Copper Wall");
-        add(TIN_BLOCK_WALL, "Tin Wall");
-        add(SILVER_BLOCK_WALL, "Silver Wall");
         add(ELECTROTINE_BLOCK_WALL, "Electrotine Wall");
 
         // Items
+        add(RAW_TIN_ITEM, "Raw Tin");
+        add(TIN_INGOT_ITEM, "Tin Ingot");
+        add(RAW_SILVER_ITEM, "Raw Silver");
+        add(SILVER_INGOT_ITEM, "Silver Ingot");
         add(WOOL_GIN, "Wool Gin");
         add(ATHAME, "Athame");
 

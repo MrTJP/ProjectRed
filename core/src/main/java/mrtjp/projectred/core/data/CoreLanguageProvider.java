@@ -37,9 +37,6 @@ public class CoreLanguageProvider extends LanguageProvider {
         add(POINTER_ITEM, "Pointer");
         add(SILICON_CHIP_ITEM, "Silicon Chip");
         add(ENERGIZED_SILICON_CHIP_ITEM, "Energized Silicon Chip");
-        add(COPPER_INGOT_ITEM, "Copper Ingot");
-        add(TIN_INGOT_ITEM, "Tin Ingot");
-        add(SILVER_INGOT_ITEM, "Silver Ingot");
         add(RED_ALLOY_INGOT_ITEM, "Red Alloy Ingot");
         add(ELECTROTINE_ALLOY_INGOT_ITEM, "Electrotine Alloy Ingot");
         add(ELECTROTINE_DUST_ITEM, "Electrotine Dust");

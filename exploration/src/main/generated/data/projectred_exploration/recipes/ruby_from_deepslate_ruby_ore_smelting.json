@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "result": {
+    "item": "projectred_core:ruby"
+  },
+  "ingredient": {
+    "item": "projectred_exploration:deepslate_ruby_ore"
+  },
+  "experience": 1.0,
+  "cookingtime": 200
+}

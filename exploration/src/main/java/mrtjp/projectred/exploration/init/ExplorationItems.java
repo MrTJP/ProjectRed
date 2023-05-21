@@ -12,10 +12,17 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
 
+import java.util.function.Supplier;
+
 import static mrtjp.projectred.core.init.CoreTags.*;
 import static mrtjp.projectred.exploration.ProjectRedExploration.*;
 
 public class ExplorationItems {
+
+    public static final String ID_RAW_TIN = "raw_tin";
+    public static final String ID_TIN_INGOT = "tin_ingot";
+    public static final String ID_RAW_SILVER = "raw_silver";
+    public static final String ID_SILVER_INGOT = "silver_ingot";
 
     public static final String ID_WOOL_GIN = "wool_gin";
     public static final String ID_ATHAME = "athame";
@@ -152,6 +159,12 @@ public class ExplorationItems {
 
     public static void register() {
 
+        // Ingots/dusts/gems
+        ITEMS.register(ID_RAW_TIN, createSimpleItemSupplier());
+        ITEMS.register(ID_TIN_INGOT, createSimpleItemSupplier());
+        ITEMS.register(ID_RAW_SILVER, createSimpleItemSupplier());
+        ITEMS.register(ID_SILVER_INGOT, createSimpleItemSupplier());
+
         ITEMS.register(ID_WOOL_GIN, WoolGinItem::new);
         ITEMS.register(ID_ATHAME, () -> new AthameItem(ATHAME_ITEM_TIER, 3, -2.4F));
 
@@ -227,6 +240,10 @@ public class ExplorationItems {
         ITEMS.register(ID_GREEN_BACKPACK,       () -> new BackpackItem(13));
         ITEMS.register(ID_RED_BACKPACK,         () -> new BackpackItem(14));
         ITEMS.register(ID_BLACK_BACKPACK,       () -> new BackpackItem(15));
+    }
+
+    private static Supplier<Item> createSimpleItemSupplier() {
+        return () -> new Item(new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
     }
 
     private static Item createAxeItem(SimpleItemTier tier, float attackDamage, float attackSpeed) {

@@ -2,19 +2,22 @@
   "replace": false,
   "values": [
     "projectred_exploration:ruby_ore",
+    "projectred_exploration:deepslate_ruby_ore",
     "projectred_exploration:sapphire_ore",
+    "projectred_exploration:deepslate_sapphire_ore",
     "projectred_exploration:peridot_ore",
-    "projectred_exploration:silver_ore",
+    "projectred_exploration:deepslate_peridot_ore",
     "projectred_exploration:electrotine_ore",
+    "projectred_exploration:deepslate_electrotine_ore",
+    "projectred_exploration:silver_ore",
+    "projectred_exploration:deepslate_silver_ore",
     "projectred_exploration:ruby_block",
     "projectred_exploration:sapphire_block",
     "projectred_exploration:peridot_block",
+    "projectred_exploration:raw_silver_block",
     "projectred_exploration:silver_block",
-    "projectred_exploration:electrotine_block",
     "projectred_exploration:ruby_block_wall",
     "projectred_exploration:sapphire_block_wall",
-    "projectred_exploration:peridot_block_wall",
-    "projectred_exploration:silver_block_wall",
-    "projectred_exploration:electrotine_block_wall"
+    "projectred_exploration:peridot_block_wall"
   ]
 }

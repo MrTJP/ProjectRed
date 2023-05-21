@@ -10,6 +10,7 @@ import net.minecraftforge.common.Tags;
 import static mrtjp.projectred.core.init.CoreReferences.COPPER_COIL_ITEM;
 import static mrtjp.projectred.core.init.CoreTags.*;
 import static mrtjp.projectred.expansion.init.ExpansionReferences.*;
+import static net.minecraftforge.common.Tags.Items.INGOTS_COPPER;
 
 public class ExpansionRecipeProvider extends RecipeProvider {
 
@@ -79,7 +80,7 @@ public class ExpansionRecipeProvider extends RecipeProvider {
         shapedRecipe(BATTERY_ITEM, 1)
                 .key('E', ELECTROTINE_DUST_TAG)
                 .key('T', TIN_INGOT_TAG)
-                .key('C', COPPER_INGOT_TAG)
+                .key('C', INGOTS_COPPER)
                 .patternLine("ETE")
                 .patternLine("ECE")
                 .patternLine("ETE");
