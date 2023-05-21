@@ -51,6 +51,13 @@ public class ExplorationBlocks {
     public static final String ID_SILVER_BLOCK_WALL = "silver_block_wall";
     public static final String ID_ELECTROTINE_BLOCK_WALL = "electrotine_block_wall";
 
+    // Direct references needed for early init and worldgen
+    public static RegistryObject<Block> MARBLE_BLOCK;
+    public static RegistryObject<Block> MARBLE_BRICK_BLOCK;
+    public static RegistryObject<Block> BASALT_BLOCK;
+    public static RegistryObject<Block> BASALT_COBBLE_BLOCK;
+    public static RegistryObject<Block> BASALT_BRICK_BLOCK;
+
     public static void register() {
 
         /* Blocks */
@@ -65,11 +72,11 @@ public class ExplorationBlocks {
         BLOCKS.register(ID_ELECTROTINE_ORE, () -> new ElectrotineOreBlock(2, 1, 5));
 
         // Decorative blocks
-        RegistryObject<Block> marbleBlock       = BLOCKS.register(ID_MARBLE,          () -> createDecorativeStoneBlock(2, 1F, 14F));
-        RegistryObject<Block> marbleBrickBlock  = BLOCKS.register(ID_MARBLE_BRICK,    () -> createDecorativeStoneBlock(2, 1F, 14F));
-        RegistryObject<Block> basaltBlock       = BLOCKS.register(ID_BASALT,          () -> createDecorativeStoneBlock(2, 2.5F, 16F));
-        RegistryObject<Block> basaltCobbleBlock = BLOCKS.register(ID_BASALT_COBBLE,   () -> createDecorativeStoneBlock(2, 2.5F, 14F));
-        RegistryObject<Block> basaltBrickBlock  = BLOCKS.register(ID_BASALT_BRICK,    () -> createDecorativeStoneBlock(2, 2.5F, 20F));
+        MARBLE_BLOCK        = BLOCKS.register(ID_MARBLE,          () -> createDecorativeStoneBlock(2, 1F, 14F));
+        MARBLE_BRICK_BLOCK  = BLOCKS.register(ID_MARBLE_BRICK,    () -> createDecorativeStoneBlock(2, 1F, 14F));
+        BASALT_BLOCK        = BLOCKS.register(ID_BASALT,          () -> createDecorativeStoneBlock(2, 2.5F, 16F));
+        BASALT_COBBLE_BLOCK = BLOCKS.register(ID_BASALT_COBBLE,   () -> createDecorativeStoneBlock(2, 2.5F, 14F));
+        BASALT_BRICK_BLOCK  = BLOCKS.register(ID_BASALT_BRICK,    () -> createDecorativeStoneBlock(2, 2.5F, 20F));
         RegistryObject<Block> rubyBlock         = BLOCKS.register(ID_RUBY_BLOCK,      () -> createDecorativeGemBlock(2, 5F, 10F));
         RegistryObject<Block> sapphireBlock     = BLOCKS.register(ID_SAPPHIRE_BLOCK,  () -> createDecorativeGemBlock(2, 5F, 10F));
         RegistryObject<Block> peridotBlock      = BLOCKS.register(ID_PERIDOT_BLOCK,   () -> createDecorativeGemBlock(2, 5F, 10F));
@@ -80,11 +87,11 @@ public class ExplorationBlocks {
 
         // Walls
         //Note: Direct refs used here bc ExplorationReferences isnt filled out when wall block suppliers are run
-        BLOCKS.register(ID_MARBLE_WALL,         () -> createWallBlock(marbleBlock));
-        BLOCKS.register(ID_MARBLE_BRICK_WALL,   () -> createWallBlock(marbleBrickBlock));
-        BLOCKS.register(ID_BASALT_WALL,         () -> createWallBlock(basaltBlock));
-        BLOCKS.register(ID_BASALT_COBBLE_WALL,  () -> createWallBlock(basaltCobbleBlock));
-        BLOCKS.register(ID_BASALT_BRICK_WALL,   () -> createWallBlock(basaltBrickBlock));
+        BLOCKS.register(ID_MARBLE_WALL,         () -> createWallBlock(MARBLE_BLOCK));
+        BLOCKS.register(ID_MARBLE_BRICK_WALL,   () -> createWallBlock(MARBLE_BRICK_BLOCK));
+        BLOCKS.register(ID_BASALT_WALL,         () -> createWallBlock(BASALT_BLOCK));
+        BLOCKS.register(ID_BASALT_COBBLE_WALL,  () -> createWallBlock(BASALT_COBBLE_BLOCK));
+        BLOCKS.register(ID_BASALT_BRICK_WALL,   () -> createWallBlock(BASALT_BRICK_BLOCK));
         BLOCKS.register(ID_RUBY_BLOCK_WALL,     () -> createWallBlock(rubyBlock));
         BLOCKS.register(ID_SAPPHIRE_BLOCK_WALL, () -> createWallBlock(sapphireBlock));
         BLOCKS.register(ID_PERIDOT_BLOCK_WALL,  () -> createWallBlock(peridotBlock));
@@ -166,6 +173,10 @@ public class ExplorationBlocks {
                 .harvestTool(ToolType.PICKAXE)
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.METAL));
+    }
+
+    private static Item createBlockItem(RegistryObject<Block> block) {
+        return new BlockItem(block.get(), new Item.Properties().tab(EXPLORATION_GROUP));
     }
 
     private static Item createBlockItem(Block block) {
