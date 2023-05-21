@@ -1,6 +1,9 @@
 package mrtjp.projectred.exploration.world.gen;
 
+import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
+import mrtjp.projectred.exploration.init.ExplorationBlocks;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Direction;
@@ -13,6 +16,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import java.util.BitSet;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.Function;
 
 import static mrtjp.projectred.exploration.init.ExplorationReferences.MARBLE_BLOCK;
@@ -21,6 +25,12 @@ public class MarbleCaveWorldCarver extends CaveWorldCarver {
 
     public MarbleCaveWorldCarver(Codec<ProbabilityConfig> codec, int genHeight) {
         super(codec, genHeight);
+
+        // A little awkward, but this is now NetherWorldCarver overrides this list
+        this.replaceableBlocks =  new ImmutableSet.Builder<Block>()
+                .addAll(this.replaceableBlocks)
+                .add(ExplorationBlocks.MARBLE_BLOCK.get())
+                .build();
     }
 
     @Override
