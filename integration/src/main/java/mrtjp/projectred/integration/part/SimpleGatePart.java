@@ -421,7 +421,7 @@ public abstract class SimpleGatePart extends RedstoneGatePart {
 
         @Override
         protected int cycleShape(int shape) {
-            return (shape + 1) & DELAYS.length;
+            return (shape + 1) % DELAYS.length;
         }
 
         @Override
