@@ -316,6 +316,11 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
             pointer_max = packet.readInt();
             pointer_start = packet.readLong();
         }
+
+        @Override
+        protected void gateLogicOnWorldLoad() {
+            if (pointer_start >= 0) pointer_start = level().getGameTime() - pointer_start;
+        }
         //endregion
 
         //region Packets
