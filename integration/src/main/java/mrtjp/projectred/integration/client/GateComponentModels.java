@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.core.BundledSignalsLib;
 import mrtjp.projectred.core.client.HaloRenderer;
+import mrtjp.projectred.integration.part.GatePart;
 import mrtjp.projectred.lib.VecLib;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
@@ -1065,11 +1066,11 @@ public class GateComponentModels {
             }
         }
 
-        public void renderLights(CCRenderState ccrs, PoseStack mStack, MultiBufferSource buffers, Transformation t) {
+        public void renderLights(CCRenderState ccrs, GatePart gate, PoseStack mStack, MultiBufferSource buffers, Transformation t) {
+            Transformation t2 = t.with(new Translation(gate.pos()));
             for (int i = 0; i < 16; i++) {
                 if ((pressMask & 1 << i) != 0) {
-                    HaloRenderer.prepareRenderState(ccrs, mStack, buffers);
-                    HaloRenderer.renderToCCRS(ccrs, LIGHT_BOXES[i], i, t);
+                    HaloRenderer.addLight(t2, i, LIGHT_BOXES[i]);
                 }
             }
         }

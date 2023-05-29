@@ -104,16 +104,8 @@ public class GateModelRenderer {
 
     //region Custom dynamic rendering
     public void renderCustomDynamic(CCRenderState ccrs, GatePart gate, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
-        renderCustomDynamic(ccrs, gate.getGateType(), gate, gate.getOrientation(), RedundantTransformation.INSTANCE, mStack, buffers, packedLight, packedOverlay, partialTicks);
-    }
-
-    public void renderCustomDynamic(CCRenderState ccrs, GateType type, IGateRenderData key, int orientation, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
-        renderCustomDynamic(ccrs, type.ordinal(), key, orientation, t, mStack, buffers, packedLight, packedOverlay, partialTicks);
-    }
-
-    public void renderCustomDynamic(CCRenderState ccrs, int renderIndex, IGateRenderData key, int orientation, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
-        GateRenderer r = getRenderer(renderIndex);
-        r.renderCustomDynamic(ccrs, key, VecLib.orientT(orientation).with(t), mStack, buffers, packedLight, packedOverlay, partialTicks);
+        GateRenderer r = getRenderer(gate.getGateType().ordinal());
+        r.renderCustomDynamic(ccrs, gate, VecLib.orientT(gate.getOrientation()), mStack, buffers, packedLight, packedOverlay, partialTicks);
     }
     //endregion
 
@@ -213,7 +205,7 @@ public class GateModelRenderer {
         public void renderDynamic(CCRenderState ccrs, Transformation t) {
         }
 
-        public void renderCustomDynamic(CCRenderState ccrs, IGateRenderData key, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
+        public void renderCustomDynamic(CCRenderState ccrs, GatePart gate, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
         }
     }
 
@@ -1716,9 +1708,9 @@ public class GateModelRenderer {
         }
 
         @Override
-        public void renderCustomDynamic(CCRenderState ccrs, IGateRenderData gate, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
+        public void renderCustomDynamic(CCRenderState ccrs, GatePart gate, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
             buttons.pressMask = gate.bInput0();
-            buttons.renderLights(ccrs, mStack, buffers, t);
+            buttons.renderLights(ccrs, gate, mStack, buffers, t);
         }
     }
 

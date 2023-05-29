@@ -116,7 +116,7 @@ public abstract class MultipartLightProperties {
                 renderInventory(lightItem.getColor(), lightItem.isInverted(), Vector3.ZERO, ccrs);
 
                 if (lightItem.isInverted()) {
-                    HaloRenderer.renderHalo(ccrs, mStack, getter, getInventoryGlowBounds(), lightItem.getColor(), Vector3.ZERO);
+                    HaloRenderer.renderInventoryHalo(ccrs, mStack, getter, getInventoryGlowBounds(), lightItem.getColor(), Vector3.ZERO);
                 }
             }
 

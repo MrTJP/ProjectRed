@@ -67,7 +67,7 @@ public class IllumarLampItemRenderer extends WrappedItemModel implements IItemRe
         BlockRenderer.renderCuboid(ccrs, BLOCK_BOUNDS, 0);
 
         // Render halo
-        HaloRenderer.renderHalo(ccrs, mStack, getter, GLOW_BOUNDS, block.getColor(), Vector3.ZERO);
+        HaloRenderer.renderInventoryHalo(ccrs, mStack, getter, GLOW_BOUNDS, block.getColor(), Vector3.ZERO);
     }
 
     @Override

@@ -23,6 +23,7 @@ public class Configurator {
     public static boolean staticWires = true;
     public static boolean staticGates = true;
     public static int lightHaloMax = -1;
+    public static boolean fabulousLights = true;
 
     /* World Gen */
     public static boolean gen_MarbleCave = true;
@@ -67,7 +68,8 @@ public class Configurator {
         logicwires3D = rendering.getValue("gate_3d_wires").setDefaultBoolean(logicwires3D).setComment("If set to false, flat wire textures will be used for logic gates. Significant performance improvement").getBoolean();
         staticWires = rendering.getValue("static_wire_renderer").setDefaultBoolean(staticWires).setComment("If set to false, wires will be rendered in the TESR rather than the WorldRenderer").getBoolean();
         staticGates = rendering.getValue("static_gate_renderer").setDefaultBoolean(staticGates).setComment("If set to false, gates will be rendered in the TESR rather than the WorldRenderer").getBoolean();
-        lightHaloMax = rendering.getValue("max_light_halo_count").setDefaultInt(lightHaloMax).setComment("Number of lights to render, -1 for unlimited").getInt();
+        lightHaloMax = rendering.getValue("max_lights").setDefaultInt(lightHaloMax).setComment("Max lights on screen at a time, -1 for unlimited").getInt();
+        fabulousLights = rendering.getValue("fabulous_lights").setDefaultBoolean(fabulousLights).setComment("Use fabulous shader pipeline for lights when on Fabulous Graphics mode").getBoolean();
 
         ConfigCategory gen = config.getCategory("world_gen").setComment("World gen settings");
         gen_Ruby                = gen.getValue("ruby_ore").setDefaultBoolean(gen_Ruby).setComment("Enable Ruby Ore generation").getBoolean();

@@ -44,9 +44,13 @@ public class IllumarLampMicroMaterial extends BlockMicroMaterial {
             @Override
             public void renderDynamic(MicroblockPart part, ItemTransforms.TransformType transform, PoseStack pStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
                 CCRenderState ccrs = CCRenderState.instance();
-                HaloRenderer.prepareRenderState(ccrs, pStack, buffers);
                 Cuboid6 cuboid = part.getBounds().copy().expand(0.025D);
-                HaloRenderer.renderToCCRS(ccrs, cuboid, getLightColor(), RedundantTransformation.INSTANCE);
+
+                if (transform != null) { // Inventory rendering
+                    HaloRenderer.renderInventoryHalo(ccrs, pStack, buffers, cuboid, getLightColor(), Vector3.ZERO);
+                } else {
+                    HaloRenderer.addLight(part.pos(), getLightColor(), cuboid);
+                }
             }
 
             @Override

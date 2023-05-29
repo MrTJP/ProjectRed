@@ -29,9 +29,7 @@ public class MultipartLightPartRenderer implements PartRenderer<MultipartLightPa
 
     @Override
     public void renderDynamic(MultipartLightPart part, PoseStack pStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
-        //        if (isOn)
-//            RenderHalo.addLight(pos, getColor, getLightBounds) //TODO RenderWorldLastEvent rendering is broken
         if (part.isLightOn())
-            HaloRenderer.renderHalo(CCRenderState.instance(), pStack, buffers, part.getProperties().getGlowBounds(part.getSide()), part.getColor(), Vector3.ZERO);
+            HaloRenderer.addLight(part.pos(), part.getColor(), part.getProperties().getGlowBounds(part.getSide()));
     }
 }
