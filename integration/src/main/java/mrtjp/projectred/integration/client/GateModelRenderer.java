@@ -1168,7 +1168,7 @@ public class GateModelRenderer {
 
         @Override
         public void renderDynamic(CCRenderState ccrs, Transformation t) {
-            pointer.renderModel(t, 0, ccrs);
+            pointer.renderModel(t, reflect ? 1 : 0, ccrs);
         }
     }
 
@@ -1231,13 +1231,14 @@ public class GateModelRenderer {
 
         @Override
         protected void prepareDynamic(IGateRenderData gate, float partialFrame) {
+            reflect = gate.shape() == 1;
             double interpPointer = !gate.isPointerStarted() ? 0f : (gate.pointerValue() + partialFrame) / gate.pointerMax();
             pointer.angle = interpPointer - MathHelper.pi / 2;
         }
 
         @Override
         public void renderDynamic(CCRenderState ccrs, Transformation t) {
-            pointer.renderModel(t, 0, ccrs);
+            pointer.renderModel(t, reflect ? 1 : 0, ccrs);
         }
     }
 
