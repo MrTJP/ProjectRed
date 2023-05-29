@@ -1,0 +1,108 @@
+{
+    "targets": [
+        "bloom_in",
+        "main_copy",
+        {
+            "name": "ds1",
+            "width": 854,
+            "height": 480
+        },
+        {
+            "name": "ds2",
+            "width": 427,
+            "height": 240
+        },
+        {
+            "name": "ds3",
+            "width": 214,
+            "height": 120
+        },
+        {
+            "name": "ds4",
+            "width": 107,
+            "height": 60
+        }
+    ],
+    "passes": [
+        {
+            "name": "projectred_core:downsample",
+            "intarget": "bloom_in",
+            "outtarget": "ds1"
+        },
+        {
+            "name": "projectred_core:downsample",
+            "intarget": "ds1",
+            "outtarget": "ds2"
+        },
+        {
+            "name": "projectred_core:downsample",
+            "intarget": "ds2",
+            "outtarget": "ds3"
+        },
+        {
+            "name": "projectred_core:downsample",
+            "intarget": "ds3",
+            "outtarget": "ds4"
+        },
+        {
+            "name": "projectred_core:upsample",
+            "intarget": "ds4",
+            "outtarget": "ds3",
+            "uniforms": [
+                {
+                    "name": "FilterRadius",
+                    "values": [ 2.0 ]
+                }
+            ]
+        },
+        {
+            "name": "projectred_core:upsample",
+            "intarget": "ds3",
+            "outtarget": "ds2",
+            "uniforms": [
+                {
+                    "name": "FilterRadius",
+                    "values": [ 3.0 ]
+                }
+            ]
+        },
+        {
+            "name": "projectred_core:upsample",
+            "intarget": "ds2",
+            "outtarget": "ds1",
+            "uniforms": [
+                {
+                    "name": "FilterRadius",
+                    "values": [ 4.0 ]
+                }
+            ]
+        },
+        {
+            "name": "projectred_core:upsample",
+            "intarget": "ds1",
+            "outtarget": "bloom_in",
+            "uniforms": [
+                {
+                    "name": "FilterRadius",
+                    "values": [ 5.0 ]
+                }
+            ]
+        },
+        {
+            "name": "projectred_core:blit",
+            "intarget": "minecraft:main",
+            "outtarget": "main_copy"
+        },
+        {
+            "name": "projectred_core:halo_blend",
+            "intarget": "main_copy",
+            "outtarget": "minecraft:main",
+            "auxtargets": [
+                {
+                    "name": "HaloSampler",
+                    "id": "bloom_in"
+                }
+            ]
+        }
+    ]
+}
