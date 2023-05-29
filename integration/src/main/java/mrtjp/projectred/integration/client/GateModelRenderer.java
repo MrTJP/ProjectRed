@@ -33,7 +33,7 @@ public class GateModelRenderer {
         return INSTANCES.get();
     }
 
-    private static final GateRenderer[] renderers = new GateRenderer[] {
+    private final GateRenderer[] renderers = new GateRenderer[] {
             new RenderOR(),
             new RenderNOR(),
             new RenderNOT(),
