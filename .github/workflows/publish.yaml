@@ -56,7 +56,7 @@ jobs:
           echo "release_channel=$release_channel" >> $GITHUB_OUTPUT
           echo "release_type=$release_type" >> $GITHUB_OUTPUT
           echo "publish_maven=$publish_maven" >> $GITHUB_OUTPUT
-          echo "publish_curse=$publish_curse"
+          echo "publish_curse=$publish_curse" >> $GITHUB_OUTPUT
           echo "publish_gh_release=$publish_gh_release" >> $GITHUB_OUTPUT
           echo "version_format=$version_format" >> $GITHUB_OUTPUT
 
