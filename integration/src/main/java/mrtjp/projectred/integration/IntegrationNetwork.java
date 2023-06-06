@@ -7,6 +7,7 @@ import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.packet.PacketCustomChannelBuilder;
 import codechicken.multipart.api.part.TMultiPart;
 import codechicken.multipart.block.BlockMultiPart;
+import codechicken.multipart.block.TileMultiPart;
 import mrtjp.projectred.integration.gui.screen.CounterScreen;
 import mrtjp.projectred.integration.gui.screen.TimerScreen;
 import mrtjp.projectred.integration.part.ComplexGatePart;
@@ -48,8 +49,8 @@ public class IntegrationNetwork {
 
     public static TMultiPart readPartIndex(World world, MCDataInput in) {
         BlockPos pos = in.readPos();
-        int slot = in.readUByte();
-        return BlockMultiPart.getPart(world, pos, slot);
+        int index = in.readUByte();
+        return BlockMultiPart.getTile(world, pos).getPartList().get(index);
     }
 
     private static class ClientHandler implements ICustomPacketHandler.IClientPacketHandler {
