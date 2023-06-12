@@ -45,6 +45,9 @@ dependencies {
     // CCTweaked
     compileOnly fg.deobf("org.squiddev:cc-tweaked-${mc_version}:${cct_version}:api")
     runtimeOnly fg.deobf("org.squiddev:cc-tweaked-${mc_version}:${cct_version}")
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
 
 curseforge {

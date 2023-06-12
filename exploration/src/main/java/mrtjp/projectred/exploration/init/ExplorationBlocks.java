@@ -1,16 +1,17 @@
 package mrtjp.projectred.exploration.init;
 
+import codechicken.microblock.api.BlockMicroMaterial;
+import codechicken.microblock.api.MicroMaterial;
 import mrtjp.projectred.exploration.block.ElectrotineOreBlock;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.OreBlock;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.WallBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryObject;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.*;
@@ -148,6 +149,19 @@ public class ExplorationBlocks {
         ITEMS.register(ID_SAPPHIRE_BLOCK_WALL,  () -> createBlockItem(SAPPHIRE_BLOCK_WALL));
         ITEMS.register(ID_PERIDOT_BLOCK_WALL,   () -> createBlockItem(PERIDOT_BLOCK_WALL));
         ITEMS.register(ID_ELECTROTINE_BLOCK_WALL, () -> createBlockItem(ELECTROTINE_BLOCK_WALL));
+    }
+
+    public static void onRegisterMicroMaterials(RegistryEvent.Register<MicroMaterial> event) {
+        IForgeRegistry<MicroMaterial> r = event.getRegistry();
+        r.register(new BlockMicroMaterial(ExplorationReferences.MARBLE_BLOCK));
+        r.register(new BlockMicroMaterial(ExplorationReferences.MARBLE_BRICK_BLOCK));
+        r.register(new BlockMicroMaterial(ExplorationReferences.BASALT_BLOCK));
+        r.register(new BlockMicroMaterial(ExplorationReferences.BASALT_COBBLE_BLOCK));
+        r.register(new BlockMicroMaterial(ExplorationReferences.BASALT_BRICK_BLOCK));
+        r.register(new BlockMicroMaterial(ExplorationReferences.RUBY_BLOCK));
+        r.register(new BlockMicroMaterial(ExplorationReferences.SAPPHIRE_BLOCK));
+        r.register(new BlockMicroMaterial(ExplorationReferences.PERIDOT_BLOCK));
+        r.register(new BlockMicroMaterial(ExplorationReferences.ELECTROTINE_BLOCK));
     }
 
     private static Block createOreBlock(boolean isDeepslate, int minxp, int maxxp) {

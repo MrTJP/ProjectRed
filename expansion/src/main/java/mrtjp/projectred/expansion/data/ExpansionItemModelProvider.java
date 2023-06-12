@@ -32,6 +32,10 @@ public class ExpansionItemModelProvider extends ItemModelProvider {
         simpleItemBlock(AUTO_CRAFTER_BLOCK);
         simpleItemBlock(CHARGING_BENCH_BLOCK);
         simpleItemBlock(FIRE_STARTER_BLOCK);
+        simpleItemBlock(FRAME_ACTUATOR_BLOCK);
+
+        generated(FRAME_BLOCK).noTexture();
+        generated(FRAME_MOTOR_BLOCK).noTexture();
 
         generated(EMPTY_BATTERY_ITEM);
         generated(BATTERY_ITEM);

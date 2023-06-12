@@ -1,6 +1,5 @@
 package mrtjp.projectred.core.tile;
 
-import codechicken.multipart.api.TickableTile;
 import mrtjp.projectred.core.power.PowerConductor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;

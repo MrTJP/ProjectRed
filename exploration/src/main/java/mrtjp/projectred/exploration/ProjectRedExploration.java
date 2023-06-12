@@ -1,9 +1,12 @@
 package mrtjp.projectred.exploration;
 
 import codechicken.lib.gui.SimpleCreativeTab;
+import codechicken.microblock.CBMicroblock;
+import codechicken.microblock.api.MicroMaterial;
 import mrtjp.projectred.exploration.data.*;
 import mrtjp.projectred.exploration.init.*;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -36,6 +39,7 @@ public class ProjectRedExploration {
     public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MOD_ID);
     public static final DeferredRegister<WorldCarver<?>> WORLD_CARVERS = DeferredRegister.create(ForgeRegistries.WORLD_CARVERS, MOD_ID);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MOD_ID);
+    public static final DeferredRegister<MicroMaterial> MICRO_MATERIALS = DeferredRegister.create(new ResourceLocation(CBMicroblock.MOD_ID, "micro_material"), MOD_ID);
 
     public static final SimpleCreativeTab EXPLORATION_CREATIVE_TAB = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(MARBLE_BRICK_BLOCK));
 
@@ -52,6 +56,7 @@ public class ProjectRedExploration {
 
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::onGatherDataEvent);
+        modEventBus.addGenericListener(MicroMaterial.class, ExplorationBlocks::onRegisterMicroMaterials);
 
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ExplorationClientInit::init);
 
@@ -60,6 +65,7 @@ public class ProjectRedExploration {
         CONTAINERS.register(modEventBus);
         WORLD_CARVERS.register(modEventBus);
         RECIPE_SERIALIZERS.register(modEventBus);
+        MICRO_MATERIALS.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, ExplorationWorldFeatures::onBiomeLoadingEvent);
     }

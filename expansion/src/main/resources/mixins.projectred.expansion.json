@@ -1,0 +1,11 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "mrtjp.projectred.expansion.mixin",
+    "refmap": "mixins.projectred.expansion.refmap.json",
+    "target": "@env(DEFAULT)",
+    "compatibilityLevel": "JAVA_17",
+    "client": [
+        "BlockEntityRenderDispatcherMixin"
+    ]
+}

@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "projectred_expansion:frame_motor"
+  },
+  "pattern": [
+    "WIW",
+    "RMR",
+    "SES"
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "E": {
+      "tag": "forge:ingots/electrotine_alloy"
+    },
+    "M": {
+      "item": "projectred_core:motor"
+    },
+    "S": {
+      "tag": "forge:stone"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "W": {
+      "tag": "minecraft:planks"
+    }
+  }
+}

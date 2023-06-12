@@ -12,29 +12,21 @@ public final class ProjectRedAPI
     /**
      * The mod IDs used for all modules of ProjectRed.
      */
-    public static final String modIDCompatibility = "projectred-compatibility";
-    public static final String modIDCore = "projectred-core";
-    public static final String modIDExpansion = "projectred-expansion";
-    public static final String modIDExploration = "projectred-exploration";
-    public static final String modIDFabrication = "projectred-fabrication";
-    public static final String modIDIllumination = "projectred-illumination";
-    public static final String modIDIntegration = "projectred-integration";
-    public static final String modIDRelocation = "projectred-relocation";
-    public static final String modIDTransmission = "projectred-transmission";
-    public static final String modIDTransportation = "projectred-transportation";
+    public static final String CORE_MOD_ID          = "projectred_core";
+    public static final String EXPANSION_MOD_ID     = "projectred_expansion";
+    public static final String EXPLORATION_MOD_ID   = "projectred_exploration";
+    public static final String FABRICATION_MOD_ID   = "projectred_fabrication";
+    public static final String ILLUMINATION_MOD_ID  = "projectred_illumination";
+    public static final String INTEGRATION_MOD_ID   = "projectred_integration";
+    public static final String TRANSMISSION_MOD_ID  = "projectred_transmission";
 
     /**
      * API used for Frame-based movement.
      */
-    public static IRelocationAPI relocationAPI;
+    public static IExpansionAPI expansionAPI;
 
     /**
      * API used for interacting with wires.
      */
     public static ITransmissionAPI transmissionAPI;
-
-    /**
-     * API used for interacting with pipes
-     */
-    public static ITransportationAPI transportationAPI;
 }

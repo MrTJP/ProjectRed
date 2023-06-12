@@ -1,9 +1,11 @@
 package mrtjp.projectred.expansion.init;
 
+import codechicken.multipart.api.MultipartType;
 import mrtjp.projectred.expansion.inventory.container.AutoCrafterContainer;
 import mrtjp.projectred.expansion.inventory.container.BatteryBoxContainer;
 import mrtjp.projectred.expansion.inventory.container.ChargingBenchContainer;
 import mrtjp.projectred.expansion.inventory.container.ProjectBenchContainer;
+import mrtjp.projectred.expansion.part.FramePart;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -18,6 +20,9 @@ import static mrtjp.projectred.expansion.init.ExpansionItems.*;
 public class ExpansionReferences {
 
     // Blocks
+    @ObjectHolder(ID_FRAME)
+    public static Block FRAME_BLOCK = null;
+
     @ObjectHolder(ID_PROJECT_BENCH)
     public static Block PROJECT_BENCH_BLOCK = null;
     @ObjectHolder(ID_BATTERY_BOX)
@@ -28,6 +33,10 @@ public class ExpansionReferences {
     public static Block AUTO_CRAFTER_BLOCK = null;
     @ObjectHolder(ID_FIRE_STARTER)
     public static Block FIRE_STARTER_BLOCK = null;
+    @ObjectHolder(ID_FRAME_MOTOR)
+    public static Block FRAME_MOTOR_BLOCK = null;
+    @ObjectHolder(ID_FRAME_ACTUATOR)
+    public static Block FRAME_ACTUATOR_BLOCK = null;
 //    @ObjectHolder(ID_INDUCTION_FURNACE)
 //    public static Block INDUCTION_FURNACE_BLOCK = null;
 //    @ObjectHolder(ID_TELEPOSER)
@@ -44,6 +53,10 @@ public class ExpansionReferences {
     public static BlockEntityType<?> AUTO_CRAFTER_TILE = null;
     @ObjectHolder(ID_FIRE_STARTER)
     public static BlockEntityType<?> FIRE_STARTER_TILE = null;
+    @ObjectHolder(ID_FRAME_MOTOR)
+    public static BlockEntityType<?> FRAME_MOTOR_TILE = null;
+    @ObjectHolder(ID_FRAME_ACTUATOR)
+    public static BlockEntityType<?> FRAME_ACTUATOR_TILE = null;
 //    @ObjectHolder(ID_INDUCTION_FURNACE)
 //    public static TileEntityType<?> INDUCTION_FURNACE_TILE = null;
 //    @ObjectHolder(ID_TELEPOSER)
@@ -68,4 +81,8 @@ public class ExpansionReferences {
     public static Item EMPTY_BATTERY_ITEM = null;
     @ObjectHolder(ID_ELECTRIC_SCREWDRIVER)
     public static Item ELECTRIC_SCREWDRIVER_ITEM = null;
+
+    // Parts
+    @ObjectHolder(ID_FRAME)
+    public static MultipartType<FramePart> FRAME_PART = null;
 }
