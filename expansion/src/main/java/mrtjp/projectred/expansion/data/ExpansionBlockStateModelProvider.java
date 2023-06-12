@@ -2,8 +2,8 @@ package mrtjp.projectred.expansion.data;
 
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.expansion.block.BatteryBoxBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
@@ -34,6 +34,12 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
         addTriStateFrontFacedPoweredMachineBlock(AUTO_CRAFTER_BLOCK);
         addBiStateSideAndTopMachineBlock(CHARGING_BENCH_BLOCK);
         addSidedOppositeMatchingFacesDeviceBlock(FIRE_STARTER_BLOCK);
+        addTriStateSidedPoweredDeviceBlock(FRAME_ACTUATOR_BLOCK);
+
+        // Advanced models rendered programmatically. Tied to dummy model to suppress warnings.
+        ModelFile dummy = models().withExistingParent("programmatically_rendered_block", "block");
+        simpleBlock(FRAME_BLOCK, dummy);
+        simpleBlock(FRAME_MOTOR_BLOCK, dummy);
     }
 
     private void addRotatableOppositeMatchingFacesBlock(Block block) {
@@ -72,6 +78,14 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
         ModelFile active = createOppositeMatchingFaceDeviceModel(block, true);
 
         addSidedDeviceVariants(block, inactive, active);
+    }
+
+    private void addTriStateSidedPoweredDeviceBlock(Block block) {
+        ModelFile m0 = createSideStateModel(block, 0);
+        ModelFile m1 = createSideStateModel(block, 1);
+        ModelFile m2 = createSideStateModel(block, 2);
+
+        addSidedPoweredDeviceVariants(block, m0, m1, m1, m2);
     }
 
     private void addRotatableVariants(Block block, ModelFile model) {
@@ -124,6 +138,24 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
         });
     }
 
+    private void addSidedPoweredDeviceVariants(Block block, ModelFile idle, ModelFile charged, ModelFile working, ModelFile chargedAndWorking) {
+        getVariantBuilder(block).forAllStates(state -> {
+            int s = state.getValue(ProjectRedBlock.SIDE);
+            boolean isWorking = state.getValue(ProjectRedBlock.WORKING);
+            boolean isCharged = state.getValue(ProjectRedBlock.CHARGED);
+            ModelFile model = isWorking && isCharged ? chargedAndWorking
+                    : isWorking ? working
+                    : isCharged ? charged
+                    : idle;
+
+            return ConfiguredModel.builder()
+                    .modelFile(model)
+                    .rotationX(DEVICE_SIDED_ROTATIONS[s][0] * 90)
+                    .rotationY(DEVICE_SIDED_ROTATIONS[s][1] * 90)
+                    .build();
+        });
+    }
+
     private BlockModelBuilder createOppositeMatchingFaceModel(Block block) {
         String texture = block.getRegistryName().getPath();
         return models().cube(texture,
@@ -162,6 +194,15 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
                 modLoc("block/" + texture + "_side_" + state),
                 modLoc("block/" + texture + "_bottom"),
                 modLoc("block/" + texture + "_top_" + state));
+    }
+
+    private BlockModelBuilder createSideStateModel(Block block, int state) {
+        String texture = block.getRegistryName().getPath();
+        String modelName = texture + (state > 0 ? "_state" + state : "");
+        return models().cubeBottomTop(modelName,
+                modLoc("block/" + texture + "_side_" + state),
+                modLoc("block/" + texture + "_bottom"),
+                modLoc("block/" + texture + "_top"));
     }
 
     private BlockModelBuilder createOppositeMatchingFaceDeviceModel(Block block, boolean active) {

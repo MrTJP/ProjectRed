@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "projectred_expansion:block/programmatically_rendered_block"
+    }
+  }
+}

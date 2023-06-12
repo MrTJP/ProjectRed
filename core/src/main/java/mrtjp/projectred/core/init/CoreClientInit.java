@@ -3,6 +3,8 @@ package mrtjp.projectred.core.init;
 import codechicken.lib.render.shader.CCShaderInstance;
 import codechicken.lib.util.ResourceUtils;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import mrtjp.projectred.api.ProjectRedAPI;
+import mrtjp.projectred.core.ProjectRedCore;
 import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.core.gui.screen.inventory.ElectrotineGeneratorScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -31,6 +33,9 @@ public class CoreClientInit {
 
         // Register screens
         MenuScreens.register(ELECTROTINE_GENERATOR_CONTAINER, ElectrotineGeneratorScreen::new);
+
+        // Init Halo Renderer
+        HaloRenderer.init();
 
         // Register Halo renderer
         MinecraftForge.EVENT_BUS.addListener(HaloRenderer::onRenderWorldStageEvent);

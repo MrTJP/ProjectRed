@@ -1,0 +1,3 @@
+COMMENT: This file exists purely for dev time,
+ anything added here should be mirrored in the build.gradle.
+MixinConfigs: mixins.projectred.expansion.json

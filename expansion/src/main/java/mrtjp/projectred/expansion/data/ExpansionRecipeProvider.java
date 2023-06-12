@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
 
 import static mrtjp.projectred.core.init.CoreReferences.COPPER_COIL_ITEM;
+import static mrtjp.projectred.core.init.CoreReferences.MOTOR_ITEM;
 import static mrtjp.projectred.core.init.CoreTags.*;
 import static mrtjp.projectred.expansion.init.ExpansionReferences.*;
 import static net.minecraftforge.common.Tags.Items.INGOTS_COPPER;
@@ -27,6 +28,13 @@ public class ExpansionRecipeProvider extends RecipeProvider {
     protected void registerRecipes() {
 
         //Blocks
+        shapedRecipe(FRAME_BLOCK, 8)
+                .key('S', Items.STICK)
+                .key('L', ItemTags.LOGS)
+                .patternLine("SLS")
+                .patternLine("LSL")
+                .patternLine("SLS");
+
         shapedRecipe(PROJECT_BENCH_BLOCK, 1)
                 .key('S', Tags.Items.STONE)
                 .key('W', ItemTags.PLANKS)
@@ -75,6 +83,27 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .patternLine("NNN")
                 .patternLine("CFC")
                 .patternLine("CRC");
+
+        shapedRecipe(FRAME_MOTOR_BLOCK, 1)
+                .key('W', ItemTags.PLANKS)
+                .key('I', Tags.Items.INGOTS_IRON)
+                .key('R', Tags.Items.DUSTS_REDSTONE)
+                .key('M', MOTOR_ITEM)
+                .key('S', Tags.Items.STONE)
+                .key('E', ELECTROTINE_ALLOY_INGOT_TAG)
+                .patternLine("WIW")
+                .patternLine("RMR")
+                .patternLine("SES");
+
+        shapedRecipe(FRAME_ACTUATOR_BLOCK, 1)
+                .key('W', ItemTags.PLANKS)
+                .key('I', Tags.Items.INGOTS_IRON)
+                .key('C', COPPER_COIL_ITEM)
+                .key('S', Tags.Items.STONE)
+                .key('E', ELECTROTINE_ALLOY_INGOT_TAG)
+                .patternLine("WIW")
+                .patternLine("CIC")
+                .patternLine("SES");
 
         // Items
         shapedRecipe(BATTERY_ITEM, 1)

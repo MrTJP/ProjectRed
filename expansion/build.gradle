@@ -1,6 +1,7 @@
 plugins {
     id 'net.minecraftforge.gradle'
     id 'com.matthewprenger.cursegradle'
+    id 'org.spongepowered.mixin'
 }
 
 String mod_id = 'projectred-expansion'
@@ -34,10 +35,21 @@ minecraft {
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
     implementation fg.deobf("codechicken:CodeChickenLib:${mc_version}-${ccl_version}:universal")
     implementation fg.deobf("codechicken:CBMultipart:${mc_version}-${cbm_version}:universal")
 
-    implementation project(":core")
+    compileOnly project(":core")
+}
+
+mixin {
+    // This will automatically add manifest entry to jar
+    add sourceSets.main, 'mixins.projectred.expansion.refmap.json'
+    config 'mixins.projectred.expansion.json'
+
+    debug.verbose = true
+    debug.export = true
 }
 
 curseforge {

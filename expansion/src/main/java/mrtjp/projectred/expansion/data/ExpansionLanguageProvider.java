@@ -30,6 +30,9 @@ public class ExpansionLanguageProvider extends LanguageProvider {
         add(AUTO_CRAFTER_BLOCK, "Auto Crafter");
         add(CHARGING_BENCH_BLOCK, "Charging Bench");
         add(FIRE_STARTER_BLOCK, "Fire Starter");
+        add(FRAME_BLOCK, "Frame");
+        add(FRAME_MOTOR_BLOCK, "Frame Motor");
+        add(FRAME_ACTUATOR_BLOCK, "Frame Actuator");
 
         add(RECIPE_PLAN_ITEM, "Recipe Plan");
         add(EMPTY_BATTERY_ITEM, "Empty Battery");

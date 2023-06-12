@@ -17,6 +17,7 @@ public class Configurator {
 
     /* Machines */
     public static boolean enableDiamondBlockBreaker = false;
+    public static int frameMoveLimit = 1024;
 
     /* Rendering */
     public static boolean logicwires3D = true;
@@ -63,6 +64,7 @@ public class Configurator {
 
         ConfigCategory machines = config.getCategory("machines").setComment("Settings related to machines and devices");
         enableDiamondBlockBreaker = machines.getValue("diamond_block_breaker").setDefaultBoolean(enableDiamondBlockBreaker).setComment("Allow the Diamond Block Breaker to be crafted").getBoolean();
+        frameMoveLimit = machines.getValue("frame_move_limit").setDefaultInt(frameMoveLimit).setComment("Max blocks in a moving frame structure").getInt();
 
         ConfigCategory rendering = config.getCategory("rendering").setComment("Client render settings");
         logicwires3D = rendering.getValue("gate_3d_wires").setDefaultBoolean(logicwires3D).setComment("If set to false, flat wire textures will be used for logic gates. Significant performance improvement").getBoolean();

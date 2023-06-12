@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014.
- * Created by MrTJP.
- * All rights reserved.
- */
 package mrtjp.projectred.api;
 
 import net.minecraft.core.Direction;
@@ -11,9 +6,9 @@ import net.minecraft.world.level.Level;
 
 /**
  * Interface for an object that manages the movement of blocks and tiles that are
- * registered to it. This class should be registered through the {@link IRelocationAPI}.
+ * registered to it. This class should be registered through the {@link IExpansionAPI}.
  */
-public interface ITileMover {
+public interface BlockMover {
     /**
      * Used to check if the block at the given position can move. This
      * method is only called if the specified block is tied to this
@@ -49,7 +44,7 @@ public interface ITileMover {
      * new locations. This is where you would reload your tile,
      * tell it to refresh or reacknowledge its new position.
      * <p>
-     * Callod on both server and client.
+     * Called on both server and client.
      *
      * @param w The world.
      * @param pos The position of the block to move.

@@ -2,13 +2,12 @@ package mrtjp.projectred.core.client;
 
 import codechicken.lib.render.BlockRenderer;
 import codechicken.lib.render.CCRenderState;
-import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.Transformation;
-import codechicken.lib.vec.Translation;
-import codechicken.lib.vec.Vector3;
+import codechicken.lib.vec.*;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import mrtjp.projectred.api.MovingBlockEntityRenderCallback;
+import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.init.CoreClientInit;
 import net.minecraft.client.GraphicsStatus;
@@ -80,13 +79,35 @@ public class HaloRenderer {
 
     private static final LinkedList<LevelLight> levelLights = new LinkedList<>();
 
+    private static final Vector3 offset = Vector3.ZERO.copy();
+
+    //region Init
+    public static void init() {
+        // Register callback for moving block entities
+        if (ProjectRedAPI.expansionAPI != null) {
+            ProjectRedAPI.expansionAPI.registerBlockEntityRenderCallback(new MovingBlockEntityRenderCallback() {
+                @Override
+                public void onMovingPreRender(double offsetX, double offsetY, double offsetZ) {
+                    offset.set(offsetX, offsetY, offsetZ);
+                }
+
+                @Override
+                public void onMovingPostRender() {
+                    offset.set(0, 0, 0);
+                }
+            });
+        }
+    }
+    //endregion
+
     //region World renderer
     public static void addLight(BlockPos pos, int colour, Cuboid6 box) {
         addLight(new Translation(pos), colour, box);
     }
 
     public static void addLight(Transformation t, int colour, Cuboid6 box) {
-        levelLights.add(new LevelLight(t, colour, box));
+        Transformation t2 = new TransformationList(t, new Translation(offset));
+        levelLights.add(new LevelLight(t2, colour, box));
         if (Configurator.lightHaloMax > -1 && levelLights.size() > Configurator.lightHaloMax) {
             levelLights.poll();
         }

@@ -24,5 +24,8 @@ public class ExpansionLootTableProvider extends LootTableProvider.BlockLootProvi
         register(AUTO_CRAFTER_BLOCK, singleItem(AUTO_CRAFTER_BLOCK));
         register(CHARGING_BENCH_BLOCK, singleItem(CHARGING_BENCH_BLOCK));
         register(FIRE_STARTER_BLOCK, singleItem(FIRE_STARTER_BLOCK));
+        register(FRAME_BLOCK, singleItem(FRAME_BLOCK));
+        register(FRAME_MOTOR_BLOCK, singleItem(FRAME_MOTOR_BLOCK));
+        register(FRAME_ACTUATOR_BLOCK, singleItem(FRAME_ACTUATOR_BLOCK));
     }
 }

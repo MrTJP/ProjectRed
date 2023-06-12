@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "projectred_expansion:project_bench",
+    "projectred_expansion:charging_bench",
+    "projectred_expansion:auto_crafter",
+    "projectred_expansion:fire_starter",
+    "projectred_expansion:frame_motor",
+    "projectred_expansion:frame_actuator"
+  ]
+}
