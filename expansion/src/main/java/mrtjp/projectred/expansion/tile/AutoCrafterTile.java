@@ -45,7 +45,7 @@ public class AutoCrafterTile extends BaseMachineTile implements CraftingHelper.I
     public void saveToNBT(CompoundNBT tag) {
         super.saveToNBT(tag);
         tag.put("storage_inv", storageInventory.createTag());
-        tag.put("crafting_grid", craftingGrid.createTag());
+        tag.put("plan_inv", planInventory.createTag());
         tag.putByte("plan_slot", (byte) planSlot);
     }
 
@@ -53,7 +53,7 @@ public class AutoCrafterTile extends BaseMachineTile implements CraftingHelper.I
     public void loadFromNBT(CompoundNBT tag) {
         super.loadFromNBT(tag);
         storageInventory.fromTag(tag.getList("storage_inv", 10));
-        craftingGrid.fromTag(tag.getList("crafting_grid", 10));
+        planInventory.fromTag(tag.getList("plan_inv", 10));
         planSlot = tag.getByte("plan_slot") & 0xFF;
     }
 

@@ -8,7 +8,7 @@ import net.minecraft.world.IBlockReader;
 public class AutoCrafterBlock extends BaseMachineBlock {
 
     public AutoCrafterBlock() {
-        super(WOODEN_PROPERTIES);
+        super(STONE_PROPERTIES);
     }
 
     @Override
