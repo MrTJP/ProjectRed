@@ -2,6 +2,7 @@ package mrtjp.projectred.expansion.tile;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.expansion.CraftingHelper;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.inventory.container.AutoCrafterContainer;
@@ -90,6 +91,14 @@ public class AutoCrafterTile extends BaseMachineTile implements CraftingHelper.I
     @Override
     protected Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
         return new AutoCrafterContainer(playerInventory, this, windowId);
+    }
+
+    @Override
+    public void onBlockRemoved() {
+        super.onBlockRemoved();
+        Vector3 pos = Vector3.fromTileCenter(this);
+        dropInventory(planInventory, getLevel(), pos);
+        dropInventory(storageInventory, getLevel(), pos);
     }
 
     private void onInventoryChanged(IInventory inventory) {
