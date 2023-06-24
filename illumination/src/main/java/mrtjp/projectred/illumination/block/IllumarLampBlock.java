@@ -1,10 +1,12 @@
 package mrtjp.projectred.illumination.block;
 
+import codechicken.multipart.api.RedstoneConnectorBlock;
 import mrtjp.projectred.illumination.tile.IllumarLampTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RedstoneTorchBlock;
@@ -18,7 +20,7 @@ import net.minecraft.world.level.material.Material;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class IllumarLampBlock extends Block implements EntityBlock {
+public class IllumarLampBlock extends Block implements EntityBlock, RedstoneConnectorBlock {
 
     public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 
@@ -86,4 +88,16 @@ public class IllumarLampBlock extends Block implements EntityBlock {
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new IllumarLampTile(color, inverted, pos, state);
     }
+
+    //region Redstone Connector block
+    @Override
+    public int getConnectionMask(LevelReader world, BlockPos pos, int side) {
+        return 0x1F;
+    }
+
+    @Override
+    public int weakPowerLevel(LevelReader world, BlockPos pos, int side, int mask) {
+        return 0;
+    }
+    //endregion
 }
