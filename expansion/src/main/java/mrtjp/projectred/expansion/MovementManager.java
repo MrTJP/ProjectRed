@@ -27,6 +27,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
@@ -106,7 +108,9 @@ public class MovementManager {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
+        //TODO move to separate class
 
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
@@ -288,18 +292,18 @@ public class MovementManager {
                 .writeByte(key);
     }
 
-    public void read(MCDataInput input) {
+    public void read(MCDataInput input, Level level) {
         int key = input.readUByte();
         switch (key) {
-            case KEY_BULK_DESC -> readStructureDescriptions(input);
-            case KEY_NEW_STRUCT -> readNewStructure(input);
-            case KEY_EXECUTE_MOVE -> readStructureExecution(input);
-            case KEY_CANCEL_MOVE -> readStructureCancellation(input);
+            case KEY_BULK_DESC -> readStructureDescriptions(input, level);
+            case KEY_NEW_STRUCT -> readNewStructure(input, level);
+            case KEY_EXECUTE_MOVE -> readStructureExecution(input, level);
+            case KEY_CANCEL_MOVE -> readStructureCancellation(input, level);
             default -> LOGGER.warn("Movement manager received unknown key " + key);
         }
     }
 
-    private void readStructureDescriptions(MCDataInput input) {
+    private void readStructureDescriptions(MCDataInput input, Level level) {
 
         int count = input.readUShort();
         for (int i = 0; i < count; i++) {
@@ -311,7 +315,7 @@ public class MovementManager {
         }
     }
 
-    private void readNewStructure(MCDataInput input) {
+    private void readNewStructure(MCDataInput input, Level level) {
         MovingStructure structure = MovingStructure.fromDesc(input);
 
         if (structures.containsKey(structure.id)) {
@@ -319,15 +323,15 @@ public class MovementManager {
         }
 
         structures.put(structure.id, structure);
-        structure.beginMove(Minecraft.getInstance().level);
+        structure.beginMove(level);
     }
 
-    private void readStructureExecution(MCDataInput input) {
+    private void readStructureExecution(MCDataInput input, Level level) {
         // Generate a new structure in case it was stale on client
         MovingStructure structure = MovingStructure.fromDesc(input);
 
         // Execute move
-        structure.executeMove(Minecraft.getInstance().level);
+        structure.executeMove(level);
 
         // Delete struct that *should* have been on the client
         if (structures.remove(structure.id) == null) {
@@ -335,13 +339,13 @@ public class MovementManager {
         }
     }
 
-    private void readStructureCancellation(MCDataInput input) {
+    private void readStructureCancellation(MCDataInput input, Level level) {
         int id = input.readUShort();
         MovingStructure structure = structures.get(id);
         if (structure == null) {
             LOGGER.debug("Received cancellation for unknown structure id {}", id);
         } else {
-            structure.cancelMove(Minecraft.getInstance().level);
+            structure.cancelMove(level);
             structures.remove(id);
         }
     }
@@ -580,6 +584,7 @@ public class MovementManager {
             cancelled = true;
         }
 
+        @OnlyIn(Dist.CLIENT)
         private void markChunksForRender() {
             FastStream.of(renderChunks.get()).forEach(p -> Minecraft.getInstance().levelRenderer.setSectionDirty(p.x(), p.y(), p.z(), true));
         }

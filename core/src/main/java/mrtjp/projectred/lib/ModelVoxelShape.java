@@ -11,6 +11,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
@@ -37,12 +39,9 @@ public class ModelVoxelShape extends VoxelShape {
         this.tris = tris;
     }
 
+    @OnlyIn(Dist.CLIENT)
     public ModelVoxelShape(VoxelShape parent, CCModel model) {
         this(parent, trisFromCCModel(model));
-    }
-
-    public ModelVoxelShape(VoxelShape parent, Vertex5[] verts, VertexFormat.Mode vertexMode) {
-        this(parent, trisFromVerts(verts, vertexMode));
     }
 
     @Override
@@ -82,31 +81,45 @@ public class ModelVoxelShape extends VoxelShape {
         return new BlockHitResult(intersection.add(pos).vec3(), side, pos, true);
     }
 
-    public static List<Tri> trisFromCCModel(CCModel model) {
-        return trisFromVerts(model.verts, model.vertexMode);
+    public static ModelVoxelShape fromTriangles(VoxelShape parent, Vertex5[] verts) {
+        return new ModelVoxelShape(parent, trisFromTriangles(verts));
     }
 
-    public static List<Tri> trisFromVerts(Vertex5[] verts, VertexFormat.Mode vertexMode) {
+    public static ModelVoxelShape fromQuads(VoxelShape parent, Vertex5[] verts) {
+        return new ModelVoxelShape(parent, trisFromQuads(verts));
+    }
 
-        int vp = vertexMode == VertexFormat.Mode.QUADS ? 4 : 3;
+    @OnlyIn(Dist.CLIENT)
+    public static List<Tri> trisFromCCModel(CCModel model) {
+        return model.vertexMode == VertexFormat.Mode.QUADS ? trisFromQuads(model.verts) : trisFromTriangles(model.verts);
+    }
 
+    public static List<Tri> trisFromQuads(Vertex5[] verts) {
+        int vp = 4;
         List<Tri> triList = new LinkedList<>();
         for (int i = 0; i < verts.length; i += vp) {
-            if (vertexMode == VertexFormat.Mode.QUADS) {
-                triList.add(new Tri(
-                        verts[i    ].copy(),
-                        verts[i + 1].copy(),
-                        verts[i + 2].copy()));
-                triList.add(new Tri(
-                        verts[i    ].copy(),
-                        verts[i + 2].copy(),
-                        verts[i + 3].copy()));
-            } else {
-                triList.add(new Tri(
-                        verts[i    ].copy(),
-                        verts[i + 1].copy(),
-                        verts[i + 2].copy()));
-            }
+            // Convert 1 quad into 2 triangles
+            triList.add(new Tri(
+                    verts[i    ].copy(),
+                    verts[i + 1].copy(),
+                    verts[i + 2].copy()));
+            triList.add(new Tri(
+                    verts[i    ].copy(),
+                    verts[i + 2].copy(),
+                    verts[i + 3].copy()));
+        }
+
+        return triList;
+    }
+
+    public static List<Tri> trisFromTriangles(Vertex5[] verts) {
+        int vp = 3;
+        List<Tri> triList = new LinkedList<>();
+        for (int i = 0; i < verts.length; i += vp) {
+            triList.add(new Tri(
+                    verts[i    ].copy(),
+                    verts[i + 1].copy(),
+                    verts[i + 2].copy()));
         }
 
         return triList;
