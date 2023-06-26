@@ -31,7 +31,7 @@ public class ExpansionNetwork {
         public void handlePacket(PacketCustom packet, Minecraft mc, ClientPacketListener handler) {
             switch (packet.getType()) {
                 case MM_FROM_SERVER:
-                    MovementManager.getInstance(mc.level).read(packet);
+                    MovementManager.getInstance(mc.level).read(packet, mc.level);
                     break;
 
                 default:

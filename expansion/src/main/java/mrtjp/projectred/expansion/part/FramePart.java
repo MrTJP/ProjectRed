@@ -12,6 +12,7 @@ import codechicken.multipart.api.MultipartType;
 import codechicken.multipart.api.part.*;
 import codechicken.multipart.util.PartRayTraceResult;
 import mrtjp.projectred.api.Frame;
+import mrtjp.projectred.expansion.block.FrameBlock;
 import mrtjp.projectred.expansion.client.FrameModelRenderer;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -149,7 +150,7 @@ public class FramePart extends BaseMultipart implements NormalOcclusionPart, Ico
     //region Part shapes
     @Override
     public VoxelShape getShape(CollisionContext context) {
-        return FrameModelRenderer.getShape(getOccludedSideMask());
+        return FrameBlock.getOrGenerateShape(getOccludedSideMask());
     }
 
     @Override
