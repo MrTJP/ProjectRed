@@ -49,7 +49,7 @@ public class ProjectRedTransmission {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::onGatherDataEvent);
 
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> TransmissionClientInit::init);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> TransmissionClientInit::init);
 
         ITEMS.register(modEventBus);
         PARTS.register(modEventBus);

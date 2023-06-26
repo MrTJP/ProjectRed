@@ -60,7 +60,7 @@ public class ProjectRedExpansion {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::onGatherDataEvent);
 
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ExpansionClientInit::init);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ExpansionClientInit::init);
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);

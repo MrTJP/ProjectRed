@@ -58,7 +58,7 @@ public class ProjectRedExploration {
         modEventBus.addListener(this::onGatherDataEvent);
         modEventBus.addGenericListener(MicroMaterial.class, ExplorationBlocks::onRegisterMicroMaterials);
 
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ExplorationClientInit::init);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ExplorationClientInit::init);
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
