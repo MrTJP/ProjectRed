@@ -42,7 +42,7 @@ public class ProjectRedIntegration {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::onGatherDataEvent);
 
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> IntegrationClientInit::init);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> IntegrationClientInit::init);
 
         ITEMS.register(modEventBus);
         PARTS.register(modEventBus);

@@ -50,7 +50,7 @@ public class ProjectRedIllumination {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::onGatherDataEvent);
 
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> IlluminationClientInit::init);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> IlluminationClientInit::init);
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);

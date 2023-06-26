@@ -57,7 +57,7 @@ public class ProjectRedCore {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::onGatherDataEvent);
 
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> CoreClientInit::init);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> CoreClientInit::init);
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
