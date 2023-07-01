@@ -32,39 +32,7 @@ public class TransmissionAPI implements ITransmissionAPI {
 
     @Override
     public byte[] getBundledInput(Level world, BlockPos pos, Direction facing) {
-
-        int side = facing.ordinal();
-        BlockEntity tile = world.getBlockEntity(pos);
-
-        if (tile instanceof IBundledTile) {
-            return ((IBundledTile) tile).getBundledSignal(side ^ 1);
-        }
-
-        if (tile instanceof TileMultipart) {
-            // Try to source bundled signals from ALL parts capable of outputting to the queried side.
-            // This includes 4 face parts perpendicular to the queried side, and the center part.
-
-            TileMultipart tmp = (TileMultipart) tile;
-            byte[] signal = null;
-
-            // Access face parts on all 4 perpendicular sides to given side
-            for (int r = 0; r < 4; r++) {
-                int pside = Rotation.rotateSide(side, r);
-                MultiPart part = tmp.getSlottedPart(pside);
-
-                if (part instanceof IBundledEmitter) {
-                    int otherRotation = Rotation.rotationTo(pside, side^1);
-                    signal = raiseSignal(signal, ((IBundledEmitter) part).getBundledSignal(otherRotation));
-                }
-            }
-
-            // Access center part
-            MultiPart part = tmp.getSlottedPart(6);
-            if (part instanceof IBundledEmitter) {
-                signal = raiseSignal(signal, ((IBundledEmitter) part).getBundledSignal(side ^ 1));
-            }
-        }
-        return null;
+        return BundledSignalsLib.getBundledInput(world, pos, facing);
     }
 
     @Override
