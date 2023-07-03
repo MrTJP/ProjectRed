@@ -12,33 +12,25 @@ A Minecraft Forge mod all about Redstone circuity.
 
 ## Development Environment Setup
 
-Project Red uses a standard Forge Gradle environment. Setup steps should be the same as most other mods:
+Project Red uses a standard Forge Gradle environment. Setup steps should be the same as most other mods. Instructions below are for Intellij IDEA, but the process is very similar for both Eclipse and VSCode. See [Forge Gradle](https://docs.minecraftforge.net/en/fg-5.x/gettingstarted/#setting-up-forgegradle) docs for more info.
 
 1. Create a new folder and check out the repository:
    ```
    mkdir ~/projectred && cd ~/projectred
    git checkout https://github.com/MrTJP/ProjectRed.git .
    ```
-2. Setup a new workspace with a decompiled copy of Minecraft:
-   ```
-   ./gradlew setupDecompWorkspace
-   ```
-3. You can now either set up Eclipse or IntelliJ Idea as your IDE.
 
-   For Eclipse:
-   * Generate an Eclipse project with `./gradlew eclipse`
-   * Import the generated project with `File > Import > General > Existing Projects into Workspace` 
-    
-   For Intellij Idea:
-   * Open IntelliJ and from the splash screen, select `Import Project`
-   * Point IntelliJ to the `./build.gradle` file in the git repo
-   * Close IntelliJ and run `./gradlew genIntellijRuns` to complete setup
+2. Build the project: 
+   ```
+   ./gradlew build
+   ```   
+
+3. Generate run configurations:
+   ```
+   ./gradlew genIntellijRuns
+   ```
    
-4. If you'd like to contribute changes, you'll need to create your own fork of ProjectRed, push your changes, and then open a Pull Request for review.
+4. Open the project directory in Intellij IDEA and give it a few minutes to set up and index the Gradle project.
 
 ### Building Locally
-You can build a locally checked out copy of the repository by simply running:
-```
-./gradlew build
-```
-The built jars will be found in `./build/libs`.
+You can re-build jar files locally by running `./gradlew build`. The jars can be found in `./<module>/build/libs`.

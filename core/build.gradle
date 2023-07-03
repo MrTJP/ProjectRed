@@ -9,19 +9,12 @@ minecraft {
     mappings channel: mcp_mappings, version: mc_version
     accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
     runs {
-        client {
-            workingDirectory file('run')
-            mods {
-                '${mod_id}' { source sourceSets.main }
-            }
-        }
-        server {
-            workingDirectory file('run')
-            mods {
-                '${mod_id}' { source sourceSets.main }
-            }
-        }
-        datagen {
+        data {
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+
+            ideaModule "${rootProject.name}.${project.name}.main"
+
             workingDirectory file('run')
             args '--mod', mod_id, '--all', '--output', file("src/main/generated"), '--existing', file("src/main/resources")
             mods {
