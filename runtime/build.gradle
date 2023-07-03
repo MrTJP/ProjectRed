@@ -1,0 +1,51 @@
+/**
+ * Used only for generating run configs that include all ProjectRed modules in the classpath.
+ */
+plugins {
+    id 'net.minecraftforge.gradle'
+    id 'org.spongepowered.mixin'
+}
+
+minecraft {
+    mappings channel: mcp_mappings, version: mc_version
+    accessTransformer = file("../core/src/main/resources/META-INF/accesstransformer.cfg")
+
+    runs {
+        configureEach {
+            ideaModule "${rootProject.name}.${project.name}.main"
+
+            mods {
+                'projectred_core' { source project(":core").sourceSets.main }
+                'projectred_expansion' { source project(":expansion").sourceSets.main }
+                'projectred_exploration' { source project(":exploration").sourceSets.main }
+                'projectred_illumination' { source project(":illumination").sourceSets.main }
+                'projectred_integration' { source project(":integration").sourceSets.main }
+                'projectred_transmission' { source project(":transmission").sourceSets.main }
+            }
+        }
+
+        client {
+            workingDirectory file('run')
+        }
+
+        server {
+            workingDirectory file('run_server')
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+
+    runtimeOnly project(":core")
+    runtimeOnly project(":expansion")
+    runtimeOnly project(":exploration")
+    runtimeOnly project(":illumination")
+    runtimeOnly project(":integration")
+    runtimeOnly project(":transmission")
+}
+
+mixin {
+    debug.verbose = true
+    debug.export = true
+}

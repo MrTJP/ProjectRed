@@ -17,4 +17,8 @@ pluginManagement {
 
 rootProject.name = 'ProjectRed'
 
+// Mod modules
 include 'core', 'expansion', 'exploration', 'illumination', 'integration', 'transmission'
+
+// Empty module for client/server run configurations
+include 'runtime'
