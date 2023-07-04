@@ -20,6 +20,7 @@ minecraft {
             workingDirectory file('run')
             args '--mod', mod_id, '--all', '--output', file("src/main/generated"), '--existing', file("src/main/resources")
             mods {
+                'projectred_core' { source project(':core').sourceSets.main }
                 '${mod_id}' { source sourceSets.main }
             }
         }
