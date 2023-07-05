@@ -4,7 +4,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
-import codechicken.multipart.api.TickableTile;
+import mrtjp.projectred.core.inventory.BaseInventory;
 import mrtjp.projectred.core.tile.IPacketReceiverTile;
 import mrtjp.projectred.core.tile.ProjectRedTile;
 import mrtjp.projectred.expansion.CraftingHelper;
@@ -37,15 +37,15 @@ public class ProjectBenchTile extends ProjectRedTile implements IPacketReceiverT
     private static final int KEY_WRITE_PLAN = 2;
     private static final int KEY_CLEAR_GRID = 3;
 
-    private final SimpleContainer planInventory = new SimpleContainer(1) {
+    private final BaseInventory planInventory = new BaseInventory(1) {
         @Override
         public boolean canPlaceItem(int slot, ItemStack stack) {
             return stack.getItem() instanceof RecipePlanItem;
         }
     };
-    private final SimpleContainer craftingGrid = new SimpleContainer(9);
-    private final SimpleContainer storageInventory = new SimpleContainer(18);
-    private final SimpleContainer planCraftingGrid = new SimpleContainer(9);
+    private final BaseInventory craftingGrid = new BaseInventory(9);
+    private final BaseInventory storageInventory = new BaseInventory(18);
+    private final BaseInventory planCraftingGrid = new BaseInventory(9);
 
     private final CraftingHelper craftingHelper = new CraftingHelper(this);
     private final LazyOptional<?> storageInventoryCap = LazyOptional.of(this::createStorageInventoryCap);
@@ -64,18 +64,18 @@ public class ProjectBenchTile extends ProjectRedTile implements IPacketReceiverT
 
     @Override
     public void saveToNBT(CompoundTag tag) {
-        tag.put("plan_inv", planInventory.createTag());
-        tag.put("crafting_inv", craftingGrid.createTag());
-        tag.put("storage_inv", storageInventory.createTag());
-        tag.put("plan_crafting_inv", planCraftingGrid.createTag());
+        planInventory.saveTo(tag, "plan_inv");
+        craftingGrid.saveTo(tag, "crafting_inv");
+        storageInventory.saveTo(tag, "storage_inv");
+        planCraftingGrid.saveTo(tag, "plan_crafting_inv");
     }
 
     @Override
     public void loadFromNBT(CompoundTag tag) {
-        planInventory.fromTag(tag.getList("plan_inv", 10));
-        craftingGrid.fromTag(tag.getList("crafting_inv", 10));
-        storageInventory.fromTag(tag.getList("storage_inv", 10));
-        planCraftingGrid.fromTag(tag.getList("plan_crafting_inv", 10));
+        planInventory.loadFrom(tag, "plan_inv");
+        craftingGrid.loadFrom(tag, "crafting_inv");
+        storageInventory.loadFrom(tag, "storage_inv");
+        planCraftingGrid.loadFrom(tag, "plan_crafting_inv");
     }
 
     @Override

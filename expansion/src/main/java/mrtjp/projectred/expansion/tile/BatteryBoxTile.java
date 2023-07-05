@@ -4,7 +4,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
-import mrtjp.projectred.expansion.ProjectRedExpansion;
+import mrtjp.projectred.core.inventory.BaseInventory;
 import mrtjp.projectred.expansion.block.BatteryBoxBlock;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.inventory.container.BatteryBoxContainer;
@@ -51,14 +51,14 @@ public class BatteryBoxTile extends LowLoadPoweredTile {
     public void saveToNBT(CompoundTag tag) {
         super.saveToNBT(tag);
         tag.putInt("storage", powerStored);
-        tag.put("inventory", inventory.createTag());
+        inventory.saveTo(tag, "inventory");
     }
 
     @Override
     public void loadFromNBT(CompoundTag tag) {
         super.loadFromNBT(tag);
         powerStored = tag.getInt("storage");
-        inventory.fromTag(tag.getList("inventory", 10));
+        inventory.loadFrom(tag, "inventory");
     }
 
     @Override
@@ -232,7 +232,7 @@ public class BatteryBoxTile extends LowLoadPoweredTile {
     }
     //endregion
 
-    private static class BatteryBoxInventory extends SimpleContainer implements WorldlyContainer {
+    private static class BatteryBoxInventory extends BaseInventory implements WorldlyContainer {
 
         private static final int[] TOP_SLOTS = new int[]{0};
         private static final int[] BOTTOM_SLOTS = new int[]{1};

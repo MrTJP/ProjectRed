@@ -4,6 +4,7 @@ import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.block.ProjectRedBlock;
+import mrtjp.projectred.core.inventory.BaseInventory;
 import mrtjp.projectred.core.inventory.container.ElectrotineGeneratorContainer;
 import mrtjp.projectred.core.power.ILowLoadMachine;
 import mrtjp.projectred.core.power.ILowLoadPowerLine;
@@ -52,7 +53,7 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
     public void saveToNBT(CompoundTag tag) {
         super.saveToNBT(tag);
         conductor.save(tag);
-        tag.put("inventory", inventory.createTag());
+        inventory.saveTo(tag, "inventory");
         tag.putInt("burnTime", burnTimeRemaining);
         tag.putInt("stored", powerStored);
     }
@@ -61,7 +62,7 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
     public void loadFromNBT(CompoundTag tag) {
         super.loadFromNBT(tag);
         conductor.load(tag);
-        inventory.fromTag(tag.getList("inventory", 10));
+        inventory.loadFrom(tag, "inventory");
         burnTimeRemaining = tag.getInt("burnTime");
         powerStored = tag.getInt("stored");
     }
@@ -235,7 +236,7 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
     }
     //endregion
 
-    private static class ElectrotineGeneratorInventory extends SimpleContainer {
+    private static class ElectrotineGeneratorInventory extends BaseInventory {
 
         public ElectrotineGeneratorInventory() {
             super(1);
