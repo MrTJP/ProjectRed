@@ -4,6 +4,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
+import mrtjp.projectred.expansion.ProjectRedExpansion;
 import mrtjp.projectred.expansion.block.BatteryBoxBlock;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.inventory.container.BatteryBoxContainer;
@@ -43,6 +44,7 @@ public class BatteryBoxTile extends LowLoadPoweredTile {
 
     public BatteryBoxTile(BlockPos pos, BlockState state) {
         super(ExpansionReferences.BATTERY_BOX_TILE, pos, state);
+        inventory.addListener(c -> setChanged());
     }
 
     @Override
