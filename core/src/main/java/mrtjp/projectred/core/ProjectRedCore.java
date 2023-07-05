@@ -93,6 +93,7 @@ public class ProjectRedCore {
             generator.addProvider(new CoreRecipeProvider(generator));
             generator.addProvider(new CoreLootTableProvider(generator));
             generator.addProvider(new CoreItemTagsProvider(generator, fileHelper));
+            generator.addProvider(new CoreBlockTagsProvider(generator, fileHelper));
         }
     }
 }
