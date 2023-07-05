@@ -39,6 +39,7 @@ public class ChargingBenchTile extends LowLoadPoweredTile {
 
     public ChargingBenchTile(BlockPos pos, BlockState state) {
         super(ExpansionReferences.CHARGING_BENCH_TILE, pos, state);
+        inventory.addListener(c -> setChanged());
     }
 
     @Override
