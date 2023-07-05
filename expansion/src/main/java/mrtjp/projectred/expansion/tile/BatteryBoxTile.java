@@ -30,6 +30,7 @@ import net.minecraftforge.items.wrapper.SidedInvWrapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static mrtjp.projectred.expansion.ProjectRedExpansion.LOGGER;
 import static mrtjp.projectred.expansion.init.ExpansionReferences.BATTERY_BOX_BLOCK;
 
 public class BatteryBoxTile extends LowLoadPoweredTile {
@@ -136,6 +137,13 @@ public class BatteryBoxTile extends LowLoadPoweredTile {
         // Charge and discharge items in inventory
         changed |= tryChargeBattery();
         changed |= tryDischargeBattery();
+
+        // Sanity check powerStored
+        // TODO Remove: temporary mitigation for #1789
+        if (powerStored < 0) {
+            LOGGER.warn("Power stored is negative! BatteryBoxTile @{}", getBlockPos());
+            powerStored = 0;
+        }
 
         // Update block state if render level changed
         int prevPowerLevel = getBlockState().getValue(BatteryBoxBlock.CHARGE_LEVEL);
