@@ -5,6 +5,7 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.core.block.ProjectRedBlock;
+import mrtjp.projectred.core.inventory.BaseInventory;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.inventory.container.ChargingBenchContainer;
 import mrtjp.projectred.expansion.item.IChargable;
@@ -47,7 +48,7 @@ public class ChargingBenchTile extends LowLoadPoweredTile {
         super.saveToNBT(tag);
         tag.putInt("storage", powerStored);
         tag.putByte("chargeSlot", (byte) chargeSlot);
-        tag.put("inventory", inventory.createTag());
+        inventory.saveTo(tag, "inventory");
     }
 
     @Override
@@ -55,7 +56,7 @@ public class ChargingBenchTile extends LowLoadPoweredTile {
         super.loadFromNBT(tag);
         powerStored = tag.getInt("storage");
         chargeSlot = tag.getByte("chargeSlot") & 0xFF;
-        inventory.fromTag(tag.getList("inventory", 10));
+        inventory.loadFrom(tag, "inventory");
     }
 
     @Override
@@ -200,7 +201,7 @@ public class ChargingBenchTile extends LowLoadPoweredTile {
     }
     //endregion
 
-    private static class ChargingBenchInventory extends SimpleContainer implements WorldlyContainer {
+    private static class ChargingBenchInventory extends BaseInventory implements WorldlyContainer {
 
         private static final int[] TOP_SLOTS = new int[8];
         private static final int[] BOTTOM_SLOTS = new int[8];

@@ -3,6 +3,7 @@ package mrtjp.projectred.expansion.tile;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.Vector3;
+import mrtjp.projectred.core.inventory.BaseInventory;
 import mrtjp.projectred.expansion.CraftingHelper;
 import mrtjp.projectred.expansion.init.ExpansionReferences;
 import mrtjp.projectred.expansion.inventory.container.AutoCrafterContainer;
@@ -23,14 +24,14 @@ public class AutoCrafterTile extends BaseMachineTile implements CraftingHelper.I
 
     private static final int KEY_CYCLE_PLAN = 2;
 
-    private final SimpleContainer planInventory = new SimpleContainer(9) {
+    private final BaseInventory planInventory = new BaseInventory(9) {
         @Override
         public boolean canPlaceItem(int slot, ItemStack stack) {
             return RecipePlanItem.hasRecipeInside(stack);
         }
     };
-    private final SimpleContainer storageInventory = new SimpleContainer(18);
-    private final SimpleContainer craftingGrid = new SimpleContainer(9);
+    private final BaseInventory storageInventory = new BaseInventory(18);
+    private final BaseInventory craftingGrid = new BaseInventory(9);
 
     private final CraftingHelper craftingHelper = new CraftingHelper(this);
 
@@ -47,16 +48,16 @@ public class AutoCrafterTile extends BaseMachineTile implements CraftingHelper.I
     @Override
     public void saveToNBT(CompoundTag tag) {
         super.saveToNBT(tag);
-        tag.put("storage_inv", storageInventory.createTag());
-        tag.put("plan_inv", planInventory.createTag());
+        storageInventory.saveTo(tag, "storage_inv");
+        planInventory.saveTo(tag, "plan_inv");
         tag.putByte("plan_slot", (byte) planSlot);
     }
 
     @Override
     public void loadFromNBT(CompoundTag tag) {
         super.loadFromNBT(tag);
-        storageInventory.fromTag(tag.getList("storage_inv", 10));
-        planInventory.fromTag(tag.getList("plan_inv", 10));
+        storageInventory.loadFrom(tag, "storage_inv");
+        planInventory.loadFrom(tag, "plan_inv");
         planSlot = tag.getByte("plan_slot") & 0xFF;
     }
 
