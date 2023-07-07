@@ -8,6 +8,7 @@ import codechicken.multipart.api.part.redstone.MaskedRedstonePart;
 import codechicken.multipart.api.part.redstone.RedstonePart;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.CenterLookup;
+import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.core.part.IPropagationCenterPart;
 import mrtjp.projectred.core.part.IRedstonePropagationPart;
@@ -59,6 +60,7 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
         switch (key) {
             case KEY_SIGNAL:
                 signal = packet.readByte();
+                if (Configurator.staticWires) tile().markRender();
                 break;
             default:
                 super.read(packet, key);
