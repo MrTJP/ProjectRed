@@ -186,7 +186,7 @@ public abstract class RedstoneGatePart extends GatePart implements FaceRedstoneP
         // Strong signal
         int dir = absoluteDir(r);
         signal = RedstoneInteractions.getPowerTo(this, dir) * 17;
-        if (signal > 0 && strong) {
+        if (signal > 0 || strong) {
             return signal;
         }
 
