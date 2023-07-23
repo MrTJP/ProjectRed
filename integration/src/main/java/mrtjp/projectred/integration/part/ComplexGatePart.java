@@ -2,17 +2,18 @@ package mrtjp.projectred.integration.part;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.Rotation;
 import codechicken.multipart.api.part.NeighborTileChangePart;
 import codechicken.multipart.util.PartRayTraceResult;
 import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.integration.GateType;
-import mrtjp.projectred.integration.gui.screen.CounterScreen;
-import mrtjp.projectred.integration.gui.screen.TimerScreen;
+import mrtjp.projectred.integration.IntegrationNetwork;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -255,6 +256,12 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         int getTimerMax();
 
         void setTimerMax(int t);
+
+        static void openFromServer(Player player, GatePart part) {
+            PacketCustom packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.OPEN_TIMER_GUI_FROM_SERVER);
+            IntegrationNetwork.writePartIndex(packet, part);
+            packet.sendToPlayer((ServerPlayer) player);
+        }
     }
 
     public interface ICounterGuiLogic {
@@ -274,6 +281,12 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         int getCounterValue();
 
         void setCounterValue(int i);
+
+        static void openFromServer(Player player, GatePart part) {
+            PacketCustom packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.OPEN_COUNTER_GUI_FROM_SERVER);
+            IntegrationNetwork.writePartIndex(packet, part);
+            packet.sendToPlayer((ServerPlayer) player);
+        }
     }
 
     public static abstract class RedstoneTimerGatePart extends ComplexGatePart implements ITimerGuiLogic {
@@ -417,7 +430,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         protected boolean gateLogicActivate(Player player, ItemStack held, PartRayTraceResult hit) {
             if (held.isEmpty() || !(held.getItem() instanceof IScrewdriver)) {
                 if (!level().isClientSide) {
-                    TimerScreen.open(player, this);
+                    ITimerGuiLogic.openFromServer(player, this);
                 }
                 return true;
             }
@@ -605,7 +618,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         protected boolean gateLogicActivate(Player player, ItemStack held, PartRayTraceResult hit) {
             if (held.isEmpty() || !(held.getItem() instanceof IScrewdriver)) {
                 if (!level().isClientSide) {
-                    TimerScreen.open(player, this);
+                    ITimerGuiLogic.openFromServer(player, this);
                 }
                 return true;
             }
@@ -838,7 +851,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         protected boolean gateLogicActivate(Player player, ItemStack held, PartRayTraceResult hit) {
             if (held.isEmpty() || !(held.getItem() instanceof IScrewdriver)) {
                 if (!level().isClientSide) {
-                    CounterScreen.open(player, this);
+                    ICounterGuiLogic.openFromServer(player, this);
                 }
                 return true;
             }

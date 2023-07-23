@@ -71,10 +71,4 @@ public class TimerScreen extends RedUIScreen {
             getMinecraft().player.closeContainer();
         }
     }
-
-    public static void open(Player player, GatePart part) {
-        PacketCustom packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.OPEN_TIMER_GUI_FROM_SERVER);
-        IntegrationNetwork.writePartIndex(packet, part);
-        packet.sendToPlayer((ServerPlayer) player);
-    }
 }
