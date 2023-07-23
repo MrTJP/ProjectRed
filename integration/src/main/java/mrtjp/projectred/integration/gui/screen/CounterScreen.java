@@ -81,10 +81,4 @@ public class CounterScreen extends RedUIScreen {
             getMinecraft().player.closeContainer();
         }
     }
-
-    public static void open(Player player, GatePart part) {
-        PacketCustom packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.OPEN_COUNTER_GUI_FROM_SERVER);
-        IntegrationNetwork.writePartIndex(packet, part);
-        packet.sendToPlayer((ServerPlayer) player);
-    }
 }
