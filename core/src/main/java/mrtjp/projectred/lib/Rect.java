@@ -98,8 +98,8 @@ public class Rect {
     }
 
     public Rect trap(Rect rect) {
-        int dx = (rect.x() < x() ? x() - rect.x() : 0) + (rect.maxX() > maxX() ? rect.maxX() - maxX() : 0);
-        int dy = (rect.y() < y() ? y() - rect.y() : 0) + (rect.maxY() > maxY() ? rect.maxY() - maxY() : 0);
+        int dx = (rect.x() < x() ? x() - rect.x() : 0) - (rect.maxX() > maxX() ? rect.maxX() - maxX() : 0);
+        int dy = (rect.y() < y() ? y() - rect.y() : 0) - (rect.maxY() > maxY() ? rect.maxY() - maxY() : 0);
         return new Rect(rect.x() + dx, rect.y() + dy, rect.width(), rect.height());
     }
 
