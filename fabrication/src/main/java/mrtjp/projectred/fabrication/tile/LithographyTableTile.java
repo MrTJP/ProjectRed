@@ -3,6 +3,7 @@ package mrtjp.projectred.fabrication.tile;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.ServerUtils;
+import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.core.inventory.BaseInventory;
 import mrtjp.projectred.fabrication.init.FabricationReferences;
 import mrtjp.projectred.fabrication.inventory.container.LithographyTableContainer;
@@ -87,6 +88,12 @@ public class LithographyTableTile extends FabricationMachineTile {
         }
 
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public void onBlockRemoved() {
+        super.onBlockRemoved();
+        dropInventory(inventory, getLevel(), Vector3.fromBlockPos(getBlockPos()));
     }
 
     @Nonnull
