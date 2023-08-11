@@ -54,6 +54,7 @@ public class PlottingTableTile extends FabricationMachineTile {
 
     public PlottingTableTile(BlockPos pos, BlockState state) {
         super(FabricationReferences.PLOTTING_TABLE_TILE, pos, state);
+        inventory.addListener(c -> setChanged());
     }
 
     public Container getInventory() {

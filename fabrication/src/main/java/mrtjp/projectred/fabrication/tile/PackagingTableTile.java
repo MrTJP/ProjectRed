@@ -53,6 +53,7 @@ public class PackagingTableTile extends FabricationMachineTile {
     };
     public PackagingTableTile(BlockPos pos, BlockState state) {
         super(FabricationReferences.PACKAGING_TABLE_TILE, pos, state);
+        inventory.addListener(c -> setChanged());
     }
 
     public Container getInventory() {

@@ -55,6 +55,7 @@ public class LithographyTableTile extends FabricationMachineTile {
 
     public LithographyTableTile(BlockPos pos, BlockState state) {
         super(FabricationReferences.LITHOGRAPHY_TABLE_TILE, pos, state);
+        inventory.addListener(c -> setChanged());
     }
 
     public Container getInventory() {
