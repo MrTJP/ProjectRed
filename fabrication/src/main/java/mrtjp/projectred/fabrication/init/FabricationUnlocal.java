@@ -88,6 +88,8 @@ public class FabricationUnlocal {
     public static final String UL_NAME               = PREFIX + "tooltip.name";
     public static final String UL_TILE_COUNT         = PREFIX + "tooltip.tile_count";
     public static final String UL_IO_TYPES           = PREFIX + "tooltip.io_types";
+    public static final String UL_INPUT_MASK         = PREFIX + "tooltip.input_mask";
+    public static final String UL_OUTPUT_MASK        = PREFIX + "tooltip.output_mask";
     public static final String UL_TOP                = PREFIX + "tooltip.top";
     public static final String UL_RIGHT              = PREFIX + "tooltip.right";
     public static final String UL_BOTTOM             = PREFIX + "tooltip.bottom";
@@ -96,6 +98,11 @@ public class FabricationUnlocal {
     public static final String UL_BUNDLED_OUTPUT     = PREFIX + "tooltip.bundled_output";
     public static final String UL_IO_NONE            = PREFIX + "tooltip.io_none";
     public static final String UL_CANNOT_FABRICATE   = PREFIX + "tooltip.cannot_fabricate";
+
+    // Interfaces
+    public static final String UL_INTERFACE_NC       = PREFIX + "interface.nc";
+    public static final String UL_INTERFACE_REDSTONE = PREFIX + "interface.redstone";
+    public static final String UL_INTERFACE_BUNDLED  = PREFIX + "interface.bundled"; ;
 
     // Numbers and measurements
     public static final String UL_UNIT_WARNINGS          = PREFIX + "unit.warnings";

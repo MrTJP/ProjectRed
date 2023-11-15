@@ -9,7 +9,7 @@ import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
 import mrtjp.fengine.api.IPathFinder;
 import mrtjp.fengine.assemble.PathFinderResult;
-import mrtjp.projectred.fabrication.engine.ICConnectionType;
+import mrtjp.projectred.fabrication.engine.ICInterfaceType;
 import mrtjp.projectred.fabrication.engine.ICSimulationContainer;
 import mrtjp.projectred.fabrication.engine.IIOConnectionTile;
 import mrtjp.projectred.fabrication.engine.IRotatableICTile;
@@ -92,8 +92,8 @@ public class IOGateTile extends RedstoneGateTile implements IIOConnectionTile {
     }
 
     @Override
-    public ICConnectionType getConnectionType() {
-        return ICConnectionType.BUNDLED;
+    public ICInterfaceType getInterfaceType() {
+        return ICInterfaceType.BUNDLED;
     }
 
     protected void toggleWorldInput() {

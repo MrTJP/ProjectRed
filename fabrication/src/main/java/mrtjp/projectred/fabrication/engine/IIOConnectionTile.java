@@ -12,5 +12,8 @@ public interface IIOConnectionTile {
      */
     int getIOSide();
 
-    ICConnectionType getConnectionType();
+    /**
+     * @return The edge interface type for this IO connection tile.
+     */
+    ICInterfaceType getInterfaceType();
 }

@@ -4,7 +4,9 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import mrtjp.fengine.api.ICFlatMap;
 import mrtjp.projectred.core.BundledSignalsLib;
+import mrtjp.projectred.fabrication.engine.ICInterfaceType;
 import mrtjp.projectred.fabrication.engine.ICSimulationContainer;
+import mrtjp.projectred.fabrication.engine.InterfaceSpec;
 import mrtjp.projectred.fabrication.engine.PRFabricationEngine;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.part.BundledGatePart;
@@ -21,8 +23,7 @@ public class FabricatedGatePart extends BundledGatePart {
 
     private final ICSimulationContainer simulationContainer = new ICSimulationContainer();
     private String icName = "untitled";
-    private byte bundledMask = 0;
-    private byte redstoneMask = 0;
+    private final InterfaceSpec ifSpec = new InterfaceSpec();
 
     private long simulationTimeStart = -1L;
 
@@ -34,6 +35,8 @@ public class FabricatedGatePart extends BundledGatePart {
     public void preparePlacement(Player player, BlockPos pos, int side) {
         super.preparePlacement(player, pos, side);
 
+        if (player.level.isClientSide) return;
+
         ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND); // TODO handle offhand
         if (stack.isEmpty() || !stack.hasTag()) {
             LOGGER.warn("Gate placement issue: no NBT on gate item");
@@ -44,44 +47,40 @@ public class FabricatedGatePart extends BundledGatePart {
         icName = tag.getString(KEY_IC_NAME);
         ICFlatMap flatMap = PRFabricationEngine.instance.deserializeFlatMap(tag.getString(KEY_FLAT_MAP));
         simulationContainer.setFlatMap(flatMap);
-        bundledMask = tag.getByte(KEY_IO_BUNDLED);
-        redstoneMask = tag.getByte(KEY_IO_RS);
+
+        ifSpec.loadFrom(tag, KEY_IO_SPEC);
     }
 
     @Override
     public void save(CompoundTag tag) {
         super.save(tag);
         tag.putString("ic_name", icName);
-        tag.putByte("bmask", bundledMask);
-        tag.putByte("rmask", redstoneMask);
         tag.putLong("sim_time", level().getGameTime() - simulationTimeStart);
         simulationContainer.save(tag);
+        ifSpec.saveTo(tag, "io_spec");
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
         icName = tag.getString("ic_name");
-        bundledMask = tag.getByte("bmask");
-        redstoneMask = tag.getByte("rmask");
         simulationTimeStart = tag.getLong("sim_time");
         simulationContainer.load(tag);
+        ifSpec.loadFrom(tag, "io_spec");
     }
 
     @Override
     public void writeDesc(MCDataOutput packet) {
         super.writeDesc(packet);
         packet.writeString(icName);
-        packet.writeByte(bundledMask);
-        packet.writeByte(redstoneMask);
+        ifSpec.writeDesc(packet);
     }
 
     @Override
     public void readDesc(MCDataInput packet) {
         super.readDesc(packet);
         icName = packet.readString();
-        bundledMask = packet.readByte();
-        redstoneMask = packet.readByte();
+        ifSpec.readDesc(packet);
     }
 
     @Override
@@ -92,22 +91,22 @@ public class FabricatedGatePart extends BundledGatePart {
     //region RedstoneGatePart overrides
     @Override
     protected int outputMask(int shape) {
-        return (redstoneMask >> 4) & 0xF;
+        return ifSpec.getRedstoneOutputMask();
     }
 
     @Override
     protected int inputMask(int shape) {
-        return redstoneMask & 0xF;
+        return ifSpec.getRedstoneInputMask();
     }
 
     @Override
     protected int getOutput(int r) {
-        if ((outputMask(shape()) & 1 << r) != 0) {
-            return 0;
-        }
+        if (!ifSpec.isOutput(r)) return 0;
 
-        // TODO interpret analog
-        return (simulationContainer.getOutput(r) & 1) != 0 ? 15 : 0;
+        return switch (ifSpec.getInterfaceType(r)) {
+            case NC, BUNDLED -> 0; // Bundled output handled by getBundledOutput
+            case REDSTONE -> (simulationContainer.getOutput(r) & 1) != 0 ? 15 : 0;
+        };
     }
 
     //endregion
@@ -115,18 +114,22 @@ public class FabricatedGatePart extends BundledGatePart {
     //region BundledGatePart overrides
     @Override
     protected int bundledInputMask(int shape) {
-        return bundledMask & 0xF;
+        return ifSpec.getBundledInputMask();
     }
 
     @Override
     protected int bundledOutputMask(int shape) {
-        return (bundledMask >> 4) & 0xF;
+        return ifSpec.getBundledOutputMask();
     }
 
     @Override
     protected byte[] getBundledOutput(int r) {
-        return (bundledOutputMask(shape()) & (1 << r)) != 0 ?
-                BundledSignalsLib.unpackDigital(null, simulationContainer.getOutput(r)) : null; //TODO reuse an array
+        if (!ifSpec.isOutput(r)) return null;
+
+        return switch (ifSpec.getInterfaceType(r)) {
+            case NC, REDSTONE -> null; // Redstone output handled by getOutput
+            case BUNDLED -> BundledSignalsLib.unpackDigital(null, simulationContainer.getOutput(r)); //TODO reuse an array
+        };
     }
     //endregion
 
@@ -134,8 +137,12 @@ public class FabricatedGatePart extends BundledGatePart {
 
     @Override
     public int state2() {
-        // TODO Temporary: Mask used to render Bundled side conns by FabricatedGateRenderer
-        return bundledMask;
+        // TODO Temporary: state2 contains IO details for rendering
+        // TODO May let ifSpec pack this?
+        int rsMask = ifSpec.getRedstoneInputMask() | ifSpec.getRedstoneOutputMask();
+        int analogMask = 0; //TODO
+        int bundledMask = ifSpec.getBundledInputMask() | ifSpec.getBundledOutputMask();
+        return (rsMask & 0xF) | (analogMask & 0xF) << 4 | (bundledMask & 0xF) << 8;
     }
 
     //endregion
@@ -156,14 +163,13 @@ public class FabricatedGatePart extends BundledGatePart {
     @Override
     protected void gateLogicOnChange() {
 
-        // Latch new input states
         short[] newInputs = new short[4];
         for (int r = 0; r < 4; r++) newInputs[r] = getModeBasedInput(r);
         int changeMask = simulationContainer.setInputs(newInputs);
 
         // Schedule update if inputs changed
         if (changeMask != 0) {
-            // TODO set gate state for client rendering here
+            setState(state() & 0xF0 | simulationContainer.inputMask());
             onInputChange();
             scheduleTick(2);
         }
@@ -179,7 +185,7 @@ public class FabricatedGatePart extends BundledGatePart {
         simulationContainer.simulate();
         int changeMask = simulationContainer.pullOutputs();
         if (changeMask != 0) {
-            // TODO set gate state for client rendering here
+            setState(state() & 0xF | simulationContainer.outputMask() << 4);
             onOutputChange(changeMask);
         }
 
@@ -200,14 +206,19 @@ public class FabricatedGatePart extends BundledGatePart {
             simulationContainer.simulate();
             int changeMask = simulationContainer.pullOutputs();
             if (changeMask != 0) {
-                // TODO set gate state for client rendering here
+                setState(state() & 0xF | simulationContainer.outputMask() << 4);
                 onOutputChange(changeMask);
             }
         }
     }
 
     private short getModeBasedInput(int r) {
-        if ((bundledInputMask(shape()) & (1 << r)) == 0) return 0;
-        return (short) BundledSignalsLib.packDigital(getBundledInput(r));
+        if (!ifSpec.isInput(r)) return 0;
+
+        return switch (ifSpec.getInterfaceType(r)) {
+            case NC       -> 0;
+            case REDSTONE -> (short) (getRedstoneInput(r) != 0 ? 0xFFFF : 0);
+            case BUNDLED  -> (short) BundledSignalsLib.packDigital(getBundledInput(r));
+        };
     }
 }

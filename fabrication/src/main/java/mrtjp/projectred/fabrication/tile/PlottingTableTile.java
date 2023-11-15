@@ -70,7 +70,7 @@ public class PlottingTableTile extends FabricationMachineTile {
     @Override
     public void loadFromNBT(CompoundTag tag) {
         super.loadFromNBT(tag);
-        inventory.fromTag(tag.getList("inventory", 10));
+        inventory.loadFrom(tag, "inventory");
     }
 
     @Override
@@ -80,7 +80,6 @@ public class PlottingTableTile extends FabricationMachineTile {
     @Override
     public void readDesc(MCDataInput in) {
     }
-
 
     @Override
     public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
@@ -119,7 +118,7 @@ public class PlottingTableTile extends FabricationMachineTile {
 
         if (!(slot1.getItem() instanceof BlankPhotomaskItem)) return false;
 
-        if (!EditorDataUtils.canFabricate(slot1.getTag())) return false;
+        if (!EditorDataUtils.canFabricate(slot0.getTag())) return false;
 
         return inventory.getItem(2).isEmpty();
     }
@@ -132,7 +131,7 @@ public class PlottingTableTile extends FabricationMachineTile {
     @Override
     protected int tickWork(int remainingWork) {
         if (canConductorWork()) {
-            conductor.applyPower(-1100); // draw at rate of 1.1kW
+            conductor.applyPower(-100); // draw at rate of 100W
             return 1;
         }
         return 0;

@@ -160,6 +160,22 @@ public class ICSimulationContainer {
         return changeMask;
     }
 
+    public int outputMask() {
+        int mask = 0;
+        for (int r = 0; r < 4; r++) {
+            if (outputs[r] != 0) mask |= 1 << r;
+        }
+        return mask;
+    }
+
+    public int inputMask() {
+        int mask = 0;
+        for (int r = 0; r < 4; r++) {
+            if (inputs[r] != 0) mask |= 1 << r;
+        }
+        return mask;
+    }
+
     public byte pullRegisterValue(int regId) {
         return simulation.getRegByteVal(regId);
     }

@@ -1,6 +1,7 @@
 package mrtjp.projectred.fabrication.item;
 
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
+import mrtjp.projectred.fabrication.engine.InterfaceSpec;
 import mrtjp.projectred.fabrication.init.FabricationReferences;
 import mrtjp.projectred.integration.GateType;
 import net.minecraft.ChatFormatting;
@@ -69,13 +70,15 @@ public class ICBlueprintItem extends Item {
         tooltipList.add(new TranslatableComponent(UL_TILE_COUNT).append(": " + blueprintTag.getInt(KEY_TILE_COUNT)).withStyle(ChatFormatting.GRAY));
         tooltipList.add(new TranslatableComponent(UL_IO_TYPES).append(": ").withStyle(ChatFormatting.GRAY));
 
-        //TODO handle other types of IO
-        byte bmask = blueprintTag.getByte(KEY_IO_BUNDLED);
+        InterfaceSpec spec = getInterfaceSpec(blueprintTag);
         TextComponent indent = new TextComponent("  ");
-        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_TOP)).append(": ").append(getBundledIOTextComponent(bmask, 0)).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_RIGHT)).append(": ").append(getBundledIOTextComponent(bmask, 1)).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_BOTTOM)).append(": ").append(getBundledIOTextComponent(bmask, 2)).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_LEFT)).append(": ").append(getBundledIOTextComponent(bmask, 3)).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_TOP)).append(": ").append(new TranslatableComponent(spec.getInterfaceType(0).getUnlocalName())).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_RIGHT)).append(": ").append(new TranslatableComponent(spec.getInterfaceType(1).getUnlocalName())).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_BOTTOM)).append(": ").append(new TranslatableComponent(spec.getInterfaceType(2).getUnlocalName())).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_LEFT)).append(": ").append(new TranslatableComponent(spec.getInterfaceType(3).getUnlocalName())).withStyle(ChatFormatting.GRAY));
+
+        tooltipList.add(new TranslatableComponent(UL_INPUT_MASK).append(String.format(": 0x%X", spec.getInputMask())).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(new TranslatableComponent(UL_OUTPUT_MASK).append(String.format(": 0x%X", spec.getOutputMask())).withStyle(ChatFormatting.GRAY));
 
         int warningCount = getWarningCount(blueprintTag);
         int errorCount = getErrorCount(blueprintTag);
@@ -90,7 +93,7 @@ public class ICBlueprintItem extends Item {
 
         if (!canFabricate(blueprintTag)) {
             tooltipList.add(new TextComponent(" - ")
-                    .append(new TranslatableComponent(UL_CANNOT_FABRICATE).withStyle(ChatFormatting.GRAY)));
+                    .append(new TranslatableComponent(UL_CANNOT_FABRICATE)).withStyle(ChatFormatting.RED));
         }
     }
 

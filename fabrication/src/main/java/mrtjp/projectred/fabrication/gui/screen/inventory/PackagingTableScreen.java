@@ -1,5 +1,6 @@
 package mrtjp.projectred.fabrication.gui.screen.inventory;
 
+import codechicken.lib.colour.EnumColour;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
@@ -10,6 +11,7 @@ import mrtjp.projectred.redui.RedUIContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 
 public class PackagingTableScreen extends RedUIContainerScreen<PackagingTableContainer> {
 
@@ -32,8 +34,8 @@ public class PackagingTableScreen extends RedUIContainerScreen<PackagingTableCon
 
         blit(stack, x, y, 0, 0, getFrame().width(), getFrame().height());
 
-        int s = getMenu().getProgressScaled(88);
-        blit(stack, x + 39, y + 25, 0, 171, s + 1, 33);
+        int s = getMenu().getProgressScaled(20);
+        blit(stack, x + 104, y + 41, 176, 0, s + 1, 16);
 
         if (getMenu().canConductorWork())
             blit(stack, x + 16, y + 16, 177, 18, 7, 9);
@@ -44,5 +46,19 @@ public class PackagingTableScreen extends RedUIContainerScreen<PackagingTableCon
             blit(stack, x + 27, y + 16, 185, 18, 7, 9);
 
         GuiLib.drawVerticalTank(stack, this, x + 27, y + 26, 185, 27, 7, 48, getMenu().getFlowScaled(48));
+
+        // Highlight problematic slots red.
+        int mask = getMenu().getProblematicSlotMask();
+        for (int i = 0; i < 9; i++) {
+            if ((mask & 1 << i) != 0) {
+                Slot slot = getMenu().getSlot(i + 36); // Offset past player inventory
+                int colour = EnumColour.RED.argb(0x55);
+                fillGradient(stack,
+                        x + slot.x,
+                        y + slot.y,
+                        x + slot.x + 16,
+                        y + slot.y + 16, colour, colour);
+            }
+        }
     }
 }

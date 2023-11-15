@@ -138,8 +138,7 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
         save(tag);
 
         // Save additional metadata for blueprints
-        tag.putByte(KEY_IO_RS, tileMap.calcRedstoneIOMask());
-        tag.putByte(KEY_IO_BUNDLED, tileMap.calcBundledIOMask());
+        tileMap.getInterfaceSpec().saveTo(tag, KEY_IO_SPEC);
         tag.putInt(KEY_TILE_COUNT, tileMap.getTileCount());
         tag.putBoolean(KEY_IS_BUILT, stateMachine.isSimulating());
 

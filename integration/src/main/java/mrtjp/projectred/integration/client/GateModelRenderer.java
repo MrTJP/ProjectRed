@@ -1880,10 +1880,11 @@ public class GateModelRenderer {
         @Override
         protected void prepare(IGateRenderData gate) {
 
-            //TODO
-            simpleWires.sidemask = 0;
-            analogWires.sidemask = 0;
-            bundledWires.sidemask = gate.state2() & 0xF | (gate.state2() >> 4) & 0xF;
+            //TODO set name string
+
+            simpleWires.sidemask = gate.state2() & 0xF;
+            analogWires.sidemask = (gate.state2() >> 4) & 0xF;
+            bundledWires.sidemask = (gate.state2() >> 8) & 0xF;
 
             simpleWires.wires[0].on = (gate.state() & 0x11) != 0;
             simpleWires.wires[1].on = (gate.state() & 0x22) != 0;

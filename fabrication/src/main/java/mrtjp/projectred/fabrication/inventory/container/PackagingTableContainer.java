@@ -1,6 +1,7 @@
 package mrtjp.projectred.fabrication.inventory.container;
 
 import codechicken.lib.inventory.container.ICCLContainerFactory;
+import mrtjp.projectred.core.inventory.container.SimpleDataSlot;
 import mrtjp.projectred.core.inventory.container.TakeOnlySlot;
 import mrtjp.projectred.fabrication.init.FabricationReferences;
 import mrtjp.projectred.fabrication.item.ValidDieItem;
@@ -24,6 +25,8 @@ public class PackagingTableContainer extends FabricationMachineContainer {
     private final Inventory playerInventory;
     private final PackagingTableTile tile;
 
+    protected int problematicSlotMask;
+
     public PackagingTableContainer(Inventory playerInventory, PackagingTableTile tile, int windowId) {
         super(FabricationReferences.PACKAGING_TABLE_CONTAINER, windowId, tile);
         this.playerInventory = playerInventory;
@@ -31,16 +34,19 @@ public class PackagingTableContainer extends FabricationMachineContainer {
 
         InventoryLib.addPlayerInventory(playerInventory, 8, 89, this::addSlot);
         addPackagingTableInventory();
+
+        addDataSlot(new SimpleDataSlot(tile::getProblematicSlotMask, value -> problematicSlotMask = value));
     }
 
     private void addPackagingTableInventory() {
-        addSlot(new Slot(tile.getInventory(), 0, 64, 32)); // die input
-        addSlot(new Slot(tile.getInventory(), 1, 46, 57)); // A
-        addSlot(new Slot(tile.getInventory(), 2, 64, 57)); // B
-        addSlot(new Slot(tile.getInventory(), 3, 82, 57)); // C
-        addSlot(new TakeOnlySlot(tile.getInventory(), 4, 135, 40)); // output
+        // Input slots
+        InventoryLib.addInventory(tile.getInventory(), 0, 46, 22, 3, 3, this::addSlot);
+
+        // Output slot
+        addSlot(new TakeOnlySlot(tile.getInventory(), 9, 135, 40));
     }
 
+    @Override
     public ItemStack quickMoveStack(Player player, int slotIndex) {
 
         Slot slot = slots.get(slotIndex);
@@ -55,7 +61,6 @@ public class PackagingTableContainer extends FabricationMachineContainer {
         } else if (isHotbar(slotIndex) || isPlayerInventory(slotIndex)) {
             if (isValidDie(stack)) {
                 if (!moveToDieInput(stack, false)) return ItemStack.EMPTY;
-                //TODO A, B, C inputs transfer
 
             } else if (isPlayerInventory(slotIndex)) {
                 if (!moveToHotbar(stack, false)) return ItemStack.EMPTY;
@@ -82,6 +87,10 @@ public class PackagingTableContainer extends FabricationMachineContainer {
         return originalStack;
     }
 
+    public int getProblematicSlotMask() {
+        return problematicSlotMask;
+    }
+
     //@formatter:off
     private boolean isHotbar(int slotIndex) {
         return slotIndex >= 27 && slotIndex < 36;
@@ -90,10 +99,10 @@ public class PackagingTableContainer extends FabricationMachineContainer {
         return slotIndex >= 0 && slotIndex < 27;
     }
     private boolean isInputs(int slotIndex) {
-        return slotIndex >= 36 && slotIndex < 40;
+        return slotIndex >= 36 && slotIndex < 45;
     }
     private boolean isOutput(int slotIndex) {
-        return slotIndex == 40;
+        return slotIndex == 45;
     }
 
     private boolean moveToHotbar(ItemStack stack, boolean reverse) {
@@ -106,7 +115,7 @@ public class PackagingTableContainer extends FabricationMachineContainer {
         return moveItemStackTo(stack, 0, 36, reverse);
     }
     private boolean moveToDieInput(ItemStack stack, boolean reverse) {
-        return moveItemStackTo(stack, 36, 37, reverse);
+        return moveItemStackTo(stack, 40, 41, reverse);
     }
     //@formatter:on
 

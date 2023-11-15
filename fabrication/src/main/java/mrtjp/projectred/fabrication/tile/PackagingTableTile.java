@@ -4,7 +4,11 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
+import mrtjp.projectred.core.init.CoreReferences;
 import mrtjp.projectred.core.inventory.BaseInventory;
+import mrtjp.projectred.core.tile.IPacketReceiverTile;
+import mrtjp.projectred.fabrication.engine.ICInterfaceType;
+import mrtjp.projectred.fabrication.engine.InterfaceSpec;
 import mrtjp.projectred.fabrication.init.FabricationReferences;
 import mrtjp.projectred.fabrication.inventory.container.PackagingTableContainer;
 import mrtjp.projectred.fabrication.item.ValidDieItem;
@@ -23,26 +27,28 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class PackagingTableTile extends FabricationMachineTile {
+import static mrtjp.projectred.fabrication.editor.EditorDataUtils.getInterfaceSpec;
+import static mrtjp.projectred.fabrication.editor.EditorDataUtils.hasFabricationTarget;
 
-    private final BaseInventory inventory = new BaseInventory(5) {
+public class PackagingTableTile extends FabricationMachineTile implements IPacketReceiverTile {
+
+    private static final int DIE_SLOT = 4;
+    private static final int OUTPUT_SLOT = 9;
+
+    private final BaseInventory inventory = new BaseInventory(10) {
 
         @Override
-        public boolean canPlaceItem(int slot, ItemStack stack) {
-            switch (slot) {
-                case 0:
-                    return stack.getItem() instanceof ValidDieItem;
-                case 1:
-                case 2:
-                case 3:
-                    //TODO
-                default:
-                    return false;
-            }
+        public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
+            return switch (slot) {
+                case DIE_SLOT -> stack.getItem() instanceof ValidDieItem;
+                case OUTPUT_SLOT -> false;
+                default -> true;
+            };
         }
 
         @Override
@@ -51,6 +57,9 @@ public class PackagingTableTile extends FabricationMachineTile {
             cancelWorkIfNeeded();
         }
     };
+
+    private int problematicSlotMask = 0; // Masks of slots that client should render red highlights
+
     public PackagingTableTile(BlockPos pos, BlockState state) {
         super(FabricationReferences.PACKAGING_TABLE_TILE, pos, state);
         inventory.addListener(c -> setChanged());
@@ -69,7 +78,7 @@ public class PackagingTableTile extends FabricationMachineTile {
     @Override
     public void loadFromNBT(CompoundTag tag) {
         super.loadFromNBT(tag);
-        inventory.fromTag(tag.getList("inventory", 10));
+        inventory.loadFrom(tag, "inventory");
     }
 
     @Override
@@ -106,13 +115,47 @@ public class PackagingTableTile extends FabricationMachineTile {
     @Override
     protected boolean canStartWork() {
 
-        ItemStack slot0 = inventory.getItem(0);
+        problematicSlotMask = 0;
 
-        if (slot0.isEmpty()) return false;
+        ItemStack dieItem = inventory.getItem(DIE_SLOT);
+        CompoundTag dieTag = dieItem.getTag();
 
-        if (!(slot0.getItem() instanceof ValidDieItem)) return false;
+        if (dieItem.isEmpty() || !(dieItem.getItem() instanceof ValidDieItem) || !hasFabricationTarget(dieTag)) {
+            problematicSlotMask |= 1 << DIE_SLOT;
+            return false; // Fail-fast. Can't do ingredient checks without valid die item
+        }
 
-        return inventory.getItem(4).isEmpty(); //TODO or output can be stackable (made from same blueprint)
+        if (!inventory.getItem(OUTPUT_SLOT).isEmpty()) {
+            problematicSlotMask |= 1 << OUTPUT_SLOT;
+        }
+
+        // Check IO ingredients
+        InterfaceSpec iospec = getInterfaceSpec(dieTag);
+        int[] slotMap = { 1, 5, 7, 3 }; // Maps rotation to grid slot
+        for (int r = 0; r < 4; r++) {
+            ICInterfaceType type = iospec.getInterfaceType(r);
+
+            // Each type of IO corresponds to a particular ingredient
+            boolean match = inventory.getItem(slotMap[r]).is(switch (type) {
+                case NC       -> CoreReferences.PLATE_ITEM;
+                case REDSTONE -> CoreReferences.CONDUCTIVE_PLATE_ITEM;
+                case BUNDLED  -> CoreReferences.BUNDLED_PLATE_ITEM;
+            });
+
+            if (!match) {
+                problematicSlotMask |= 1 << slotMap[r];
+            }
+        }
+
+        // Check corner slots
+        int[] cornerSlots = { 0, 2, 6, 8 };
+        for (int slot : cornerSlots) {
+            if (!inventory.getItem(slot).is(CoreReferences.PLATE_ITEM)) {
+                problematicSlotMask |= 1 << slot;
+            }
+        }
+
+        return problematicSlotMask == 0;
     }
 
     @Override
@@ -123,7 +166,7 @@ public class PackagingTableTile extends FabricationMachineTile {
     @Override
     protected int tickWork(int remainingWork) {
         if (canConductorWork()) {
-            conductor.applyPower(-1100); // draw at rate of 1.1kW
+            conductor.applyPower(-100); // draw at rate of 100W
             return 1;
         }
         return 0;
@@ -131,10 +174,18 @@ public class PackagingTableTile extends FabricationMachineTile {
 
     @Override
     protected void finishWork() {
-        ItemStack gatePart = ValidDieItem.createGatePart(inventory.getItem(0));
-        inventory.setItem(4, gatePart); //TODO or stack
+        ItemStack gatePart = ValidDieItem.createGatePart(inventory.getItem(DIE_SLOT));
+        inventory.setItem(OUTPUT_SLOT, gatePart); //TODO or stack
 
         // Consume inputs
-        inventory.removeItem(0, 1);
+        for (int i = 0; i < 9; i++) {
+            inventory.removeItem(i, 1);
+        }
     }
+
+    //region Container data
+    public int getProblematicSlotMask() {
+        return problematicSlotMask;
+    }
+    //endregion
 }

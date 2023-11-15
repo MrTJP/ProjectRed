@@ -1,6 +1,7 @@
 package mrtjp.projectred.fabrication.editor;
 
 import mrtjp.fengine.TileCoord;
+import mrtjp.projectred.fabrication.engine.InterfaceSpec;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -16,8 +17,7 @@ public class EditorDataUtils {
     public static final String KEY_TILE_MAP = "tile_map"; // CompoundTag
     public static final String KEY_TILE_COUNT = "tile_count"; // int
     public static final String KEY_IS_BUILT = "is_built"; // boolean
-    public static final String KEY_IO_RS = "rsmask"; // CompoundTag
-    public static final String KEY_IO_BUNDLED = "bmask"; // CompoundTag
+    public static final String KEY_IO_SPEC = "io_spec";
 
     // ICEditorStateMachine
     public static final String KEY_COMP_STATE = "state"; // byte
@@ -68,10 +68,13 @@ public class EditorDataUtils {
         copy.putBoolean(KEY_IS_BUILT, editorTag.getBoolean(KEY_IS_BUILT));
         copy.putString(KEY_IC_NAME, editorTag.getString(KEY_IC_NAME));
         copy.putInt(KEY_TILE_COUNT, editorTag.getInt(KEY_TILE_COUNT));
-        //TODO handle other types of IO
-        copy.putByte(KEY_IO_BUNDLED, editorTag.getByte(KEY_IO_BUNDLED));
+        copy.put(KEY_IO_SPEC, editorTag.getCompound(KEY_IO_SPEC));
         copy.putString(KEY_FLAT_MAP, editorTag.getString(KEY_FLAT_MAP));
         return copy;
+    }
+
+    public static InterfaceSpec getInterfaceSpec(CompoundTag tag) {
+        return InterfaceSpec.createFrom(tag, KEY_IO_SPEC);
     }
 
     public static void saveTileCoord(CompoundTag tag, String key, TileCoord coord) {

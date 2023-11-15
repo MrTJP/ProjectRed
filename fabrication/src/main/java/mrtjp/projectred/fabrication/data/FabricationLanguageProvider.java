@@ -104,6 +104,8 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_NAME, "Name");
         add(UL_TILE_COUNT, "Tile count");
         add(UL_IO_TYPES, "IO types");
+        add(UL_INPUT_MASK, "Input mask");
+        add(UL_OUTPUT_MASK, "Output mask");
         add(UL_TOP, "Top");
         add(UL_RIGHT, "Right");
         add(UL_BOTTOM, "Bottom");
@@ -121,6 +123,10 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_TILEGROUP_BASIC, "Basic");
         add(UL_TILEGROUP_TIMING, "Timing");
         add(UL_TILEGROUP_MEMORY, "Memory");
+
+        add(UL_INTERFACE_NC, "Not connected");
+        add(UL_INTERFACE_REDSTONE, "Redstone");
+        add(UL_INTERFACE_BUNDLED, "Bundled");
 
         add(UL_UNIT_WARNINGS, "%d warnings");
         add(UL_UNIT_ERRORS, "%d errors");

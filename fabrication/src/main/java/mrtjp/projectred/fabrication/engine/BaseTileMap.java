@@ -123,22 +123,10 @@ public class BaseTileMap implements FETileMap {
         if (tile instanceof IIOConnectionTile) ioTiles.remove(tile);
     }
 
-    public byte calcBundledIOMask() {
-        // OOOO IIII
-        int bmask = 0;
-
-        for (IIOConnectionTile t : ioTiles) {
-            if (t.getConnectionType() == ICConnectionType.BUNDLED) {
-                int m = (t.isInputIOMode() ? 0x1 : 0x10) << t.getIOSide();
-                bmask |= m;
-            }
-        }
-
-        return (byte) bmask;
-    }
-
-    public byte calcRedstoneIOMask() {
-        return 0; //TODO
+    public InterfaceSpec getInterfaceSpec() {
+        InterfaceSpec spec = new InterfaceSpec();
+        spec.setFromIOTiles(ioTiles);
+        return spec;
     }
 
     public void save(CompoundTag tag) {
