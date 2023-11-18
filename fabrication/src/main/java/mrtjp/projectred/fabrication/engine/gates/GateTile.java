@@ -137,8 +137,8 @@ public abstract class GateTile extends BaseTile implements IConnectableICTile, I
     @Override
     public void renderTile(CCRenderState ccrs, Transformation t, float partialFrame) {
         GateModelRenderer r = GateModelRenderer.instance();
-        r.renderStatic(ccrs, gateTileType.renderIndex, this, getRotation() & 0x3, t);
-        r.renderDynamic(ccrs, gateTileType.renderIndex, this, getRotation() & 0x3, t, partialFrame);
+        r.renderStatic(ccrs, this, t);
+        r.renderDynamic(ccrs, this, t, partialFrame);
     }
 
     protected void notifyNeighbors(int rMask) {
@@ -191,6 +191,17 @@ public abstract class GateTile extends BaseTile implements IConnectableICTile, I
     //endregion
 
     //region IGateRenderKey implementation
+
+    @Override
+    public int getRenderIndex() {
+        return gateTileType.renderIndex;
+    }
+
+    @Override
+    public int getOrientation() {
+        return getRotation() & 0x3;
+    }
+
     @Override
     public int shape() {
         return this.gateShape;

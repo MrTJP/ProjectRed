@@ -781,6 +781,11 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         public short bInput0() {
             return pressMask;
         }
+
+        @Override
+        public BlockPos worldPos() {
+            return pos();
+        }
         //endregion
 
         //region Gate logic

@@ -134,7 +134,6 @@ public class FabricatedGatePart extends BundledGatePart {
     //endregion
 
     //region IGateRenderKey overrides
-
     @Override
     public int state2() {
         // TODO Temporary: state2 contains IO details for rendering
@@ -145,6 +144,10 @@ public class FabricatedGatePart extends BundledGatePart {
         return (rsMask & 0xF) | (analogMask & 0xF) << 4 | (bundledMask & 0xF) << 8;
     }
 
+    @Override
+    public String getGateName() {
+        return icName;
+    }
     //endregion
 
     @Override

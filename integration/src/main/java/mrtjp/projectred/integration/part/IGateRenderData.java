@@ -1,8 +1,14 @@
 package mrtjp.projectred.integration.part;
 
+import net.minecraft.core.BlockPos;
+
 public interface IGateRenderData {
 
     //@formatter:off
+    // Render type
+    int getRenderIndex(); // Unique identifier that selects exact model to render
+    int getOrientation(); // Packed orientation data. See {@link VecLib.orientT}
+
     // General stuff
     int shape();
     int state();
@@ -30,9 +36,15 @@ public interface IGateRenderData {
     default int bInHigh() { return 0; } //TODO this is just bundled input side 0
     default byte segmentColour() { return 0; } // TODO this can be a state2
 
+    // Bus input panel
+    default BlockPos worldPos() { return BlockPos.ZERO; }
+
     // Array Cells
     default byte bottomSignal() { return 0; }
     default byte topSignal() { return 0; }
     default int topSignalConnMask() { return 0; }
+
+    // Fabricated Gate
+    default String getGateName() { return "???"; }
     //@formatter:on
 }

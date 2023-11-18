@@ -88,8 +88,14 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
         return type;
     }
 
+    @Override
     public int getOrientation() {
         return orientation & 0xFF;
+    }
+
+    @Override
+    public int getRenderIndex() {
+        return type.ordinal();
     }
 
     @Override
