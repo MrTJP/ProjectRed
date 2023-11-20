@@ -1,0 +1,55 @@
+name: bug_template
+description: "Template for submitting bug reports"
+labels: ["bug"]
+title: "[Bug] "
+body:
+  - type: dropdown
+    id: mc_version
+    attributes:
+      label: "Minecraft version"
+      description: "What version of Minecraft are you running? If your version is not displayed here, then it is no longer supported."
+      options: ["1.16.x", "1.18.x"]
+    validations:
+      required: true
+  - type: input
+    id: ccl_version
+    attributes:
+      label: "CodeChickenLib version"
+      placeholder: "x.y.z"
+    validations:
+      required: true
+  - type: input
+    id: cbm_version
+    attributes:
+      label: "CBMultipart version"
+      placeholder: "x.y.z"
+    validations:
+      required: true
+  - type: input
+    id: pr_version
+    attributes:
+      label: "ProjectRed version"
+      placeholder: "x.y.z"
+    validations:
+      required: true
+  - type: textarea
+    id: bug_desc
+    attributes:
+      label: "What happened?"
+      description: "Describe the bug you are experiencing and what you expected to happen"
+    validations:
+      required: true
+  - type: textarea
+    id: crash_log
+    attributes:
+      label: "Crash log"
+      description: "Put your crash log here. You can link to a service like [GitHub Gist](https://gist.github.com/), or paste it here directly."
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: "How do you make it happen again?"
+      description: "Describe steps to reproduce the bug"
+    validations:
+      required: true
