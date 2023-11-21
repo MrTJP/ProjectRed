@@ -1524,7 +1524,7 @@ public class GateModelRenderer {
 
         private final List<ComponentModel> models = new LinkedList<>();
 
-        private final WireModel[] wires = generateWireModels("xor", 4);
+        private final WireModel[] wires = generateWireModels("comparator", 4);
         private final RedstoneTorchModel torch = new RedstoneTorchModel(8, 2, 6);
         private final OnOffModel[] chips = new OnOffModel[] { new MinusChipModel(5, 8), new PlusChipModel(11, 8) };
 
