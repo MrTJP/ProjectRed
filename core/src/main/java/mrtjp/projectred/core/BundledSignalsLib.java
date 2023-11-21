@@ -186,9 +186,9 @@ public class BundledSignalsLib {
 
     public static int mostSignificantBit(int mask) {
         int idx = 0;
-        int m2 = mask >> 1;
+        int m2 = mask >>> 1;
         while (m2 != 0) {
-            m2 >>= 1;
+            m2 >>>= 1;
             idx++;
         }
         return idx;
