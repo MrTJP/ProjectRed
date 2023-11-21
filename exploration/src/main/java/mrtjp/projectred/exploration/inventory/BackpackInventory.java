@@ -20,6 +20,7 @@ public class BackpackInventory extends BaseInventory {
             load(inventoryTag);
             // Delete inventory from stack. It will be saved back once container closes
             BackpackItem.deleteBackpackInventory(backpack);
+            BackpackItem.setBackpackOpenedFlag(backpack, true);
         }
     }
 
@@ -29,6 +30,7 @@ public class BackpackInventory extends BaseInventory {
             CompoundTag inventoryTag = new CompoundTag();
             save(inventoryTag);
             BackpackItem.saveBackpackInventory(backpack, inventoryTag);
+            BackpackItem.setBackpackOpenedFlag(backpack, false);
         }
     }
 
