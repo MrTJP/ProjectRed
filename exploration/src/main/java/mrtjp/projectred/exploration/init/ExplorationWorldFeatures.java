@@ -100,7 +100,7 @@ public class ExplorationWorldFeatures {
     // Registers the actual ore feature. This describes a single cluster of this specific ore type
     private static Holder<ConfiguredFeature<OreConfiguration, ?>> registerOreConfiguration(String id, Block standard, Block deepslate, int veinSize) {
         return FeatureUtils.register(
-                id,
+                modId(id),
                 Feature.ORE,
                 new OreConfiguration(ImmutableList.of(
                         OreConfiguration.target(OreFeatures.STONE_ORE_REPLACEABLES, standard.defaultBlockState()),
@@ -115,7 +115,7 @@ public class ExplorationWorldFeatures {
                 HeightRangePlacement.triangle(VerticalAnchor.absolute(minY), VerticalAnchor.absolute(maxY)));
 
         return PlacementUtils.register(
-                id,
+                modId(id),
                 configuredFeature,
                 modifiers);
     }
@@ -135,5 +135,9 @@ public class ExplorationWorldFeatures {
                 BuiltinRegistries.CONFIGURED_CARVER,
                 new ResourceLocation(MOD_ID, ID_MARBLE_CAVE_CARVER),
                 configuredCarver);
+    }
+
+    private static String modId(String id) {
+        return MOD_ID + ":" + id;
     }
 }
