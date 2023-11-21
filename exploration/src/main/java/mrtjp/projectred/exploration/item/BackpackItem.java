@@ -25,10 +25,12 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 public class BackpackItem extends Item {
 
     public static final String TAG_INVENTORY = "backpack_inventory";
+    public static final String TAG_IS_OPENED = "is_opened";
 
     private final int colour;
 
@@ -67,6 +69,8 @@ public class BackpackItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
+        if (isBackpackOpened(stack)) return;
+
         int itemCount = getBackpackItemCount(stack);
         tooltip.add(new TextComponent(itemCount + " / 27").withStyle(ChatFormatting.GRAY));
     }
@@ -105,6 +109,21 @@ public class BackpackItem extends Item {
         if (hasBackpackInventory(stack)) {
             stack.getTag().remove(TAG_INVENTORY);
         }
+    }
+
+    public static void setBackpackOpenedFlag(ItemStack stack, boolean opened) {
+        if (isBackpack(stack)) {
+            CompoundTag tag = stack.getOrCreateTag();
+            if (opened) {
+                tag.putBoolean(TAG_IS_OPENED, true);
+            } else {
+                tag.remove(TAG_IS_OPENED);
+            }
+        }
+    }
+
+    public static boolean isBackpackOpened(ItemStack stack) {
+        return isBackpack(stack) && stack.hasTag() && Objects.requireNonNull(stack.getTag()).getBoolean(TAG_IS_OPENED);
     }
 
     public static boolean isItemAllowedInBackpack(ItemStack stack) {
