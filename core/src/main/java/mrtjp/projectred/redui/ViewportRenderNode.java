@@ -58,6 +58,16 @@ public abstract class ViewportRenderNode extends AbstractGuiNode {
         return pvMatrix.ndcToWorldCoordinates(ndcMouse.dx, ndcMouse.dy, getTargetPlaneDistance());
     }
 
+    protected double distanceToEncloseRect(double width, double height) {
+        double fovY = getVerticalFOV();
+        double fovX = fovY * getFrame().width() / getFrame().height();
+
+        double xDist = width / (2 * Math.tan(fovX / 2));
+        double yDist = height / (2 * Math.tan(fovY / 2));
+
+        return Math.max(xDist, yDist);
+    }
+
     @Override
     public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
 

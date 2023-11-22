@@ -44,6 +44,11 @@ public class LinearVectorAnimation {
         step.divide(stepsRemaining);
     }
 
+    public void moveToTargetWithDuration(Vector3 target, long duration) {
+        stepsRemaining = duration;
+        step.set(target).subtract(vector).divide(stepsRemaining);
+    }
+
     public void tick(long time) {
 
         long dt = lastTime == -1 ? 0 : time - lastTime;

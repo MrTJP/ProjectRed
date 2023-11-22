@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class ICRenderNode extends ViewportRenderNode {
     private static final int ZOOM_ANIMATION_TIME_MS = 100;
     private static final int LAYER_ANIMATION_TIME_MS = 200;
     private static final int CAMERA_ANIMATION_TIME_MS = 100;
+    private static final int FOCUS_ANIMATION_TIME_MS = 400;
     private static final int ZOOM_DIST_MAX = 18;
     private static final int ZOOM_DIST_MIN = 3;
 
@@ -35,7 +37,7 @@ public class ICRenderNode extends ViewportRenderNode {
     private final Vector3 cameraPosition = new Vector3();
 
     private final LinearVectorAnimation cameraLayerAnimator = new LinearVectorAnimation();
-    private final LinearVectorAnimation cameraZoomAnimator = new LinearVectorAnimation(0, 5, 0);
+    private final LinearVectorAnimation cameraZoomAnimator = new LinearVectorAnimation(0, 8, 0);
 
     private int currentLayer = 0;
 
@@ -66,6 +68,33 @@ public class ICRenderNode extends ViewportRenderNode {
 
     public void applyCameraDelta(Vector3 delta) {
         cameraZoomAnimator.addDeltaWithNewDuration(delta, CAMERA_ANIMATION_TIME_MS);
+    }
+
+    public void focusCameraAtTiles(List<TileCoord> positions) {
+
+        if (positions.isEmpty()) return;
+
+        // Create cuboid enclosing all tiles
+        Cuboid6 bounds = new Cuboid6();
+
+        Iterator<TileCoord> it = positions.iterator();
+        TileCoord first = it.next();
+        bounds.set(first.x, first.y, first.z, first.x+1, first.y+1, first.z+1);
+        while (it.hasNext()) {
+            TileCoord next = it.next();
+            bounds.enclose(next.x, next.y, next.z, next.x+1, next.y+1, next.z+1);
+        }
+        bounds.expand(1.0); // Expand by 1 tile in all directions
+
+        // X and Z will be at midpoints
+        double midX = (bounds.min.x + bounds.max.x) / 2D;
+        double midZ = (bounds.min.z + bounds.max.z) / 2D;
+
+        // Y will be far enough away to enclose all tiles inside FOV
+        double dist = distanceToEncloseRect(bounds.max.x - bounds.min.x, bounds.max.z - bounds.min.z);
+
+        // Set camera position
+        cameraZoomAnimator.moveToTargetWithDuration(new Vector3(midX, dist, midZ), FOCUS_ANIMATION_TIME_MS);
     }
 
     @Override
@@ -160,6 +189,12 @@ public class ICRenderNode extends ViewportRenderNode {
 
         // Force-end the batch to make sure it happens before the custom viewport is altered
         getter.endBatch();
+    }
+
+    @Override
+    public void onAddedToParent() {
+        // Set initial zoom to enclose entire tile map
+        focusCameraAtTiles(List.of(editor.getTileMap().getMinBounds(), editor.getTileMap().getMaxBounds()));
     }
 
     @Override

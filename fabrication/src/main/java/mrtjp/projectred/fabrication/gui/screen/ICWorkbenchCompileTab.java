@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static mrtjp.projectred.fabrication.editor.ICWorkbenchEditor.*;
-import static mrtjp.projectred.fabrication.editor.ICWorkbenchEditor.UNIFORM_DARK_GRAY;
 import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNode.IICRenderNodeEventReceiver {
