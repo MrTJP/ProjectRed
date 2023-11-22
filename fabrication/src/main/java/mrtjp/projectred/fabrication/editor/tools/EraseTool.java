@@ -113,6 +113,9 @@ public class EraseTool extends BaseICEditorTool {
     @Override
     @OnlyIn (Dist.CLIENT)
     public void renderOverlay(Vector3 mousePosition, boolean isFirstHit, CCRenderState ccrs, MultiBufferSource getter, PoseStack matrixStack) {
+
+        if (!isFirstHit) return;
+
         Vector3 a = leftMouseDown ? initialMouseDown : mousePosition;
         Vector3 b = mousePosition;
 

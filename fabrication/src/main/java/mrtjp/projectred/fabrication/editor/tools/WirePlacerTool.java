@@ -31,7 +31,7 @@ public class WirePlacerTool extends BaseICEditorTool {
 
     private final Vector3 initialMouseDown = new Vector3();
     private final List<TileCoord> selectedPositionsList = new LinkedList<>();
-    private final Set<TileCoord> selectedPositions = new HashSet<>();
+    private final Set<TileCoord> selectedPositionsSet = new HashSet<>();
 
     private boolean leftMouseDown;
 
@@ -63,12 +63,12 @@ public class WirePlacerTool extends BaseICEditorTool {
         for (int i = 0; i < numPositions; i++) {
             TileCoord pos = new TileCoord(in.readByte(), y, in.readByte());
 
-            if (editor.getTileMap().getTile(pos).isPresent()) {
-                if (!overwrite) continue;
-                editor.removeTile(pos);
-            }
+            if (!canPlaceAt(pos, overwrite)) continue;
 
             WireTile tile = (WireTile) wireType.tileType.create();
+            if (editor.getTileMap().getTile(pos).isPresent()) {
+                editor.removeTile(pos);
+            }
             editor.addTile(tile, pos);
         }
     }
@@ -87,10 +87,15 @@ public class WirePlacerTool extends BaseICEditorTool {
         }
     }
 
+    protected boolean canPlaceAt(TileCoord pos, boolean overwrite) {
+        if (!isInBody(pos) || isOnIOEdge(pos)) return false;
+        return editor.getTileMap().getTile(pos).isEmpty() || overwrite;
+    }
+
     protected void addToSelection(Vector3 mousePosition) {
         TileCoord pos = toNearestPosition(mousePosition);
-        if (!selectedPositions.contains(pos) && !editor.getTileMap().getBaseTile(pos).isPresent()) {
-            selectedPositions.add(pos);
+        if (canPlaceAt(pos, overwrite) && !selectedPositionsSet.contains(pos)) {
+            selectedPositionsSet.add(pos);
             selectedPositionsList.add(pos);
         }
     }
@@ -113,7 +118,7 @@ public class WirePlacerTool extends BaseICEditorTool {
             sendPlaceWires();
 
             leftMouseDown = false;
-            selectedPositions.clear();
+            selectedPositionsSet.clear();
             selectedPositionsList.clear();
 
             return true;
@@ -144,12 +149,12 @@ public class WirePlacerTool extends BaseICEditorTool {
             initialMouseDown.y += diff;
 
             List<TileCoord> oldSelection = new LinkedList<>(selectedPositionsList);
-            selectedPositions.clear();
+            selectedPositionsSet.clear();
             selectedPositionsList.clear();
 
             for (TileCoord t : oldSelection) {
                 TileCoord newPos = t.add(0, diff, 0);
-                selectedPositions.add(newPos);
+                selectedPositionsSet.add(newPos);
                 selectedPositionsList.add(newPos);
             }
         }
@@ -158,21 +163,21 @@ public class WirePlacerTool extends BaseICEditorTool {
     @Override
     public void toolCanceled(Vector3 mousePosition) {
         leftMouseDown = false;
-        selectedPositions.clear();
+        selectedPositionsSet.clear();
         selectedPositionsList.clear();
     }
 
     @Override
     public void toolActivated() {
         leftMouseDown = false;
-        selectedPositions.clear();
+        selectedPositionsSet.clear();
         selectedPositionsList.clear();
     }
 
     @Override
     public void toolDeactivated() {
         leftMouseDown = false;
-        selectedPositions.clear();
+        selectedPositionsSet.clear();
         selectedPositionsList.clear();
     }
 
@@ -180,28 +185,30 @@ public class WirePlacerTool extends BaseICEditorTool {
     @OnlyIn(Dist.CLIENT)
     public void renderOverlay(Vector3 mousePosition, boolean isFirstHit, CCRenderState ccrs, MultiBufferSource getter, PoseStack matrixStack) {
 
-        if (leftMouseDown) {
-            addToSelection(mousePosition);
-        }
+        if (!isFirstHit && selectedPositionsList.isEmpty()) return;
 
         ccrs.reset();
         ccrs.bind(ICRenderTypes.layersRenderType, Minecraft.getInstance().renderBuffers().bufferSource(), matrixStack);
         ccrs.alphaOverride = leftMouseDown ? 128 : 64;
         ccrs.brightness = LightTexture.pack(15, 15);
 
-        if (!leftMouseDown) {
-            renderWireAt(toNearestPosition(mousePosition), ccrs, 0);
-        }
-
         for (TileCoord pos : selectedPositionsList) {
             int rmask = 0;
             for (int r = 0; r < 4; r++) {
                 int s = IRotatableICTile.rotationToDir(r);
-                if (selectedPositions.contains(pos.offset(s))) {
+                if (selectedPositionsSet.contains(pos.offset(s))) {
                     rmask |= 1 << r;
                 }
             }
             renderWireAt(pos, ccrs, rmask);
+        }
+
+        // If just hovering, render overlay
+        if (!leftMouseDown) {
+            TileCoord pos = toNearestPosition(mousePosition);
+            if (canPlaceAt(pos, overwrite)) {
+                renderWireAt(pos, ccrs, 0);
+            }
         }
     }
 
