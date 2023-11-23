@@ -31,9 +31,9 @@ public interface IICEditorTool {
 
     boolean toolScrolled(Vector3 mousePosition, double scroll);
 
-    void toolLayerChanged(int previousLayer, int newLayer);
+    boolean toolCanceled();
 
-    void toolCanceled(Vector3 mousePosition);
+    void toolLayerChanged(int previousLayer, int newLayer);
 
     void toolActivated();
 

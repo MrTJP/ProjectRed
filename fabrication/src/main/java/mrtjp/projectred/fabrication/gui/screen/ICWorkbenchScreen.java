@@ -23,6 +23,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
@@ -110,6 +111,26 @@ public class ICWorkbenchScreen extends RedUIScreen {
     @Override
     public void update() {
         refreshOverlay();
+    }
+
+    @Override
+    public boolean shouldCloseOnEsc() {
+        // Suppress Vanilla logic to always close screen on ESC press
+        return false;
+    }
+
+    @Override
+    public boolean keyPressed(int glfwKeyCode, int glfwScanCode, int glfwFlags) {
+        // This gives our UI elements a chance to consume ESC before we close the screen
+        if (super.keyPressed(glfwKeyCode, glfwScanCode, glfwFlags)) return true;
+
+        // Since we didn't consume ESC, we'll close the screen if it was pressed
+        if (glfwKeyCode == GLFW.GLFW_KEY_ESCAPE) {
+            onClose();
+            return true;
+        }
+
+        return false;
     }
 
     private void refreshOverlay() {

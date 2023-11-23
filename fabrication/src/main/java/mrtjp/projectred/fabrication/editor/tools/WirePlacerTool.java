@@ -161,10 +161,14 @@ public class WirePlacerTool extends BaseICEditorTool {
     }
 
     @Override
-    public void toolCanceled(Vector3 mousePosition) {
-        leftMouseDown = false;
-        selectedPositionsSet.clear();
-        selectedPositionsList.clear();
+    public boolean toolCanceled() {
+        if (leftMouseDown) {
+            leftMouseDown = false;
+            selectedPositionsSet.clear();
+            selectedPositionsList.clear();
+            return true;
+        }
+        return false;
     }
 
     @Override

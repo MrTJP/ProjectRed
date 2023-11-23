@@ -92,6 +92,10 @@ public class ICEditorToolTab extends AbstractGuiNode implements TabControllerNod
         addChild(button);
     }
 
+    public IICEditorTool getTool() {
+        return tool;
+    }
+
     @Override
     public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
         RenderSystem.setShaderTexture(0, ICWorkbenchScreen.BACKGROUND);
@@ -99,6 +103,11 @@ public class ICEditorToolTab extends AbstractGuiNode implements TabControllerNod
         GuiComponent.blit(stack, getPosition().x, getPosition().y, 305, 0, 84, 222, 512, 512);
 
         //TODO: Render tool name on header
+    }
+
+    @Override
+    public boolean hasBody() {
+        return true;
     }
 
     @Override

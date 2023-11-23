@@ -136,8 +136,12 @@ public class GatePlacerTool extends BaseICEditorTool {
     }
 
     @Override
-    public void toolCanceled(Vector3 mousePosition) {
-        leftMouseDown = false;
+    public boolean toolCanceled() {
+        if (leftMouseDown) {
+            leftMouseDown = false;
+            return true;
+        }
+        return false;
     }
 
     @Override

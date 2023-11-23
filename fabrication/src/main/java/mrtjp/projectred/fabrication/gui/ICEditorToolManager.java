@@ -10,7 +10,9 @@ import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ICEditorToolManager implements ICRenderNode.IICRenderNodeEventReceiver {
 
@@ -30,6 +32,8 @@ public class ICEditorToolManager implements ICRenderNode.IICRenderNodeEventRecei
     private boolean layerUpPressed = false;
     private boolean layerDownPressed = false;
 
+    private final List<Consumer<ICEditorToolType>> toolSwappedListeners = new LinkedList<>();
+
     public ICEditorToolManager(ArrayList<IICEditorTool> toolList) {
         this.toolList = toolList;
         selectedTool = toolList.get(0);
@@ -41,11 +45,29 @@ public class ICEditorToolManager implements ICRenderNode.IICRenderNodeEventRecei
             selectedTool.toolDeactivated();
             selectedTool = nextTool;
             selectedTool.toolActivated();
+
+            for (Consumer<ICEditorToolType> listener : toolSwappedListeners) {
+                listener.accept(nextToolType);
+            }
         }
+    }
+
+    public void addToolSwappedListener(Consumer<ICEditorToolType> listener) {
+        toolSwappedListeners.add(listener);
     }
 
     public boolean keyPressed(int glfwKeyCode, int glfwFlags) {
         switch (glfwKeyCode) {
+            case GLFW.GLFW_KEY_ESCAPE:
+                // Try to cancel current tool
+                if (selectedTool.toolCanceled()) break;
+
+                // Otherwise, try to swap to the interact tool
+                if (selectedTool.getToolType() != ICEditorToolType.INTERACT_TOOL) {
+                    swapTools(ICEditorToolType.INTERACT_TOOL);
+                    break;
+                }
+                return false;
             case GLFW.GLFW_KEY_W:
                 upPressed = true;
                 break;

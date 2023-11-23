@@ -3,6 +3,7 @@ package mrtjp.projectred.fabrication.gui.screen;
 import codechicken.lib.colour.EnumColour;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mrtjp.projectred.fabrication.editor.ICEditorToolType;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
 import mrtjp.projectred.fabrication.editor.tools.*;
 import mrtjp.projectred.fabrication.gui.*;
@@ -17,9 +18,13 @@ public class ICWorkbenchEditTab extends AbstractGuiNode {
     private final ICWorkbenchEditor editor;
     private final ICEditorToolManager toolManager;
 
+    private final TabControllerNode toolbarNode = new TabControllerNode();
+
     public ICWorkbenchEditTab(ICWorkbenchEditor editor) {
         this.editor = editor;
         this.toolManager = new ICEditorToolManager(editor.getToolList());
+
+        toolManager.addToolSwappedListener(this::onToolSwapped);
 
         setSize(304, 222);
         initSubNodes();
@@ -27,7 +32,6 @@ public class ICWorkbenchEditTab extends AbstractGuiNode {
 
     private void initSubNodes() {
 
-        TabControllerNode toolbarNode = new TabControllerNode();
         toolbarNode.setPosition(286, 24);
         toolbarNode.setZPosition(0.1);
         addChild(toolbarNode);
@@ -65,6 +69,10 @@ public class ICWorkbenchEditTab extends AbstractGuiNode {
             return new WirePlacerToolTab(toolManager, (WirePlacerTool) tool);
 
         return new ICEditorToolTab(toolManager, tool);
+    }
+
+    private void onToolSwapped(ICEditorToolType newToolType) {
+        toolbarNode.openTab(tab -> ((ICEditorToolTab) tab).getTool().getToolType() == newToolType);
     }
 
     @Override

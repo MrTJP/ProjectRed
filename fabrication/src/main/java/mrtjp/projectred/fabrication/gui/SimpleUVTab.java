@@ -51,6 +51,11 @@ public class SimpleUVTab implements TabControllerNode.IToolbarTab {
 
     //region TabControllerNode.IToolbarTab
     @Override
+    public boolean hasBody() {
+        return true;
+    }
+
+    @Override
     public void onTabClosed() {
         tabBodyNode.setHidden(true);
     }

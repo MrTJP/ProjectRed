@@ -107,9 +107,7 @@ public abstract class TabButtonNode extends AbstractGuiNode {
 
     public void onClicked() {
         TabControllerNode tabControllerNode = (TabControllerNode) getParent();
-
         tabControllerNode.openTab(tab);
-        if (!hasBody()) tabControllerNode.minimizeTab(tab); // If no body, minimize tab
     }
 
     public void onTabStateChanged(TabState prevState, TabState newState) {
@@ -124,10 +122,6 @@ public abstract class TabButtonNode extends AbstractGuiNode {
             case MINIMIZED:
                 tab.onTabMinimized();
         }
-    }
-
-    public boolean hasBody() {
-        return true;
     }
 
     public abstract void renderIcon(PoseStack stack, Point mouse, float partialFrame);

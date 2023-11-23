@@ -1,10 +1,12 @@
 package mrtjp.projectred.fabrication.gui;
 
 import mrtjp.projectred.redui.AbstractGuiNode;
+import net.covers1624.quack.collection.FastStream;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static mrtjp.projectred.fabrication.gui.TabButtonNode.TabState.*;
 
@@ -57,23 +59,38 @@ public class TabControllerNode extends AbstractGuiNode {
     }
 
     public void selectInitialTab(int tabIndex) {
-
-        TabEntry tab = tabs.get(tabIndex);
-        if (tab.buttonNode.hasBody()) {
-            for (int i = 0; i < tabs.size(); i++) {
-                tabs.get(i).buttonNode.setTabState(i == tabIndex ?  OPEN : CLOSED);
-            }
-        } else {
-            tab.buttonNode.setTabState(MINIMIZED);
-        }
+        openTab(tabs.get(tabIndex).tab);
     }
 
     public void openTab(IToolbarTab tab) {
+
+        boolean tabsOpen = false;
+
         for (TabEntry entry : tabs) {
             if (entry.tab == tab) {
                 entry.buttonNode.setTabState(OPEN);
+                if (!tab.hasBody()) {
+                    entry.buttonNode.setTabState(MINIMIZED);
+                } else {
+                    tabsOpen = true;
+                }
             } else {
                 entry.buttonNode.setTabState(CLOSED);
+            }
+        }
+
+        if (!tabsOpen) {
+            for (TabEntry entry : tabs) {
+                if (entry.tab != tab) entry.buttonNode.setTabState(ALL_CLOSED);
+            }
+        }
+    }
+
+    public void openTab(Predicate<IToolbarTab> selector) {
+        for (TabEntry entry : tabs) {
+            if (selector.test(entry.tab)) {
+                openTab(entry.tab);
+                return;
             }
         }
     }
@@ -136,6 +153,8 @@ public class TabControllerNode extends AbstractGuiNode {
     }
 
     public interface IToolbarTab {
+
+        boolean hasBody(); // Tabs without bodies will be immediately minimized after open
 
         void onTabClosed();
 

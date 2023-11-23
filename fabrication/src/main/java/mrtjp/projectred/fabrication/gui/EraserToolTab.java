@@ -40,11 +40,11 @@ public class EraserToolTab extends ICEditorToolTab {
             public void buildTooltip(List<Component> tooltip) {
                 tooltip.add(new TranslatableComponent(UL_ERASER_TOOL));
             }
-
-            @Override
-            public boolean hasBody() {
-                return false;
-            }
         };
+    }
+
+    @Override
+    public boolean hasBody() {
+        return false;
     }
 }

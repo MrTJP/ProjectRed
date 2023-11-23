@@ -33,6 +33,11 @@ import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
 
 public class ICWorkbenchTile extends ProjectRedTile implements IPacketReceiverTile, IICWorkbenchEditorNetwork {
 
+    private static final int KEY_CLIENT_OPENED_SCREEN = 0;
+    private static final int KEY_CLIENT_CLOSED_SCREEN = 1;
+    private static final int KEY_EDITOR_DESCRIPTION_UPDATE = 50;
+    private static final int KEY_EDITOR_PACKET = 100;
+
     private final ICWorkbenchEditor editor = new ICWorkbenchEditor(this);
 
     private final Map<Integer, PacketCustom> editorBufferedStreams = new HashMap<>();
@@ -146,12 +151,12 @@ public class ICWorkbenchTile extends ProjectRedTile implements IPacketReceiverTi
         if (getLevel().isClientSide || !(player instanceof ServerPlayer)) { throw new RuntimeException("Server only"); }
         filterAndGetWatchers().add((ServerPlayer) player);
         LOGGER.info("Watcher added. Size: " + playersWatchingScreen.size());
-        sendUpdateToPlayer(0, editor::writeDesc, (ServerPlayer) player);
+        sendUpdateToPlayer(KEY_CLIENT_OPENED_SCREEN, editor::writeDesc, (ServerPlayer) player);
     }
 
     private void sendEditorDescription() {
 
-        sendUpdateToPlayerList(50, editor::writeDesc, playersWatchingScreen);
+        sendUpdateToPlayerList(KEY_EDITOR_DESCRIPTION_UPDATE, editor::writeDesc, playersWatchingScreen);
     }
 
     public void closeGuiFromClient() {
@@ -161,14 +166,14 @@ public class ICWorkbenchTile extends ProjectRedTile implements IPacketReceiverTi
     @Override
     public void receiveUpdateFromServer(int key, MCDataInput input) {
         switch (key) {
-            case 0: // Client opened screen
+            case KEY_CLIENT_OPENED_SCREEN: // Client opened screen
                 editor.readDesc(input);
                 ICWorkbenchScreen.openGuiOnClient(this);
                 break;
-            case 50: // Editor description update
+            case KEY_EDITOR_DESCRIPTION_UPDATE: // Editor description update
                 editor.readDesc(input);
                 break;
-            case 100: // Some packet for the editor
+            case KEY_EDITOR_PACKET: // Some packet for the editor
                 receiveBufferedStream(input);
                 break;
             default:
@@ -179,11 +184,11 @@ public class ICWorkbenchTile extends ProjectRedTile implements IPacketReceiverTi
     @Override
     public void receiveUpdateFromClient(int key, MCDataInput input, ServerPlayer player) {
         switch (key) {
-            case 1: // Client closed screen
+            case KEY_CLIENT_CLOSED_SCREEN: // Client closed screen
                 filterAndGetWatchers().remove(player);
                 LOGGER.info("Watcher removed. Size: " + playersWatchingScreen.size());
                 break;
-            case 100: // Some packet for the editor
+            case KEY_EDITOR_PACKET: // Some packet for the editor
                 receiveBufferedStream(input);
                 break;
             default:
@@ -204,8 +209,8 @@ public class ICWorkbenchTile extends ProjectRedTile implements IPacketReceiverTi
     public MCDataOutput getBufferedStream(int streamKey, int frameKey) {
         MCDataOutput out =  editorBufferedStreams.computeIfAbsent(streamKey, k -> {
             PacketCustom packet = getLevel().isClientSide ?
-                    CoreNetwork.createTileServerPacket(this, (byte) 100) :
-                    CoreNetwork.createTileClientPacket(this, (byte) 100);
+                    CoreNetwork.createTileServerPacket(this, (byte) KEY_EDITOR_PACKET) :
+                    CoreNetwork.createTileClientPacket(this, (byte) KEY_EDITOR_PACKET);
             packet.writeByte(k); // One-time key that identifies the entire stream
             return packet;
         });
