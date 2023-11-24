@@ -325,8 +325,8 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
 
     @Override
     public void onSimulationComplete(int changeMask, ICSimulationContainer container) {
-        for (BaseTileMap.BaseTileEntry entry : tileMap.getBaseTileEntries()) {
-            entry.getTile().onSimRegistersChanged(changeMask, container);
+        for (var entry : tileMap.getBaseTileEntries()) {
+            entry.getValue().onSimRegistersChanged(changeMask, container);
         }
     }
     //endregion

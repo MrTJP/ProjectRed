@@ -16,7 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -172,12 +171,12 @@ public class ICRenderNode extends ViewportRenderNode {
             renderStack.popPose();
 
             // Render tiles
-            for (BaseTileMap.BaseTileEntry entry : editor.getTileMap().getTilesOnLayer(y)) {
+            for (var entry : editor.getTileMap().getTilesOnLayer(y)) {
                 renderStack.pushPose();
-                renderStack.translate(entry.getCoord().x, y, entry.getCoord().z);
+                renderStack.translate(entry.getKey().x, y, entry.getKey().z);
                 ccrs.bind(ICRenderTypes.layersRenderType, getter, renderStack);
 
-                entry.getTile().renderTile(ccrs, RedundantTransformation.INSTANCE, partialFrame);
+                entry.getValue().renderTile(ccrs, RedundantTransformation.INSTANCE, partialFrame);
 
                 renderStack.popPose();
             }

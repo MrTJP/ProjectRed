@@ -6,6 +6,7 @@ import mrtjp.fengine.TileCoord;
 import mrtjp.fengine.tiles.FETile;
 import mrtjp.fengine.tiles.FETileMap;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
+import net.covers1624.quack.collection.FastStream;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 
@@ -24,6 +25,7 @@ public class BaseTileMap implements FETileMap {
     private final ICWorkbenchEditor editor;
 
     private final Set<IIOConnectionTile> ioTiles = new HashSet<>();
+    private final Map<Integer, Map<TileCoord, BaseTile>> layerToTileMap = new HashMap<>();
 
     private TileCoord minBounds = defaultMinBounds;
     private TileCoord maxBounds = defaultMaxBounds;
@@ -64,7 +66,7 @@ public class BaseTileMap implements FETileMap {
         if (!tileMap.containsKey(coord)) {
             tileMap.put(coord, tile);
             tile.bindMap(this, coord);
-            cacheType(tile);
+            cacheType(coord, tile);
             return true;
         }
         return false;
@@ -75,7 +77,7 @@ public class BaseTileMap implements FETileMap {
         BaseTile removed = tileMap.remove(coord);
         if (removed != null) {
             removed.unbindMap();
-            uncacheType(removed);
+            uncacheType(coord, removed);
         }
         return Optional.ofNullable(removed);
     }
@@ -88,17 +90,12 @@ public class BaseTileMap implements FETileMap {
         return tileMap.size();
     }
 
-    public Collection<BaseTileEntry> getBaseTileEntries() {
-        return tileMap.entrySet().stream()
-                .map(e -> new BaseTileEntry(e.getKey(), e.getValue()))
-                .collect(Collectors.toList());
+    public Collection<Map.Entry<TileCoord, BaseTile>> getBaseTileEntries() {
+        return tileMap.entrySet();
     }
 
-    // TODO keep track of tiles by layer
-    public Collection<BaseTileEntry> getTilesOnLayer(int y) {
-        return getBaseTileEntries().stream()
-                .filter(t -> t.getCoord().y == y)
-                .collect(Collectors.toList());
+    public Collection<Map.Entry<TileCoord, BaseTile>> getTilesOnLayer(int y) {
+        return layerToTileMap.computeIfAbsent(y, k -> new HashMap<>()).entrySet();
     }
 
     public Collection<IIOConnectionTile> getIOTiles() {
@@ -115,12 +112,20 @@ public class BaseTileMap implements FETileMap {
         maxBounds = defaultMaxBounds;
     }
 
-    private void cacheType(BaseTile tile) {
+    private void cacheType(TileCoord coord, BaseTile tile) {
+        // Type caching
         if (tile instanceof IIOConnectionTile) ioTiles.add((IIOConnectionTile) tile);
+
+        // Layer caching
+        layerToTileMap.computeIfAbsent(coord.y, k -> new HashMap<>()).put(coord, tile);
     }
 
-    private void uncacheType(BaseTile tile) {
+    private void uncacheType(TileCoord coord, BaseTile tile) {
+        // Type caching
         if (tile instanceof IIOConnectionTile) ioTiles.remove(tile);
+
+        // Layer caching
+        layerToTileMap.get(coord.y).remove(coord);
     }
 
     public InterfaceSpec getInterfaceSpec() {
@@ -198,24 +203,6 @@ public class BaseTileMap implements FETileMap {
         }
     }
 
-    public static class BaseTileEntry {
-        private final TileCoord coord;
-        private final BaseTile tile;
-
-        public BaseTileEntry(TileCoord coord, BaseTile tile) {
-            this.coord = coord;
-            this.tile = tile;
-        }
-
-        public BaseTile getTile() {
-            return tile;
-        }
-
-        public TileCoord getCoord() {
-            return coord;
-        }
-    }
-
     @Override
     public Optional<FETile> getTile(TileCoord coord) {
         return Optional.ofNullable(tileMap.get(coord));
@@ -224,11 +211,11 @@ public class BaseTileMap implements FETileMap {
     @Override
     public Collection<TileMapEntry> getEntries() {
 
-        return tileMap.entrySet().stream().map(e -> new TileMapEntry() {
+        return FastStream.of(tileMap.entrySet()).map(e -> (TileMapEntry) new TileMapEntry() {
             //@formatter:off
             @Override public TileCoord getCoord() { return e.getKey(); }
             @Override public FETile getTile() { return e.getValue(); }
             //@formatter:on
-        }).collect(Collectors.toList());
+        }).toImmutableList();
     }
 }
