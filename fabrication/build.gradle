@@ -1,7 +1,7 @@
 plugins {
     id 'net.minecraftforge.gradle'
+    id 'com.matthewprenger.cursegradle'
     id 'com.github.johnrengelman.shadow'
-//    id 'com.matthewprenger.cursegradle'
 }
 
 String mod_id = 'projectred_fabrication'
@@ -59,23 +59,23 @@ reobf {
     shadowJar { } // Enable shadow jar reobf
 }
 
-//TODO
-//curseforge {
-//    apiKey = System.getenv('CURSE_TOKEN') ?: 'XXX'
-//
-//    // Fabrication
-//    project {
-//        id = '230111'
-//        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
-//        changelogType = 'markdown'
-//        changelog = rootProject.file('CHANGELOG.md')
-//        relations {
-//            requiredDependency 'project-red-core'
-//            requiredDependency 'project-red-integration'
-//            requiredDependency 'project-red-transmission'
-//        }
-//        // Java/ForgeGradle integrations don't work after 1.18.2 port
-//        addGameVersion "${mc_version}"
-//        addGameVersion "Java ${java_lang_version}"
-//    }
-//}
+curseforge {
+    apiKey = System.getenv('CURSE_TOKEN') ?: 'XXX'
+
+    // Fabrication
+    project {
+        id = '230111'
+        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
+        changelogType = 'markdown'
+        changelog = rootProject.file('CHANGELOG.md')
+        relations {
+            requiredDependency 'project-red-core'
+            requiredDependency 'project-red-integration'
+            requiredDependency 'project-red-transmission'
+        }
+
+        // Java/ForgeGradle integrations don't work after 1.18.2 port
+        addGameVersion "${mc_version}"
+        addGameVersion "Java ${java_lang_version}"
+    }
+}
