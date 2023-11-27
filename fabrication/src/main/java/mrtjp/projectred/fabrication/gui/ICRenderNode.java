@@ -69,6 +69,27 @@ public class ICRenderNode extends ViewportRenderNode {
         cameraZoomAnimator.addDeltaWithNewDuration(delta, CAMERA_ANIMATION_TIME_MS);
     }
 
+    /**
+     * Apply a camera delta based on NDC delta
+     * @param delta Amount to pan camera in frame NDC units
+     */
+    public void applyPanningDelta(Vector3 delta) {
+
+        // Calculate scale based on how many tiles are visible in the viewport across its largest dimension
+        double scale;
+        if (getFrame().width() > getFrame().height()) {
+            scale = ndcMouseToWorld(new Vec2(1, 0)).subtract(ndcMouseToWorld(new Vec2(-1, 0))).x;
+        } else {
+            scale = ndcMouseToWorld(new Vec2(0, -1)).subtract(ndcMouseToWorld(new Vec2(0, 1))).z; // Z because top-down view
+        }
+
+        // Scale delta to world units
+        Vector3 scaledDelta = delta.copy().multiply(scale);
+
+        // Move camera
+        applyCameraDelta(scaledDelta);
+    }
+
     public void focusCameraAtTiles(List<TileCoord> positions) {
 
         if (positions.isEmpty()) return;

@@ -202,12 +202,14 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
 
     @Override
     public void update(ICRenderNode renderNode) {
-        // Move camera
-        Vector3 cameraDelta = new Vector3();
-        double deltaPerTick =  0.5D;
-        cameraDelta.z = (upPressed ? -deltaPerTick : 0) + (downPressed ? deltaPerTick : 0);
-        cameraDelta.x = (leftPressed ? -deltaPerTick : 0) + (rightPressed ? deltaPerTick : 0);
-        renderNode.applyCameraDelta(cameraDelta);
+        // Pan camera
+        if (upPressed || downPressed || leftPressed || rightPressed) {
+            Vector3 panDelta = new Vector3();
+            double deltaPerTick = 0.05D;
+            panDelta.z = (upPressed ? -deltaPerTick : 0) + (downPressed ? deltaPerTick : 0);
+            panDelta.x = (leftPressed ? -deltaPerTick : 0) + (rightPressed ? deltaPerTick : 0);
+            renderNode.applyPanningDelta(panDelta);
+        }
 
         // Shift Layers
         if (layerUpPressed) {
