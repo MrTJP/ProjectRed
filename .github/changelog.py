@@ -30,11 +30,11 @@ def getTags():
     return (prevTag, currentTag)
 
 def getCommits(prevTag, currentTag):
-    (err, commits) = shellCmd("git log %s..%s --oneline --no-decorate" % (prevTag, currentTag))
+    (err, commits) = shellCmd("git log %s..%s --oneline --no-decorate --first-parent" % (prevTag, currentTag))
     return commits
 
 def createCommits(prevTag, currentTag):
-    (err, commits) = shellCmd("git log %s..%s --oneline --no-decorate" % (prevTag, currentTag))
+    (err, commits) = shellCmd("git log %s..%s --oneline --no-decorate --first-parent" % (prevTag, currentTag))
 
     pattern = re.compile('^(?P<hash>[0-9a-fA-f]+)( )+(?P<type>[a-z]+!?)(\((?P<scope>[a-z]+)\))?(?P<breaking>!)?:( )+(?P<message>.*)$')
 
