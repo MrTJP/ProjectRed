@@ -99,18 +99,20 @@ public class MovementRegistry {
 
             LevelChunk chunk = w.getChunkAt(pos);
             BlockState state = w.getBlockState(pos);
+
             BlockPos pos2 = pos.relative(dir);
+            LevelChunk chunk2 = w.getChunkAt(pos2);
 
             // Remove old block and tile
             silentSetBlockState(chunk, pos, Blocks.AIR.defaultBlockState());
             chunk.removeBlockEntity(pos);
 
             // Set blockstate in new position without causing blockentity creation
-            silentSetBlockState(chunk, pos2, state);
+            silentSetBlockState(chunk2, pos2, state);
 
             // Move the tile and add it back
             tmp.worldPosition = pos2;
-            chunk.addAndRegisterBlockEntity(tmp);
+            chunk2.addAndRegisterBlockEntity(tmp);
         }
 
         @Override
@@ -138,7 +140,9 @@ public class MovementRegistry {
         @Override
         public void move(Level w, BlockPos pos, Direction dir) {
             LevelChunk chunk = w.getChunkAt(pos);
+
             BlockPos pos2 = pos.relative(dir);
+            LevelChunk chunk2 = w.getChunkAt(pos2);
 
             BlockState state = w.getBlockState(pos); //ok, doesnt alert anything
             CompoundTag tag = chunk.getBlockEntityNbtForSaving(pos); // Save existing tile to nbt
@@ -148,7 +152,7 @@ public class MovementRegistry {
             chunk.removeBlockEntity(pos);
 
             // Set blockstate in new position without causing blockentity creation
-            silentSetBlockState(chunk, pos2, state);
+            silentSetBlockState(chunk2, pos2, state);
 
             if (tag != null) {
                 // Alter the tag into new position
@@ -156,7 +160,7 @@ public class MovementRegistry {
                 tag.putInt("y", pos2.getY());
                 tag.putInt("z", pos2.getZ());
                 // Add the tile back as pending
-                chunk.setBlockEntityNbt(tag);
+                chunk2.setBlockEntityNbt(tag);
             }
         }
 
