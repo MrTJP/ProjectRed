@@ -12,13 +12,13 @@ pluginManagement {
         id 'com.matthewprenger.cursegradle' version '1.4.0' apply false
         id 'net.minecraftforge.gradle'      version '5.1.+' apply false
         id 'org.spongepowered.mixin'        version '0.7.+' apply false
+        id 'com.github.johnrengelman.shadow' version '7.1.+' apply false
     }
 }
 
 rootProject.name = 'ProjectRed'
 
-// Mod modules
-include 'core', 'expansion', 'exploration', 'illumination', 'integration', 'transmission'
+include 'core', 'expansion', 'exploration', 'fabrication', 'illumination', 'integration', 'transmission'
 
 // Empty module for client/server run configurations
 include 'runtime'

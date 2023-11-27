@@ -1,0 +1,11 @@
+{
+  "parent": "projectred_fabrication:block/domed_machine",
+  "textures": {
+    "down": "projectred_fabrication:block/plotting_table_bottom",
+    "up": "projectred_fabrication:block/plotting_table_top",
+    "north": "projectred_fabrication:block/plotting_table_front_0",
+    "south": "projectred_fabrication:block/plotting_table_side",
+    "west": "projectred_fabrication:block/plotting_table_side",
+    "east": "projectred_fabrication:block/plotting_table_side"
+  }
+}

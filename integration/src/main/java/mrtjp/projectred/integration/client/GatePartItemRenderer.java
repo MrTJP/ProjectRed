@@ -48,6 +48,6 @@ public class GatePartItemRenderer implements IItemRenderer {
         ccrs.brightness = packedLight;
         ccrs.overlay = packedOverlay;
         ccrs.bind(RenderType.cutout(), getter, mStack);
-        GateModelRenderer.instance().renderInventory(ccrs, stack, RedundantTransformation.INSTANCE, gateItem.getGateType());
+        GateModelRenderer.instance().renderInventory(ccrs, stack, gateItem.getGateType().ordinal(), 0, RedundantTransformation.INSTANCE, mStack, getter, packedLight, packedOverlay);
     }
 }

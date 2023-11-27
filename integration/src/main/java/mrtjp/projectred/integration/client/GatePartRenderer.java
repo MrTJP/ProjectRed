@@ -2,6 +2,7 @@ package mrtjp.projectred.integration.client;
 
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.buffer.TransformingVertexConsumer;
+import codechicken.lib.vec.RedundantTransformation;
 import codechicken.multipart.api.part.render.PartRenderer;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -23,7 +24,7 @@ public class GatePartRenderer implements PartRenderer<GatePart> {
     public boolean renderStatic(GatePart part, @Nullable RenderType layer, CCRenderState ccrs) {
         if (layer == null || (layer == RenderType.cutout() && Configurator.staticGates)) {
             ccrs.setBrightness(part.level(), part.pos());
-            GateModelRenderer.instance().renderStatic(ccrs, part);
+            GateModelRenderer.instance().renderStatic(ccrs, part, RedundantTransformation.INSTANCE);
             return true;
         }
         return false;
@@ -36,7 +37,6 @@ public class GatePartRenderer implements PartRenderer<GatePart> {
         ccrs.brightness = packedLight;
         ccrs.overlay = packedOverlay;
         ccrs.bind(new TransformingVertexConsumer(buffers.getBuffer(RenderType.cutout()), mStack), DefaultVertexFormat.BLOCK);
-        GateModelRenderer.instance().renderDynamic(ccrs, part, partialTicks);
-        GateModelRenderer.instance().renderCustomDynamic(ccrs, part, mStack, buffers, packedLight, packedOverlay, partialTicks);
+        GateModelRenderer.instance().renderDynamic(ccrs, part, RedundantTransformation.INSTANCE, mStack, buffers, packedLight, packedOverlay, partialTicks);
     }
 }

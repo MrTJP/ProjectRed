@@ -239,11 +239,11 @@ public abstract class RedstoneGatePart extends GatePart implements FaceRedstoneP
         return 0;
     }
 
-    int getOutput(int r) {
+    protected int getOutput(int r) {
         return (getState() & 0x10 << r) != 0 ? 15 : 0;
     }
 
-    int getInput(int mask) {
+    protected int getInput(int mask) {
         int input = 0;
         for (int r = 0; r < 4; r++) {
             if ((mask & 1 << r) != 0 && getRedstoneInput(r) > 0) {

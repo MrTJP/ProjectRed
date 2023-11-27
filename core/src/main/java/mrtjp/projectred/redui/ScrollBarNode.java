@@ -12,7 +12,8 @@ public abstract class ScrollBarNode extends AbstractGuiNode {
 
     private final ScrollAxis axis;
 
-    private Point lastDragPosition = Point.ZERO;
+    private Point initialClickPosition = Point.ZERO;
+    private Rect initialSliderFrame = new Rect(0, 0, 0, 0);
     private boolean isDraggingSlider = false;
     private Rect sliderFrame = new Rect(0, 0, 0, 0);
 
@@ -35,18 +36,12 @@ public abstract class ScrollBarNode extends AbstractGuiNode {
     }
 
     @Override
-    public void drawFront(PoseStack stack, Point mouse, float partialFrame) {
-        if (!isFirstHit(mouse)) return;
-
-        renderTooltip(stack, mouse, Collections.singletonList(new TextComponent("Scroll (" + scrollPercentage + ")")));
-    }
-
-    @Override
     public boolean mouseClicked(Point p, int glfwMouseButton, boolean consumed) {
         if (isFirstHit(p)) {
             if (sliderFrame.contains(p)) {
                 isDraggingSlider = true;
-                lastDragPosition = p;
+                initialClickPosition = p;
+                initialSliderFrame = sliderFrame;
                 return true;
             }
 
@@ -71,10 +66,8 @@ public abstract class ScrollBarNode extends AbstractGuiNode {
         if (!isDraggingSlider)
             return false;
 
-        Point delta = p.subtract(lastDragPosition).multiply(axis.vec);
-        lastDragPosition = p;
-
-        Rect targetSliderFrame = new Rect(sliderFrame.origin.add(delta), sliderFrame.size);
+        Point delta = p.subtract(initialClickPosition).multiply(axis.vec);
+        Rect targetSliderFrame = new Rect(initialSliderFrame.origin.add(delta), sliderFrame.size);
         sliderFrame = getFrame().trap(targetSliderFrame);
         recalcScrollPercentage();
 

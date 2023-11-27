@@ -3,10 +3,11 @@ package mrtjp.projectred.integration.client;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.buffer.TransformingVertexConsumer;
 import codechicken.lib.texture.AtlasRegistrar;
-import codechicken.lib.vec.RedundantTransformation;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import mrtjp.projectred.integration.GateType;
@@ -14,9 +15,13 @@ import mrtjp.projectred.integration.part.GatePart;
 import mrtjp.projectred.integration.part.IGateRenderData;
 import mrtjp.projectred.lib.VecLib;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -66,63 +71,54 @@ public class GateModelRenderer {
             new RenderTransparentLatchCell(),
             new RenderSegmentDisplay(),
             new RenderDecodingRandomizer(),
+            new RenderFabricatedGate(),
+    };
+
+    private final GateRenderer[] nonPartRenderers = new GateRenderer[] {
+            new RenderIOGate(),
     };
 
     //region Static rendering
-    public void renderStatic(CCRenderState ccrs, GatePart gate) {
-        renderStatic(ccrs, gate.getGateType(), gate, gate.getOrientation(), RedundantTransformation.INSTANCE);
-    }
-
-    public void renderStatic(CCRenderState ccrs, GateType type, IGateRenderData key, int orientation, Transformation t) {
-        renderStatic(ccrs, type.ordinal(), key, orientation, t);
-    }
-
-    public void renderStatic(CCRenderState ccrs, int renderIndex, IGateRenderData key, int orientation, Transformation t) {
-        GateRenderer r = getRenderer(renderIndex);
+    public void renderStatic(CCRenderState ccrs, IGateRenderData key, Transformation t) {
+        GateRenderer r = getRenderer(key.getRenderIndex());
         r.prepare(key);
-        r.renderStatic(ccrs, orientation, t);
+        r.renderStatic(ccrs, key.getOrientation(), t);
     }
     //endregion
 
     //region Dynamic rendering
-    public void renderDynamic(CCRenderState ccrs, GatePart gate, float partialFrame) {
-        renderDynamic(ccrs, gate.getGateType(), gate, gate.getOrientation(), RedundantTransformation.INSTANCE, partialFrame);
+    public void renderDynamic(CCRenderState ccrs, IGateRenderData key, Transformation t, float partialFrame) {
+        renderDynamic(ccrs, key, t, null, null, 0, 0, partialFrame);
     }
 
-    public void renderDynamic(CCRenderState ccrs, GateType type, IGateRenderData key, int orientation, Transformation t, float partialTicks) {
-        renderDynamic(ccrs, type.ordinal(), key, orientation, t, partialTicks);
-    }
-
-    public void renderDynamic(CCRenderState ccrs, int renderIndex, IGateRenderData key, int orientation, Transformation t, float partialTicks) {
-        GateRenderer r = getRenderer(renderIndex);
+    public void renderDynamic(CCRenderState ccrs, IGateRenderData key, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
+        GateRenderer r = getRenderer(key.getRenderIndex());
         if (r.hasSpecials()) {
+            Transformation t2 = VecLib.orientT(key.getOrientation()).with(t);
             r.prepareDynamic(key, partialTicks);
-            r.renderDynamic(ccrs, VecLib.orientT(orientation).with(t));
+            r.renderDynamic(ccrs, t2);
+            if (mStack != null) {
+                r.renderCustomDynamic(ccrs, t2, mStack, buffers, packedLight, packedOverlay, partialTicks);
+            }
         }
     }
     //endregion
 
-    //region Custom dynamic rendering
-    public void renderCustomDynamic(CCRenderState ccrs, GatePart gate, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
-        GateRenderer r = getRenderer(gate.getGateType().ordinal());
-        r.renderCustomDynamic(ccrs, gate, VecLib.orientT(gate.getOrientation()), mStack, buffers, packedLight, packedOverlay, partialTicks);
-    }
-    //endregion
-
     //region Inventory rendering
-    public void renderInventory(CCRenderState ccrs, ItemStack stack, Transformation t, GateType type) {
-        renderInventory(ccrs, stack, type, 0, t);
+    public void renderInventory(CCRenderState ccrs, @Nullable ItemStack stack, int renderIndex, int orient, Transformation t) {
+        renderInventory(ccrs, stack, renderIndex, orient, t, null, null, 0, 0);
     }
 
-    public void renderInventory(CCRenderState ccrs, ItemStack stack, GateType type, int orient, Transformation t) {
-        renderInventory(ccrs, stack, type.ordinal(), orient, t);
-    }
-
-    public void renderInventory(CCRenderState ccrs, ItemStack stack, int renderIndex, int orient, Transformation t) {
+    public void renderInventory(CCRenderState ccrs, @Nullable ItemStack stack, int renderIndex, int orient, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay) {
         GateRenderer r = getRenderer(renderIndex);
-        r.prepareInventory();
+        r.prepareInventory(stack);
         r.renderStatic(ccrs, orient, t);
-        if (r.hasSpecials()) r.renderDynamic(ccrs, t);
+        if (r.hasSpecials()) {
+            r.renderDynamic(ccrs, t);
+            if (mStack != null) {
+                r.renderCustomDynamic(ccrs, t, mStack, buffers, packedLight, packedOverlay, 0);
+            }
+        }
     }
     //endregion
 
@@ -132,10 +128,17 @@ public class GateModelRenderer {
         r.spawnParticles(part, random);
     }
 
+    public static int getRenderIndex(GateType type) {
+        return type.ordinal();
+    }
+
+    public static int getNonPartRenderIndex(int i) {
+        return 0x100 | i;
+    }
+
     private GateRenderer getRenderer(int renderIndex) {
         if ((renderIndex & 0x100) != 0) {
-            //TODO return non-gate renders
-            return null;
+            return nonPartRenderers[renderIndex & 0xFF];
         } else {
             return renderers[renderIndex];
         }
@@ -157,7 +160,7 @@ public class GateModelRenderer {
 
         protected abstract List<ComponentModel> getModels();
 
-        protected abstract void prepareInventory();
+        protected abstract void prepareInventory(@Nullable ItemStack stack);
 
         protected abstract void prepare(IGateRenderData gate);
 
@@ -205,7 +208,7 @@ public class GateModelRenderer {
         public void renderDynamic(CCRenderState ccrs, Transformation t) {
         }
 
-        public void renderCustomDynamic(CCRenderState ccrs, GatePart gate, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
+        public void renderCustomDynamic(CCRenderState ccrs, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
         }
     }
 
@@ -228,7 +231,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = true;
             wires[1].on = false;
             wires[2].on = false;
@@ -273,7 +276,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = true;
             wires[1].on = false;
             wires[2].on = false;
@@ -316,7 +319,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = true;
             wires[1].on = true;
             wires[2].on = false;
@@ -361,7 +364,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = true;
             wires[1].on = false;
             wires[2].on = false;
@@ -412,7 +415,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = true;
             wires[1].on = false;
             wires[2].on = false;
@@ -461,7 +464,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = false;
             wires[3].on = false;
             wires[2].on = false;
@@ -504,7 +507,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = false;
             wires[3].on = false;
             wires[2].on = false;
@@ -549,7 +552,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = true;
             wires[1].on = false;
             wires[2].on = false;
@@ -594,7 +597,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = false;
             wires[1].on = true;
             wires[2].on = true;
@@ -643,7 +646,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = true;
             wires[1].on = false;
             wires[2].on = false;
@@ -696,7 +699,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = true;
             wires[1].on = false;
             endTorch.on = false;
@@ -734,7 +737,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = false;
             wires[1].on = false;
             wires[2].on = false;
@@ -808,7 +811,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             reflect = false;
             shape = 0;
             wires1[0].on = false;
@@ -861,7 +864,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = false;
             wires[1].on = false;
             torches[0].on = true;
@@ -900,7 +903,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             reflect = false;
             wires[0].on = true;
             wires[1].on = false;
@@ -950,7 +953,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = false;
             solar.state = 0;
         }
@@ -981,7 +984,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = false;
         }
 
@@ -1012,7 +1015,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = false;
             wires[1].on = false;
             wires[2].on = false;
@@ -1065,7 +1068,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             torches[0].on = true;
             torches[1].on = true;
             torches[2].on = false;
@@ -1124,7 +1127,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             reflect = false;
             wires[0].on = false;
             wires[1].on = false;
@@ -1183,7 +1186,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             reflect = false;
             wires[0].on = false;
             wires[1].on = false;
@@ -1252,7 +1255,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = true;
             wires[1].on = true;
             wires[2].on = false;
@@ -1301,7 +1304,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             reflect = false;
             wires[0].on = false;
             wires[1].on = false;
@@ -1343,7 +1346,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             bottomWire.signal = 0;
             topWire.signal = 0;
             topWire.conn = 0;
@@ -1378,8 +1381,8 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
-            super.prepareInventory();
+        protected void prepareInventory(@Nullable ItemStack stack) {
+            super.prepareInventory(stack);
             topWire.signal = (byte) 255;
             wires[0].on = false;
             torch.on = true;
@@ -1406,8 +1409,8 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
-            super.prepareInventory();
+        protected void prepareInventory(@Nullable ItemStack stack) {
+            super.prepareInventory(stack);
             wires[0].on = false;
             wires[1].on = true;
             torches[0].on = true;
@@ -1445,7 +1448,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             topWire.signal = 0;
             topWire.conn = 0;
             torches[0].on = true;
@@ -1489,7 +1492,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             topWire.signal = 0;
             topWire.conn = 0;
             wires[0].on = true;
@@ -1505,14 +1508,14 @@ public class GateModelRenderer {
 
         @Override
         protected void prepare(IGateRenderData gate) {
-            boolean on = (gate.state()&0x10) != 0;
+            boolean on = (gate.state() & 0x10) != 0;
             topWire.signal = gate.topSignal();
             topWire.conn = gate.topSignalConnMask() & ~0x2; // Always render left side
             wires[0].on = !on;
             wires[1].on = gate.topSignal() != 0;
             wires[2].on = gate.topSignal() == 0;
             wires[3].on = on;
-            wires[4].on = (gate.state()&4) != 0;
+            wires[4].on = (gate.state() & 4) != 0;
             torches[0].on = wires[2].on;
             torches[1].on = !wires[2].on && !wires[4].on;
             torches[2].on = !wires[1].on && !wires[3].on;
@@ -1540,7 +1543,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             reflect = false;
             wires[0].on = true;
             wires[1].on = false;
@@ -1614,7 +1617,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             shape = 0;
             panel.signal = 0;
             panel.disableMask = 0;
@@ -1658,7 +1661,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = false;
             wires[1].on = false;
             wires[2].on = false;
@@ -1683,6 +1686,8 @@ public class GateModelRenderer {
         private final WireModel[] wires = generateWireModels("businput", 1);
         private final InputPanelButtonsModel buttons = new InputPanelButtonsModel();
 
+        private BlockPos.MutableBlockPos lightPos = new BlockPos.MutableBlockPos();
+
         public RenderBusInputPanel() {
             models.add(BaseComponentModel.INSTANCE);
             models.add(BusInputPanelCableModel.INSTANCE);
@@ -1696,9 +1701,10 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = false;
             buttons.pressMask = 0;
+            lightPos.set(0, 0, 0);
         }
 
         @Override
@@ -1708,9 +1714,19 @@ public class GateModelRenderer {
         }
 
         @Override
-        public void renderCustomDynamic(CCRenderState ccrs, GatePart gate, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
+        public boolean hasSpecials() {
+            return true;
+        }
+
+        @Override
+        protected void prepareDynamic(IGateRenderData gate, float partialFrame) {
             buttons.pressMask = gate.bInput0();
-            buttons.renderLights(ccrs, gate, mStack, buffers, t);
+            lightPos.set(gate.worldPos());
+        }
+
+        @Override
+        public void renderCustomDynamic(CCRenderState ccrs, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
+            buttons.renderLights(ccrs, lightPos, mStack, buffers, t);
         }
     }
 
@@ -1746,7 +1762,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             shape = 0;
             sevenSeg1.signal = 64;
             sevenSeg0.signal = 64;
@@ -1793,7 +1809,7 @@ public class GateModelRenderer {
         }
 
         @Override
-        protected void prepareInventory() {
+        protected void prepareInventory(@Nullable ItemStack stack) {
             wires[0].on = false;
             wires[1].on = false;
             wires[2].on = false;
@@ -1829,6 +1845,157 @@ public class GateModelRenderer {
             chips[0].on = (state >> 4) == 2;
             chips[1].on = (state >> 4) == 1 || (state >> 4) == 2;
             chips[2].on = true;
+        }
+    }
+
+    public static class RenderFabricatedGate extends GateRenderer {
+
+        private final List<ComponentModel> models = new LinkedList<>();
+
+        private final SidedWireModel simpleWires = new SidedWireModel(generateWireModels("ic1", 4));
+        private final SidedWireModel analogWires = new SidedWireModel(generateWireModels("ic2", 4));
+        private final SidedICBundledCableModel bundledWires = new SidedICBundledCableModel();
+        private final FabricatedICModel icHousing = FabricatedICModel.INSTANCE;
+
+        //**** Copied from EditorDataUtils.class ****/
+        public static final String KEY_FORMAT = "format"; // int
+        public static final String KEY_ACTIVE = "active"; // boolean
+        public static final String KEY_IC_NAME = "ic_name"; // String
+        public static final String KEY_TILE_MAP = "tile_map"; // CompoundTag
+        public static final String KEY_IS_BUILT = "is_built"; // boolean
+        public static final String KEY_IO_SPEC = "io_spec";
+        public static final String KEY_COMP_STATE = "state"; // byte
+        public static final String KEY_FLAT_MAP = "flat_map"; // String
+        public static final String KEY_SIMULATION = "sim_cont"; // CompoundTag
+        public static final String KEY_COMPILER_LOG = "compiler_log"; // CompoundTag
+
+        // Minimum subset of data required to fabricate gate (i.e. create photomask)
+        public static boolean hasFabricationTarget(CompoundTag tag) {
+            return tag != null &&
+                    tag.contains(KEY_IS_BUILT) &&
+                    tag.contains(KEY_FLAT_MAP);
+        }
+
+        private String name = "untitled";
+
+        public RenderFabricatedGate() {
+            models.add(BaseComponentModel.INSTANCE);
+            models.add(simpleWires);
+            models.add(analogWires);
+            models.add(bundledWires);
+            models.add(icHousing);
+        }
+
+        @Override
+        protected List<ComponentModel> getModels() {
+            return models;
+        }
+
+        @Override
+        protected void prepareInventory(@Nullable ItemStack stack) {
+            if (stack == null  || !hasFabricationTarget(stack.getTag())) {
+                name = "ERROR!";
+                simpleWires.sidemask = 0;
+                analogWires.sidemask = 0;
+                bundledWires.sidemask = 0;
+                return;
+            }
+
+            //TODO use EditorDataUtils helpers once this class is moved to Fabrication
+
+            CompoundTag tag = stack.getTag();
+            name = tag.getString("ic_name");
+
+            CompoundTag ifspecTag = tag.getCompound("io_spec");
+            byte rMask = ifspecTag.getByte("rmask");
+            byte aMask = 0; //TODO analog stuff
+            byte bMask = ifspecTag.getByte("bmask");
+
+            simpleWires.sidemask = rMask & 0xF | (rMask >> 4) & 0xF;
+            analogWires.sidemask = aMask;
+            bundledWires.sidemask = bMask & 0xF | (bMask >> 4) & 0xF;
+        }
+
+        @Override
+        protected void prepare(IGateRenderData gate) {
+
+            simpleWires.sidemask = gate.state2() & 0xF;
+            analogWires.sidemask = (gate.state2() >> 4) & 0xF;
+            bundledWires.sidemask = (gate.state2() >> 8) & 0xF;
+
+            simpleWires.wires[0].on = (gate.state() & 0x11) != 0;
+            simpleWires.wires[1].on = (gate.state() & 0x22) != 0;
+            simpleWires.wires[2].on = (gate.state() & 0x44) != 0;
+            simpleWires.wires[3].on = (gate.state() & 0x88) != 0;
+
+            analogWires.wires[0].on = simpleWires.wires[0].on;
+            analogWires.wires[1].on = simpleWires.wires[1].on;
+            analogWires.wires[2].on = simpleWires.wires[2].on;
+            analogWires.wires[3].on = simpleWires.wires[3].on;
+        }
+
+        @Override
+        public boolean hasSpecials() {
+            return true;
+        }
+
+        @Override
+        protected void prepareDynamic(IGateRenderData gate, float partialFrame) {
+            name = gate.getGateName();
+        }
+
+        @Override
+        public void renderDynamic(CCRenderState ccrs, Transformation t) {
+        }
+
+        @Override
+        public void renderCustomDynamic(CCRenderState ccrs, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
+
+            // Render name
+            icHousing.renderName(name, mStack, t);
+
+            // Render glass
+            ccrs.reset();
+            ccrs.brightness = packedLight;
+            ccrs.overlay = packedOverlay;
+            ccrs.bind(new TransformingVertexConsumer(buffers.getBuffer(RenderType.translucentMovingBlock()), mStack), DefaultVertexFormat.BLOCK);
+            icHousing.renderGlass(t, ccrs);
+        }
+    }
+
+    public static class RenderIOGate extends GateRenderer {
+
+        private final List<ComponentModel> models = new LinkedList<>();
+
+        private final WireModel[] wires = generateWireModels("fabio", 1);
+        private final IOCrimpWireModel crimpWire = new IOCrimpWireModel();
+        private final IOCrimpColourBoxModel colourBox = new IOCrimpColourBoxModel(3, 10.5);
+
+        public RenderIOGate() {
+            models.add(BaseComponentModel.INSTANCE);
+            models.addAll(Arrays.asList(wires));
+            models.add(IOCrimpConnectorModel.INSTANCE);
+            models.add(crimpWire);
+            models.add(colourBox);
+        }
+
+        @Override
+        protected List<ComponentModel> getModels() {
+            return models;
+        }
+
+        @Override
+        protected void prepareInventory(@Nullable ItemStack stack) {
+            crimpWire.signal = 0;
+            colourBox.colour = 0;
+        }
+
+        @Override
+        protected void prepare(IGateRenderData gate) {
+            wires[0].on = (gate.state() & 0x44) != 0;
+            crimpWire.signal = (byte) (wires[0].on ? 255 : 0);
+            colourBox.colour = gate.state2() & 0xF;
+            colourBox.isInput = gate.shape() == 0;
         }
     }
 }

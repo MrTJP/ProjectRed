@@ -606,7 +606,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         }
 
         @Override
-        int getOutput(int r) {
+        protected int getOutput(int r) {
             return shape() != 0 && r == 2 ? rsOut : (state() & 0x10 << r) != 0 ? 0xF : 0;
         }
 
@@ -781,6 +781,11 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         public short bInput0() {
             return pressMask;
         }
+
+        @Override
+        public BlockPos worldPos() {
+            return pos();
+        }
         //endregion
 
         //region Gate logic
@@ -805,7 +810,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         }
 
         @Override
-        int getOutput(int r) {
+        protected int getOutput(int r) {
             //TODO same as super. Dont  override?
             return (state() & 0x10 << r) != 0 ? 15 : 0;
         }
@@ -953,7 +958,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         }
 
         @Override
-        int getOutput(int r) {
+        protected int getOutput(int r) {
             return 0; // Super derives output from state, but we store colour in that
         }
 

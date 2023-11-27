@@ -1054,7 +1054,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         }
 
         @Override
-        int getOutput(int r) {
+        protected int getOutput(int r) {
             return r == 0 ? state2() & 0xF : 0;
         }
         //endregion

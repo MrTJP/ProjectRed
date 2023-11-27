@@ -20,8 +20,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.core.BundledSignalsLib;
 import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.integration.part.GatePart;
+import mrtjp.projectred.integration.part.IGateRenderData;
 import mrtjp.projectred.lib.VecLib;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.*;
@@ -56,9 +63,9 @@ public class GateComponentModels {
     public static Map<String, CCModel> sixteenSeg = loadModels("array/16seg");
     public static CCModel segbus = loadModel("array/segbus");
 
-    public static CCModel icChip = loadModel("icchip").apply(new Translation(8 / 16D, 2 / 16D, 8 / 16D));
-    public static CCModel icGlass = loadModel("icglass").apply(new Translation(8 / 16D, 0, 8 / 16D));
-    public static CCModel icHousing = loadModel("ichousing").apply(new Translation(8 / 16D, 0, 8 / 16D));
+    public static Map<String, CCModel> fabIC = loadModels("fab_ic", (k, v) -> v.apply(new Translation(0.5, 0, 0.5)));
+    public static Map<String, CCModel> ioCrimp = loadModels("io_crimp");
+    public static Map<String, CCModel> ioColourBox = loadModels("io_colour_box");
 
     public static IconTransformation baseIcon;
     public static IconTransformation wireBorderIcon;
@@ -93,6 +100,8 @@ public class GateComponentModels {
     public static IconTransformation icChipIcon;
     public static IconTransformation icChipIconOff;
     public static IconTransformation icHousingIcon;
+    public static IconTransformation ioCrimpConnectorIcon;
+    public static IconTransformation ioColourBoxIcon;
 
     public static void registerIcons(AtlasRegistrar registrar) {
         //@formatter:off
@@ -133,6 +142,8 @@ public class GateComponentModels {
         registrar.registerSprite(new ResourceLocation(MOD_ID, "block/ic_active"),               i -> icChipIcon = new IconTransformation(i));
         registrar.registerSprite(new ResourceLocation(MOD_ID, "block/ic_inert"),                i -> icChipIconOff = new IconTransformation(i));
         registrar.registerSprite(new ResourceLocation(MOD_ID, "block/ic_housing"),              i -> icHousingIcon = new IconTransformation(i));
+        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/io_crimp"),                i -> ioCrimpConnectorIcon = new IconTransformation(i));
+        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/io_colour_box"),           i -> ioColourBoxIcon = new IconTransformation(i));
         //@formatter:on
     }
 
@@ -1066,8 +1077,8 @@ public class GateComponentModels {
             }
         }
 
-        public void renderLights(CCRenderState ccrs, GatePart gate, PoseStack mStack, MultiBufferSource buffers, Transformation t) {
-            Transformation t2 = t.with(new Translation(gate.pos()));
+        public void renderLights(CCRenderState ccrs, BlockPos lightPos, PoseStack mStack, MultiBufferSource buffers, Transformation t) {
+            Transformation t2 = t.with(new Translation(lightPos));
             for (int i = 0; i < 16; i++) {
                 if ((pressMask & 1 << i) != 0) {
                     HaloRenderer.addLight(t2, i, LIGHT_BOXES[i]);
@@ -1428,6 +1439,165 @@ public class GateComponentModels {
         }
     }
 
+    public static class SidedICBundledCableModel extends BundledCableModel {
+
+        public int sidemask = 0;
+
+        public SidedICBundledCableModel() {
+            super(icBundled, new Vector3(8, 0, 8), 7 / 32D, 12 / 32D);
+        }
+
+        @Override
+        protected UVTransformation getUVT() {
+            return busConvIcon;
+        }
+
+        @Override
+        public void renderModel(Transformation t, int orient, CCRenderState ccrs) {
+            for (int r = 0; r < 4; r++) {
+                if ((sidemask & 1 << r) != 0) {
+                    super.renderModel(t, orient & 0xFC | ((orient & 3) + r) % 4, ccrs);
+                }
+            }
+        }
+    }
+
+    public static class SidedWireModel extends ComponentModel {
+
+        public int sidemask = 0;
+
+        public final WireModel[] wires;
+
+        public SidedWireModel(WireModel[] wires) {
+            this.wires = wires;
+        }
+
+        @Override
+        public void renderModel(Transformation t, int orient, CCRenderState ccrs) {
+            for (int r = 0; r < 4; r++) {
+                if ((sidemask & 1 << r) != 0) {
+                    wires[r].renderModel(t, orient, ccrs);
+                }
+            }
+        }
+    }
+
+    public static class FabricatedICModel extends ComponentModel {
+
+        public static final FabricatedICModel INSTANCE = new FabricatedICModel();
+
+        private static final Style UNIFORM = Style.EMPTY.withFont(new ResourceLocation("minecraft", "uniform"));
+        private static final CCModel[] platformModel = bakeOrients(fabIC.get("platform"));
+        private static final CCModel[] icChipModel = bakeOrients(fabIC.get("ic"));
+
+        @Override
+        public void renderModel(Transformation t, int orient, CCRenderState ccrs) {
+            platformModel[orient].render(ccrs, t, icHousingIcon);
+            icChipModel[orient].render(ccrs, t, icChipIcon);
+        }
+
+        public void renderName(String name, PoseStack mStack, Transformation t1) {
+
+            Component nameComponent = new TextComponent(name).withStyle(UNIFORM);
+            Font fr = Minecraft.getInstance().font;
+
+            // Calculate font scale
+            int tw = fr.width(nameComponent);
+            int th = fr.lineHeight;
+            double wScale = 8/16D * (1.0/tw); // Cap width to 8/16 block
+            double hScale = 2/16D * (1.0/th); // Cap height to 2/16 block
+            double scale = Math.min(wScale, hScale); // Use the limiting scale
+
+            // Create the transform
+            Transformation t = new Rotation(90 * MathHelper.torad, 1, 0, 0)
+                    .with(new Scale(scale, 1, scale))
+                    .with(new Translation(8/16D, 2.2501/16D, 11.5/16D))
+                    .with(new Translation(-(tw / 2.0) * scale, 0, -(th / 2.0) * scale))
+                    .with(t1);
+            Matrix4 m = new Matrix4();
+            t.apply(m);
+
+            // Draw text
+            mStack.pushPose();
+            mStack.mulPoseMatrix(m.toMatrix4f());
+            fr.draw(mStack, nameComponent, 0, 0, 0xFFFFFFFF);
+            mStack.popPose();
+        }
+
+        public void renderGlass(Transformation t, CCRenderState ccrs) {
+            fabIC.get("glass").render(ccrs, t, icHousingIcon);
+        }
+    }
+
+    public static class IOCrimpConnectorModel extends StaticComponentModel {
+
+        public static final IOCrimpConnectorModel INSTANCE = new IOCrimpConnectorModel();
+
+        private IOCrimpConnectorModel() {
+            super(ioCrimp.get("crimp")
+                    .copy()
+                    .apply(new Translation(0.5, 2/16D, 0.5)));
+        }
+
+        @Override
+        protected UVTransformation getUVT() {
+            return ioCrimpConnectorIcon;
+        }
+    }
+
+    public static class IOCrimpWireModel extends CellWireModel {
+
+        private static final CCModel[] models = bakeOrients(ioCrimp.get("redalloy").copy().apply(new Translation(0.5, 2/16D, 0.5)));
+
+        private IconTransformation getUVT() {
+            return ioCrimpConnectorIcon;
+        }
+
+        @Override
+        public void renderModel(Transformation t, int orient, CCRenderState ccrs) {
+            models[orient].render(ccrs, t, getUVT(), colourMult());
+        }
+    }
+
+    public static class IOCrimpColourBoxModel extends ComponentModel {
+
+        public int colour = EnumColour.WHITE.ordinal();
+        public boolean isInput = true;
+
+        private final CCModel[] boxModels;
+        private final CCModel[] inputArrowModels;
+        private final CCModel[] outputArrowModels;
+
+        public IOCrimpColourBoxModel(double x, double z) {
+
+            CCModel m = ioColourBox.get("box").copy().apply(new Translation(x/16D, 2/16D, z/16D));
+            boxModels = bakeOrients(m);
+
+            m = ioColourBox.get("arrow").copy().apply(new Translation(x/16D, 2/16D, z/16D));
+            inputArrowModels = bakeOrients(m);
+
+            m = ioColourBox.get("arrow").copy()
+                    .apply(new Rotation(180 * MathHelper.torad, 0, 1, 0))
+                    .apply(new Translation(x/16D, 2/16D, z/16D));
+            outputArrowModels = bakeOrients(m);
+        }
+
+        private UVTransformation getColourUVT() {
+            return new UVTranslation((colour%2) * 4 / 32D, (colour/2) * 4 / 32D).with(ioColourBoxIcon);
+        }
+
+        private UVTransformation getBoxUVT() {
+            return ioColourBoxIcon;
+        }
+
+        @Override
+        public void renderModel(Transformation t, int orient, CCRenderState ccrs) {
+            boxModels[orient].render(ccrs, t, getBoxUVT());
+            (isInput ? inputArrowModels : outputArrowModels)[orient].render(ccrs, t, getColourUVT());
+        }
+    }
+
+
     private static class RedundantUVTransformation extends UVTransformation {
 
         public static final RedundantUVTransformation INSTANCE = new RedundantUVTransformation();
@@ -1469,5 +1639,4 @@ public class GateComponentModels {
             return this;
         }
     }
-
 }
