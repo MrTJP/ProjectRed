@@ -196,7 +196,7 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
     public void propagateOther(int mode) {
         for (int s = 0; s < 6; s++) {
             if (!maskConnects(s)) {
-                RedstonePropagator.addNeighborChange(level(), posOfStraight(s));
+                RedstonePropagator.addNeighborChange(level(), pos(), posOfStraight(s));
             }
         }
     }

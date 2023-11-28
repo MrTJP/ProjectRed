@@ -19,11 +19,11 @@ public interface IPropagationFacePart extends IPropagationHooks, IConnectableFac
                     propagateTo(getInternal(r), prev, mode);
                 } else if (maskConnectsStraight(r)) {
                     if (!propagateTo(getStraight(r), prev, mode)) {
-                        RedstonePropagator.addNeighborChange(level(), posOfStraight(r));
+                        RedstonePropagator.addNeighborChange(level(), pos(), posOfStraight(r));
                     }
                 } else if (maskConnectsCorner(r)) {
                     if (!propagateTo(getCorner(r), prev, mode)) {
-                        RedstonePropagator.addNeighborChange(level(), posOfCorner(r));
+                        RedstonePropagator.addNeighborChange(level(), posOfStraight(r), posOfCorner(r));
                     }
                 }
             }
