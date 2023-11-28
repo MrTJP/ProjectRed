@@ -10,10 +10,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RedstonePropagator {
     /**
@@ -68,8 +65,12 @@ public class RedstonePropagator {
         setCanConnectRedwires(true);
     }
 
-    public static void addNeighborChange(Level world, BlockPos pos) {
-        currentRun.neighborChanges.put(world, pos);
+    public static void addNeighborChange(Level world, BlockPos sourcePos, BlockPos neighborPos) {
+        currentRun.neighborChanges.put(world, neighborPos);
+
+        // Track source of change for first time a particular neighbor is changed
+        if (!currentRun.neighborChangeSources.containsKey(neighborPos))
+            currentRun.neighborChangeSources.put(neighborPos, sourcePos);
     }
 
     public static void addPartChange(MultiPart part) {
@@ -109,12 +110,14 @@ public class RedstonePropagator {
 
         HashMultimap<TileMultipart, MultiPart> partChanges = HashMultimap.create();
         HashMultimap<Level, BlockPos> neighborChanges = HashMultimap.create();
+        HashMap<BlockPos, BlockPos> neighborChangeSources = new HashMap<>();
         List<Runnable> propagationTasks = new LinkedList<>();
         List<Runnable> analogDropPropagationTasks = new LinkedList<>();
 
         void clear() {
             partChanges.clear();
             neighborChanges.clear();
+            neighborChangeSources.clear();
             count = 0;
             recalcs = 0;
             lastCaller = null;
@@ -167,7 +170,7 @@ public class RedstonePropagator {
                 Level world = entry.getKey();
                 Collection<BlockPos> positions = entry.getValue();
                 for (BlockPos pos : positions) {
-                    world.neighborChanged(pos, CBMultipartModContent.MULTIPART_BLOCK.get(), pos);
+                    world.neighborChanged(pos, CBMultipartModContent.MULTIPART_BLOCK.get(), neighborChangeSources.get(pos));
                 }
             }
 

@@ -66,8 +66,11 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
             }
         }
 
+        // This means change came on non-redwire side. Simply queue up a normal neighbor update
         if (uMask == 0) {
-            RedstonePropagator.addNeighborChange(level(), pos());
+            // TODO find better way to do this and sideDiff logic below
+            BlockPos prevPos = prev instanceof MultiPart ? ((MultiPart) prev).pos() : pos();
+            RedstonePropagator.addNeighborChange(level(), prevPos, pos());
         }
         propagationMask = 0xF;
     }
