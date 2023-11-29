@@ -176,6 +176,16 @@ public class HaloRenderer {
         // Unfabulous rendering. Batched rendering doesn't seem to work from stage events when not
         // on fabulous for some reason, so we have to do it here instead.
         if (!isFabulous()) {
+            if (levelLights.isEmpty()) return;
+
+            // Poll all pending lights from queue
+            List<LevelLight> lightList = new LinkedList<>();
+            LevelLight l;
+            while ((l = levelLights.poll()) != null) {
+                lightList.add(l);
+            }
+
+            // Prepare render
             Vec3 cam = Minecraft.getInstance().getEntityRenderDispatcher().camera.getPosition();
             PoseStack stack = event.getPoseStack();
             stack.pushPose();
@@ -185,21 +195,16 @@ public class HaloRenderer {
             ccrs.reset();
             MultiBufferSource.BufferSource buffers = Minecraft.getInstance().renderBuffers().bufferSource();
 
-            // Build light list
-            List<LevelLight> lightList = new LinkedList<>();
-            LevelLight l;
-            while ((l = levelLights.poll()) != null) {
-                lightList.add(l);
-            }
-
             // Render to normal render target for primary visuals
             ccrs.bind(HALO_GLOW_RENDER_TYPE, buffers, stack);
             for (LevelLight light : lightList) {
                 renderToCCRS(ccrs, light.box, light.colour, light.t, HaloContext.LEVEL_RENDERER);
             }
-            buffers.endBatch();
-        }
 
+            // Finish render
+            buffers.endBatch();
+            stack.popPose();
+        }
 
         // Fabulous bloom post-processing effects rendered here instead of during stage
         if (isFabulous() && postChainFlushPending) {
