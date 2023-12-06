@@ -23,6 +23,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 
+import javax.annotation.Nullable;
+
 import static mrtjp.projectred.core.RedstonePropagator.FORCE;
 import static mrtjp.projectred.core.RedstonePropagator.RISING;
 
@@ -77,7 +79,7 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
     }
 
     @Override
-    public void onPartChanged(MultiPart part) {
+    public void onPartChanged(@Nullable MultiPart part) {
         if (!level().isClientSide) {
             RedstonePropagator.logCalculation();
             if (updateOutward()) {

@@ -1,6 +1,5 @@
 package mrtjp.projectred.expansion.block;
 
-import codechicken.lib.raytracer.VoxelShapeCache;
 import codechicken.lib.render.particle.CustomParticleHandler;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
@@ -11,18 +10,14 @@ import mrtjp.projectred.expansion.tile.FrameMotorTile;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.client.IBlockRenderProperties;
 import org.jetbrains.annotations.Nullable;
 
@@ -78,7 +73,7 @@ public class FrameMotorBlock extends ProjectRedBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         int s = context.getClickedFace().ordinal() ^ 1; // Place bottom of block on the side clicked
-        int r = (Rotation.getSidedRotation(context.getPlayer(), context.getClickedFace().ordinal()) + 2) % 4;
+        int r = context.getPlayer() == null ? 0 : (Rotation.getSidedRotation(context.getPlayer(), context.getClickedFace().ordinal()) + 2) % 4;
         return defaultBlockState()
                 .setValue(SIDE, s)
                 .setValue(ROTATION, r)

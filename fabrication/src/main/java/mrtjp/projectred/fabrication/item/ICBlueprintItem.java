@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 import static mrtjp.projectred.fabrication.editor.EditorDataUtils.*;
 import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
@@ -39,6 +40,7 @@ public class ICBlueprintItem extends Item {
     @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
 
+        assert context.getPlayer() != null;
         if (!context.getPlayer().isCreative()) return InteractionResult.PASS;
 
         // Creative mode bypass: Convert blueprint directly to gate block
@@ -50,13 +52,13 @@ public class ICBlueprintItem extends Item {
         }
 
         ItemStack gate = GateType.FABRICATED_GATE.makeStack();
-        gate.setTag(createFabricationCopy(stack.getTag()));
+        gate.setTag(createFabricationCopy(Objects.requireNonNull(stack.getTag())));
 
         context.getPlayer().addItem(gate);
         return InteractionResult.SUCCESS;
     }
 
-    public static void buildTooltip(CompoundTag blueprintTag, List<Component> tooltipList) {
+    public static void buildTooltip(@Nullable CompoundTag blueprintTag, List<Component> tooltipList) {
 
         if (blueprintTag == null) return;
 

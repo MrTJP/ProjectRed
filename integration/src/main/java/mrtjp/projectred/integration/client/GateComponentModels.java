@@ -19,8 +19,6 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.core.BundledSignalsLib;
 import mrtjp.projectred.core.client.HaloRenderer;
-import mrtjp.projectred.integration.part.GatePart;
-import mrtjp.projectred.integration.part.IGateRenderData;
 import mrtjp.projectred.lib.VecLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -31,12 +29,14 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
 import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
+@SuppressWarnings("NotNullFieldNotInitialized")
 public class GateComponentModels {
 
     public static CCModel base = loadBaseModel("base");
@@ -168,7 +168,7 @@ public class GateComponentModels {
     }
 
     public static CCModel loadModel(String path) {
-        return CCModel.combine(loadModels(path).values());
+        return Objects.requireNonNull(CCModel.combine(loadModels(path).values()));
     }
 
     public static CCModel loadBaseModel(String path) {
@@ -538,8 +538,8 @@ public class GateComponentModels {
 
         private final String textureName;
 
-        private MultiIconTransformation wireOnIcons;
-        private MultiIconTransformation wireOffIcons;
+        private @Nullable MultiIconTransformation wireOnIcons;
+        private @Nullable MultiIconTransformation wireOffIcons;
 
         public WireModel3D(String textureName) {
             this.textureName = textureName;
@@ -551,7 +551,7 @@ public class GateComponentModels {
 
         protected UVTransformation getUVT() {
             // Regenerate if icons are different
-            if (wireOnIcons == null || wireOnIcons.icons[0] != wireBorderIcon.icon) {
+            if (wireOnIcons == null || wireOffIcons == null || wireOnIcons.icons[0] != wireBorderIcon.icon) {
                 wireOnIcons = new MultiIconTransformation(wireBorderIcon.icon, wireOnIcon.icon);
                 wireOffIcons = new MultiIconTransformation(wireBorderIcon.icon, wireOffIcon.icon);
             }
@@ -1182,7 +1182,7 @@ public class GateComponentModels {
 
         static {
             // Base and wood frame
-            nullCellBaseModel = CCModel.combine(ImmutableSet.of(nullCell.get("base"), nullCell.get("frame")));
+            nullCellBaseModel = Objects.requireNonNull(CCModel.combine(ImmutableSet.of(nullCell.get("base"), nullCell.get("frame"))));
         }
 
         public static final NullCellBaseModel INSTANCE = new NullCellBaseModel();
@@ -1238,10 +1238,10 @@ public class GateComponentModels {
         private static final CCModel logicCellBaseModel;
 
         static {
-            logicCellBaseModel = CCModel.combine(ImmutableSet.of(
+            logicCellBaseModel = Objects.requireNonNull(CCModel.combine(ImmutableSet.of(
                     logicCell.get("base"),
                     logicCell.get("frame"),
-                    logicCell.get("plate")));
+                    logicCell.get("plate"))));
         }
 
         public static final LogicCellBaseModel INSTANCE = new LogicCellBaseModel();
@@ -1283,10 +1283,10 @@ public class GateComponentModels {
         private static final CCModel andCellBaseModel;
 
         static {
-            andCellBaseModel = CCModel.combine(ImmutableSet.of(
+            andCellBaseModel = Objects.requireNonNull(CCModel.combine(ImmutableSet.of(
                     andCell.get("base"),
                     andCell.get("frame"),
-                    andCell.get("plate")));
+                    andCell.get("plate"))));
         }
 
         public static final AndCellBaseModel INSTANCE = new AndCellBaseModel();
@@ -1328,9 +1328,9 @@ public class GateComponentModels {
         private static final CCModel transparentLatchCellBaseModel;
 
         static {
-            transparentLatchCellBaseModel = CCModel.combine(ImmutableSet.of(
+            transparentLatchCellBaseModel = Objects.requireNonNull(CCModel.combine(ImmutableSet.of(
                     transparentLatchCell.get("base"),
-                    transparentLatchCell.get("frame")));
+                    transparentLatchCell.get("frame"))));
         }
 
         public static final TransparentLatchCellBaseModel INSTANCE = new TransparentLatchCellBaseModel();

@@ -2,13 +2,15 @@ package mrtjp.projectred.core.tile;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+
+import javax.annotation.Nullable;
 
 public abstract class BaseConnectableTile extends ProjectRedTile implements IConnectableTile, IPacketReceiverTile {
 
@@ -86,7 +88,7 @@ public abstract class BaseConnectableTile extends ProjectRedTile implements ICon
     }
 
     @Override
-    public void onBlockPlaced(LivingEntity player, ItemStack item) {
+    public void onBlockPlaced(@Nullable LivingEntity player, ItemStack item) {
         super.onBlockPlaced(player, item);
         if (!getBlockLevel().isClientSide) {
             updateExternals();

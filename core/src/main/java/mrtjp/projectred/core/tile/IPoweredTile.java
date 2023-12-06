@@ -6,9 +6,11 @@ import mrtjp.projectred.core.power.IPowerConnectable;
 import mrtjp.projectred.core.power.PowerConductor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import javax.annotation.Nullable;
+
 public interface IPoweredTile extends IBlockEventTile, IConnectableTile, IPowerConnectable, IPowerConductorSource {
 
-    static PowerConductor getExternalConductorForFaceConn(IPoweredTile poweredTile, int s, int edgeRot) {
+    static @Nullable PowerConductor getExternalConductorForFaceConn(IPoweredTile poweredTile, int s, int edgeRot) {
         if (poweredTile.maskConnectsStraight(s, edgeRot)) {
             MultiPart part = poweredTile.getStraight(s, edgeRot);
             if (part instanceof IPowerConnectable) {
@@ -25,7 +27,7 @@ public interface IPoweredTile extends IBlockEventTile, IConnectableTile, IPowerC
         return null;
     }
 
-    static PowerConductor getExternalConductorForCenterConn(IPoweredTile poweredTile, int s) {
+    static @Nullable PowerConductor getExternalConductorForCenterConn(IPoweredTile poweredTile, int s) {
         if (poweredTile.maskConnectsStraightCenter(s)) {
             MultiPart part = poweredTile.getStraightCenter(s);
             if (part instanceof IPowerConnectable) {

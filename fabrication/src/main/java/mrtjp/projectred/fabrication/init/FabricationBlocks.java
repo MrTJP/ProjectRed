@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.*;
 import static mrtjp.projectred.fabrication.init.FabricationReferences.*;
 
+@SuppressWarnings("DataFlowIssue")
 public class FabricationBlocks {
 
     public static final String ID_IC_WORKBENCH = "ic_workbench";

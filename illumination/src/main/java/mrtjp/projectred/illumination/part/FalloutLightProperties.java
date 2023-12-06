@@ -12,6 +12,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
@@ -22,7 +23,7 @@ public class FalloutLightProperties extends MultipartLightProperties {
     private static final Cuboid6[] GLOW_BOUNDS = sidedBoxes(new Cuboid6(4/16D, 1.5/16, 4/16D, 12/16D, 10/16D, 12/16D).expand(-0.002));
     private static final VoxelShape[] SHAPES = boxesToShapes(BOUNDS);
 
-    private TextureAtlasSprite icon;
+    private @Nullable TextureAtlasSprite icon;
 
     @Override
     public VoxelShape getShape(int side) {
@@ -49,6 +50,7 @@ public class FalloutLightProperties extends MultipartLightProperties {
     @Override
     @OnlyIn(Dist.CLIENT)
     public TextureAtlasSprite getIcon(int color) {
+        assert icon != null;
         return icon;
     }
 

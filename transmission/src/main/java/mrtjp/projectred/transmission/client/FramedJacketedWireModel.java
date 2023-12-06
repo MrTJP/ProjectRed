@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.RenderType;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class FramedJacketedWireModel {
 
@@ -35,12 +36,12 @@ public class FramedJacketedWireModel {
 
     public void renderMaterial(CCRenderState ccrs, MicroMaterial material, boolean inventory) {
         RenderType layer = inventory ? null : RenderType.solid();
-        MicroMaterialClient.get(material).renderCuboids(ccrs, layer, wireBoxList);
+        Objects.requireNonNull(MicroMaterialClient.get(material)).renderCuboids(ccrs, layer, wireBoxList);
     }
 
     public void renderHighlight(CCRenderState ccrs, MicroMaterial material, boolean inventory) {
         RenderType layer = inventory ? null : RenderType.solid();
-        MicroMaterialClient.get(material).renderCuboids(ccrs, layer, highlightBoxList);
+        Objects.requireNonNull(MicroMaterialClient.get(material)).renderCuboids(ccrs, layer, highlightBoxList);
     }
 
     public FramedJacketedWireModel copy() {

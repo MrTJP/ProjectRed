@@ -14,6 +14,7 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static mrtjp.projectred.expansion.init.ExpansionUnlocal.UL_PLAN_RESULT;
 
@@ -33,7 +34,7 @@ public class RecipePlanItem extends Item {
     }
 
     public static boolean hasRecipeInside(ItemStack stack) {
-        return stack.hasTag() && stack.getTag().contains("planInputs") && stack.getTag().contains("planOutput");
+        return stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains("planInputs") && stack.getTag().contains("planOutput");
     }
 
     public static void savePlan(ItemStack stack, ItemStack[] inputs, ItemStack output) {
@@ -81,6 +82,7 @@ public class RecipePlanItem extends Item {
             Arrays.fill(inputs, ItemStack.EMPTY);
             return inputs;
         }
+        assert stack.getTag() != null;
 
         CompoundTag inputsNBT = stack.getTag().getCompound("planInputs");
         for (int i = 0; i < 9; i++) {
@@ -94,6 +96,8 @@ public class RecipePlanItem extends Item {
         if (!hasRecipeInside(stack)) {
             return ItemStack.EMPTY;
         }
+        assert stack.getTag() != null;
+
         return ItemStack.of(stack.getTag().getCompound("planOutput"));
     }
 }

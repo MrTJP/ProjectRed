@@ -6,6 +6,8 @@ import mrtjp.projectred.api.IConnectable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 
+import javax.annotation.Nullable;
+
 public interface IConnectableCenterPart extends MultiPart, IConnectablePart {
 
     //region Neighbor Positions
@@ -15,13 +17,13 @@ public interface IConnectableCenterPart extends MultiPart, IConnectablePart {
     //endregion
 
     //region Connectable Neighbor Acquisitions
-    default IConnectable getStraight(int s) {
+    default @Nullable IConnectable getStraight(int s) {
         BlockPos pos = pos().relative(Direction.values()[s]);
         MultiPart part = BlockMultipart.getPart(level(), pos, 6);
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
 
-    default IConnectable getInternal(int s) {
+    default @Nullable IConnectable getInternal(int s) {
         MultiPart part = tile().getSlottedPart(s);
         return part instanceof IConnectable ? (IConnectable) part : null;
     }

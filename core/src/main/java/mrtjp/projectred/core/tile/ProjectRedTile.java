@@ -12,6 +12,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.Objects;
+
 public abstract class ProjectRedTile extends BlockEntity implements IBlockEventTile {
 
     public ProjectRedTile(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -57,7 +59,7 @@ public abstract class ProjectRedTile extends BlockEntity implements IBlockEventT
     // Obfuscation bug: cant use getLevel name
     @Override
     public Level getBlockLevel() {
-        return getLevel();
+        return Objects.requireNonNull(getLevel());
     }
 
     // Obfuscation bug: cant use getBlockPos name

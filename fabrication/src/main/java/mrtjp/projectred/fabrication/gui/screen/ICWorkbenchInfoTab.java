@@ -1,7 +1,6 @@
 package mrtjp.projectred.fabrication.gui.screen;
 
 import codechicken.lib.colour.EnumColour;
-import codechicken.lib.texture.TextureUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.fengine.TileCoord;
@@ -20,11 +19,12 @@ import mrtjp.projectred.redui.AbstractGuiNode;
 import mrtjp.projectred.redui.ScrollBarNode;
 import mrtjp.projectred.redui.TextBoxNode;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+
+import javax.annotation.Nullable;
+
 import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class ICWorkbenchInfoTab extends AbstractGuiNode {
@@ -35,7 +35,7 @@ public class ICWorkbenchInfoTab extends AbstractGuiNode {
 
     private final YieldCalculator yieldCalculator = new YieldCalculator();
 
-    private VerticalListNode listNode;
+    private @Nullable VerticalListNode listNode;
 
     public ICWorkbenchInfoTab(ICWorkbenchEditor editor) {
         this.editor = editor;

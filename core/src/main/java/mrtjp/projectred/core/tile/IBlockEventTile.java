@@ -18,12 +18,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import javax.annotation.Nullable;
+
 public interface IBlockEventTile {
 
     Level getBlockLevel();
     BlockPos getBlockPosition();
 
-    default void onBlockPlaced(LivingEntity player, ItemStack item) {}
+    default void onBlockPlaced(@Nullable LivingEntity player, ItemStack item) {}
 
     default void onBlockStateReplaced(BlockState newState) {}
 

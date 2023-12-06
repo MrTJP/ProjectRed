@@ -12,6 +12,7 @@ import net.minecraft.nbt.Tag;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static mrtjp.fengine.api.ICStepThroughAssembler.AssemblerStepType.CHECK_OPEN_TILE_MAPS;
 import static mrtjp.projectred.fabrication.editor.EditorDataUtils.*;
 import static mrtjp.projectred.fabrication.editor.ICEditorStateMachine.*;
 
@@ -263,7 +264,7 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
 
         public final List<CompileTreeNode> children = new ArrayList<>();
 
-        public ICStepThroughAssembler.AssemblerStepType step;
+        public ICStepThroughAssembler.AssemblerStepType step = CHECK_OPEN_TILE_MAPS;
         public final List<TileCoord> tileCoords = new ArrayList<>();
         public final List<Integer> registerIds = new ArrayList<>();
         public final List<Integer> gateIds = new ArrayList<>();

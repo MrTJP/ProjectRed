@@ -11,8 +11,8 @@ import mrtjp.projectred.redui.ButtonNode;
 import mrtjp.projectred.redui.RedUIScreen;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
+
+import java.util.Objects;
 
 import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
@@ -24,7 +24,7 @@ public class TimerScreen extends RedUIScreen {
     private final ComplexGatePart.ITimerGuiLogic timerGate;
 
     public TimerScreen(GatePart gate) {
-        super(256, 55, new TextComponent(gate.getType().getRegistryName().toString()));
+        super(256, 55, new TextComponent(Objects.requireNonNull(gate.getType().getRegistryName()).toString()));
         this.gate = gate;
         this.timerGate = (ComplexGatePart.ITimerGuiLogic) gate;
 
@@ -67,8 +67,8 @@ public class TimerScreen extends RedUIScreen {
 
     @Override
     public void update() {
-        if (gate.tile() == null) {
-            getMinecraft().player.closeContainer();
+        if (!gate.hasTile()) {
+            Objects.requireNonNull(getMinecraft().player).closeContainer();
         }
     }
 }

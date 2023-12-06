@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import static mrtjp.projectred.expansion.ProjectRedExpansion.*;
 import static mrtjp.projectred.expansion.init.ExpansionReferences.*;
 
+@SuppressWarnings("DataFlowIssue")
 public class ExpansionBlocks {
 
     public static final String ID_PROJECT_BENCH = "project_bench";

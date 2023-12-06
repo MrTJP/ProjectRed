@@ -15,6 +15,7 @@ import mrtjp.projectred.fabrication.engine.log.NoInputsError;
 import mrtjp.projectred.fabrication.engine.log.NoOutputsError;
 import net.minecraft.nbt.CompoundTag;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +52,7 @@ public class ICEditorStateMachine {
 
     private int currentState = STATE_INITIAL;
 
-    private final StateMachineCallback callback;
+    private final @Nullable StateMachineCallback callback;
 
     private final ICSimulationContainer simulationContainer = new ICSimulationContainer();
     private final ICCompilerLog compilerLog = new ICCompilerLog(this);
@@ -60,7 +61,7 @@ public class ICEditorStateMachine {
 
     private boolean autoCompileOnChange = false; //TODO client-side toggle
 
-    public ICEditorStateMachine(ICWorkbenchEditor editor, StateMachineCallback callback) {
+    public ICEditorStateMachine(ICWorkbenchEditor editor, @Nullable StateMachineCallback callback) {
         this.editor = editor;
         this.callback = callback;
     }
@@ -275,7 +276,7 @@ public class ICEditorStateMachine {
 
     private class StateCompiling implements State {
 
-        private ICStepThroughAssembler assembler = null;
+        private @Nullable ICStepThroughAssembler assembler = null;
 
         @Override
         public void onTick(long time) {

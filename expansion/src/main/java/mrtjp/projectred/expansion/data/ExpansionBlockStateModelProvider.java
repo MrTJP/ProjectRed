@@ -10,9 +10,12 @@ import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
+import javax.annotation.Nonnull;
+
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 import static mrtjp.projectred.expansion.init.ExpansionReferences.*;
 
+@SuppressWarnings("DataFlowIssue")
 public class ExpansionBlockStateModelProvider extends BlockStateProvider {
 
     // XY rotations for non-rotatable sided devices
@@ -23,7 +26,7 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
     }
 
     @Override
-    public String getName() {
+    public @Nonnull String getName() {
         return "ProjectRed-Expansion Block State Models";
     }
 

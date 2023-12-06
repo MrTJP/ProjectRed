@@ -4,6 +4,8 @@ import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.core.part.IPropagationHooks;
 import mrtjp.projectred.core.part.IPropagationPart;
 
+import javax.annotation.Nullable;
+
 import static mrtjp.projectred.core.BundledSignalsLib.*;
 import static mrtjp.projectred.core.RedstonePropagator.*;
 
@@ -11,7 +13,7 @@ public interface IBundledPropagationPart extends IPropagationPart, IPropagationH
 
     //region Trait variables
     byte[] getSignal();
-    void setSignal(byte[] signal);
+    void setSignal(@Nullable byte[] signal);
     int getColorMask();
     void setColorMask(int mask);
     //endregion
@@ -23,7 +25,7 @@ public interface IBundledPropagationPart extends IPropagationPart, IPropagationH
     byte[] calculateSignal();
 
     @Override
-    default void updateAndPropagate(IPropagationPart from, int mode) {
+    default void updateAndPropagate(@Nullable IPropagationPart from, int mode) {
         int mask = getColorMaskFrom(from, mode);
         if (mode == DROPPING && isSignalZero(getSignal(), mask)) return;
 
@@ -53,7 +55,7 @@ public interface IBundledPropagationPart extends IPropagationPart, IPropagationH
         setColorMask(0xFFFF);
     }
 
-    default int getColorMaskFrom(IPropagationPart from, int mode) {
+    default int getColorMaskFrom(@Nullable IPropagationPart from, int mode) {
         if (from instanceof IInsulatedRedwirePart) {
             return 1 << ((IInsulatedRedwirePart) from).getInsulatedColour();
         }
@@ -84,7 +86,7 @@ public interface IBundledPropagationPart extends IPropagationPart, IPropagationH
     }
 
     @Override
-    default boolean shouldPropagate(IPropagationPart to, int mode) {
+    default boolean shouldPropagate(@Nullable IPropagationPart to, int mode) {
         // Don't propagate to insulated colors if the color is masked
         if (to instanceof IInsulatedRedwirePart) {
             int insColour = ((IInsulatedRedwirePart) to).getInsulatedColour();

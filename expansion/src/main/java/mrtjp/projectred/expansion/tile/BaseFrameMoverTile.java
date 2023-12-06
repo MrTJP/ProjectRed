@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 
 public abstract class BaseFrameMoverTile extends LowLoadPoweredTile implements RedstoneConnector, IOrientableBlockEntity, Frame {
@@ -23,7 +24,7 @@ public abstract class BaseFrameMoverTile extends LowLoadPoweredTile implements R
     protected boolean isCharged = false;
     protected boolean isWorking = false;
 
-    private MovementDescriptor descriptor = null;
+    private @Nullable MovementDescriptor descriptor = null;
 
     public BaseFrameMoverTile(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -54,10 +55,12 @@ public abstract class BaseFrameMoverTile extends LowLoadPoweredTile implements R
     }
 
     protected void beginMove() {
+        assert level != null;
         BlockPos blockInFront = getBlockPos().relative(Direction.values()[getFrontSide()]);
-        if (getLevel().isEmptyBlock(blockInFront)) return;
-        if (MovementManager.getInstance(getLevel()).getMovementInfo(blockInFront).isMoving()) return;
+        if (level.isEmptyBlock(blockInFront)) return;
+        if (MovementManager.getInstance(level).getMovementInfo(blockInFront).isMoving()) return;
 
+        assert ProjectRedAPI.expansionAPI != null;
         Set<BlockPos> blocks = ProjectRedAPI.expansionAPI.getStructure(level, blockInFront, getBlockPos());
         MovementDescriptor desc = ProjectRedAPI.expansionAPI.beginMove(level, getMoveDir(), 1 / 16D, blocks);
         if (desc.getStatus() == MovementDescriptor.MovementStatus.MOVING) {
@@ -69,12 +72,14 @@ public abstract class BaseFrameMoverTile extends LowLoadPoweredTile implements R
     public void tick() {
         super.tick();
 
+        assert level != null;
         if (level.isClientSide) return;
 
         isCharged = canConductorWork();
         isWorking = isMoving();
 
         if (isWorking) {
+            assert descriptor != null;
             drawPower(descriptor.getSize());
         }
 
@@ -90,11 +95,12 @@ public abstract class BaseFrameMoverTile extends LowLoadPoweredTile implements R
     public void onNeighborBlockChanged(BlockPos neighborPos) {
         super.onNeighborBlockChanged(neighborPos);
 
+        assert level != null;
         if (level.isClientSide) return;
 
         boolean oldPowered = powered;
         for (int s = 0; s < 6; s++) {
-            powered = RedstoneInteractions.getPowerTo(getLevel(), getBlockPos(), s, 0x1F) > 0;
+            powered = RedstoneInteractions.getPowerTo(level, getBlockPos(), s, 0x1F) > 0;
             if (powered) break;
         }
 

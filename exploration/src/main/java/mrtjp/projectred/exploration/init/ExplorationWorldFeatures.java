@@ -35,6 +35,7 @@ import static mrtjp.projectred.exploration.ProjectRedExploration.WORLD_CARVERS;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
 import static net.minecraft.world.level.biome.Biome.BiomeCategory.*;
 
+@SuppressWarnings("NotNullFieldNotInitialized")
 public class ExplorationWorldFeatures {
 
     public static final String ID_MARBLE_CAVE_CARVER = "marble_cave";

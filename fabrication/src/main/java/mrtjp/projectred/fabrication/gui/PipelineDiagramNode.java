@@ -14,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("NotNullFieldNotInitialized")
 public class PipelineDiagramNode extends AbstractGuiNode {
 
     private final YieldCalculator yieldCalculator;

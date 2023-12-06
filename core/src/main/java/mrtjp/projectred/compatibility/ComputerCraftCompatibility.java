@@ -2,10 +2,10 @@ package mrtjp.projectred.compatibility;
 
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.redstone.IBundledRedstoneProvider;
-import mrtjp.projectred.core.ProjectRedCore;
 import mrtjp.projectred.api.IBundledTileInteraction;
 import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.core.BundledSignalsLib;
+import mrtjp.projectred.core.ProjectRedCore;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -29,6 +29,7 @@ public class ComputerCraftCompatibility {
     private static class CCPRBundledRedstoneProvider implements IBundledRedstoneProvider {
         @Override
         public int getBundledRedstoneOutput(@Nonnull Level world, @Nonnull BlockPos pos, @Nonnull Direction side) {
+            assert ProjectRedAPI.transmissionAPI != null;
             byte[] signal = ProjectRedAPI.transmissionAPI.getBundledInput(world, pos.relative(side), side.getOpposite());
             return BundledSignalsLib.packDigital(signal);
         }

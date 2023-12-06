@@ -47,7 +47,9 @@ public class BackpackItem extends Item {
 
         if (!context.getLevel().isClientSide) {
             ServerPlayer player = (ServerPlayer) context.getPlayer();
-            openGui(player);
+            if (player != null) {
+                openGui(player);
+            }
         }
         return InteractionResult.sidedSuccess(context.getLevel().isClientSide);
     }
@@ -84,19 +86,19 @@ public class BackpackItem extends Item {
     }
 
     public static boolean hasBackpackInventory(ItemStack stack) {
-        return isBackpack(stack) && stack.hasTag() && stack.getTag().contains(TAG_INVENTORY);
+        return isBackpack(stack) && stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains(TAG_INVENTORY);
     }
 
     public static CompoundTag getBackpackInventoryTag(ItemStack stack) {
         if (hasBackpackInventory(stack)) {
-            return stack.getTag().getCompound(TAG_INVENTORY);
+            return Objects.requireNonNull(stack.getTag()).getCompound(TAG_INVENTORY);
         }
         return new CompoundTag();
     }
 
     public static int getBackpackItemCount(ItemStack stack) {
         if (hasBackpackInventory(stack)) {
-            return BaseInventory.getItemCount(stack.getTag().getCompound(TAG_INVENTORY));
+            return BaseInventory.getItemCount(Objects.requireNonNull(stack.getTag()).getCompound(TAG_INVENTORY));
         }
         return 0;
     }
@@ -107,7 +109,7 @@ public class BackpackItem extends Item {
 
     public static void deleteBackpackInventory(ItemStack stack) {
         if (hasBackpackInventory(stack)) {
-            stack.getTag().remove(TAG_INVENTORY);
+            Objects.requireNonNull(stack.getTag()).remove(TAG_INVENTORY);
         }
     }
 

@@ -10,6 +10,8 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.Tags;
 
+import java.util.Objects;
+
 import static mrtjp.projectred.exploration.init.ExplorationReferences.BACKPACK_DYE_RECIPE_SERIALIZER;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.getBackpackByColor;
 
@@ -46,7 +48,7 @@ public class BackpackDyeRecipe extends CustomRecipe {
         DyeColor backpackColor = ((BackpackItem) backpack.getItem()).getDyeColor();
         DyeColor dyeColor = DyeColor.getColor(dye);
 
-        if (backpackColor == null || dyeColor == null) return false;
+        if (dyeColor == null) return false;
 
         return backpackColor != dyeColor; // Can't dye to same color
     }
@@ -77,11 +79,11 @@ public class BackpackDyeRecipe extends CustomRecipe {
         DyeColor backpackColor = ((BackpackItem) backpack.getItem()).getDyeColor();
         DyeColor dyeColor = DyeColor.getColor(dye);
 
-        if (backpackColor == null || dyeColor == null || backpackColor == dyeColor) return ItemStack.EMPTY;
+        if (dyeColor == null || backpackColor == dyeColor) return ItemStack.EMPTY;
 
         ItemStack result = new ItemStack(getBackpackByColor(dyeColor.getId()));
         if (backpack.hasTag()) {
-            result.setTag(backpack.getTag().copy());
+            result.setTag(Objects.requireNonNull(backpack.getTag()).copy());
         }
 
         return result;

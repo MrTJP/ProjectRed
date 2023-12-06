@@ -80,7 +80,7 @@ public class BackpackContainer extends AbstractContainerMenu {
     @Override
     public ItemStack quickMoveStack(Player player, int slotIndex) {
         Slot slot = slots.get(slotIndex);
-        if (slot == null || !slot.hasItem()) return ItemStack.EMPTY;
+        if (!slot.hasItem()) return ItemStack.EMPTY;
 
         ItemStack stack = slot.getItem();
         ItemStack originalStack = stack.copy();

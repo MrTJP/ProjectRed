@@ -15,6 +15,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ public class LanternLightProperties extends MultipartLightProperties {
     private static final Cuboid6 GLOW_BOUNDS = BOUNDS.copy().expand(-1/64D);
     private static final VoxelShape SHAPE =  VoxelShapeCache.getShape(BOUNDS);
 
-    private TextureAtlasSprite icon;
+    private @Nullable TextureAtlasSprite icon;
 
     @Override
     public VoxelShape getShape(int side) {
@@ -53,6 +54,7 @@ public class LanternLightProperties extends MultipartLightProperties {
     @Override
     @OnlyIn(Dist.CLIENT)
     public TextureAtlasSprite getIcon(int color) {
+        assert icon != null;
         return icon;
     }
 

@@ -10,6 +10,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import javax.annotation.Nullable;
+
 public class FaceLookup {
 
     //Starting conditions
@@ -21,15 +23,15 @@ public class FaceLookup {
     //Located objects
     public final BlockState state;
     public final Block block;
-    public final BlockEntity tile;
-    public final MultiPart part;
+    public @Nullable final BlockEntity tile;
+    public @Nullable final MultiPart part;
 
     //Conditions for reverse lookup
     public final BlockPos otherPos;
     public final int otherSide;
     public final int otherRotation;
 
-    public FaceLookup(Level world, BlockPos pos, int side, int r, BlockState state, BlockEntity tile, MultiPart part, BlockPos otherPos, int otherSide, int otherRotation) {
+    public FaceLookup(Level world, BlockPos pos, int side, int r, BlockState state, @Nullable BlockEntity tile, @Nullable MultiPart part, BlockPos otherPos, int otherSide, int otherRotation) {
         this.world = world;
         this.pos = pos;
         this.side = side;

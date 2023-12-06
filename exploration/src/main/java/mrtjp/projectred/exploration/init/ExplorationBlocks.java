@@ -6,7 +6,10 @@ import mrtjp.projectred.exploration.block.ElectrotineOreBlock;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.OreBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
@@ -17,6 +20,7 @@ import net.minecraftforge.registries.RegistryObject;
 import static mrtjp.projectred.exploration.ProjectRedExploration.*;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
 
+@SuppressWarnings("NotNullFieldNotInitialized")
 public class ExplorationBlocks {
 
     public static final String ID_RUBY_ORE = "ruby_ore";

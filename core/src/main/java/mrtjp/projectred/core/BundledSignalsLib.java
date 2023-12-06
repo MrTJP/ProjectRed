@@ -12,6 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +31,7 @@ public class BundledSignalsLib {
         interactions.add(interaction);
     }
 
-    public static byte[] getBundledInput(Level world, BlockPos pos, Direction facing) {
+    public static @Nullable byte[] getBundledInput(Level world, BlockPos pos, Direction facing) {
 
         int side = facing.ordinal();
         BlockEntity tile = world.getBlockEntity(pos.relative(facing));
@@ -81,7 +82,7 @@ public class BundledSignalsLib {
         return false;
     }
 
-    public static byte[] getBundledSignalViaInteraction(Level world, BlockPos pos, Direction side) {
+    public static @Nullable byte[] getBundledSignalViaInteraction(Level world, BlockPos pos, Direction side) {
         for (IBundledTileInteraction interaction : interactions) {
             if (interaction.isValidInteractionFor(world, pos, side)) {
                 return interaction.getBundledSignal(world, pos, side);
@@ -93,7 +94,7 @@ public class BundledSignalsLib {
 
     //region Signal utilities
 
-    public static boolean signalsEqual(byte[] signal1, byte[] signal2) {
+    public static boolean signalsEqual(@Nullable byte[] signal1, @Nullable byte[] signal2) {
         if (signal1 == null) return isSignalZero(signal2);
         if (signal2 == null) return isSignalZero(signal1);
         if (signal1.length != signal2.length) return false;
@@ -103,7 +104,7 @@ public class BundledSignalsLib {
         return true;
     }
 
-    public static boolean isSignalZero(byte[] signal) {
+    public static boolean isSignalZero(@Nullable byte[] signal) {
         if (signal == null) return true;
         for (byte b : signal) {
             if (b != 0) return false;
@@ -111,7 +112,7 @@ public class BundledSignalsLib {
         return true;
     }
 
-    public static boolean isSignalZero(byte[] signal, int mask) {
+    public static boolean isSignalZero(@Nullable byte[] signal, int mask) {
         if (signal == null) return true;
         for (int i = 0; i < signal.length; i++) {
             if ((mask & 1 << i) != 0 && signal[i] != 0) return false;
@@ -139,7 +140,7 @@ public class BundledSignalsLib {
         }
     }
 
-    public static byte[] raiseSignal(byte[] signal, byte[] source) {
+    public static byte[] raiseSignal(@Nullable byte[] signal, @Nullable byte[] source) {
         if (signal == null) signal = new byte[16];
         if (source == null) return signal;
         for (int i = 0; i < 16; i++) {
@@ -150,20 +151,20 @@ public class BundledSignalsLib {
         return signal;
     }
 
-    public static byte[] copySignal(byte[] signal) {
+    public static @Nullable byte[] copySignal(@Nullable byte[] signal) {
         return signal == null ? null : signal.clone();
     }
 
-    public static void saveSignal(CompoundTag tag, String key, byte[] signal) {
+    public static void saveSignal(CompoundTag tag, String key, @Nullable byte[] signal) {
         if (signal != null) tag.putByteArray(key, signal);
     }
 
-    public static byte[] loadSignal(CompoundTag tag, String key) {
+    public static @Nullable byte[] loadSignal(CompoundTag tag, String key) {
         if (tag.contains(key)) return tag.getByteArray(key).clone();
         return null;
     }
 
-    public static int packDigital(byte[] signal) {
+    public static int packDigital(@Nullable byte[] signal) {
         if (signal == null) return 0;
         int packed = 0;
         for (int i = 0; i < 16; i++) {
@@ -172,7 +173,7 @@ public class BundledSignalsLib {
         return packed;
     }
 
-    public static byte[] unpackDigital(byte[] signal, int packed) {
+    public static @Nullable byte[] unpackDigital(@Nullable byte[] signal, int packed) {
         if (packed == 0) {
             if (signal != null) Arrays.fill(signal, (byte) 0);
             return signal;

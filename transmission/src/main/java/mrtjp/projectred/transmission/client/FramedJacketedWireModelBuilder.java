@@ -7,6 +7,7 @@ import codechicken.lib.vec.uv.UVTranslation;
 import codechicken.microblock.util.MaskedCuboid;
 import mrtjp.projectred.transmission.part.BaseCenterWirePart;
 
+import javax.annotation.Nullable;
 import java.util.LinkedList;
 
 import static mrtjp.projectred.transmission.client.FramedWireModelBuilder.*;
@@ -22,7 +23,7 @@ public class FramedJacketedWireModelBuilder {
     private int[] fRotationMasks = new int[6]; // Rotation masks for each face
     private int[] fAxisCounts = new int[6]; // Axis count for each face
     private int i = 0;
-    private FramedJacketedWireModel model;
+    private @Nullable FramedJacketedWireModel model;
 
     private int modelKey = 0;
     private boolean modelBuilt = false;
@@ -36,8 +37,10 @@ public class FramedJacketedWireModelBuilder {
         if (!modelBuilt) {
             buildModel();
             modelBuilt = true;
+            assert model != null;
             return model;
         }
+        assert model != null;
         return model.copy();
     }
 

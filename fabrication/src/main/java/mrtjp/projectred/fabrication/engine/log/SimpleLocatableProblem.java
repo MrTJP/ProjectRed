@@ -19,7 +19,7 @@ import static mrtjp.projectred.fabrication.engine.log.CompileProblemSeverity.ERR
 
 public abstract class SimpleLocatableProblem extends CompileProblem {
 
-    public TileCoord coord;
+    public TileCoord coord = TileCoord.origin;
 
     public SimpleLocatableProblem(CompileProblemType type, CompileProblemSeverity severity) {
         super(type, severity);

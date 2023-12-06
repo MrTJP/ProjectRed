@@ -7,6 +7,7 @@ import mrtjp.projectred.fabrication.engine.wires.RedAlloyWireTile;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.transmission.WireType;
 
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 import static mrtjp.projectred.fabrication.engine.ICTileTypeOffsets.*;
@@ -111,7 +112,8 @@ public enum ICTileType {
         return id;
     }
 
-    public static BaseTile createFromId(int id) {
+    public static @Nullable BaseTile createFromId(int id) {
+        if (id < 0 || id >= VALUES_BY_ID.length) return null;
         return VALUES_BY_ID[id].create();
     }
 }

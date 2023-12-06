@@ -110,7 +110,7 @@ public class FrameBlock extends Block implements Frame {
     //region Shape generation
     public static VoxelShape getOrGenerateShape(int mask) {
         VoxelShape s = shapes[mask & 0x3F];
-        if (s == null) {
+        if (s == null || true) {
             s = generateShape(mask);
             shapes[mask & 0x3F] = s;
         }

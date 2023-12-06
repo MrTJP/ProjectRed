@@ -9,6 +9,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
+import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.function.Function;
 
 import static mrtjp.projectred.integration.init.IntegrationParts.*;
@@ -52,13 +54,13 @@ public enum GateType
     FABRICATED_GATE    (null, null), // Will be injected if applicable
     ;
 
-    private String unlocalName;
-    private Function<GateType, GatePart> partFactory;
+    private @Nullable String unlocalName;
+    private @Nullable Function<GateType, GatePart> partFactory;
 
-    private RegistryObject<Item> itemSupplier;
-    private RegistryObject<MultipartType<GatePart>> partSupplier;
+    private @Nullable RegistryObject<Item> itemSupplier;
+    private @Nullable RegistryObject<MultipartType<GatePart>> partSupplier;
 
-    GateType(String unlocalName, Function<GateType, GatePart> partFactory) {
+    GateType(@Nullable String unlocalName, @Nullable Function<GateType, GatePart> partFactory) {
         this.unlocalName = unlocalName;
         this.partFactory = partFactory;
     }
@@ -68,10 +70,12 @@ public enum GateType
     }
 
     public String getUnlocalizedName() {
+        assert unlocalName != null;
         return unlocalName;
     }
 
     public Item getItem() {
+        assert itemSupplier != null;
         return itemSupplier.get();
     }
 
@@ -80,16 +84,18 @@ public enum GateType
     }
 
     public MultipartType<GatePart> getPartType() {
+        assert partSupplier != null;
         return partSupplier.get();
     }
 
     public GatePart newPart() {
+        assert partFactory != null;
         return partFactory.apply(this);
     }
 
     public void registerParts(DeferredRegister<MultipartType<?>> partRegistry, DeferredRegister<Item> itemRegistry) {
         itemSupplier = itemRegistry.register(unlocalName, () -> new GatePartItem(this));
-        partSupplier = partRegistry.register(unlocalName, () -> new SimpleMultipartType<>(isClient -> partFactory.apply(this)));
+        partSupplier = partRegistry.register(unlocalName, () -> new SimpleMultipartType<>(isClient -> Objects.requireNonNull(partFactory).apply(this)));
     }
 
     // TODO: Add proper gate registering mechanism

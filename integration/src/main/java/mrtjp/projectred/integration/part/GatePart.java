@@ -36,6 +36,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,9 +80,9 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
         this.type = type;
     }
 
-    public void preparePlacement(Player player, BlockPos pos, int side) {
+    public void preparePlacement(@Nullable Player player, BlockPos pos, int side) {
         setSide(side ^ 1);
-        setRotation((Rotation.getSidedRotation(player, side) + 2) % 4);
+        setRotation(player == null ? 0 : (Rotation.getSidedRotation(player, side) + 2) % 4);
     }
 
     public final GateType getGateType() {
@@ -224,7 +225,7 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
 
     //region Neighbor/part changes
     @Override
-    public void onPartChanged(MultiPart part) {
+    public void onPartChanged(@Nullable MultiPart part) {
         super.onPartChanged(part);
         if (!level().isClientSide) {
             updateOutward();
@@ -265,7 +266,7 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
     @Override
     public void onChunkLoad(LevelChunk chunk) {
         super.onChunkLoad(chunk);
-        if (tile() != null) {
+        if (hasTile()) {
             gateLogicOnWorldLoad();
         }
     }

@@ -12,6 +12,10 @@ import codechicken.lib.vec.uv.UVTranslation;
 import mrtjp.projectred.core.BundledSignalsLib;
 import mrtjp.projectred.core.UVT;
 
+import javax.annotation.Nullable;
+
+import java.util.Objects;
+
 import static mrtjp.projectred.transmission.client.WireModelBuilder.*;
 
 public class FramedWireModelBuilder {
@@ -26,7 +30,7 @@ public class FramedWireModelBuilder {
     private int[] fRotationMasks = new int[6]; // Rotation masks for each face
     private int[] fAxisCounts = new int[6]; // Axis count for each face
     private int i = 0;
-    private CCModel model = null;
+    private @Nullable CCModel model = null;
 
     private int modelKey = 0;
     private boolean modelBuilt = false;
@@ -40,8 +44,10 @@ public class FramedWireModelBuilder {
         if (!modelBuilt) {
             buildModel();
             modelBuilt = true;
+            assert model != null;
             return model;
         }
+        assert model != null;
         return model.copy();
     }
 
@@ -78,7 +84,7 @@ public class FramedWireModelBuilder {
     private void generateFace(int s) {
 
         int start = i;
-        i = addVerts(model, generateFaceAxisVerts(s), i); // Verts for conns perpendicular to 's' axis
+        i = addVerts(Objects.requireNonNull(model), generateFaceAxisVerts(s), i); // Verts for conns perpendicular to 's' axis
 
         switch (fAxisCounts[s]) {
             case 0:

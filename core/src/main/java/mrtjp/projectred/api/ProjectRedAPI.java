@@ -1,5 +1,7 @@
 package mrtjp.projectred.api;
 
+import javax.annotation.Nullable;
+
 /**
  * Central API class for ProjectRed. APIs are split up by module. If a specific
  * module is installed, the appropriate field will contain an implementor of that
@@ -23,10 +25,12 @@ public final class ProjectRedAPI
     /**
      * API used for Frame-based movement.
      */
+    @Nullable
     public static IExpansionAPI expansionAPI;
 
     /**
      * API used for interacting with wires.
      */
+    @Nullable
     public static ITransmissionAPI transmissionAPI;
 }

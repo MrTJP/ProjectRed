@@ -1,8 +1,10 @@
 package mrtjp.projectred.api;
 
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+
+import javax.annotation.Nullable;
 
 /**
  * Class used instead of implementing IBundledTile, where it would be very,
@@ -44,7 +46,7 @@ public interface IBundledTileInteraction
      * @param world The World
      * @param pos The coordinates of the block being checked
      * @param side The side we want the signal for.
-     * @return The byte array of all the signals.
+     * @return The byte array of all the signals. Null is equivalent to zero signal.
      */
-    byte[] getBundledSignal(Level world, BlockPos pos, Direction side);
+    @Nullable byte[] getBundledSignal(Level world, BlockPos pos, Direction side);
 }

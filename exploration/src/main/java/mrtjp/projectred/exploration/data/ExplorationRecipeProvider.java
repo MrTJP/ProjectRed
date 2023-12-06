@@ -23,6 +23,7 @@ import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
 import static mrtjp.projectred.exploration.init.ExplorationTags.*;
 
+@SuppressWarnings("DataFlowIssue")
 public class ExplorationRecipeProvider extends RecipeProvider {
 
     public ExplorationRecipeProvider(DataGenerator generatorIn) {

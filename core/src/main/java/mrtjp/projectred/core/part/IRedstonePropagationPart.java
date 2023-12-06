@@ -2,6 +2,8 @@ package mrtjp.projectred.core.part;
 
 import mrtjp.projectred.core.RedstonePropagator;
 
+import javax.annotation.Nullable;
+
 import static mrtjp.projectred.core.RedstonePropagator.*;
 
 /**
@@ -22,7 +24,7 @@ public interface IRedstonePropagationPart extends IPropagationPart, IPropagation
     int calculateSignal();
 
     @Override
-    default void updateAndPropagate(IPropagationPart prev, int mode) {
+    default void updateAndPropagate(@Nullable IPropagationPart prev, int mode) {
         if (mode == DROPPING && getSignal() == 0) return;
 
         int oldSignal = getSignal();

@@ -1,8 +1,10 @@
 package mrtjp.projectred.api;
 
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+
+import javax.annotation.Nullable;
 
 public interface ITransmissionAPI
 {
@@ -20,11 +22,11 @@ public interface ITransmissionAPI
      * emitted to this block.
      *
      * @param world The world containing the block
-     * @param pos The coordinates of the block/tile querying signal
-     * @param side The side of the block
+     * @param pos   The coordinates of the block/tile querying signal
+     * @param side  The side of the block
      * @return A bundled signal {@link IBundledEmitter}
      */
-    byte[] getBundledInput(Level world, BlockPos pos, Direction side);
+    @Nullable byte[] getBundledInput(Level world, BlockPos pos, Direction side);
 
     /**
      * Checks to see if the position specified contains a bundled cable.

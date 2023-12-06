@@ -11,7 +11,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static mrtjp.projectred.fabrication.editor.EditorDataUtils.loadTileCoord;
 import static mrtjp.projectred.fabrication.editor.EditorDataUtils.saveTileCoord;
@@ -162,7 +161,7 @@ public class BaseTileMap implements FETileMap {
             int x = tileTag.getByte("_x");
             int y = tileTag.getByte("_y");
             int z = tileTag.getByte("_z");
-            BaseTile tile = ICTileType.createFromId(id);
+            BaseTile tile = Objects.requireNonNull(ICTileType.createFromId(id));
             addTile(new TileCoord(x, y, z), tile);
             tile.load(tileTag);
         }
@@ -194,9 +193,9 @@ public class BaseTileMap implements FETileMap {
 
         int id = in.readUByte();
         while (id != 255) {
-            BaseTile tile = ICTileType.createFromId(id);
+            BaseTile tile = Objects.requireNonNull(ICTileType.createFromId(id));
             TileCoord coord = new TileCoord(in.readByte(), in.readByte(), in.readByte());
-            addTile(coord, tile);
+            addTile(coord,tile);
             tile.readDesc(in);
 
             id = in.readUByte();

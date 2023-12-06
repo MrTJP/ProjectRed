@@ -1,7 +1,6 @@
 package mrtjp.projectred.fabrication.gui;
 
 import mrtjp.projectred.redui.AbstractGuiNode;
-import net.covers1624.quack.collection.FastStream;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +31,7 @@ public class TabControllerNode extends AbstractGuiNode {
         for (TabEntry entry : tabs) {
             TabButtonNode.TabState state = entry.buttonNode.getRenderState();
             if (state == OPEN || state == MINIMIZED) {
-                return Optional.ofNullable(entry.tab);
+                return Optional.of(entry.tab);
             }
         }
         return Optional.empty();

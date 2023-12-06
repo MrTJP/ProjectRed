@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 import static mrtjp.projectred.core.part.IOrientableFacePart.flipMaskZ;
@@ -1107,7 +1108,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         /*
          * Copied from ComparatorBlock#getItemFrame(World, Direction, BlockPos)
          */
-        private ItemFrame getItemFrame(Level world, Direction facing, BlockPos pos) {
+        private @Nullable ItemFrame getItemFrame(Level world, Direction facing, BlockPos pos) {
             List<ItemFrame> list = world.getEntitiesOfClass(ItemFrame.class, new AABB((double) pos.getX(), (double) pos.getY(), (double) pos.getZ(), (double) (pos.getX() + 1), (double) (pos.getY() + 1), (double) (pos.getZ() + 1)), (p_210304_1_) -> {
                 return p_210304_1_ != null && p_210304_1_.getDirection() == facing;
             });

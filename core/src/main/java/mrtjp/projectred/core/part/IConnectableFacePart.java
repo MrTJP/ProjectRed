@@ -8,7 +8,8 @@ import codechicken.multipart.util.PartMap;
 import mrtjp.projectred.api.IConnectable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.Level;
+
+import javax.annotation.Nullable;
 
 /**
  * Default implementation of Connectable face part. Manages connection mask and facilitates connections with
@@ -57,7 +58,7 @@ public interface IConnectableFacePart extends MultiPart, IConnectablePart, IOrie
     //endregion
 
     //region Connectable Neighbor Acquisitions
-    default IConnectable getCorner(int r) {
+    default @Nullable IConnectable getCorner(int r) {
         int absDir = absoluteDir(r);
         BlockPos pos = pos()
                 .relative(Direction.values()[absDir])
@@ -67,18 +68,18 @@ public interface IConnectableFacePart extends MultiPart, IConnectablePart, IOrie
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
 
-    default IConnectable getStraight(int r) {
+    default @Nullable IConnectable getStraight(int r) {
         BlockPos pos = pos().relative(Direction.values()[absoluteDir(r)]);
         MultiPart part = BlockMultipart.getPart(level(), pos, getSide());
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
 
-    default IConnectable getInternal(int r) {
+    default @Nullable IConnectable getInternal(int r) {
         MultiPart part = tile().getSlottedPart(absoluteDir(r));
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
 
-    default IConnectable getCenter() {
+    default @Nullable IConnectable getCenter() {
         MultiPart part = tile().getSlottedPart(6);
         return part instanceof IConnectable ? (IConnectable) part : null;
     }

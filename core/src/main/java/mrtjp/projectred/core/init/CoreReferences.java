@@ -13,19 +13,20 @@ import static mrtjp.projectred.core.init.CoreBlocks.ID_ELECTROTINE_GENERATOR;
 import static mrtjp.projectred.core.init.CoreItems.*;
 
 @ObjectHolder(MOD_ID)
+@SuppressWarnings("NotNullFieldNotInitialized")
 public class CoreReferences {
 
     // Blocks
     @ObjectHolder(ID_ELECTROTINE_GENERATOR)
-    public static Block ELECTROTINE_GENERATOR_BLOCK = null;
+    public static Block ELECTROTINE_GENERATOR_BLOCK;
 
     // Containers
     @ObjectHolder(ID_ELECTROTINE_GENERATOR)
-    public static MenuType<ElectrotineGeneratorContainer> ELECTROTINE_GENERATOR_CONTAINER = null;
+    public static MenuType<ElectrotineGeneratorContainer> ELECTROTINE_GENERATOR_CONTAINER;
 
     // Tile
     @ObjectHolder(ID_ELECTROTINE_GENERATOR)
-    public static BlockEntityType<ElectrotineGeneratorTile> ELECTROTINE_GENERATOR_TILE = null;
+    public static BlockEntityType<ElectrotineGeneratorTile> ELECTROTINE_GENERATOR_TILE;
 
     // Items
     @ObjectHolder(ID_PLATE)

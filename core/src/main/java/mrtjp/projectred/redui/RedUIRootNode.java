@@ -27,7 +27,7 @@ public interface RedUIRootNode extends RedUINode {
     }
 
     @Override
-    default RedUINode getParent() {
+    default @Nullable RedUINode getParent() {
         throw new RuntimeException("Cannot get parent of root node");
     }
 

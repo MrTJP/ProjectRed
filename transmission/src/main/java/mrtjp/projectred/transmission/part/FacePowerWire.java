@@ -9,6 +9,7 @@ import mrtjp.projectred.core.power.PowerConductor;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.core.BlockPos;
 
+import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -73,7 +74,7 @@ public abstract class FacePowerWire extends BaseFaceWirePart implements IPowerCo
         }
     }
 
-    private PowerConductor retrieveConductor(FaceLookup lookup) {
+    private @Nullable PowerConductor retrieveConductor(FaceLookup lookup) {
 
         if (lookup.part instanceof IPowerConnectable) {
             return ((IPowerConnectable) lookup.part).getConductor(lookup.otherRotation);

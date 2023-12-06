@@ -13,7 +13,9 @@ import codechicken.lib.vec.uv.UVTranslation;
 import mrtjp.projectred.core.BundledSignalsLib;
 import mrtjp.projectred.core.UVT;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class WireModelBuilder {
 
@@ -27,7 +29,7 @@ public class WireModelBuilder {
     private int mask = 0;
     private int connMask = 0;
     private int connCount = 0;
-    private CCModel model = null;
+    private @Nullable CCModel model = null;
     private int i = 0;
 
     private int modelKey = 0;
@@ -48,8 +50,10 @@ public class WireModelBuilder {
         if (!modelBuilt) {
             buildModel();
             modelBuilt = true;
+            assert model != null;
             return model;
         }
+        assert model != null;
         return model.copy();
     }
 
@@ -121,7 +125,7 @@ public class WireModelBuilder {
         }
 
         if (inv) verts = withBottom(verts, 0, 4);
-        i = addVerts(model, verts, i);
+        i = addVerts(Objects.requireNonNull(model), verts, i);
     }
 
     private void generateSide(int r) {
@@ -150,7 +154,7 @@ public class WireModelBuilder {
 
         Transformation t = Rotation.quarterRotations[r].at(Vector3.CENTER);
         apply(t, verts);
-        i = addVerts(model, verts, i);
+        i = addVerts(Objects.requireNonNull(model), verts, i);
     }
 
     private Vertex5[] genrateSideInv(int r) {

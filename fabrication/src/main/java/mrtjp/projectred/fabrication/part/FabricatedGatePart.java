@@ -4,7 +4,6 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import mrtjp.fengine.api.ICFlatMap;
 import mrtjp.projectred.core.BundledSignalsLib;
-import mrtjp.projectred.fabrication.engine.ICInterfaceType;
 import mrtjp.projectred.fabrication.engine.ICSimulationContainer;
 import mrtjp.projectred.fabrication.engine.InterfaceSpec;
 import mrtjp.projectred.fabrication.engine.PRFabricationEngine;
@@ -15,6 +14,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+
+import javax.annotation.Nullable;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
 import static mrtjp.projectred.fabrication.editor.EditorDataUtils.*;
@@ -32,10 +33,10 @@ public class FabricatedGatePart extends BundledGatePart {
     }
 
     @Override
-    public void preparePlacement(Player player, BlockPos pos, int side) {
+    public void preparePlacement(@Nullable Player player, BlockPos pos, int side) {
         super.preparePlacement(player, pos, side);
 
-        if (player.level.isClientSide) return;
+        if (player == null || player.level.isClientSide) return;
 
         ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND); // TODO handle offhand
         if (stack.isEmpty() || !stack.hasTag()) {
@@ -44,11 +45,12 @@ public class FabricatedGatePart extends BundledGatePart {
         }
 
         CompoundTag tag = stack.getTag();
-        icName = tag.getString(KEY_IC_NAME);
-        ICFlatMap flatMap = PRFabricationEngine.instance.deserializeFlatMap(tag.getString(KEY_FLAT_MAP));
-        simulationContainer.setFlatMap(flatMap);
-
-        ifSpec.loadFrom(tag, KEY_IO_SPEC);
+        if (tag != null) {
+            icName = tag.getString(KEY_IC_NAME);
+            ICFlatMap flatMap = PRFabricationEngine.instance.deserializeFlatMap(tag.getString(KEY_FLAT_MAP));
+            simulationContainer.setFlatMap(flatMap);
+            ifSpec.loadFrom(tag, KEY_IO_SPEC);
+        }
     }
 
     @Override
@@ -123,7 +125,7 @@ public class FabricatedGatePart extends BundledGatePart {
     }
 
     @Override
-    protected byte[] getBundledOutput(int r) {
+    protected @Nullable byte[] getBundledOutput(int r) {
         if (!ifSpec.isOutput(r)) return null;
 
         return switch (ifSpec.getInterfaceType(r)) {

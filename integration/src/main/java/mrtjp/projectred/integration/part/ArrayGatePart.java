@@ -27,6 +27,8 @@ import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import javax.annotation.Nullable;
+
 public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwirePart, IPropagationFacePart, IRedstonePropagationPart {
 
     private int propagationMask = 0xF;
@@ -52,7 +54,7 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
     }
 
     @Override
-    public void updateAndPropagate(IPropagationPart prev, int mode) {
+    public void updateAndPropagate(@Nullable IPropagationPart prev, int mode) {
         int rd = sideDiff(prev);
         int uMask = 0;
         for (int r = 0; r < 4; r++) {
@@ -81,10 +83,10 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
         notifyExternals(nonConn & propagationMask);
     }
 
-    private int sideDiff(IPropagationPart p) {
+    private int sideDiff(@Nullable IPropagationPart p) {
         if (!(p instanceof MultiPart)) return 0xF;
 
-        if (!(p instanceof IOrientableFacePart) || ((MultiPart) p).tile() == null) return 0xF;
+        if (!(p instanceof IOrientableFacePart)) return 0xF;
 
         MultiPart part = (MultiPart) p;
         IOrientableFacePart facePart = (IOrientableFacePart) p;
@@ -255,9 +257,9 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
 
     //region Multipart properties
     @Override
-    public void preparePlacement(Player player, BlockPos pos, int side) {
+    public void preparePlacement(@Nullable Player player, BlockPos pos, int side) {
         super.preparePlacement(player, pos, side);
-        if (canCross()) {
+        if (canCross() && player != null) {
             // Note: tile() is not available yet, must access from player.level
             MultiPart tpart = BlockMultipart.getPart(player.level, pos, getSide()^1);
             if (tpart instanceof ArrayGatePart) {

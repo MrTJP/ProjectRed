@@ -9,6 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 
+import java.util.Objects;
+
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 
 public class ExpansionNetwork {
@@ -31,7 +33,7 @@ public class ExpansionNetwork {
         public void handlePacket(PacketCustom packet, Minecraft mc, ClientPacketListener handler) {
             switch (packet.getType()) {
                 case MM_FROM_SERVER:
-                    MovementManager.getInstance(mc.level).read(packet, mc.level);
+                    MovementManager.getInstance(Objects.requireNonNull(mc.level)).read(packet, mc.level);
                     break;
 
                 default:

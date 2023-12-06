@@ -5,17 +5,16 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Transformation;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.fengine.TileCoord;
 import mrtjp.fengine.tiles.FETile;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,8 +22,8 @@ public abstract class BaseTile implements FETile {
 
     private final ICTileType tileType;
 
-    private BaseTileMap map;
-    private TileCoord pos;
+    private @Nullable BaseTileMap map;
+    private @Nullable TileCoord pos;
 
     public BaseTile(ICTileType tileType) {
         this.tileType = tileType;
@@ -41,14 +40,17 @@ public abstract class BaseTile implements FETile {
     }
 
     public BaseTileMap getMap() {
+        assert map != null;
         return map;
     }
 
     public ICWorkbenchEditor getEditor() {
+        assert map != null;
         return map.getEditor();
     }
 
     public TileCoord getPos() {
+        assert pos != null;
         return pos;
     }
 
