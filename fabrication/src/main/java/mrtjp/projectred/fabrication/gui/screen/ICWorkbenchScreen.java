@@ -15,7 +15,6 @@ import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractGuiNode;
 import mrtjp.projectred.redui.ItemStackNode;
 import mrtjp.projectred.redui.RedUIScreen;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
@@ -25,9 +24,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
-import static mrtjp.projectred.fabrication.editor.ICWorkbenchEditor.*;
+import static mrtjp.projectred.fabrication.editor.ICWorkbenchEditor.UNIFORM_GRAY;
+import static mrtjp.projectred.fabrication.editor.ICWorkbenchEditor.UNIFORM_RED;
 import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class ICWorkbenchScreen extends RedUIScreen {
@@ -37,11 +39,11 @@ public class ICWorkbenchScreen extends RedUIScreen {
     private final ICWorkbenchTile tile;
     private final ICWorkbenchEditor editor;
 
-    private AbstractGuiNode contentNode;
-    private InactiveOverlayNode overlayNode;
+    private @Nullable AbstractGuiNode contentNode;
+    private @Nullable InactiveOverlayNode overlayNode;
 
     public ICWorkbenchScreen(ICWorkbenchTile tile) {
-        super(304, 222, new TextComponent(tile.getType().getRegistryName().toString()));
+        super(304, 222, new TextComponent(Objects.requireNonNull(tile.getType().getRegistryName()).toString()));
 
         this.tile = tile;
         this.editor = tile.getEditor();
@@ -136,8 +138,8 @@ public class ICWorkbenchScreen extends RedUIScreen {
     private void refreshOverlay() {
         // If active, hide overlay and show every thing else. Otherwise, do opposite
         boolean isActive = editor.isActive();
-        overlayNode.setHidden(isActive);
-        contentNode.setHidden(!isActive);
+        Objects.requireNonNull(overlayNode).setHidden(isActive);
+        Objects.requireNonNull(contentNode).setHidden(!isActive);
     }
 
     private static class InactiveOverlayNode extends AbstractGuiNode {

@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 public class PhotomaskSetItem extends Item {
 
@@ -30,7 +31,7 @@ public class PhotomaskSetItem extends Item {
     @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
 
-        if (stack.getTag() != null) {
+        if (stack.getTag() != null && context.getPlayer() != null) {
             ItemStack gate = GateType.FABRICATED_GATE.makeStack();
             gate.setTag(stack.getTag());
 
@@ -43,7 +44,7 @@ public class PhotomaskSetItem extends Item {
 
     public static ItemStack createDieStack(ItemStack photomask, int count) {
         ItemStack validDieStack = new ItemStack(FabricationReferences.VALID_DIE_ITEM, count);
-        validDieStack.setTag(photomask.getTag().copy()); //Nothing additional to add yet
+        validDieStack.setTag(Objects.requireNonNull(photomask.getTag()).copy()); //Nothing additional to add yet
         return validDieStack;
     }
 }

@@ -1,6 +1,7 @@
 package mrtjp.projectred.fabrication.item;
 
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
+import mrtjp.projectred.fabrication.editor.EditorDataUtils;
 import mrtjp.projectred.integration.GateType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -10,6 +11,7 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 public class ValidDieItem extends Item {
 
@@ -25,7 +27,9 @@ public class ValidDieItem extends Item {
 
     public static ItemStack createGatePart(ItemStack die) {
         ItemStack gate = GateType.FABRICATED_GATE.makeStack();
-        gate.setTag(die.getTag().copy());
+        if (EditorDataUtils.canFabricate(die.getTag())) {
+            gate.setTag(Objects.requireNonNull(die.getTag()).copy());
+        }
         return gate;
     }
 }

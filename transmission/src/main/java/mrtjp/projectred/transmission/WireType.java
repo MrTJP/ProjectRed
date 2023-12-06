@@ -17,8 +17,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
@@ -114,22 +116,22 @@ public enum WireType {
     private final String unlocalName;
     private final boolean isCenterPart;
     private final Function<WireType, BaseWirePart> partFactory;
-    private final EnumColour colour;
+    private final @Nullable EnumColour colour;
     private final int thickness;
     private final int itemColour;
     private final List<String> textureNames;
 
-    private RegistryObject<Item> itemSupplier;
-    private RegistryObject<MultipartType<BaseWirePart>> partSupplier;
+    private @Nullable RegistryObject<Item> itemSupplier;
+    private @Nullable RegistryObject<MultipartType<BaseWirePart>> partSupplier;
 
     @OnlyIn (Dist.CLIENT)
-    private List<TextureAtlasSprite> textures;
+    private @Nullable List<TextureAtlasSprite> textures;
 
     WireType(String unlocalName, boolean isCenterPart, Function<WireType, BaseWirePart> partFactory, int thickness, String... textures) {
         this(unlocalName, isCenterPart, partFactory, null, thickness, textures);
     }
 
-    WireType(String unlocalName, boolean isCenterPart, Function<WireType, BaseWirePart> partFactory, EnumColour colour, int thickness, String... textures) {
+    WireType(String unlocalName, boolean isCenterPart, Function<WireType, BaseWirePart> partFactory, @Nullable EnumColour colour, int thickness, String... textures) {
         this(unlocalName, isCenterPart, partFactory, colour, thickness, 0xFFFFFF, textures);
     }
 
@@ -137,7 +139,7 @@ public enum WireType {
         this(unlocalName, isCenterPart, partFactory, null, thickness, itemColour, textures);
     }
 
-    WireType(String unlocalName, boolean isCenterPart, Function<WireType, BaseWirePart> partFactory, EnumColour colour, int thickness, int itemColour, String... textures) {
+    WireType(String unlocalName, boolean isCenterPart, Function<WireType, BaseWirePart> partFactory, @Nullable EnumColour colour, int thickness, int itemColour, String... textures) {
         this.unlocalName = unlocalName;
         this.isCenterPart = isCenterPart;
         this.partFactory = partFactory;
@@ -156,7 +158,7 @@ public enum WireType {
     }
 
     public Item getItem() {
-        return itemSupplier.get();
+        return Objects.requireNonNull(itemSupplier).get();
     }
 
     public ItemStack makeStack() {
@@ -164,7 +166,7 @@ public enum WireType {
     }
 
     public MultipartType<BaseWirePart> getPartType() {
-        return partSupplier.get();
+        return Objects.requireNonNull(partSupplier).get();
     }
 
     public BaseWirePart newPart() {
@@ -172,7 +174,7 @@ public enum WireType {
     }
 
     public EnumColour getColour() {
-        return colour;
+        return Objects.requireNonNull(colour);
     }
 
     public int getColourIdx() {
@@ -189,7 +191,7 @@ public enum WireType {
 
     @OnlyIn (Dist.CLIENT)
     public List<TextureAtlasSprite> getTextures() {
-        return textures;
+        return Objects.requireNonNull(textures);
     }
 
     @OnlyIn (Dist.CLIENT)

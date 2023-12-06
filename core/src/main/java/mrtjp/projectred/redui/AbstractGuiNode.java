@@ -10,8 +10,8 @@ import java.util.List;
 
 public abstract class AbstractGuiNode implements RedUINode {
 
-    private RedUIRootNode root;
-    private RedUINode parent;
+    private @Nullable RedUIRootNode root;
+    private @Nullable RedUINode parent;
 
     private Rect frame = new Rect(Point.ZERO, Size.ZERO);
     private double zPos = 0;
@@ -33,7 +33,7 @@ public abstract class AbstractGuiNode implements RedUINode {
     }
 
     @Override
-    public RedUIRootNode getRoot() {
+    public @Nullable RedUIRootNode getRoot() {
         return root;
     }
 
@@ -43,7 +43,7 @@ public abstract class AbstractGuiNode implements RedUINode {
     }
 
     @Override
-    public RedUINode getParent() {
+    public @Nullable RedUINode getParent() {
         return parent;
     }
 

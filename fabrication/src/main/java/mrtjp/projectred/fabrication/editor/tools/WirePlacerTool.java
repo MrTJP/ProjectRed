@@ -66,17 +66,17 @@ public class WirePlacerTool extends BaseICEditorTool {
             if (!canPlaceAt(pos, overwrite)) continue;
 
             WireTile tile = (WireTile) wireType.tileType.create();
-            if (editor.getTileMap().getTile(pos).isPresent()) {
-                editor.removeTile(pos);
+            if (getEditor().getTileMap().getTile(pos).isPresent()) {
+                getEditor().removeTile(pos);
             }
-            editor.addTile(tile, pos);
+            getEditor().addTile(tile, pos);
         }
     }
 
     protected void sendPlaceWires() {
         if (selectedPositionsList.isEmpty()) return;
 
-        MCDataOutput out = editor.getToolStream(this);
+        MCDataOutput out = getEditor().getToolStream(this);
         out.writeBoolean(overwrite);
         out.writeByte(wireType.ordinal());
         out.writeByte(selectedPositionsList.size());
@@ -89,7 +89,7 @@ public class WirePlacerTool extends BaseICEditorTool {
 
     protected boolean canPlaceAt(TileCoord pos, boolean overwrite) {
         if (!isInBody(pos) || isOnIOEdge(pos)) return false;
-        return editor.getTileMap().getTile(pos).isEmpty() || overwrite;
+        return getEditor().getTileMap().getTile(pos).isEmpty() || overwrite;
     }
 
     protected void addToSelection(Vector3 mousePosition) {

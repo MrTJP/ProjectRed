@@ -20,6 +20,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.IOException;
@@ -31,7 +32,7 @@ import static net.minecraft.client.renderer.RenderStateShard.*;
 
 public class HaloRenderer {
 
-    private static HaloBloomPostChain HALO_POST_CHAIN;
+    private static @Nullable HaloBloomPostChain HALO_POST_CHAIN;
 
     private static final RenderType HALO_GLOW_RENDER_TYPE = RenderType.create(MOD_ID + ":halo",
             DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 2048, false, true,
@@ -136,6 +137,7 @@ public class HaloRenderer {
 
         // Setup post-chain
         preparePostChain();
+        assert HALO_POST_CHAIN != null;
         HALO_POST_CHAIN.getInputTarget().clear(Minecraft.ON_OSX);
         HALO_POST_CHAIN.getInputTarget().copyDepthFrom(Minecraft.getInstance().getMainRenderTarget());
 
@@ -209,6 +211,7 @@ public class HaloRenderer {
         // Fabulous bloom post-processing effects rendered here instead of during stage
         if (isFabulous() && postChainFlushPending) {
             postChainFlushPending = false;
+            assert HALO_POST_CHAIN != null;
             HALO_POST_CHAIN.process(event.getPartialTick());
             Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
         }
@@ -324,6 +327,7 @@ public class HaloRenderer {
         BLACK     (0x1F1F1FA0, 0.4F, 0.4F, 0.4F);
         //@formatter:on
 
+        //noinspection FieldCanBeLocal
         private final int rgba;
         private final float glowBrightness;
         private final float itemGlowBrightness;

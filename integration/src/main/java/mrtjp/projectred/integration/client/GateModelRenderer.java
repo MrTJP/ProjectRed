@@ -91,13 +91,13 @@ public class GateModelRenderer {
         renderDynamic(ccrs, key, t, null, null, 0, 0, partialFrame);
     }
 
-    public void renderDynamic(CCRenderState ccrs, IGateRenderData key, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
+    public void renderDynamic(CCRenderState ccrs, IGateRenderData key, Transformation t, @Nullable PoseStack mStack, @Nullable MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
         GateRenderer r = getRenderer(key.getRenderIndex());
         if (r.hasSpecials()) {
             Transformation t2 = VecLib.orientT(key.getOrientation()).with(t);
             r.prepareDynamic(key, partialTicks);
             r.renderDynamic(ccrs, t2);
-            if (mStack != null) {
+            if (mStack != null && buffers != null) {
                 r.renderCustomDynamic(ccrs, t2, mStack, buffers, packedLight, packedOverlay, partialTicks);
             }
         }
@@ -109,13 +109,13 @@ public class GateModelRenderer {
         renderInventory(ccrs, stack, renderIndex, orient, t, null, null, 0, 0);
     }
 
-    public void renderInventory(CCRenderState ccrs, @Nullable ItemStack stack, int renderIndex, int orient, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay) {
+    public void renderInventory(CCRenderState ccrs, @Nullable ItemStack stack, int renderIndex, int orient, Transformation t, @Nullable PoseStack mStack, @Nullable MultiBufferSource buffers, int packedLight, int packedOverlay) {
         GateRenderer r = getRenderer(renderIndex);
         r.prepareInventory(stack);
         r.renderStatic(ccrs, orient, t);
         if (r.hasSpecials()) {
             r.renderDynamic(ccrs, t);
-            if (mStack != null) {
+            if (mStack != null && buffers != null) {
                 r.renderCustomDynamic(ccrs, t, mStack, buffers, packedLight, packedOverlay, 0);
             }
         }
@@ -1870,7 +1870,7 @@ public class GateModelRenderer {
         public static final String KEY_COMPILER_LOG = "compiler_log"; // CompoundTag
 
         // Minimum subset of data required to fabricate gate (i.e. create photomask)
-        public static boolean hasFabricationTarget(CompoundTag tag) {
+        public static boolean hasFabricationTarget(@Nullable CompoundTag tag) {
             return tag != null &&
                     tag.contains(KEY_IS_BUILT) &&
                     tag.contains(KEY_FLAT_MAP);

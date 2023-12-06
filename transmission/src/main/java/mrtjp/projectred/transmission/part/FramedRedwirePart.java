@@ -18,6 +18,8 @@ import mrtjp.projectred.transmission.WireType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 
+import javax.annotation.Nullable;
+
 import static mrtjp.projectred.core.RedstonePropagator.FORCE;
 import static mrtjp.projectred.core.RedstonePropagator.RISING;
 
@@ -72,7 +74,7 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
     }
 
     @Override
-    public void onPartChanged(MultiPart part) {
+    public void onPartChanged(@Nullable MultiPart part) {
         if (!level().isClientSide) {
             RedstonePropagator.logCalculation();
             if (updateOutward()) {

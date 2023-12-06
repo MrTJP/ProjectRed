@@ -1,16 +1,17 @@
 package mrtjp.projectred.core.part;
 
-import codechicken.multipart.api.part.MultiPart;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.RedstonePropagator;
+
+import javax.annotation.Nullable;
 
 public interface IPropagationFacePart extends IPropagationHooks, IConnectableFacePart {
 
     default void propagateOther(int mode) { }
 
-    default void propagateForward(IPropagationPart prev, int mode) {
+    default void propagateForward(@Nullable IPropagationPart prev, int mode) {
         if (mode != RedstonePropagator.FORCED) {
-            RedstonePropagator.addPartChange((MultiPart) this);
+            RedstonePropagator.addPartChange(this);
         }
 
         for (int r = 0; r < 4; r++) {
@@ -37,8 +38,8 @@ public interface IPropagationFacePart extends IPropagationHooks, IConnectableFac
     }
 
     @Override
-    default void propagateBackward(IPropagationPart prev, int mode) {
-        if (shouldPropagate(prev, mode)) {
+    default void propagateBackward(@Nullable IPropagationPart prev, int mode) {
+        if (prev != null && shouldPropagate(prev, mode)) {
             RedstonePropagator.propagateTo(prev, this, mode);
         }
     }
@@ -50,7 +51,7 @@ public interface IPropagationFacePart extends IPropagationHooks, IConnectableFac
         return 0xF;
     }
 
-    default boolean propagateTo(IConnectable to, IPropagationPart prev, int mode) {
+    default boolean propagateTo(@Nullable IConnectable to, @Nullable IPropagationPart prev, int mode) {
         if (to != null) {
             if (to == prev) return false;
             if (to instanceof IPropagationPart) {

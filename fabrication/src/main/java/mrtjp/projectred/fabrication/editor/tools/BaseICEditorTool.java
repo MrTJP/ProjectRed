@@ -7,15 +7,21 @@ import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class BaseICEditorTool implements IICEditorTool {
 
-    protected ICWorkbenchEditor editor;
+    private @Nullable ICWorkbenchEditor editor;
 
     @Override
     public void bindEditor(ICWorkbenchEditor editor) {
         this.editor = editor;
+    }
+
+    public ICWorkbenchEditor getEditor() {
+        return Objects.requireNonNull(editor);
     }
 
     @Override
@@ -25,12 +31,12 @@ public abstract class BaseICEditorTool implements IICEditorTool {
         if (!isFirstHit) return;
 
         TileCoord pos = IICEditorTool.toNearestPosition(mousePosition);
-        editor.getTileMap().getBaseTile(pos).ifPresent(tile -> tile.buildToolTip(tooltip));
+        getEditor().getTileMap().getBaseTile(pos).ifPresent(tile -> tile.buildToolTip(tooltip));
     }
 
     protected boolean isInBody(TileCoord coord) {
-        TileCoord minBounds = editor.getTileMap().getMinBounds();
-        TileCoord maxBounds = editor.getTileMap().getMaxBounds();
+        TileCoord minBounds = getEditor().getTileMap().getMinBounds();
+        TileCoord maxBounds = getEditor().getTileMap().getMaxBounds();
 
         return coord.x > minBounds.x && coord.x < maxBounds.x &&
                 coord.y >= minBounds.y && coord.y <= maxBounds.y &&
@@ -38,8 +44,8 @@ public abstract class BaseICEditorTool implements IICEditorTool {
     }
 
     protected boolean isOnIOEdge(TileCoord coord) {
-        TileCoord minBounds = editor.getTileMap().getMinBounds();
-        TileCoord maxBounds = editor.getTileMap().getMaxBounds();
+        TileCoord minBounds = getEditor().getTileMap().getMinBounds();
+        TileCoord maxBounds = getEditor().getTileMap().getMaxBounds();
 
         if (coord.y != 0) return false;
 

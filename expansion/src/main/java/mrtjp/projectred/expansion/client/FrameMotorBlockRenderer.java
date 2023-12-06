@@ -15,8 +15,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 
+import javax.annotation.Nullable;
+import java.util.Objects;
+
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 
+@SuppressWarnings("NotNullFieldNotInitialized")
 public class FrameMotorBlockRenderer extends FullyOrientableBlockRenderer {
 
     public static final FrameMotorBlockRenderer INSTANCE = new FrameMotorBlockRenderer();
@@ -29,9 +33,9 @@ public class FrameMotorBlockRenderer extends FullyOrientableBlockRenderer {
     private static TextureAtlasSprite rightIcon;
     private static TextureAtlasSprite bottomIcon;
 
-    private static MultiIconTransformation iconT1;
-    private static MultiIconTransformation iconT2;
-    private static MultiIconTransformation iconT3;
+    private static @Nullable MultiIconTransformation iconT1;
+    private static @Nullable MultiIconTransformation iconT2;
+    private static @Nullable MultiIconTransformation iconT3;
 
     private FrameMotorBlockRenderer() {
     }
@@ -58,14 +62,14 @@ public class FrameMotorBlockRenderer extends FullyOrientableBlockRenderer {
         boolean isCharged = state.getValue(ProjectRedBlock.CHARGED);
         MultiIconTransformation iconT = isWorking ? iconT3 : isCharged ? iconT2 : iconT1;
 
-        return new RenderData(s, r, iconT);
+        return new RenderData(s, r, Objects.requireNonNull(iconT));
     }
 
     @Override
     protected RenderData getItemRenderData(ItemStack stack) {
 
         createIconTransforms();
-        return new RenderData(0, 0, iconT1);
+        return new RenderData(0, 0, Objects.requireNonNull(iconT1));
     }
 
     private void createIconTransforms() {
@@ -94,7 +98,7 @@ public class FrameMotorBlockRenderer extends FullyOrientableBlockRenderer {
             case 2, 3 -> frontBack0Icon;
             case 4 -> leftIcon;
             case 5 -> rightIcon;
-            default -> null;
+            default -> throw new IllegalArgumentException("Invalid side: " + side);
         };
     }
 

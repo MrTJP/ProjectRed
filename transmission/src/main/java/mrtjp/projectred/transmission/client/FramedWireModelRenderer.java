@@ -17,6 +17,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 
+import javax.annotation.Nullable;
+
 public class FramedWireModelRenderer {
 
     private static final CCModel[] scaffoldModels = new FramedWireScaffoldingModelBuilder().build();
@@ -53,7 +55,7 @@ public class FramedWireModelRenderer {
         render(ccrs, modelKey(wire), wire.getRenderHue(), wire.getIcon(), wire.getMaterial());
     }
 
-    public static void render(CCRenderState ccrs, int modelKey, int hue, TextureAtlasSprite icon, MicroMaterial material) {
+    public static void render(CCRenderState ccrs, int modelKey, int hue, TextureAtlasSprite icon, @Nullable MicroMaterial material) {
         IconTransformation uvt = new IconTransformation(icon);
         ColourMultiplier c = ColourMultiplier.instance(hue);
 

@@ -28,6 +28,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 import static mrtjp.projectred.core.BundledSignalsLib.*;
@@ -41,7 +42,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
     //region Bundled emitters
     @Override
-    public byte[] getBundledSignal(int r) {
+    public @Nullable byte[] getBundledSignal(int r) {
         int ir = toInternal(r);
         if ((bundledOutputMask(shape()) & 1 << ir) != 0) {
             return getBundledOutput(ir);
@@ -51,7 +52,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
     //endregion
 
     //region Signal acquisition
-    protected byte[] getBundledInput(int r) {
+    protected @Nullable byte[] getBundledInput(int r) {
         int ar = toAbsolute(r);
         if (maskConnectsCorner(ar)) {
             return calcCornerSignal(ar);
@@ -63,22 +64,22 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         return null;
     }
 
-    private byte[] calcCornerSignal(int r) {
+    private @Nullable byte[] calcCornerSignal(int r) {
         FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
         return resolveArray(lookup);
     }
 
-    private byte[] calcStraightSignal(int r) {
+    private @Nullable byte[] calcStraightSignal(int r) {
         FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
         return resolveArray(lookup);
     }
 
-    private byte[] calcInsideSignal(int r) {
+    private @Nullable byte[] calcInsideSignal(int r) {
         FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
         return resolveArray(lookup);
     }
 
-    protected byte[] resolveArray(FaceLookup lookup) {
+    protected @Nullable byte[] resolveArray(FaceLookup lookup) {
         if (lookup.part instanceof IBundledEmitter) {
             return ((IBundledEmitter) lookup.part).getBundledSignal(lookup.otherRotation);
 
@@ -86,7 +87,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
             return ((IBundledTile) lookup.tile).getBundledSignal(Rotation.rotateSide(lookup.otherSide, lookup.otherRotation));
 
         } else if (lookup.tile != null) {
-            return BundledSignalsLib.getBundledSignalViaInteraction(lookup.tile.getLevel(), lookup.tile.getBlockPos(), Direction.values()[Rotation.rotateSide(lookup.otherSide, lookup.otherRotation)]);
+            return BundledSignalsLib.getBundledSignalViaInteraction(Objects.requireNonNull(lookup.tile.getLevel()), lookup.tile.getBlockPos(), Direction.values()[Rotation.rotateSide(lookup.otherSide, lookup.otherRotation)]);
         }
         return null;
     }
@@ -144,7 +145,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         return 0;
     }
 
-    protected byte[] getBundledOutput(int r) {
+    protected @Nullable byte[] getBundledOutput(int r) {
         return null;
     }
     //endregion
@@ -153,7 +154,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
         private static final int KEY_PACKED_IO = 20;
 
-        private byte[] input0, output0, input2, output2 = null;
+        private @Nullable byte[] input0, output0, input2, output2 = null;
         private int packedOutput = 0;
 
         public BusTransceiver(GateType type) {
@@ -255,7 +256,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         }
 
         @Override
-        protected byte[] getBundledOutput(int r) {
+        protected @Nullable byte[] getBundledOutput(int r) {
             return r == 0 ? output0 : output2;
         }
 
@@ -290,7 +291,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
             if (!signalsEqual(output0, calcBundledOutput(0)) || !signalsEqual(output2, calcBundledOutput(2))) scheduleTick(2);
         }
 
-        protected byte[] calcBundledOutput(int r) {
+        protected @Nullable byte[] calcBundledOutput(int r) {
             int input = state() & 0xF;
             if (shape() == 1) input = flipMaskZ(input);
 
@@ -327,7 +328,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         private static final int KEY_OUTPUT = 20;
         private static final int KEY_MASK = 21;
 
-        private byte[] unpackedOut = new byte[16];
+        private final byte[] unpackedOut = new byte[16];
         private short output = 0;
         private short mask = (short) 0xFFFF;
 
@@ -348,7 +349,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
             super.load(tag);
             mask = tag.getShort("in");
             output = tag.getShort("out");
-            unpackedOut = unpackDigital(unpackedOut, output);
+            unpackDigital(unpackedOut, output);
         }
 
         @Override
@@ -447,7 +448,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
             short oldOut = output;
             output = (state() & 0xF) != 0 ? shape() == 0 ? calc1BitOut() : calcNBitOut() : oldOut;
             if (oldOut != output) {
-                unpackedOut = unpackDigital(unpackedOut, output);
+                unpackDigital(unpackedOut, output);
                 onOutputChange(1);
                 sendOutUpdate();
             }
@@ -477,7 +478,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         }
 
         @Override
-        protected byte[] getBundledOutput(int r) {
+        protected @Nullable byte[] getBundledOutput(int r) {
             return r == 0 ? unpackedOut : null;
         }
 
@@ -495,7 +496,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
         private short bIn, bOut;
         private byte rsIn, rsOut;
-        private byte[] bOutUnpacked = null;
+        private final byte[] bOutUnpacked = new byte[16];
 
         boolean forceBInUpdate, forceBOutUpdate = false;
 
@@ -506,7 +507,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         private void setBOut(int newBOut) {
             if (bOut != (short) newBOut) {
                 bOut = (short) newBOut;
-                bOutUnpacked = unpackDigital(bOutUnpacked, bOut);
+                unpackDigital(bOutUnpacked, bOut);
             }
         }
 
@@ -611,7 +612,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         }
 
         @Override
-        protected byte[] getBundledOutput(int r) {
+        protected @Nullable byte[] getBundledOutput(int r) {
             return shape() == 0 && r == 0 ? bOutUnpacked : null;
         }
 
@@ -712,7 +713,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
         private short pressMask = 0;
         private short bOut = 0;
-        private byte[] bOutUnpacked = null;
+        private final byte[] bOutUnpacked = new byte[16];
 
         public BusInputPanel(GateType type) {
             super(type);
@@ -721,7 +722,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         public void setbOut(int newBOut) {
             if (bOut != (short) newBOut) {
                 bOut = (short) newBOut;
-                bOutUnpacked = unpackDigital(bOutUnpacked, bOut);
+                unpackDigital(bOutUnpacked, bOut);
             }
         }
 
@@ -816,7 +817,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         }
 
         @Override
-        protected byte[] getBundledOutput(int r) {
+        protected @Nullable byte[] getBundledOutput(int r) {
             //TODO filter r == 2 ?
             return bOutUnpacked;
         }

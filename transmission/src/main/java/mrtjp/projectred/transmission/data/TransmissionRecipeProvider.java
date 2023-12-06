@@ -11,12 +11,13 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.Tags;
 
-import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 import static mrtjp.projectred.core.init.CoreReferences.*;
 import static mrtjp.projectred.core.init.CoreTags.ELECTROTINE_ALLOY_INGOT_TAG;
 import static mrtjp.projectred.core.init.CoreTags.RED_ALLOY_INGOT_TAG;
+import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 import static mrtjp.projectred.transmission.init.TransmissionTags.*;
 
+@SuppressWarnings("DataFlowIssue")
 public class TransmissionRecipeProvider extends RecipeProvider {
 
     public TransmissionRecipeProvider(DataGenerator generatorIn) {

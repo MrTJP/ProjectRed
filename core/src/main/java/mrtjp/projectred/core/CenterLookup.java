@@ -9,6 +9,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import javax.annotation.Nullable;
+
 public class CenterLookup {
 
     //Starting conditions
@@ -19,14 +21,14 @@ public class CenterLookup {
     // Located objects
     public final BlockState state;
     public final Block block;
-    public final BlockEntity tile;
-    public final MultiPart part;
+    public final @Nullable BlockEntity tile;
+    public final @Nullable MultiPart part;
 
     // Conditions for reverse lookup
     public final BlockPos otherPos;
     public final int otherDirection;
 
-    public CenterLookup(Level world, BlockPos pos, int direction, BlockState state, BlockEntity tile, MultiPart part, BlockPos otherPos, int otherDirection) {
+    public CenterLookup(Level world, BlockPos pos, int direction, BlockState state, @Nullable BlockEntity tile, @Nullable MultiPart part, BlockPos otherPos, int otherDirection) {
         this.world = world;
         this.pos = pos;
         this.direction = direction;

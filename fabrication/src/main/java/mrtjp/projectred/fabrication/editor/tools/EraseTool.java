@@ -40,13 +40,13 @@ public class EraseTool extends BaseICEditorTool {
         for (int x = min.x; x <= max.x; x++) {
             for (int z = min.z; z <= max.z; z++) {
                 TileCoord pos = new TileCoord(x, start.y, z);
-                if (editor.getTileMap().getBaseTile(pos).isPresent()) editor.removeTile(pos);
+                if (getEditor().getTileMap().getBaseTile(pos).isPresent()) getEditor().removeTile(pos);
             }
         }
     }
 
     private void executeTool(Vector3 startMouseDown, Vector3 endMouseDown) {
-        MCDataOutput out = editor.getToolStream(this);
+        MCDataOutput out = getEditor().getToolStream(this);
 
         TileCoord start = toNearestPosition(startMouseDown);
         TileCoord end = toNearestPosition(endMouseDown);

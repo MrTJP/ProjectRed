@@ -10,6 +10,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class RedstonePropagator {
@@ -36,8 +37,8 @@ public class RedstonePropagator {
     public static final int FORCED = 3;
 
     private static final LinkedList<PropagationRun> reusableRuns = new LinkedList<>();
-    private static PropagationRun currentRun = null;
-    private static PropagationRun finishingRun = null;
+    private static @Nullable PropagationRun currentRun = null;
+    private static @Nullable PropagationRun finishingRun = null;
 
     private static boolean canRedwiresProvidePower = true;
     private static boolean canConnectRedwires = true;
@@ -66,6 +67,7 @@ public class RedstonePropagator {
     }
 
     public static void addNeighborChange(Level world, BlockPos sourcePos, BlockPos neighborPos) {
+        assert currentRun != null;
         currentRun.neighborChanges.put(world, neighborPos);
 
         // Track source of change for first time a particular neighbor is changed
@@ -74,6 +76,7 @@ public class RedstonePropagator {
     }
 
     public static void addPartChange(MultiPart part) {
+        assert currentRun != null;
         currentRun.partChanges.put(part.tile(), part);
     }
 
@@ -83,7 +86,7 @@ public class RedstonePropagator {
         }
     }
 
-    public static void propagateTo(IPropagationPart part, IPropagationPart from, int mode) {
+    public static void propagateTo(IPropagationPart part, @Nullable IPropagationPart from, int mode) {
         if (currentRun != null) {
             currentRun.add(part, from, mode);
             return;
@@ -98,13 +101,14 @@ public class RedstonePropagator {
     }
 
     public static void propagateAnalogDrop(IPropagationPart part) {
+        assert currentRun != null;
         currentRun.addAnalogDrop(part);
     }
 
     private static class PropagationRun {
 
-        private PropagationRun parent;
-        private IPropagationPart lastCaller;
+        private @Nullable PropagationRun parent;
+        private @Nullable IPropagationPart lastCaller;
         private int count = 0;
         private int recalcs = 0;
 
@@ -124,7 +128,7 @@ public class RedstonePropagator {
             reusableRuns.add(this);
         }
 
-        void executeRun(PropagationRun parent) {
+        void executeRun(@Nullable PropagationRun parent) {
             this.parent = parent;
             RedstonePropagator.currentRun = this;
             runLoop();
@@ -178,7 +182,7 @@ public class RedstonePropagator {
             clear();
         }
 
-        void add(IPropagationPart part, IPropagationPart from, int mode) {
+        void add(IPropagationPart part, @Nullable IPropagationPart from, int mode) {
             if (from != lastCaller) {
                 lastCaller = from;
                 count++;

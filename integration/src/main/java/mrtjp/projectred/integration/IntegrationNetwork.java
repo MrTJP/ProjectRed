@@ -19,6 +19,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.level.Level;
 
+import java.util.Objects;
+
 import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
 public class IntegrationNetwork {
@@ -49,7 +51,7 @@ public class IntegrationNetwork {
     public static MultiPart readPartIndex(Level world, MCDataInput in) {
         BlockPos pos = in.readPos();
         int index = in.readUByte();
-        return BlockMultipart.getTile(world, pos).getPartList().get(index);
+        return Objects.requireNonNull(BlockMultipart.getTile(world, pos)).getPartList().get(index);
     }
 
     private static class ClientHandler implements ICustomPacketHandler.IClientPacketHandler {
@@ -70,14 +72,14 @@ public class IntegrationNetwork {
         }
 
         private void handleOpenTimerGuiMessage(Minecraft mc, MCDataInput data) {
-            MultiPart part = readPartIndex(mc.level, data);
+            MultiPart part = readPartIndex(Objects.requireNonNull(mc.level), data);
             if (part instanceof ComplexGatePart.ITimerGuiLogic) {
                 mc.setScreen(new TimerScreen((GatePart) part));
             }
         }
 
         private void handleOpenCounterGuiMessage(Minecraft mc, MCDataInput data) {
-            MultiPart part = readPartIndex(mc.level, data);
+            MultiPart part = readPartIndex(Objects.requireNonNull(mc.level), data);
             if (part instanceof ComplexGatePart.ICounterGuiLogic) {
                 mc.setScreen(new CounterScreen((GatePart) part));
             }

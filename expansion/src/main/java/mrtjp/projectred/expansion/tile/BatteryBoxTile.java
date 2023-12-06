@@ -29,6 +29,7 @@ import net.minecraftforge.items.wrapper.SidedInvWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.LOGGER;
 import static mrtjp.projectred.expansion.init.ExpansionReferences.BATTERY_BOX_BLOCK;
@@ -87,9 +88,9 @@ public class BatteryBoxTile extends LowLoadPoweredTile {
     }
 
     @Override
-    public void onBlockPlaced(LivingEntity player, ItemStack item) {
+    public void onBlockPlaced(@Nullable LivingEntity player, ItemStack item) {
         super.onBlockPlaced(player, item);
-        if (!getBlockLevel().isClientSide && item.hasTag() && item.getTag().contains(TAG_KEY_POWER_STORED)) {
+        if (!getBlockLevel().isClientSide && item.hasTag() && Objects.requireNonNull(item.getTag()).contains(TAG_KEY_POWER_STORED)) {
             powerStored = item.getTag().getInt(TAG_KEY_POWER_STORED);
             pushBlockState();
         }

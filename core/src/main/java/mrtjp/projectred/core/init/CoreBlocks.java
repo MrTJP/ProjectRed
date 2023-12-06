@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import static mrtjp.projectred.core.ProjectRedCore.*;
 import static mrtjp.projectred.core.init.CoreReferences.ELECTROTINE_GENERATOR_BLOCK;
 
+@SuppressWarnings("DataFlowIssue")
 public class CoreBlocks {
 
     public static final String ID_ELECTROTINE_GENERATOR = "electrotine_generator";

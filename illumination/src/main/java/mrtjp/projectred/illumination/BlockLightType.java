@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
+@SuppressWarnings("DataFlowIssue")
 public enum BlockLightType {
     ILLUMAR_LAMP("illumar_lamp", "Illumar Lamp", IllumarLampBlock::new, IllumarLampTile::new);
 

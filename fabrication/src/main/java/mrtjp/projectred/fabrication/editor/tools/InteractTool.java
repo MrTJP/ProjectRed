@@ -20,6 +20,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +45,7 @@ public class InteractTool extends BaseICEditorTool {
         int z = b & 0x7F;
         boolean leftClick = (b & 0x80) != 0;
 
-        Optional<BaseTile> tile = editor.getTileMap().getBaseTile(pos);
+        Optional<BaseTile> tile = getEditor().getTileMap().getBaseTile(pos);
         tile.ifPresent(t -> {
             if (leftClick)
                 t.onInteractionZoneClicked(z);
@@ -63,7 +64,7 @@ public class InteractTool extends BaseICEditorTool {
 
         byte b = (byte) ((zone.index & 0x7F) | 0x80); //TODO right clicky
 
-        editor.getToolStream(this)
+        getEditor().getToolStream(this)
                 .writeByte(start.x).writeByte(start.y).writeByte(start.z)
                 .writeByte(b);
     }
@@ -140,7 +141,7 @@ public class InteractTool extends BaseICEditorTool {
         }
 
         TileCoord pos = toNearestPosition(mousePosition);
-        editor.getTileMap().getBaseTile(pos).ifPresent(tile ->
+        getEditor().getTileMap().getBaseTile(pos).ifPresent(tile ->
                 tile.buildInteractionToolTip(tooltip, zone.index));
     }
 
@@ -163,7 +164,7 @@ public class InteractTool extends BaseICEditorTool {
 
         // Render tile interaction zone
         TileCoord coord = toNearestPosition(b);
-        editor.getTileMap().getBaseTile(coord).ifPresent(tile -> {
+        getEditor().getTileMap().getBaseTile(coord).ifPresent(tile -> {
             List<Cuboid6> zones = tile.getInteractionZones();
 
             Cuboid6 currentZoneBox = null;
@@ -192,9 +193,9 @@ public class InteractTool extends BaseICEditorTool {
         return toNearestPosition(leftMouseDown ? initialMouseDown : mousePosition);
     }
 
-    private InteractionZone getTargetInteractionZone(Vector3 mousePosition) {
+    private @Nullable InteractionZone getTargetInteractionZone(Vector3 mousePosition) {
         TileCoord coord = getTargetTileCoord(mousePosition);
-        BaseTile tile = editor.getTileMap().getBaseTile(coord).orElse(null);
+        BaseTile tile = getEditor().getTileMap().getBaseTile(coord).orElse(null);
 
         if (tile == null) return null;
 

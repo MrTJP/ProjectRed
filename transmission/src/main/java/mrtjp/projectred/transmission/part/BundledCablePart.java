@@ -16,7 +16,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Objects;
 
 import static mrtjp.projectred.core.BundledSignalsLib.raiseSignal;
 import static mrtjp.projectred.core.RedstonePropagator.FORCE;
@@ -40,7 +42,7 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
     }
 
     @Override
-    public void setSignal(byte[] signal) {
+    public void setSignal(@Nullable byte[] signal) {
         if (signal == null) {
             Arrays.fill(this.signal, (byte) 0);
         } else {
@@ -73,7 +75,7 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
     }
 
     @Override
-    public void onPartChanged(MultiPart part) {
+    public void onPartChanged(@Nullable MultiPart part) {
         if (!level().isClientSide) {
             RedstonePropagator.logCalculation();
             if (updateOutward()) {
@@ -147,7 +149,7 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
 
     //region IBundledEmitter and IBundledCablePart overrides
     @Override
-    public byte[] getBundledSignal(int dir) {
+    public @Nullable byte[] getBundledSignal(int dir) {
         return maskConnects(dir) ? signal : null;
     }
 
@@ -231,7 +233,7 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
             raiseSignal(tmpSignal, signalIn);
 
         } else if (lookup.tile != null) {
-            byte[] externalSignal = BundledSignalsLib.getBundledSignalViaInteraction(lookup.tile.getLevel(), lookup.tile.getBlockPos(), Direction.values()[Rotation.rotateSide(lookup.otherSide, lookup.otherRotation)]);
+            byte[] externalSignal = BundledSignalsLib.getBundledSignalViaInteraction(Objects.requireNonNull(lookup.tile.getLevel()), lookup.tile.getBlockPos(), Direction.values()[Rotation.rotateSide(lookup.otherSide, lookup.otherRotation)]);
             raiseSignal(tmpSignal, externalSignal);
         }
     }

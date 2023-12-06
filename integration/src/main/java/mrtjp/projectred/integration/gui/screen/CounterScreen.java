@@ -11,8 +11,8 @@ import mrtjp.projectred.redui.ButtonNode;
 import mrtjp.projectred.redui.RedUIScreen;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
+
+import java.util.Objects;
 
 import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
@@ -24,7 +24,7 @@ public class CounterScreen extends RedUIScreen {
     private final ComplexGatePart.ICounterGuiLogic counterGate;
 
     public CounterScreen(GatePart gate) {
-        super(256, 145, new TextComponent(gate.getType().getRegistryName().toString()));
+        super(256, 145, new TextComponent(Objects.requireNonNull(gate.getType().getRegistryName()).toString()));
         this.gate = gate;
         this.counterGate = (ComplexGatePart.ICounterGuiLogic) gate;
 
@@ -77,8 +77,8 @@ public class CounterScreen extends RedUIScreen {
 
     @Override
     public void update() {
-        if (gate.tile() == null) {
-            getMinecraft().player.closeContainer();
+        if (!gate.hasTile()) {
+            Objects.requireNonNull(getMinecraft().player).closeContainer();
         }
     }
 }

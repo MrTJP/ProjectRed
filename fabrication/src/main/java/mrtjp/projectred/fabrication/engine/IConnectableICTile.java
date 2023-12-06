@@ -1,12 +1,14 @@
 package mrtjp.projectred.fabrication.engine;
 
+import javax.annotation.Nullable;
+
 public interface IConnectableICTile {
 
     int getConnMask();
 
     void setConnMask(int connMask);
 
-    IConnectableICTile getTileTowardsDir(int dir);
+    @Nullable IConnectableICTile getTileTowardsDir(int dir);
 
     default int dirFrom(int dir) {
         return dir^1;

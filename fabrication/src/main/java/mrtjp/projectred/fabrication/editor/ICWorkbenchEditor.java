@@ -185,7 +185,7 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
     private void readGeneralStream(MCDataInput in, int frameKey) {
         switch (frameKey) {
             case KEY_ADD_TILE:
-                BaseTile tile = ICTileType.createFromId(in.readUByte()); //TODO check if not null?
+                BaseTile tile = Objects.requireNonNull(ICTileType.createFromId(in.readUByte()));
                 tileMap.addTile(new TileCoord(in.readByte(), in.readByte(), in.readByte()), tile);
                 tile.readDesc(in);
                 break;

@@ -29,7 +29,7 @@ public interface RedUINode {
      * @return The root node for this tree. Can be this, or null if this node is not
      * part of a valid tree.
      */
-    RedUIRootNode getRoot();
+    @Nullable RedUIRootNode getRoot();
 
     void setRoot(@Nullable RedUIRootNode root);
 
@@ -37,7 +37,7 @@ public interface RedUINode {
      * @return The parent for this node, or null if not set
      * @throws RuntimeException if this is the root node
      */
-    RedUINode getParent();
+    @Nullable RedUINode getParent();
 
     void setParent(@Nullable RedUINode parent);
 

@@ -15,6 +15,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeHooks;
 
+import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
 public class CraftingHelper {
@@ -30,7 +31,7 @@ public class CraftingHelper {
 
     private final InventorySource inputSource;
 
-    private CraftingRecipe recipe = null;
+    private @Nullable CraftingRecipe recipe = null;
     private CraftingResult result = CraftingResult.EMPTY;
 
     public CraftingHelper(InventorySource inputSource) {
@@ -101,6 +102,8 @@ public class CraftingHelper {
     }
 
     public boolean onCraftedByPlayer(Player player, boolean leaveRemainingInGrid) {
+        if (recipe == null) return false;
+
         CraftingResult result = craftFromStorage(false);
 
         if (!result.isCraftable()) {
@@ -249,11 +252,11 @@ public class CraftingHelper {
         public final ItemStack outputStack;
         public final NonNullList<ItemStack> remainingItems;
         public final int missingIngredientMask;
-        public final Container remainingStorage;
+        public final @Nullable Container remainingStorage;
 
         private final LazyValue<Boolean> canStorageAcceptResults = new LazyValue<>(this::canFitResultsIntoStorage);
 
-        public CraftingResult(ItemStack outputStack, NonNullList<ItemStack> remainingItems, int missingIngredientMask, Container remainingStorage) {
+        public CraftingResult(ItemStack outputStack, NonNullList<ItemStack> remainingItems, int missingIngredientMask, @Nullable Container remainingStorage) {
             this.outputStack = outputStack;
             this.remainingItems = remainingItems;
             this.missingIngredientMask = missingIngredientMask;
@@ -281,6 +284,7 @@ public class CraftingHelper {
         }
 
         private boolean canFitResultsIntoStorage() {
+            assert remainingStorage != null;
             Container storage = copyInventory(remainingStorage); // Don't mutate original list
             return InventoryLib.injectAllItemStacks(storage, getCopyOfAllResults(), true);
         }

@@ -12,8 +12,11 @@ import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
+import javax.annotation.Nonnull;
+
 import static mrtjp.projectred.fabrication.init.FabricationReferences.*;
 
+@SuppressWarnings("DataFlowIssue")
 public class FabricationBlockStateModelProvider extends BlockStateProvider {
 
     public FabricationBlockStateModelProvider(DataGenerator gen, ExistingFileHelper exFileHelper) {
@@ -21,7 +24,7 @@ public class FabricationBlockStateModelProvider extends BlockStateProvider {
     }
 
     @Override
-    public String getName() {
+    public @Nonnull String getName() {
         return "ProjectRed-Fabrication Block Models";
     }
 

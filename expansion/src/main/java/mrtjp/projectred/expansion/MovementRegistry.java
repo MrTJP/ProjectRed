@@ -16,6 +16,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.common.util.LazyOptional;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class MovementRegistry {
         frameInteractions.add(interaction);
     }
 
-    public static Frame getFrame(Level level, BlockPos pos) {
+    public static @Nullable Frame getFrame(Level level, BlockPos pos) {
         Block block = level.getBlockState(pos).getBlock();
         if (block instanceof Frame f) return f;
 
@@ -59,7 +60,7 @@ public class MovementRegistry {
         return null;
     }
 
-    public static MovementController getMovementController(Level level, BlockPos pos) {
+    public static @Nullable MovementController getMovementController(Level level, BlockPos pos) {
         Block block = level.getBlockState(pos).getBlock();
         if (block instanceof MovementController mhb) return mhb;
 

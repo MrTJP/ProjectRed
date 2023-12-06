@@ -6,7 +6,6 @@ import codechicken.lib.raytracer.VoxelShapeCache;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
-import codechicken.multipart.api.NormalOcclusionTest;
 import codechicken.multipart.api.part.FacePart;
 import codechicken.multipart.api.part.MultiPart;
 import codechicken.multipart.api.part.NormalOcclusionPart;
@@ -23,11 +22,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import javax.annotation.Nullable;
 
 public abstract class BaseFaceWirePart extends BaseWirePart implements IConnectableFacePart, NormalOcclusionPart, FacePart {
 
@@ -148,7 +148,7 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     }
 
     @Override
-    public void onPartChanged(MultiPart part) {
+    public void onPartChanged(@Nullable MultiPart part) {
         super.onPartChanged(part);
         if (!level().isClientSide) {
             if (updateOutward()) {

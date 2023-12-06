@@ -8,9 +8,7 @@ import codechicken.lib.vec.Vector3;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.fengine.TileCoord;
 import mrtjp.projectred.fabrication.editor.EditorDataUtils;
-import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
 import mrtjp.projectred.fabrication.gui.ICRenderTypes;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -27,7 +25,7 @@ import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_MULTIPLE_D
 
 public class MultipleDriversError extends CompileProblem {
 
-    public TileCoord coord;
+    public TileCoord coord = TileCoord.origin;
     public final List<Integer> registerList = new ArrayList<>();
 
     public MultipleDriversError() {

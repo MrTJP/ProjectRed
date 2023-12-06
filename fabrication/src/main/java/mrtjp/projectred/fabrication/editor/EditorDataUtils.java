@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class EditorDataUtils {
@@ -36,7 +37,7 @@ public class EditorDataUtils {
         return tag.getInt(KEY_FORMAT);
     }
 
-    public static boolean hasEditorData(CompoundTag tag) {
+    public static boolean hasEditorData(@Nullable CompoundTag tag) {
         return tag != null &&
                 tag.contains(KEY_FORMAT) &&
                 tag.contains(KEY_ACTIVE) &&
@@ -44,13 +45,13 @@ public class EditorDataUtils {
     }
 
     // Minimum subset of data required to fabricate gate (i.e. create photomask)
-    public static boolean hasFabricationTarget(CompoundTag tag) {
+    public static boolean hasFabricationTarget(@Nullable CompoundTag tag) {
         return tag != null &&
                 tag.contains(KEY_IS_BUILT) &&
                 tag.contains(KEY_FLAT_MAP);
     }
 
-    public static boolean canFabricate(CompoundTag tag) {
+    public static boolean canFabricate(@Nullable CompoundTag tag) {
         return hasFabricationTarget(tag) && tag.getBoolean(KEY_IS_BUILT) && getErrorCount(tag) == 0;
     }
 

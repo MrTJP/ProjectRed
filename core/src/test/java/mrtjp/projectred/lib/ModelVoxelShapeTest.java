@@ -4,6 +4,7 @@ import codechicken.lib.math.MathHelper;
 import codechicken.lib.vec.*;
 import org.junit.jupiter.api.Test;
 
+import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -76,7 +77,9 @@ public class ModelVoxelShapeTest {
     }
 
     // Equal with some floating point tolerance
-    public static void assertEqualsT(Vector3 a, Vector3 b) {
+    public static void assertEqualsT(@Nullable Vector3 a, @Nullable Vector3 b) {
+        assertNotNull(a);
+        assertNotNull(b);
         assertTrue(a.equalsT(b));
     }
 

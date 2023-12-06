@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static mrtjp.projectred.expansion.init.ExpansionUnlocal.UL_STORED_POWER_TOOLTIP;
 
@@ -82,7 +83,7 @@ public class BatteryBoxBlock extends ProjectRedBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> toolTip, TooltipFlag flag) {
         super.appendHoverText(stack, level, toolTip, flag);
         if (stack.hasTag()) {
-            int power = stack.getTag().getInt(BatteryBoxTile.TAG_KEY_POWER_STORED);
+            int power = Objects.requireNonNull(stack.getTag()).getInt(BatteryBoxTile.TAG_KEY_POWER_STORED);
             toolTip.add(new TranslatableComponent(UL_STORED_POWER_TOOLTIP).append(": " + power + " / " + 8000).withStyle(ChatFormatting.GRAY)); //TODO make this static constant
         }
     }

@@ -9,7 +9,6 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Vector3f;
-import mrtjp.projectred.fabrication.ProjectRedFabrication;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -18,11 +17,9 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.MOD_ID;
 
+@SuppressWarnings("NotNullFieldNotInitialized")
 public class ICRenderTypes {
 
     public static ResourceLocation PERFBOARD_TEXTURE = new ResourceLocation(MOD_ID, "textures/block/perfboard.png");

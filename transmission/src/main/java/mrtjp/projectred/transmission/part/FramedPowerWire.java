@@ -8,6 +8,7 @@ import mrtjp.projectred.core.power.PowerConductor;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.core.BlockPos;
 
+import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public abstract class FramedPowerWire extends BaseCenterWirePart implements IPow
         }
     }
 
-    private PowerConductor retrieveConductor(CenterLookup lookup) {
+    private @Nullable PowerConductor retrieveConductor(CenterLookup lookup) {
         if (lookup.part instanceof IPowerConnectable) {
             return ((IPowerConnectable) lookup.part).getConductor(lookup.otherDirection);
         }

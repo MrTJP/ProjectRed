@@ -60,19 +60,19 @@ public class GatePlacerTool extends BaseICEditorTool {
         int r = input.readUByte();
 
         TileCoord pos = new TileCoord(x, y, z);
-        if (!editor.getTileMap().isInBounds(pos)) return;
-        if (editor.getTileMap().getTile(pos).isPresent()) {
+        if (!getEditor().getTileMap().isInBounds(pos)) return;
+        if (getEditor().getTileMap().getTile(pos).isPresent()) {
             if (!overwrite) return;
-            editor.getTileMap().removeTile(pos);
+            getEditor().getTileMap().removeTile(pos);
         }
 
         GateTile t = (GateTile) gateType.tileType.create();
         t.preparePlacement(r);
-        editor.addTile(t, pos);
+        getEditor().addTile(t, pos);
     }
 
     private void sendPlaceGatePacket(TileCoord pos, int r) {
-        MCDataOutput out = editor.getToolStream(this);
+        MCDataOutput out = getEditor().getToolStream(this);
         out.writeBoolean(overwrite);
         out.writeByte(gateType.ordinal());
 
@@ -82,8 +82,8 @@ public class GatePlacerTool extends BaseICEditorTool {
 
     private boolean isValidStart(TileCoord pos) {
 
-        if (!editor.getTileMap().isInBounds(pos)) return false;
-        if (editor.getTileMap().getTile(pos).isPresent() && !overwrite) return false;
+        if (!getEditor().getTileMap().isInBounds(pos)) return false;
+        if (getEditor().getTileMap().getTile(pos).isPresent() && !overwrite) return false;
 
         if (gateType.placementType == GatePlacementType.INTERNAL && !isInBody(pos)) return false;
         if (gateType.placementType == GatePlacementType.IO_EDGE && !isOnIOEdge(pos)) return false;
@@ -218,10 +218,10 @@ public class GatePlacerTool extends BaseICEditorTool {
     }
 
     private int getEdgeRotation(TileCoord pos) {
-        if (pos.z == editor.getTileMap().getMinBounds().z) return 0;
-        if (pos.x == editor.getTileMap().getMaxBounds().x) return 1;
-        if (pos.z == editor.getTileMap().getMaxBounds().z) return 2;
-        if (pos.x == editor.getTileMap().getMinBounds().x) return 3;
+        if (pos.z == getEditor().getTileMap().getMinBounds().z) return 0;
+        if (pos.x == getEditor().getTileMap().getMaxBounds().x) return 1;
+        if (pos.z == getEditor().getTileMap().getMaxBounds().z) return 2;
+        if (pos.x == getEditor().getTileMap().getMinBounds().x) return 3;
 
         return 0;
     }

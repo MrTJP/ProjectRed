@@ -19,9 +19,11 @@ import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 
+@SuppressWarnings("NotNullFieldNotInitialized")
 public class FrameModelRenderer {
 
     private static Map<String, CCModel> frameModels = loadModels("frame");
@@ -126,6 +128,6 @@ public class FrameModelRenderer {
             }
         }
 
-        return CCModel.combine(m);
+        return Objects.requireNonNull(CCModel.combine(m));
     }
 }

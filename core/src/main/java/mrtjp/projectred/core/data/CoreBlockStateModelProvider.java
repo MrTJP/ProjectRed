@@ -1,8 +1,8 @@
 package mrtjp.projectred.core.data;
 
 import mrtjp.projectred.core.block.ProjectRedBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
@@ -14,6 +14,7 @@ import javax.annotation.Nonnull;
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 import static mrtjp.projectred.core.init.CoreReferences.ELECTROTINE_GENERATOR_BLOCK;
 
+@SuppressWarnings("DataFlowIssue")
 public class CoreBlockStateModelProvider extends BlockStateProvider {
 
     public CoreBlockStateModelProvider(DataGenerator gen, ExistingFileHelper exFileHelper) {

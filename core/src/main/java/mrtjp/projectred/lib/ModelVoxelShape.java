@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Shape that can calculate a hit against arbitrary triangles
@@ -146,7 +147,7 @@ public class ModelVoxelShape extends VoxelShape {
             this.v1 = v1;
             this.v2 = v2;
             this.normal = VectorUtils.calculateNormal(v0, v1, v2);
-            this.side = VectorUtils.calcNormalSide(normal);
+            this.side = Objects.requireNonNull(VectorUtils.calcNormalSide(normal));
 
             // Precompute some constants to speed up tracing
             u = v1.copy().subtract(v0);
@@ -174,7 +175,7 @@ public class ModelVoxelShape extends VoxelShape {
          * @param segment If true, ray is treated as a segment (has a start and end). Otherwise, it is treated as infinite length
          * @return Intersection point or null if no intersection
          */
-        public Vector3 getIntersection(Vector3 r0, Vector3 r1, boolean cull, boolean segment) {
+        public @Nullable Vector3 getIntersection(Vector3 r0, Vector3 r1, boolean cull, boolean segment) {
 
             Vector3 dir = r1.copy().subtract(r0);
             Vector3 w0 = r0.copy().subtract(v0);

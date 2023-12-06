@@ -15,7 +15,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Objects;
 
 import static mrtjp.projectred.core.BundledSignalsLib.raiseSignal;
 import static mrtjp.projectred.core.RedstonePropagator.FORCE;
@@ -39,7 +41,7 @@ public class FramedBundledCablePart extends BaseCenterWirePart implements IBundl
     }
 
     @Override
-    public void setSignal(byte[] signal) {
+    public void setSignal(@Nullable byte[] signal) {
         if (signal == null) {
             Arrays.fill(this.signal, (byte) 0);
         } else {
@@ -72,7 +74,7 @@ public class FramedBundledCablePart extends BaseCenterWirePart implements IBundl
     }
 
     @Override
-    public void onPartChanged(MultiPart part) {
+    public void onPartChanged(@Nullable MultiPart part) {
         if (!level().isClientSide) {
             RedstonePropagator.logCalculation();
             if (updateOutward()) {
@@ -142,7 +144,7 @@ public class FramedBundledCablePart extends BaseCenterWirePart implements IBundl
 
     //region IBundledEmitter and IBundledCablePart overrides
     @Override
-    public byte[] getBundledSignal(int dir) {
+    public @Nullable byte[] getBundledSignal(int dir) {
         return maskConnects(dir) ? signal : null;
     }
 
@@ -211,7 +213,7 @@ public class FramedBundledCablePart extends BaseCenterWirePart implements IBundl
             raiseSignal(tmpSignal, signalIn);
 
         } else if (lookup.tile != null) {
-            byte[] externalSignal = BundledSignalsLib.getBundledSignalViaInteraction(lookup.tile.getLevel(), lookup.tile.getBlockPos(), Direction.values()[lookup.otherDirection]);
+            byte[] externalSignal = BundledSignalsLib.getBundledSignalViaInteraction(Objects.requireNonNull(lookup.tile.getLevel()), lookup.tile.getBlockPos(), Direction.values()[lookup.otherDirection]);
             raiseSignal(tmpSignal, externalSignal);
         }
     }

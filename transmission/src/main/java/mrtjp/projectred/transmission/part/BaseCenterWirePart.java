@@ -15,7 +15,6 @@ import codechicken.microblock.util.MicroMaterialRegistry;
 import codechicken.multipart.api.part.MultiPart;
 import codechicken.multipart.api.part.NormalOcclusionPart;
 import codechicken.multipart.api.part.SlottedPart;
-import codechicken.multipart.block.TileMultipart;
 import codechicken.multipart.util.PartRayTraceResult;
 import com.google.common.collect.ImmutableSet;
 import mrtjp.projectred.api.IConnectable;
@@ -31,11 +30,11 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -73,13 +72,13 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     private static final int KEY_REMOVE_MATERIAL = 3;
 
     private int connMap = 0;
-    private MicroMaterial material = null;
+    private @Nullable MicroMaterial material = null;
 
     public BaseCenterWirePart(WireType wireType) {
         super(wireType);
     }
 
-    public MicroMaterial getMaterial() {
+    public @Nullable MicroMaterial getMaterial() {
         return material;
     }
 
@@ -178,7 +177,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     }
 
     @Override
-    public void onPartChanged(MultiPart part) {
+    public void onPartChanged(@Nullable MultiPart part) {
         super.onPartChanged(part);
         if (!level().isClientSide) {
             if (updateOutward()) {
@@ -305,7 +304,9 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
 
                     // Play material sound
                     SoundType sound = newMat.getSound();
-                    level().playSound(null, pos(), sound.getPlaceSound(), SoundSource.BLOCKS, sound.getVolume() + 1.0F/2.0F, sound.getPitch() * 0.8F);
+                    if (sound != null) {
+                        level().playSound(null, pos(), sound.getPlaceSound(), SoundSource.BLOCKS, sound.getVolume() + 1.0F/2.0F, sound.getPitch() * 0.8F);
+                    }
 
                     // Consume item from player if not in creative
                     if (!player.isCreative()) {

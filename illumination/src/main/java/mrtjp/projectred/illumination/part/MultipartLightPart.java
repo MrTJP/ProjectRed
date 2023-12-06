@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 
 public class MultipartLightPart extends BaseMultipart implements SlottedPart, NormalOcclusionPart, RedstonePart {
@@ -106,7 +107,7 @@ public class MultipartLightPart extends BaseMultipart implements SlottedPart, No
     }
 
     @Override
-    public void onPartChanged(MultiPart part) {
+    public void onPartChanged(@Nullable MultiPart part) {
         if (checkSupport()) return;
         updateState(false);
     }

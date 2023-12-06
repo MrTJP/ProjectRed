@@ -1,5 +1,7 @@
 package mrtjp.projectred.core.part;
 
+import javax.annotation.Nullable;
+
 public interface IPropagationPart {
 
     /**
@@ -11,7 +13,7 @@ public interface IPropagationPart {
      *             may be null.
      * @param mode One of RISING, DROPPING, FORCE and FORCED specified above
      */
-    void updateAndPropagate(IPropagationPart prev, int mode);
+    void updateAndPropagate(@Nullable IPropagationPart prev, int mode);
 
     /**
      * Called at the end of a propagation run for partChanged events. Marks the

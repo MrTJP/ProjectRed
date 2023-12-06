@@ -24,6 +24,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
 /**
@@ -83,7 +84,7 @@ public abstract class FullyOrientableBlockRenderer implements ICCBlockRenderer, 
         render(ccrs, null, getItemRenderData(stack));
     }
 
-    private void render(CCRenderState ccrs, RenderType layer, RenderData data) {
+    private void render(CCRenderState ccrs, @Nullable RenderType layer, RenderData data) {
 
         CCModel model = models[modelKey(data.side, data.rotation)];
         MultiIconTransformation iconT = data.iconT;

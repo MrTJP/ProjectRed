@@ -2,7 +2,6 @@ package mrtjp.projectred.illumination.part;
 
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.RedundantTransformation;
 import codechicken.lib.vec.Vector3;
 import codechicken.microblock.api.BlockMicroMaterial;
 import codechicken.microblock.api.MicroMaterialClient;
@@ -42,7 +41,7 @@ public class IllumarLampMicroMaterial extends BlockMicroMaterial {
 
             // Provide RenderDynamic implementation
             @Override
-            public void renderDynamic(MicroblockPart part, ItemTransforms.TransformType transform, PoseStack pStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
+            public void renderDynamic(MicroblockPart part, @Nullable ItemTransforms.TransformType transform, PoseStack pStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
                 CCRenderState ccrs = CCRenderState.instance();
                 Cuboid6 cuboid = part.getBounds().copy().expand(0.025D);
 

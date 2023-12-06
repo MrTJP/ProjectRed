@@ -15,6 +15,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import static mrtjp.projectred.fabrication.init.FabricationReferences.*;
 
+@SuppressWarnings("DataFlowIssue")
 public class FabricationClientInit {
 
     public static void init() {

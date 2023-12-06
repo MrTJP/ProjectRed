@@ -13,6 +13,8 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import java.util.Objects;
+
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 
 public class CoreNetwork {
@@ -52,7 +54,7 @@ public class CoreNetwork {
         public void handlePacket(PacketCustom packet, Minecraft mc, ClientPacketListener handler) {
             switch (packet.getType()) {
                 case NET_TILE_PACKET_TO_CLIENT:
-                    handleTilePacket(mc.level, packet);
+                    handleTilePacket(Objects.requireNonNull(mc.level), packet);
                     break;
                 default:
                     // unknown key

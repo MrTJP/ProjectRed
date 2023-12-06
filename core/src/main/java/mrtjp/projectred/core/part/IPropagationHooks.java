@@ -1,5 +1,7 @@
 package mrtjp.projectred.core.part;
 
+import javax.annotation.Nullable;
+
 /**
  * Common callbacks used by propagation models for both face and center parts.
  */
@@ -11,14 +13,14 @@ public interface IPropagationHooks extends IPropagationPart {
      * @param prev Previous part
      * @param mode Propagation mode
      */
-    void propagateForward(IPropagationPart prev, int mode);
+    void propagateForward(@Nullable IPropagationPart prev, int mode);
 
     /**
      * Perform back propagation to the previous part only
      * @param prev Previous part
      * @param mode Propagation mode
      */
-    void propagateBackward(IPropagationPart prev, int mode);
+    void propagateBackward(@Nullable IPropagationPart prev, int mode);
 
     /**
      * Should be called by above forward/backwards methods as a final check to see if propagation
@@ -27,7 +29,7 @@ public interface IPropagationHooks extends IPropagationPart {
      * @param mode Propagation mode
      * @return True if propagation should continue
      */
-    default boolean shouldPropagate(IPropagationPart to, int mode) {
+    default boolean shouldPropagate(@Nullable IPropagationPart to, int mode) {
         return true;
     }
 }

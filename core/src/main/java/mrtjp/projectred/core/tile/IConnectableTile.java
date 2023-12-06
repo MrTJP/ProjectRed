@@ -11,6 +11,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import javax.annotation.Nullable;
+
 public interface IConnectableTile extends IBlockEventTile, IConnectable {
 
     //region Position calculations
@@ -88,21 +90,21 @@ public interface IConnectableTile extends IBlockEventTile, IConnectable {
 
     //region Neighbor acquisitions
 
-    default MultiPart getStraightCenter(int s) {
+    default @Nullable MultiPart getStraightCenter(int s) {
         BlockPos pos = posOfStraight(s);
         TileMultipart tile = BlockMultipart.getTile(getBlockLevel(), pos);
         if (tile == null) return null;
         return tile.getSlottedPart(6);
     }
 
-    default MultiPart getStraight(int s, int edgeRot) {
+    default @Nullable MultiPart getStraight(int s, int edgeRot) {
         BlockPos pos = posOfStraight(s);
         TileMultipart tile = BlockMultipart.getTile(getBlockLevel(), pos);
         if (tile == null) return null;
         return tile.getSlottedPart(Rotation.rotateSide(s ^ 1, edgeRot));
     }
 
-    default MultiPart getCorner(int s, int edgeRot) {
+    default @Nullable MultiPart getCorner(int s, int edgeRot) {
         BlockPos pos = posOfCorner(s, edgeRot);
         TileMultipart tile = BlockMultipart.getTile(getBlockLevel(), pos);
         if (tile == null) return null;

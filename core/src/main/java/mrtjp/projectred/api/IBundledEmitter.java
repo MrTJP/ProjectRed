@@ -1,5 +1,7 @@
 package mrtjp.projectred.api;
 
+import javax.annotation.Nullable;
+
 /**
  * Implemented by parts that can emit bundled cable signals. If you are a
  * tile entity, see {@link IBundledTile}
@@ -22,5 +24,5 @@ public interface IBundledEmitter
      * The return value will be used immediately, so the returned array may be
      * overwritten by the next call to getBundledSignal.
      */
-    byte[] getBundledSignal(int dir);
+    @Nullable byte[] getBundledSignal(int dir);
 }

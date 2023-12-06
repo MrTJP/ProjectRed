@@ -30,6 +30,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -53,7 +54,7 @@ public class IlluminationClientInit {
         modelHelper.registerCallback(e -> {
             // Illumar lamp renderer
             for (int color = 0; color < 16; color++) {
-                ResourceLocation blockRL = BlockLightType.ILLUMAR_LAMP.getBlock(color, true).getRegistryName();
+                ResourceLocation blockRL = Objects.requireNonNull(BlockLightType.ILLUMAR_LAMP.getBlock(color, true).getRegistryName());
                 // Override default BlockItem renderer for the lit variants to render lamp glow
                 BakedModel litModel = e.getModelRegistry().get(new ModelResourceLocation(blockRL, "lit=true"));
                 e.getModelRegistry().put(

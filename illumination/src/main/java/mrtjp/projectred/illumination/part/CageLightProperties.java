@@ -12,7 +12,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Objects;
 
 import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
 
@@ -22,7 +24,7 @@ public class CageLightProperties extends MultipartLightProperties {
     private static final Cuboid6[] GLOW_BOUNDS = sidedBoxes(new Cuboid6(4.5/16D, 1.5/16, 4.5/16D, 11.5/16D, 11.5/16D, 11.5/16D));
     private static final VoxelShape[] SHAPES = boxesToShapes(BOUNDS);
 
-    private TextureAtlasSprite icon;
+    private @Nullable TextureAtlasSprite icon;
 
     @Override
     public VoxelShape getShape(int side) {
@@ -49,7 +51,7 @@ public class CageLightProperties extends MultipartLightProperties {
     @Override
     @OnlyIn(Dist.CLIENT)
     public TextureAtlasSprite getIcon(int color) {
-        return icon;
+        return Objects.requireNonNull(icon);
     }
 
     @Override

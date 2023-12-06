@@ -3,8 +3,6 @@ package mrtjp.projectred.core.init;
 import codechicken.lib.render.shader.CCShaderInstance;
 import codechicken.lib.util.ResourceUtils;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import mrtjp.projectred.api.ProjectRedAPI;
-import mrtjp.projectred.core.ProjectRedCore;
 import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.core.gui.screen.inventory.ElectrotineGeneratorScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -18,6 +16,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 import static mrtjp.projectred.core.init.CoreReferences.ELECTROTINE_GENERATOR_CONTAINER;
 
+@SuppressWarnings("NotNullFieldNotInitialized")
 public class CoreClientInit {
 
     public static CCShaderInstance HALO_SHADER;
