@@ -206,6 +206,15 @@ public class ICRenderNode extends ViewportRenderNode {
             }
         }
 
+        // Edit mode grid effect
+        if (!editor.getStateMachine().isSimulating()) {
+            TileCoord minBounds = editor.getTileMap().getMinBounds();
+            TileCoord maxBounds = editor.getTileMap().getMaxBounds();
+            double girdHeight = 2;
+            Cuboid6 bounds = new Cuboid6(minBounds.x, currentLayer - girdHeight - 1, minBounds.z, maxBounds.x + 1, currentLayer + girdHeight, maxBounds.z + 1).expand(0.01);
+            ICRenderTypes.renderGridInBounds(renderStack, getter, bounds, 0x7);
+        }
+
         // Force-end the batch to make sure it happens before the custom viewport is altered
         getter.endBatch();
     }
