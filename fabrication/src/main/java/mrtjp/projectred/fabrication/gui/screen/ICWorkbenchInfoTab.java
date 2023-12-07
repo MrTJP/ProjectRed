@@ -65,7 +65,7 @@ public class ICWorkbenchInfoTab extends AbstractGuiNode {
 
         listNode.addKeyValueRow(new TranslatableComponent(UL_BLUEPRINT_LAYERS), () -> {
             TileCoord dimensions = editor.getTileMap().getDimensions();
-            return new TextComponent("" + dimensions.y);
+            return new TextComponent(String.valueOf(dimensions.y));
         });
 
         listNode.addTitleRow(new TranslatableComponent(UL_YIELD_CALCULATOR));

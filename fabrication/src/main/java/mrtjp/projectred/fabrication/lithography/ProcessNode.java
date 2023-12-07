@@ -28,6 +28,6 @@ public enum ProcessNode {
     }
 
     public String getDisplayName() {
-        return "" + tileLen + "nm";
+        return tileLen + "nm";
     }
 }

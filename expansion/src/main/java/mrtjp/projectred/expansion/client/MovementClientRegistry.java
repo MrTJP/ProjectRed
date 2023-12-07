@@ -8,7 +8,7 @@ import java.util.List;
 
 public class MovementClientRegistry {
 
-    private static List<MovingBlockEntityRenderCallback> callbacks = new LinkedList<>();
+    private static final List<MovingBlockEntityRenderCallback> callbacks = new LinkedList<>();
 
     public static void registerBlockEntityRendererCallback(MovingBlockEntityRenderCallback callback) {
         callbacks.add(callback);

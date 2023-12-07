@@ -97,7 +97,7 @@ public class IntegrationRecipeProvider extends RecipeProvider {
                 .key('W', CONDUCTIVE_PLATE_ITEM)
                 .patternLine("ACA")
                 .patternLine("WCW")
-                .patternLine("PWP");;
+                .patternLine("PWP");
 
         //Multiplexer gate
         shapedRecipe(GateType.MULTIPLEXER.getItem(), 1)

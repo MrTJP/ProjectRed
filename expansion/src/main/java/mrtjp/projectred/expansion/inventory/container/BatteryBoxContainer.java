@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class BatteryBoxContainer extends BasePoweredTileContainer {
 
-    public static ICCLContainerFactory<BatteryBoxContainer> FACTORY = (windowId, inventory, packet) -> {
+    public static final ICCLContainerFactory<BatteryBoxContainer> FACTORY = (windowId, inventory, packet) -> {
         BlockEntity tile = inventory.player.level.getBlockEntity(packet.readPos());
         if (!(tile instanceof BatteryBoxTile)) return null;
 

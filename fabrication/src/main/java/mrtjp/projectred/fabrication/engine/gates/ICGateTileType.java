@@ -28,8 +28,6 @@ public enum ICGateTileType {
     TOGGLE_LATCH(ICTileType.TOGGLE_LATCH_GATE,  GateModelRenderer.getRenderIndex(GateType.TOGGLE_LATCH)),
     TRANSPARENT_LATCH(ICTileType.TRANSPARENT_LATCH_GATE, GateModelRenderer.getRenderIndex(GateType.TRANSPARENT_LATCH));
 
-    ;
-
     public final ICTileType tileType;
     public final int renderIndex;
     public final GatePlacementType placementType;

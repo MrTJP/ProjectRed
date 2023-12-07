@@ -102,7 +102,7 @@ public class WireModelBuilder {
                 tex = connMask == 5 ? 0 : connMask == 10 ? 1 : 2;
         }
 
-        Vertex5 verts[] = new Vertex5[] {
+        Vertex5[] verts = new Vertex5[] {
                 new Vertex5(0.5 - w, h, 0.5 + w, 8 - tw, 16 + tw),
                 new Vertex5(0.5 + w, h, 0.5 + w, 8 + tw, 16 + tw),
                 new Vertex5(0.5 + w, h, 0.5 - w, 8 + tw, 16 - tw),
@@ -296,9 +296,7 @@ public class WireModelBuilder {
     }
 
     public static int addVerts(CCModel model, Vertex5[] verts, int k) {
-        for (int i = 0; i < verts.length; i++) {
-            model.verts[k + i] = verts[i];
-        }
+        System.arraycopy(verts, 0, model.verts, k, verts.length);
         return k + verts.length;
     }
 

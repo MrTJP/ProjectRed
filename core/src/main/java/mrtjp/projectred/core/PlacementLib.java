@@ -17,8 +17,8 @@ import java.util.List;
 
 public class PlacementLib {
 
-    private static List<Block> wireWhiteList = new LinkedList<>();
-    private static List<Block> gateWhiteList = new LinkedList<>();
+    private static final List<Block> wireWhiteList = new LinkedList<>();
+    private static final List<Block> gateWhiteList = new LinkedList<>();
 
     static {
         wireWhiteList.add(Blocks.GLOWSTONE);

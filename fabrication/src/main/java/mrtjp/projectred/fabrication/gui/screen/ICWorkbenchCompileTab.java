@@ -35,7 +35,7 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
 
     private final ICWorkbenchEditor editor;
 
-    private List<ICompileOverlayRenderer> overlays = new LinkedList<>();
+    private final List<ICompileOverlayRenderer> overlays = new LinkedList<>();
 
     private boolean upPressed = false;
     private boolean rightPressed = false;

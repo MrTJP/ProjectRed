@@ -6,7 +6,6 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Vector3;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.fengine.TileCoord;
-import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -15,7 +14,8 @@ import net.minecraft.network.chat.TranslatableComponent;
 import java.util.List;
 
 import static mrtjp.projectred.fabrication.editor.ICWorkbenchEditor.UNIFORM_GRAY;
-import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_NO_OUTPUTS_DESC;
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_NO_OUTPUTS_TITLE;
 
 public class NoOutputsError extends CompileProblem {
 
