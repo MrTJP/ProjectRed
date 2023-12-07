@@ -7,7 +7,9 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Vector3;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -16,6 +18,8 @@ import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
+
+import java.util.OptionalDouble;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.MOD_ID;
 
@@ -106,6 +110,22 @@ public class ICRenderTypes {
                     .setLineState(RenderStateShard.DEFAULT_LINE)
                     .createCompositeState(true));
 
+    public static RenderType holoGridRenderType = RenderType.create(MOD_ID + ":holo_grid_lines", DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.LINES, 256, false, false,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
+                    .setTextureState(RenderStateShard.NO_TEXTURE)
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
+                    .setCullState(RenderStateShard.NO_CULL)
+                    .setLightmapState(RenderStateShard.NO_LIGHTMAP)
+                    .setOverlayState(RenderStateShard.NO_OVERLAY)
+                    .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
+                    .setOutputState(RenderStateShard.MAIN_TARGET)
+                    .setTexturingState(RenderStateShard.DEFAULT_TEXTURING)
+                    .setWriteMaskState(RenderStateShard.COLOR_DEPTH_WRITE)
+                    .setLineState(new RenderStateShard.LineStateShard(OptionalDouble.empty()))
+                    .createCompositeState(false));
+
     public static TextureAtlasSprite icSurfaceIcon;
     public static TextureAtlasSprite icSurfaceBorderIcon;
     public static TextureAtlasSprite icSurfaceCornerIcon;
@@ -195,6 +215,47 @@ public class ICRenderTypes {
         box.max.y = ac.min.y + height;
         box.max.z = ac.max.z - th;
         BlockRenderer.renderCuboid(ccrs, box, 1 | 1<<2 | 1<<3);
+    }
+
+    public static void renderGridInBounds(PoseStack stack, MultiBufferSource getter, Cuboid6 bounds, int amask) {
+
+        VertexConsumer vertexConsumer = getter.getBuffer(holoGridRenderType);
+        Matrix4f pose = stack.last().pose();
+
+        float r = 0.7f;
+        float g = 0.7f;
+        float b = 0.7f;
+        float alpha = 0.2f;
+
+        // Render X axis lines
+        if ((amask & 1) != 0) {
+            for (int y = (int) bounds.min.y; y <= bounds.max.y; y++) {
+                for (int z = (int) bounds.min.z; z <= bounds.max.z; z++) {
+                    vertexConsumer.vertex(pose, (float) bounds.min.x, y, z).color(r, g, b, alpha).normal(1, 0, 0).endVertex();
+                    vertexConsumer.vertex(pose, (float) bounds.max.x, y, z).color(r, g, b, alpha).normal(1, 0, 0).endVertex();
+                }
+            }
+        }
+
+        // Render Y axis lines
+        if ((amask & 2) != 0) {
+            for (int x = (int) bounds.min.x; x <= bounds.max.x; x++) {
+                for (int z = (int) bounds.min.z; z <= bounds.max.z; z++) {
+                    vertexConsumer.vertex(pose, x, (float) bounds.min.y, z).color(r, g, b, alpha).normal(0, 1, 0).endVertex();
+                    vertexConsumer.vertex(pose, x, (float) bounds.max.y, z).color(r, g, b, alpha).normal(0, 1, 0).endVertex();
+                }
+            }
+        }
+
+        // Render Z axis lines
+        if ((amask & 4) != 0) {
+            for (int x = (int) bounds.min.x; x <= bounds.max.x; x++) {
+                for (int y = (int) bounds.min.y; y <= bounds.max.y; y++) {
+                    vertexConsumer.vertex(pose, x, y, (float) bounds.min.z).color(r, g, b, alpha).normal(0, 0, 1).endVertex();
+                    vertexConsumer.vertex(pose, x, y, (float) bounds.max.z).color(r, g, b, alpha).normal(0, 0, 1).endVertex();
+                }
+            }
+        }
     }
 
     public static void renderTextCenteredAt(PoseStack stack, Vector3 pos, String text, int bgColor, int textColor) {
