@@ -2,13 +2,13 @@ package mrtjp.projectred.illumination.item;
 
 import codechicken.multipart.api.ItemMultipart;
 import codechicken.multipart.api.part.MultiPart;
-import mrtjp.projectred.illumination.ProjectRedIllumination;
+import codechicken.multipart.util.MultipartPlaceContext;
 import mrtjp.projectred.illumination.MultipartLightProperties;
+import mrtjp.projectred.illumination.ProjectRedIllumination;
 import mrtjp.projectred.illumination.part.MultipartLightPart;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.context.UseOnContext;
 
 public class MultipartLightPartItem extends ItemMultipart {
 
@@ -32,7 +32,7 @@ public class MultipartLightPartItem extends ItemMultipart {
     }
 
     @Override
-    public MultiPart newPart(UseOnContext context) {
+    public MultiPart newPart(MultipartPlaceContext context) {
         Direction side = context.getClickedFace();
         BlockPos onPos = context.getClickedPos().relative(side.getOpposite());
 

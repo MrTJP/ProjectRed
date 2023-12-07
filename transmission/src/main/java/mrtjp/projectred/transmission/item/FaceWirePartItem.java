@@ -2,14 +2,14 @@ package mrtjp.projectred.transmission.item;
 
 import codechicken.multipart.api.ItemMultipart;
 import codechicken.multipart.api.part.MultiPart;
-import mrtjp.projectred.transmission.ProjectRedTransmission;
+import codechicken.multipart.util.MultipartPlaceContext;
 import mrtjp.projectred.core.PlacementLib;
+import mrtjp.projectred.transmission.ProjectRedTransmission;
 import mrtjp.projectred.transmission.WireType;
 import mrtjp.projectred.transmission.part.BaseWirePart;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.context.UseOnContext;
 
 public class FaceWirePartItem extends ItemMultipart {
 
@@ -25,7 +25,7 @@ public class FaceWirePartItem extends ItemMultipart {
     }
 
     @Override
-    public MultiPart newPart(UseOnContext context) {
+    public MultiPart newPart(MultipartPlaceContext context) {
         Direction side = context.getClickedFace();
         BlockPos onPos = context.getClickedPos().relative(side.getOpposite());
         if (!PlacementLib.canPlaceWireOnSide(context.getLevel(), onPos, side)) {
