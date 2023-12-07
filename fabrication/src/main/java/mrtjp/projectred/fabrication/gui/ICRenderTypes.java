@@ -206,7 +206,7 @@ public class ICRenderTypes {
         stack.scale(1.0f/fontRenderer.lineHeight, 1, 1.0f/fontRenderer.lineHeight);
         stack.mulPose(Vector3f.XP.rotationDegrees(90.0F));
 
-        fontRenderer.draw(stack, text, (float) (0 - fontRenderer.width(text) / 2), (float) (0 - fontRenderer.lineHeight / 2), textColor);
+        fontRenderer.draw(stack, text, (float) (-fontRenderer.width(text) / 2), (float) (-fontRenderer.lineHeight / 2), textColor);
 
         stack.popPose();
     }

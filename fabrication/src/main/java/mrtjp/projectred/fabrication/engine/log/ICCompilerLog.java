@@ -10,7 +10,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static mrtjp.fengine.api.ICStepThroughAssembler.AssemblerStepType.CHECK_OPEN_TILE_MAPS;
 import static mrtjp.projectred.fabrication.editor.EditorDataUtils.*;
@@ -319,8 +318,8 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
                 ));
             }
 
-            registerIds.addAll(Arrays.stream(tag.getIntArray("registerIds")).boxed().collect(Collectors.toList()));
-            gateIds.addAll(Arrays.stream(tag.getIntArray("gateIds")).boxed().collect(Collectors.toList()));
+            registerIds.addAll(Arrays.stream(tag.getIntArray("registerIds")).boxed().toList());
+            gateIds.addAll(Arrays.stream(tag.getIntArray("gateIds")).boxed().toList());
 
             ListTag remapsTag = tag.getList("registerRemaps", Tag.TAG_COMPOUND);
             for (Tag remapTag : remapsTag) {

@@ -20,8 +20,8 @@ public class FramedJacketedWireModelBuilder {
     private double w = 0.0D;
     private int connCount = 0; // Number of sided connections
     private int axisCount = 0; // Number of connection axis used
-    private int[] fRotationMasks = new int[6]; // Rotation masks for each face
-    private int[] fAxisCounts = new int[6]; // Axis count for each face
+    private final int[] fRotationMasks = new int[6]; // Rotation masks for each face
+    private final int[] fAxisCounts = new int[6]; // Axis count for each face
     private int i = 0;
     private @Nullable FramedJacketedWireModel model;
 

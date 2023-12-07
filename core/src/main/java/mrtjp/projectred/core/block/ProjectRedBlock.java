@@ -1,9 +1,6 @@
 package mrtjp.projectred.core.block;
 
-import codechicken.multipart.api.TickableTile;
-import codechicken.multipart.init.CBMultipartModContent;
 import mrtjp.projectred.core.tile.IBlockEventTile;
-import mrtjp.projectred.core.tile.ProjectRedTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -18,7 +15,6 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;

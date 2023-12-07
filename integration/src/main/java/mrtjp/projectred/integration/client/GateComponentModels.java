@@ -39,33 +39,33 @@ import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class GateComponentModels {
 
-    public static CCModel base = loadBaseModel("base");
-    public static CCModel lightChip = loadModel("chip");
-    public static CCModel leverOn = loadModel("leveron").apply(new Translation(0, 2 / 16D, 0));
-    public static CCModel leverOff = loadModel("leveroff").apply(new Translation(0, 2 / 16D, 0));
-    public static CCModel solarArray = loadModel("solar");
-    public static CCModel rainSensor = loadModel("rainsensor");
-    public static CCModel pointer = loadModel("pointer");
-    public static CCModel busXcvr = loadModel("array/busxcvr");
-    public static CCModel lightPanel1 = loadModel("array/lightpanel1");
-    public static CCModel lightPanel2 = loadModel("array/lightpanel2");
-    public static CCModel busRand = loadModel("array/busrand");
-    public static CCModel busConv = loadModel("array/busconv");
-    public static CCModel signalPanel = loadModel("array/signalpanel");
-    public static CCModel busInput = loadModel("array/businput");
-    public static CCModel icBundled = loadModel("array/icbundled");
+    public static final CCModel base = loadBaseModel("base");
+    public static final CCModel lightChip = loadModel("chip");
+    public static final CCModel leverOn = loadModel("leveron").apply(new Translation(0, 2 / 16D, 0));
+    public static final CCModel leverOff = loadModel("leveroff").apply(new Translation(0, 2 / 16D, 0));
+    public static final CCModel solarArray = loadModel("solar");
+    public static final CCModel rainSensor = loadModel("rainsensor");
+    public static final CCModel pointer = loadModel("pointer");
+    public static final CCModel busXcvr = loadModel("array/busxcvr");
+    public static final CCModel lightPanel1 = loadModel("array/lightpanel1");
+    public static final CCModel lightPanel2 = loadModel("array/lightpanel2");
+    public static final CCModel busRand = loadModel("array/busrand");
+    public static final CCModel busConv = loadModel("array/busconv");
+    public static final CCModel signalPanel = loadModel("array/signalpanel");
+    public static final CCModel busInput = loadModel("array/businput");
+    public static final CCModel icBundled = loadModel("array/icbundled");
 
-    public static Map<String, CCModel> nullCell = loadModels("array/null_cell", (k, v) -> v.apply(new Translation(0.5, 0, 0.5)));
-    public static Map<String, CCModel> logicCell = loadModels("array/logic_cell", (k, v) -> v.apply(new Translation(0.5, 0, 0.5)));
-    public static Map<String, CCModel> andCell = loadModels("array/and_cell", (k, v) -> v.apply(new Translation(0.5, 0, 0.5)));
-    public static Map<String, CCModel> transparentLatchCell = loadModels("array/transparent_latch_cell", (k, v) -> v.apply(new Translation(0.5, 0, 0.5)));
-    public static Map<String, CCModel> sevenSeg = loadModels("array/7seg");
-    public static Map<String, CCModel> sixteenSeg = loadModels("array/16seg");
-    public static CCModel segbus = loadModel("array/segbus");
+    public static final Map<String, CCModel> nullCell = loadModels("array/null_cell", (k, v) -> v.apply(new Translation(0.5, 0, 0.5)));
+    public static final Map<String, CCModel> logicCell = loadModels("array/logic_cell", (k, v) -> v.apply(new Translation(0.5, 0, 0.5)));
+    public static final Map<String, CCModel> andCell = loadModels("array/and_cell", (k, v) -> v.apply(new Translation(0.5, 0, 0.5)));
+    public static final Map<String, CCModel> transparentLatchCell = loadModels("array/transparent_latch_cell", (k, v) -> v.apply(new Translation(0.5, 0, 0.5)));
+    public static final Map<String, CCModel> sevenSeg = loadModels("array/7seg");
+    public static final Map<String, CCModel> sixteenSeg = loadModels("array/16seg");
+    public static final CCModel segbus = loadModel("array/segbus");
 
-    public static Map<String, CCModel> fabIC = loadModels("fab_ic", (k, v) -> v.apply(new Translation(0.5, 0, 0.5)));
-    public static Map<String, CCModel> ioCrimp = loadModels("io_crimp");
-    public static Map<String, CCModel> ioColourBox = loadModels("io_colour_box");
+    public static final Map<String, CCModel> fabIC = loadModels("fab_ic", (k, v) -> v.apply(new Translation(0.5, 0, 0.5)));
+    public static final Map<String, CCModel> ioCrimp = loadModels("io_crimp");
+    public static final Map<String, CCModel> ioColourBox = loadModels("io_colour_box");
 
     public static IconTransformation baseIcon;
     public static IconTransformation wireBorderIcon;
@@ -934,13 +934,13 @@ public class GateComponentModels {
         private final CCModel[] models;
         private final CCModel[] modelsSI;
 
-        public boolean sideIndicator = true;
+        public final boolean sideIndicator = true;
         public int signal = 0;
         public int disableMask = 0;
 
         public int offColour = 0x420000FF;
         public int onColour = 0xEC0000FF;
-        public int disableColour = EnumColour.GRAY.rgba();
+        public final int disableColour = EnumColour.GRAY.rgba();
 
         public SignalPanelModel(double x, double z, int r) {
             this(new Vector3(x, 0, z), r);
@@ -1355,7 +1355,7 @@ public class GateComponentModels {
 
         public int signal = 0;
         public int onColour = EnumColour.RED.rgba();
-        public int offColour = EnumColour.BLACK.rgba();
+        public final int offColour = EnumColour.BLACK.rgba();
 
         public SegmentDisplayModel(double x, double z, Map<String, CCModel> modelMap) {
             dPos = new Vector3(x, 0, z).multiply(1 / 16D).translation();

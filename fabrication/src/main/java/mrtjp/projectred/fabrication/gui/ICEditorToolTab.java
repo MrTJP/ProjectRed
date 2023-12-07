@@ -164,7 +164,7 @@ public class ICEditorToolTab extends AbstractGuiNode implements TabControllerNod
             GuiComponent.blit(stack, getPosition().x, getPosition().y, GROUP_U, GROUP_V, getFrame().width(), getFrame().height(), 512, 512);
 
             Font fontRenderer = getRoot().getFontRenderer();
-            fontRenderer.draw(stack, title, getPosition().x + 2, getPosition().y + GROUP_HEIGHT / 2 - fontRenderer.lineHeight/2, 0xFFFFFF);
+            fontRenderer.draw(stack, title, getPosition().x + 2, getPosition().y + GROUP_HEIGHT / 2f - fontRenderer.lineHeight / 2f, 0xFFFFFF);
         }
     }
 

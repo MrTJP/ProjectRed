@@ -2,9 +2,7 @@ package mrtjp.projectred.fabrication.engine.log;
 
 import mrtjp.fengine.TileCoord;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.List;

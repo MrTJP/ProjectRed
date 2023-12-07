@@ -102,7 +102,7 @@ public class FabricationUnlocal {
     // Interfaces
     public static final String UL_INTERFACE_NC       = PREFIX + "interface.nc";
     public static final String UL_INTERFACE_REDSTONE = PREFIX + "interface.redstone";
-    public static final String UL_INTERFACE_BUNDLED  = PREFIX + "interface.bundled"; ;
+    public static final String UL_INTERFACE_BUNDLED  = PREFIX + "interface.bundled";
 
     // Numbers and measurements
     public static final String UL_UNIT_WARNINGS          = PREFIX + "unit.warnings";

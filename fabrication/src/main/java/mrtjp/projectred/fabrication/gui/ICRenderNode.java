@@ -8,7 +8,6 @@ import codechicken.lib.vec.Vector3;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.fengine.TileCoord;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
-import mrtjp.projectred.fabrication.engine.BaseTileMap;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Vec2;
 import mrtjp.projectred.redui.ViewportRenderNode;

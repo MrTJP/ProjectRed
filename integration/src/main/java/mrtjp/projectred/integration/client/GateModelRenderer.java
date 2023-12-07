@@ -1686,7 +1686,7 @@ public class GateModelRenderer {
         private final WireModel[] wires = generateWireModels("businput", 1);
         private final InputPanelButtonsModel buttons = new InputPanelButtonsModel();
 
-        private BlockPos.MutableBlockPos lightPos = new BlockPos.MutableBlockPos();
+        private final BlockPos.MutableBlockPos lightPos = new BlockPos.MutableBlockPos();
 
         public RenderBusInputPanel() {
             models.add(BaseComponentModel.INSTANCE);

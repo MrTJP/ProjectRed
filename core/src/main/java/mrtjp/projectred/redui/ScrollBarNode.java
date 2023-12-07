@@ -4,9 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.lib.Size;
-import net.minecraft.network.chat.TextComponent;
-
-import java.util.Collections;
 
 public abstract class ScrollBarNode extends AbstractGuiNode {
 

@@ -169,7 +169,7 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
         TileCoord positionToUpdate = new TileCoord(in.readByte(), in.readByte(), in.readByte());
         int key = in.readUByte();
         Optional<BaseTile> tileToUpdate = tileMap.getBaseTile(positionToUpdate);
-        if (!tileToUpdate.isPresent() || tileToUpdate.get().getTileType().getID() != frameKey) {
+        if (tileToUpdate.isEmpty() || tileToUpdate.get().getTileType().getID() != frameKey) {
             LOGGER.error("Tile Update error: No tile with id " + frameKey + " at position " + positionToUpdate + ". Reading into temporary tile");
             BaseTile tmp = ICTileType.createFromId(frameKey);
             if (tmp == null) {
@@ -272,7 +272,7 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
         if (network.isClientSide()) throw new RuntimeException("Tiles can only be removed server-side");
 
         Optional<BaseTile> tileToRemove = tileMap.getBaseTile(pos);
-        if (!tileToRemove.isPresent()) {
+        if (tileToRemove.isEmpty()) {
             LOGGER.error("No tile present to remove at pos " + pos);
             return;
         }

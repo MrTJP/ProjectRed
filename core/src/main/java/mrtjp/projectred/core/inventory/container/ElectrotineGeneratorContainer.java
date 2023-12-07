@@ -14,7 +14,7 @@ import static mrtjp.projectred.core.init.CoreReferences.ELECTROTINE_GENERATOR_CO
 
 public class ElectrotineGeneratorContainer extends BasePoweredTileContainer {
 
-    public static ICCLContainerFactory<ElectrotineGeneratorContainer> FACTORY = (windowId, inventory, packet) -> {
+    public static final ICCLContainerFactory<ElectrotineGeneratorContainer> FACTORY = (windowId, inventory, packet) -> {
         BlockEntity tile = inventory.player.level.getBlockEntity(packet.readPos());
         if (!(tile instanceof ElectrotineGeneratorTile)) return null;
 

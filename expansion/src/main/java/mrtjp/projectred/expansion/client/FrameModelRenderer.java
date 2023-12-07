@@ -26,9 +26,9 @@ import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class FrameModelRenderer {
 
-    private static Map<String, CCModel> frameModels = loadModels("frame");
+    private static final Map<String, CCModel> frameModels = loadModels("frame");
 
-    private static CCModel[] models = new CCModel[64];
+    private static final CCModel[] models = new CCModel[64];
     private static IconTransformation frameIcon;
 
     public static TextureAtlasSprite getFrameIcon() {
