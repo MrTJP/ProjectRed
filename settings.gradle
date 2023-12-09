@@ -18,6 +18,9 @@ pluginManagement {
 
 rootProject.name = 'ProjectRed'
 
+// Note: Standalone subproject ('core' subproject directly includes its sources)
+include 'api'
+
 include 'core', 'expansion', 'exploration', 'fabrication', 'illumination', 'integration', 'transmission'
 
 // Empty module for client/server run configurations

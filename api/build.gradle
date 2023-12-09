@@ -1,0 +1,13 @@
+plugins {
+    id 'net.minecraftforge.gradle'
+}
+
+minecraft {
+    mappings channel: mcp_mappings, version: mc_version
+//    accessTransformer = file("../core/src/main/resources/META-INF/accesstransformer.cfg")
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+}
+

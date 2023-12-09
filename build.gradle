@@ -79,6 +79,7 @@ publishing {
     }
     publications {
         ProjectRed(MavenPublication) {
+            artifact project(':api').jar
             artifact project(':core').jar
             artifact project(':expansion').jar
             artifact project(':exploration').jar

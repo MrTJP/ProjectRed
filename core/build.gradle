@@ -5,6 +5,9 @@ plugins {
 
 String mod_id = 'projectred_core'
 
+// Include all sources from API project
+sourceSets.main.java.srcDirs += ['../api/src/main/java']
+
 minecraft {
     mappings channel: mcp_mappings, version: mc_version
     accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
