@@ -44,6 +44,9 @@ public class Configurator {
     /* Compatibility */
     public static boolean compat_CCBundledCable = true;
 
+    /* Fabrication */
+    public static int autoCompileTileLimit = 20;
+
     public static void load() {
         ConfigFile configFile = new ConfigFile(MOD_ID).path(Paths.get("config/ProjectRed.cfg"));
         ConfigCategory config = configFile.load();
@@ -90,6 +93,9 @@ public class Configurator {
 
         ConfigCategory compat = config.getCategory("compatibility").setComment("Control the loading of various compatibility hooks. These settings are ignored unless the Compatibility module is installed.");
         compat_CCBundledCable = compat.getValue("computercraft").setDefaultBoolean(compat_CCBundledCable).setComment("This allows computers to connect to bundled cables with the RS API.").getBoolean();
+
+        ConfigCategory fab = config.getCategory("fabrication").setComment("Settings for Fabrication circuit compilation");
+        autoCompileTileLimit = fab.getValue("auto_compile_tile_limit").setDefaultInt(autoCompileTileLimit).setComment("Tile count before auto-compile becomes disallowed (-1 to always allow, 0 to never allow). Recommended to keep this very low on servers.").getInt();
     }
 
     private static void loadAndDeleteLegacyValues(ConfigCategory config) {

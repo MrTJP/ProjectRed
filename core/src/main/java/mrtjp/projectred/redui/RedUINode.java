@@ -1,9 +1,11 @@
 package mrtjp.projectred.redui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.lib.Size;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
@@ -779,8 +781,7 @@ public interface RedUINode {
         boolean operate(RedUINode node, Point relativePoint, boolean consumed);
     }
 
-    // Utility methods
-
+    //region Utility methods
     default void renderTooltip(PoseStack stack, Point mouse, List<Component> tooltip) {
 
         if (tooltip.isEmpty()) return;
@@ -793,9 +794,27 @@ public interface RedUINode {
         stack.pushPose();
         stack.translate(-screenOffset.x, -screenOffset.y, 0);
 
-//        GuiUtils.drawHoveringText(stack, tooltip, mouseScreenSpace.x, mouseScreenSpace.y, getRoot().getScreenFrame().width(), getRoot().getScreenFrame().height(), -1, getRoot().getFontRenderer());
         getRoot().renderTooltipScreenSpace(stack, mouseScreenSpace, tooltip);
 
         stack.popPose();
     }
+
+    default void blitSprite(PoseStack stack, RedUISprite sprite) {
+        blitSpriteAt(stack, sprite, getPosition());
+    }
+
+    default void blitSpriteCentered(PoseStack stack, RedUISprite sprite) {
+        blitSpriteCenteredAt(stack, sprite, getFrame().midPoint());
+    }
+
+    default void blitSpriteAt(PoseStack stack, RedUISprite sprite, Point pos) {
+        RenderSystem.setShaderTexture(0, sprite.texture());
+        GuiComponent.blit(stack, pos.x, pos.y, sprite.u(), sprite.v(), sprite.w(), sprite.h(), sprite.textureWidth(), sprite.textureHeight());
+    }
+
+    default void blitSpriteCenteredAt(PoseStack stack, RedUISprite sprite, Point pos) {
+        Point blitPos = pos.subtract(new Point(sprite.w() / 2, sprite.h() / 2));
+        blitSpriteAt(stack, sprite, blitPos);
+    }
+    //endregion
 }
