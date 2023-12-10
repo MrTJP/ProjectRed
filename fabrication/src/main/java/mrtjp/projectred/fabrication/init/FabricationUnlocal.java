@@ -47,18 +47,21 @@ public class FabricationUnlocal {
     public static final String UL_NO_WARNINGS            =  PREFIX + "problems.no_warnings";
 
     // General workbench UI
-    public static final String UL_PLACE_BLUEPRINT   = PREFIX + "ui.place_blueprint";
-    public static final String UL_BLUEPRINT_INFO    = PREFIX + "ui.blueprint_info";
-    public static final String UL_BLUEPRINT_NAME    = PREFIX + "ui.blueprint_name";
-    public static final String UL_BLUEPRINT_OWNER   = PREFIX + "ui.blueprint_owner";
-    public static final String UL_BLUEPRINT_DIM     = PREFIX + "ui.blueprint_dim";
-    public static final String UL_BLUEPRINT_LAYERS  = PREFIX + "ui.blueprint_layers";
-    public static final String UL_COMPILE           = PREFIX + "ui.compile";
-    public static final String UL_COMPILE_PROGRESS  = PREFIX + "ui.compile_progress";
-    public static final String UL_COMPILE_DONE      = PREFIX + "ui.compile_done";
-    public static final String UL_COMPILE_READY     = PREFIX + "ui.compile_ready";
-    public static final String UL_COMPILE_FAILED    = PREFIX + "ui.compile_failed";
-    public static final String UL_SIM_RUNNING       = PREFIX + "ui.sim_running";
+    public static final String UL_PLACE_BLUEPRINT           = PREFIX + "ui.place_blueprint";
+    public static final String UL_BLUEPRINT_INFO            = PREFIX + "ui.blueprint_info";
+    public static final String UL_BLUEPRINT_NAME            = PREFIX + "ui.blueprint_name";
+    public static final String UL_BLUEPRINT_OWNER           = PREFIX + "ui.blueprint_owner";
+    public static final String UL_BLUEPRINT_DIM             = PREFIX + "ui.blueprint_dim";
+    public static final String UL_BLUEPRINT_LAYERS          = PREFIX + "ui.blueprint_layers";
+    public static final String UL_COMPILE                   = PREFIX + "ui.compile";
+    public static final String UL_COMPILE_PROGRESS          = PREFIX + "ui.compile_progress";
+    public static final String UL_COMPILE_DONE              = PREFIX + "ui.compile_done";
+    public static final String UL_COMPILE_READY             = PREFIX + "ui.compile_ready";
+    public static final String UL_COMPILE_FAILED            = PREFIX + "ui.compile_failed";
+    public static final String UL_AUTO_COMPILE              = PREFIX + "ui.auto_compile";
+    public static final String UL_AUTO_COMPILE_DESCRIPTION  = PREFIX + "ui.auto_compile_description";
+    public static final String UL_AUTO_COMPILE_DISABLED     = PREFIX + "ui.auto_compile_disabled";
+    public static final String UL_SIM_RUNNING               = PREFIX + "ui.sim_running";
 
     public static final String UL_YIELD_CALCULATOR      = PREFIX + "ui.yield_calculator";
     public static final String UL_LITHOGRAPHY_PIPELINE  = PREFIX + "ui.lithography_pipeline";

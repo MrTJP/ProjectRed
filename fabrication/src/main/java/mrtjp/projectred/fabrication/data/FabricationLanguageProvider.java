@@ -86,6 +86,9 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_COMPILE_DONE, "Done (%d/%d)");
         add(UL_COMPILE_READY, "Ready to compile");
         add(UL_COMPILE_FAILED, "Compile failed");
+        add(UL_AUTO_COMPILE, "Auto-compile");
+        add(UL_AUTO_COMPILE_DESCRIPTION, "Enable to auto-compile design on change");
+        add(UL_AUTO_COMPILE_DISABLED, "Disabled. Design is too complex");
         add(UL_SIM_RUNNING, "Simulation running");
 
         add(UL_YIELD_CALCULATOR, "Yield Calculator");

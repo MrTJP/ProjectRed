@@ -5,6 +5,7 @@ import codechicken.lib.data.MCDataOutput;
 import mrtjp.fengine.TileCoord;
 import mrtjp.fengine.api.ICFlatMap;
 import mrtjp.fengine.api.ICStepThroughAssembler;
+import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.fabrication.engine.BaseTile;
 import mrtjp.projectred.fabrication.engine.ICSimulationContainer;
 import mrtjp.projectred.fabrication.engine.IIOConnectionTile;
@@ -31,8 +32,10 @@ public class ICEditorStateMachine {
     public static final int KEY_COMPILER_LOG_NODE_ADDED = 2;
     public static final int KEY_COMPILER_LOG_NODE_EXECUTED = 3;
     public static final int KEY_COMPILER_LOG_PROBLEM_ADDED = 4;
+    public static final int KEY_AUTO_COMPILE_STATE = 5;
 
     public static final int KEY_CLIENT_COMPILE_CLICKED = 10;
+    public static final int KEY_CLIENT_AUTO_COMPILE_TOGGLED = 11;
 
     private final ICWorkbenchEditor editor;
 
@@ -59,7 +62,8 @@ public class ICEditorStateMachine {
 
     private String lastCompiledFlatMap = PRFabricationEngine.EMPTY_FLAT_MAP_SERIALIZED;
 
-    private boolean autoCompileOnChange = false; //TODO client-side toggle
+    private boolean autoCompileAvailable = true;
+    private boolean enableAutoCompile = true;
 
     public ICEditorStateMachine(ICWorkbenchEditor editor, @Nullable StateMachineCallback callback) {
         this.editor = editor;
@@ -81,6 +85,9 @@ public class ICEditorStateMachine {
         CompoundTag logTag = new CompoundTag();
         compilerLog.save(logTag);
         tag.put(KEY_COMPILER_LOG, logTag);
+
+        tag.putBoolean(KEY_AUTO_COMPILE_ENABLE, enableAutoCompile);
+        tag.putBoolean(KEY_AUTO_COMPILE_ALLOWED, autoCompileAvailable);
     }
 
     public void load(CompoundTag tag) {
@@ -88,18 +95,22 @@ public class ICEditorStateMachine {
         lastCompiledFlatMap = tag.getString(KEY_FLAT_MAP);
         simulationContainer.load(tag.getCompound(KEY_SIMULATION));
         compilerLog.load(tag.getCompound(KEY_COMPILER_LOG));
+        enableAutoCompile = tag.getBoolean(KEY_AUTO_COMPILE_ENABLE);
+        autoCompileAvailable = tag.getBoolean(KEY_AUTO_COMPILE_ALLOWED);
     }
 
     public void writeDesc(MCDataOutput out) {
         out.writeByte(currentState);
         simulationContainer.writeDesc(out);
         compilerLog.writeDesc(out);
+        writeAutoCompileState(out);
     }
 
     public void readDesc(MCDataInput in) {
         currentState = in.readUByte();
         simulationContainer.readDesc(in);
         compilerLog.readDesc(in);
+        readAutoCompileState(in);
     }
 
     public void reset() {
@@ -108,6 +119,7 @@ public class ICEditorStateMachine {
 
     public void readStateMachineStream(MCDataInput in, int key) {
         switch (key) {
+            // Server -> Client packets
             case KEY_STATE_CHANGED:
                 enterStateOnClient(in.readUByte());
                 break;
@@ -117,9 +129,18 @@ public class ICEditorStateMachine {
             case KEY_COMPILER_LOG_PROBLEM_ADDED:
                 compilerLog.readLogStream(in, key);
                 break;
+            case KEY_AUTO_COMPILE_STATE:
+                readAutoCompileState(in);
+                break;
+
+            // Client -> Server packets
             case KEY_CLIENT_COMPILE_CLICKED:
                 onCompileTriggered();
                 break;
+            case KEY_CLIENT_AUTO_COMPILE_TOGGLED:
+                setAutoCompileAndSend(!enableAutoCompile);
+                break;
+
             default:
                 throw new IllegalArgumentException("Unknown compiler stream key: " + key);
         }
@@ -147,22 +168,73 @@ public class ICEditorStateMachine {
     }
     //endregion
 
+    //region Server-side utilities
+    private void sendAutoCompileState() {
+        writeAutoCompileState(getStateMachineStream(KEY_AUTO_COMPILE_STATE));
+    }
+
+    private boolean checkAutoCompileAvailable() {
+        if (Configurator.autoCompileTileLimit == -1) return true;
+        if (Configurator.autoCompileTileLimit == 0) return false;
+        return editor.getTileMap().getTileCount() <= Configurator.autoCompileTileLimit;
+    }
+
+    private void setAutoCompileAndSend(boolean enable) {
+        boolean oldAvailable = autoCompileAvailable;
+        boolean oldEnabled = enableAutoCompile;
+
+        autoCompileAvailable = checkAutoCompileAvailable();
+        enableAutoCompile = autoCompileAvailable && enable;
+
+        if (oldAvailable != autoCompileAvailable || oldEnabled != enableAutoCompile) {
+            sendAutoCompileState();
+        }
+    }
+
+    private void writeAutoCompileState(MCDataOutput out) {
+        int acState = (autoCompileAvailable ? 0x1 : 0) | (enableAutoCompile ? 0x2 : 0);
+        out.writeByte(acState);
+    }
+    //endregion
+
     //region Client-side utilities
+    private void readAutoCompileState(MCDataInput in) {
+        byte acState = in.readByte();
+        autoCompileAvailable = (acState & 0x1) != 0;
+        enableAutoCompile = (acState & 0x2) != 0;
+    }
+
     public void sendCompileButtonClicked() {
         // Notifies server to call onCompileTriggered
         getStateMachineStream(KEY_CLIENT_COMPILE_CLICKED);
     }
+
+    public void sendAutoCompileToggled() {
+        getStateMachineStream(KEY_CLIENT_AUTO_COMPILE_TOGGLED);
+    }
+
     public boolean canTriggerCompile() {
         return states[currentState].canTransitionTo(STATE_COMPILING);
     }
+
     public boolean isCompiling() {
         return currentState == STATE_COMPILING;
     }
+
     public boolean isSimulating() {
         return currentState == STATE_SIMULATING;
     }
+
     public boolean didLastCompileFailed() {
         return getCompilerLog().getErrorCount() > 0;
+    }
+
+    public boolean isAutoCompileEnabled() {
+        return enableAutoCompile;
+    }
+
+    public boolean isAutoCompileAvailable() {
+        return autoCompileAvailable;
     }
     //endregion
 
@@ -258,7 +330,7 @@ public class ICEditorStateMachine {
 
         @Override
         public void onTick(long time) {
-            if (autoCompileOnChange) {
+            if (enableAutoCompile) {
                 enterStateAndSend(STATE_COMPILING);
             }
         }
@@ -271,6 +343,18 @@ public class ICEditorStateMachine {
         @Override
         public boolean canTransitionTo(int id) {
             return id == STATE_COMPILING;
+        }
+
+        @Override
+        public void onStateEntered(int previousStateId) {
+            // Set to same state to force re-check of availability
+            setAutoCompileAndSend(enableAutoCompile);
+        }
+
+        @Override
+        public void onTileMapChanged() {
+            // Set to same state to force re-check of availability
+            setAutoCompileAndSend(enableAutoCompile);
         }
     }
 

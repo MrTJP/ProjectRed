@@ -13,6 +13,7 @@ import mrtjp.projectred.fabrication.engine.log.ICCompilerLog;
 import mrtjp.projectred.fabrication.gui.*;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractButtonNode;
+import mrtjp.projectred.redui.AbstractCheckboxNode;
 import mrtjp.projectred.redui.AbstractGuiNode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -57,6 +58,10 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
         compileButton.setPosition(208, 16);
         compileButton.setSize(18, 18);
         addChild(compileButton);
+
+        AutoCompileCheckbox autoCompileCheckbox = new AutoCompileCheckbox();
+        autoCompileCheckbox.setPosition(230, 16);
+        addChild(autoCompileCheckbox);
 
         ICRenderNode icRenderNode = new ICRenderNode(editor, this);
         icRenderNode.setPosition(7, 18);
@@ -312,6 +317,36 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
             tooltip.add(new TranslatableComponent(UL_COMPILE));
             if (editor.getStateMachine().canTriggerCompile()) {
                 tooltip.add(new TranslatableComponent(UL_COMPILE_READY).withStyle(UNIFORM_GRAY));
+            }
+        }
+    }
+
+    private class AutoCompileCheckbox extends AbstractCheckboxNode {
+
+        @Override
+        protected boolean isDisabled() {
+            return !editor.getStateMachine().isAutoCompileAvailable();
+        }
+
+        @Override
+        protected boolean isChecked() {
+            return editor.getStateMachine().isAutoCompileEnabled();
+        }
+
+        @Override
+        protected void onClicked() {
+            editor.getStateMachine().sendAutoCompileToggled();
+        }
+
+        @Override
+        protected void buildTooltip(List<Component> tooltip) {
+            tooltip.add(new TranslatableComponent(UL_AUTO_COMPILE));
+            tooltip.add(new TranslatableComponent(UL_AUTO_COMPILE_DESCRIPTION).withStyle(UNIFORM_GRAY));
+            if (isDisabled()) {
+                tooltip.add(new TextComponent("<!> ")
+                        .withStyle(UNIFORM_RED)
+                        .append(new TranslatableComponent(UL_AUTO_COMPILE_DISABLED)
+                                .withStyle(UNIFORM_GRAY)));
             }
         }
     }

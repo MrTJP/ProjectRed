@@ -25,6 +25,8 @@ public class EditorDataUtils {
     public static final String KEY_FLAT_MAP = "flat_map"; // String
     public static final String KEY_SIMULATION = "sim_cont"; // CompoundTag
     public static final String KEY_COMPILER_LOG = "compiler_log"; // CompoundTag
+    public static final String KEY_AUTO_COMPILE_ENABLE = "auto_compile_enable"; // boolean
+    public static final String KEY_AUTO_COMPILE_ALLOWED = "auto_compile_allowed"; // boolean
 
     // ICIssuesLog
     public static final String KEY_COMPLETED_STEPS = "completed_steps"; // int
