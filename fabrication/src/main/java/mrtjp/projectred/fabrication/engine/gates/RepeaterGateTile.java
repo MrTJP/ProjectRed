@@ -8,7 +8,6 @@ import mrtjp.fengine.simulate.ICGate;
 import mrtjp.fengine.simulate.ICSimulation;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -44,8 +43,8 @@ public class RepeaterGateTile extends TimedStateGateTile {
     @OnlyIn(Dist.CLIENT)
     public void buildInteractionToolTip(List<Component> toolTip, int i) {
 
-        toolTip.add(new TranslatableComponent(UL_TOGGLE_DELAY));
-        toolTip.add(new TranslatableComponent(UL_UNIT_TICKS, DELAYS[getShape()]).withStyle(ChatFormatting.GRAY));
+        toolTip.add(Component.translatable(UL_TOGGLE_DELAY));
+        toolTip.add(Component.translatable(UL_UNIT_TICKS, DELAYS[getShape()]).withStyle(ChatFormatting.GRAY));
     }
 
     @Override

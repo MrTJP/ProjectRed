@@ -6,7 +6,6 @@ import mrtjp.projectred.expansion.tile.BatteryBoxTile;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -83,7 +82,7 @@ public class BatteryBoxBlock extends ProjectRedBlock {
         super.appendHoverText(stack, level, toolTip, flag);
         if (stack.hasTag()) {
             int power = Objects.requireNonNull(stack.getTag()).getInt(BatteryBoxTile.TAG_KEY_POWER_STORED);
-            toolTip.add(new TranslatableComponent(UL_STORED_POWER_TOOLTIP).append(": " + power + " / " + 8000).withStyle(ChatFormatting.GRAY)); //TODO make this static constant
+            toolTip.add(Component.translatable(UL_STORED_POWER_TOOLTIP).append(": " + power + " / " + 8000).withStyle(ChatFormatting.GRAY)); //TODO make this static constant
         }
     }
 }

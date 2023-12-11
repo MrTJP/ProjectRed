@@ -10,8 +10,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 
 import java.util.LinkedList;
@@ -68,7 +66,7 @@ public class ICEditorToolTab extends AbstractGuiNode implements TabControllerNod
     }
 
     protected void addGroup(String unlocal) {
-        addGroup(new TranslatableComponent(unlocal));
+        addGroup(Component.translatable(unlocal));
     }
 
     protected void addGroup(Component groupName) {
@@ -136,7 +134,7 @@ public class ICEditorToolTab extends AbstractGuiNode implements TabControllerNod
 
             @Override
             public void buildTooltip(List<Component> tooltip) {
-                tooltip.add(new TextComponent("//TODO implement tab"));
+                tooltip.add(Component.literal("//TODO implement tab"));
             }
         };
     }

@@ -17,6 +17,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 
@@ -256,7 +257,7 @@ public abstract class RedstoneGatePart extends GatePart implements FaceRedstoneP
 
     //region Rendering
     @Override
-    public void animateTick(Random random) {
+    public void animateTick(RandomSource random) {
         // client side only
         GateModelRenderer.instance().spawnParticles(this, random);
     }

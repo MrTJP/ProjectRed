@@ -1,5 +1,6 @@
 package mrtjp.projectred.transmission.client;
 
+import codechicken.lib.model.PerspectiveModelState;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.item.IItemRenderer;
 import codechicken.lib.util.TransformUtils;
@@ -10,7 +11,6 @@ import mrtjp.projectred.transmission.item.CenterWirePartItem;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.world.item.ItemStack;
 
 public class FramedWirePartItemRenderer implements IItemRenderer {
@@ -35,7 +35,7 @@ public class FramedWirePartItemRenderer implements IItemRenderer {
     }
 
     @Override
-    public ModelState getModelTransform() {
+    public PerspectiveModelState getModelState() {
         return TransformUtils.DEFAULT_BLOCK;
     }
 

@@ -9,6 +9,7 @@ import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 
@@ -160,7 +161,7 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
     }
 
     private BlockModelBuilder createOppositeMatchingFaceModel(Block block) {
-        String texture = block.getRegistryName().getPath();
+        String texture = ForgeRegistries.BLOCKS.getKey(block).getPath();
         return models().cube(texture,
                         modLoc("block/" + texture + "_bottom"),
                         modLoc("block/" + texture + "_top"),
@@ -172,7 +173,7 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
     }
 
     private BlockModelBuilder createBatteryModel(Block block, int charge) {
-        String texture = block.getRegistryName().getPath();
+        String texture = ForgeRegistries.BLOCKS.getKey(block).getPath();
         String modelName = texture + (charge > 0 ? "_charge" + charge : "");
         return models().cubeBottomTop(modelName,
                 modLoc("block/" + texture + "_side_" + charge),
@@ -181,7 +182,7 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
     }
 
     private BlockModelBuilder createFrontFacedMachineModel(Block block, int state) {
-        String texture = block.getRegistryName().getPath();
+        String texture = ForgeRegistries.BLOCKS.getKey(block).getPath();
         String modelName = texture + (state > 0 ? "_state" + state : "");
         return models().orientableWithBottom(modelName,
                 modLoc("block/" + texture + "_side"),
@@ -191,7 +192,7 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
     }
 
     private BlockModelBuilder createSideAndTopStateModel(Block block, int state) {
-        String texture = block.getRegistryName().getPath();
+        String texture = ForgeRegistries.BLOCKS.getKey(block).getPath();
         String modelName = texture + (state > 0 ? "_state" + state : "");
         return models().cubeBottomTop(modelName,
                 modLoc("block/" + texture + "_side_" + state),
@@ -200,7 +201,7 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
     }
 
     private BlockModelBuilder createSideStateModel(Block block, int state) {
-        String texture = block.getRegistryName().getPath();
+        String texture = ForgeRegistries.BLOCKS.getKey(block).getPath();
         String modelName = texture + (state > 0 ? "_state" + state : "");
         return models().cubeBottomTop(modelName,
                 modLoc("block/" + texture + "_side_" + state),
@@ -209,7 +210,7 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
     }
 
     private BlockModelBuilder createOppositeMatchingFaceDeviceModel(Block block, boolean active) {
-        String texture = block.getRegistryName().getPath();
+        String texture = ForgeRegistries.BLOCKS.getKey(block).getPath();
         String activeKey = active ? "_active" : "";
         String modelName = texture + activeKey;
         return models().cube(modelName,

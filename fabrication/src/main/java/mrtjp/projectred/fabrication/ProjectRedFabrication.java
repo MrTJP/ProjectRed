@@ -15,12 +15,12 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
@@ -37,8 +37,8 @@ public class ProjectRedFabrication {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MOD_ID);
-    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.CONTAINERS, MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MOD_ID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MOD_ID);
     public static final DeferredRegister<MultipartType<?>> PARTS = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
 
     public static final SimpleCreativeTab FABRICATION_GROUP = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(FabricationBlocks.IC_WORKBENCH_BLOCK.get()));
@@ -73,13 +73,10 @@ public class ProjectRedFabrication {
         DataGenerator generator = event.getGenerator();
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
 
-        if (event.includeClient()) {
-            generator.addProvider(new FabricationBlockStateModelProvider(generator, fileHelper));
-            generator.addProvider(new FabricationItemModelProvider(generator, fileHelper));
-            generator.addProvider(new FabricationLanguageProvider(generator));
-        }
-        if (event.includeServer()) {
-            generator.addProvider(new FabricationRecipeProvider(generator));
-        }
+        generator.addProvider(event.includeClient(), new FabricationBlockStateModelProvider(generator, fileHelper));
+        generator.addProvider(event.includeClient(), new FabricationItemModelProvider(generator, fileHelper));
+        generator.addProvider(event.includeClient(), new FabricationLanguageProvider(generator));
+
+        generator.addProvider(event.includeServer(), new FabricationRecipeProvider(generator));
     }
 }

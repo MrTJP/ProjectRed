@@ -25,6 +25,11 @@ public class CraftingHelper {
         public boolean stillValid(Player p_75145_1_) {
             return false;
         }
+
+        @Override
+        public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
+            return ItemStack.EMPTY;
+        }
     }, 3, 3);
 
     private final ResultContainer craftResultInventory = new ResultContainer();

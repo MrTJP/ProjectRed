@@ -16,12 +16,12 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
@@ -38,8 +38,8 @@ public class ProjectRedExpansion {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MOD_ID);
-    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.CONTAINERS, MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MOD_ID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MOD_ID);
     public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
     public static final DeferredRegister<PartConverter> PART_CONVERTERS = DeferredRegister.create(PartConverter.PART_CONVERTERS, MOD_ID);
 
@@ -92,15 +92,12 @@ public class ProjectRedExpansion {
         DataGenerator generator = event.getGenerator();
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
 
-        if (event.includeClient()) {
-            generator.addProvider(new ExpansionBlockStateModelProvider(generator, fileHelper));
-            generator.addProvider(new ExpansionItemModelProvider(generator, fileHelper));
-            generator.addProvider(new ExpansionLanguageProvider(generator));
-        }
-        if (event.includeServer()) {
-            generator.addProvider(new ExpansionBlockTagsProvider(generator, fileHelper));
-            generator.addProvider(new ExpansionRecipeProvider(generator));
-            generator.addProvider(new ExpansionLootTableProvider(generator));
-        }
+        generator.addProvider(event.includeClient(), new ExpansionBlockStateModelProvider(generator, fileHelper));
+        generator.addProvider(event.includeClient(), new ExpansionItemModelProvider(generator, fileHelper));
+        generator.addProvider(event.includeClient(), new ExpansionLanguageProvider(generator));
+
+        generator.addProvider(event.includeServer(), new ExpansionBlockTagsProvider(generator, fileHelper));
+        generator.addProvider(event.includeServer(), new ExpansionRecipeProvider(generator));
+        generator.addProvider(event.includeServer(), new ExpansionLootTableProvider(generator));
     }
 }

@@ -15,7 +15,6 @@ import mrtjp.projectred.lib.InventoryLib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.player.Player;
@@ -25,6 +24,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
@@ -119,7 +119,7 @@ public class ProjectBenchTile extends ProjectRedTile implements IPacketReceiverT
                     (ServerPlayer) player,
                     new SimpleMenuProvider(
                             (id, inv, p) -> new ProjectBenchContainer(inv, this, id),
-                            new TextComponent(getBlockState().getBlock().getDescriptionId())),
+                            getBlockState().getBlock().getName()),
                     p -> p.writePos(getBlockPos()));
         }
 
@@ -262,7 +262,7 @@ public class ProjectBenchTile extends ProjectRedTile implements IPacketReceiverT
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (!this.remove && cap == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        if (!this.remove && cap == ForgeCapabilities.ITEM_HANDLER)
             return storageInventoryCap.cast();
         return super.getCapability(cap, side);
     }

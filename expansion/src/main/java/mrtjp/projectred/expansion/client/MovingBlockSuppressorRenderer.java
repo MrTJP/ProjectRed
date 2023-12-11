@@ -6,13 +6,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import mrtjp.projectred.expansion.MovementManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.IModelData;
-
-import java.util.Random;
+import net.minecraftforge.client.model.data.ModelData;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A global block renderer that takes care of temporarily suppressing rendering for any blocks that are
@@ -30,7 +31,7 @@ public class MovingBlockSuppressorRenderer implements ICCBlockRenderer {
     }
 
     @Override
-    public boolean canHandleBlock(BlockAndTintGetter world, BlockPos pos, BlockState blockState) {
+    public boolean canHandleBlock(BlockAndTintGetter world, BlockPos pos, BlockState blockState, @Nullable RenderType renderType) {
         // Infinite recursion prevention. #renderBlock is attempting a no-cull render.
         if (isRendering) return false;
 
@@ -52,17 +53,17 @@ public class MovingBlockSuppressorRenderer implements ICCBlockRenderer {
     }
 
     @Override
-    public boolean renderBlock(BlockState state, BlockPos pos, BlockAndTintGetter world, PoseStack mStack, VertexConsumer builder, Random random, IModelData data) {
+    public void renderBlock(BlockState state, BlockPos pos, BlockAndTintGetter world, PoseStack mStack, VertexConsumer builder, RandomSource random, ModelData data, @Nullable RenderType renderType) {
 
         // Moving blocks don't render here
-        if (isMoving(pos)) return false;
+        if (isMoving(pos)) return;
 
         // Render adjacent blocks without culling
         isRendering = true; // Prevents ourselves from re-handling this event
-        Minecraft.getInstance().getBlockRenderer().renderBatched(state, pos, world, mStack, builder, false, random);
+        // renderType should be nullable
+        //noinspection DataFlowIssue
+        Minecraft.getInstance().getBlockRenderer().renderBatched(state, pos, world, mStack, builder, false, random, data, renderType);
         isRendering = false;
-
-        return true;
     }
 
     private static boolean isMoving(BlockPos pos) {

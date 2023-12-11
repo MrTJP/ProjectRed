@@ -21,13 +21,11 @@ public class GatePartRenderer implements PartRenderer<GatePart> {
     }
 
     @Override
-    public boolean renderStatic(GatePart part, @Nullable RenderType layer, CCRenderState ccrs) {
+    public void renderStatic(GatePart part, @Nullable RenderType layer, CCRenderState ccrs) {
         if (layer == null || (layer == RenderType.cutout() && Configurator.staticGates)) {
             ccrs.setBrightness(part.level(), part.pos());
             GateModelRenderer.instance().renderStatic(ccrs, part, RedundantTransformation.INSTANCE);
-            return true;
         }
-        return false;
     }
 
     @Override

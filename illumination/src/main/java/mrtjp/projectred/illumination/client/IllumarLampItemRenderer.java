@@ -1,5 +1,6 @@
 package mrtjp.projectred.illumination.client;
 
+import codechicken.lib.model.PerspectiveModelState;
 import codechicken.lib.model.bakedmodels.WrappedItemModel;
 import codechicken.lib.render.BlockRenderer;
 import codechicken.lib.render.CCRenderState;
@@ -18,9 +19,12 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.levelgen.RandomState;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
@@ -28,7 +32,7 @@ public class IllumarLampItemRenderer extends WrappedItemModel implements IItemRe
 
     private static final Cuboid6 BLOCK_BOUNDS = Cuboid6.full.copy().expand(-0.02D);
     private static final Cuboid6 GLOW_BOUNDS = Cuboid6.full.copy().expand(0.02D);
-    private static final Random random = new Random();
+    private static final RandomSource random = RandomSource.create();
 
     public IllumarLampItemRenderer(BakedModel wrapped) {
         super(wrapped);
@@ -69,7 +73,7 @@ public class IllumarLampItemRenderer extends WrappedItemModel implements IItemRe
     }
 
     @Override
-    public ModelState getModelTransform() {
+    public @Nullable PerspectiveModelState getModelState() {
         return TransformUtils.DEFAULT_BLOCK;
     }
 

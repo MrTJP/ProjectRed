@@ -28,10 +28,11 @@ public class MarbleCaveWorldCarver extends CaveWorldCarver {
         super(codec);
 
         // A little awkward, but this is now NetherWorldCarver overrides this list
-        this.replaceableBlocks =  new ImmutableSet.Builder<Block>()
-                .addAll(this.replaceableBlocks)
-                .add(ExplorationBlocks.MARBLE_BLOCK.get())
-                .build();
+        // TODO make this class generic, and intake the block for cave walls
+//        this.replaceableBlocks =  new ImmutableSet.Builder<Block>()
+//                .addAll(this.replaceableBlocks)
+//                .add(ExplorationBlocks.MARBLE_BLOCK.get())
+//                .build();
     }
 
     @Override
@@ -50,7 +51,7 @@ public class MarbleCaveWorldCarver extends CaveWorldCarver {
             for (int s = 0; s < 6; s++) {
                 pos.set(pos1).move(Direction.values()[s]);
                 BlockState adjacentState = chunkAccess.getBlockState(pos);
-                if (canReplaceBlock(adjacentState)) {
+                if (canReplaceBlock(config, adjacentState)) {
                     chunkAccess.setBlockState(pos, marbleState, false);
                 }
             }

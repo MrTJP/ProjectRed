@@ -2,7 +2,6 @@ package mrtjp.projectred.fabrication.engine.log;
 
 import mrtjp.fengine.TileCoord;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,11 +22,11 @@ public class IODirectionMismatchError extends MultiPositionProblem {
 
     @Override
     public Component getName() {
-        return new TranslatableComponent(UL_IO_DIR_MISMATCH_TITLE);
+        return Component.translatable(UL_IO_DIR_MISMATCH_TITLE);
     }
 
     @Override
     public void buildToolTip(List<Component> tooltip) {
-        tooltip.add(new TranslatableComponent(UL_IO_DIR_MISMATCH_DESC).withStyle(UNIFORM_GRAY));
+        tooltip.add(Component.translatable(UL_IO_DIR_MISMATCH_DESC).withStyle(UNIFORM_GRAY));
     }
 }

@@ -41,6 +41,12 @@ public class LithographyTableContainer extends FabricationMachineContainer {
         addSlot(new TakeOnlySlot(tile.getInventory(), 3, 110, 49)); // invalid die output
     }
 
+    @Override
+    public boolean stillValid(Player player) {
+        //TODO move to superclass once reobf bug is fixed
+        return !tile.isRemoved();
+    }
+
     public ItemStack quickMoveStack(Player player, int slotIndex) {
 
         Slot slot = slots.get(slotIndex);

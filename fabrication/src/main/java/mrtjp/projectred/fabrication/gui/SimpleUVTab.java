@@ -7,7 +7,6 @@ import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractGuiNode;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -24,7 +23,7 @@ public class SimpleUVTab implements TabControllerNode.IToolbarTab {
 
     public SimpleUVTab(AbstractGuiNode tabBodyNode, String unlocalTabName, TabButtonNode.TabSide side, int u, int v, ResourceLocation texture) { //TODO Icon width/height?
         this.tabBodyNode = tabBodyNode;
-        this.tabName = new TranslatableComponent(unlocalTabName);
+        this.tabName = Component.translatable(unlocalTabName);
         this.tabSide = side;
         this.u = u;
         this.v = v;

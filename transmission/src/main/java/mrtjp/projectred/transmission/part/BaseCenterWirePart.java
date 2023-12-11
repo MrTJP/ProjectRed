@@ -117,7 +117,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
         packet.writeByte(packedConnMap());
         packet.writeBoolean(material != null);
         if (material != null) {
-            packet.writeRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS, material);
+            packet.writeRegistryIdDirect(MicroMaterialRegistry.MICRO_MATERIALS, material);
         }
     }
 
@@ -126,7 +126,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
         super.readDesc(packet);
         connMap = packet.readUByte();
         if (packet.readBoolean()) {
-            material = packet.readRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS);
+            material = packet.readRegistryIdDirect(MicroMaterialRegistry.MICRO_MATERIALS);
         }
     }
 
@@ -138,7 +138,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
                 if (useStaticRenderer()) tile().markRender();
                 break;
             case KEY_MATERIAL:
-                material = packet.readRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS);
+                material = packet.readRegistryIdDirect(MicroMaterialRegistry.MICRO_MATERIALS);
                 if (useStaticRenderer()) tile().markRender();
                 break;
             case KEY_REMOVE_MATERIAL:
@@ -159,7 +159,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
         if (material == null) {
             sendUpdate(KEY_REMOVE_MATERIAL, p -> {});
         } else {
-            sendUpdate(KEY_MATERIAL, p -> p.writeRegistryIdUnsafe(MicroMaterialRegistry.MICRO_MATERIALS, material));
+            sendUpdate(KEY_MATERIAL, p -> p.writeRegistryIdDirect(MicroMaterialRegistry.MICRO_MATERIALS, material));
         }
     }
 

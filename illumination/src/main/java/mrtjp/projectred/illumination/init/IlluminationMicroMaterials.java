@@ -1,27 +1,27 @@
 package mrtjp.projectred.illumination.init;
 
-import codechicken.microblock.api.MicroMaterial;
+import codechicken.microblock.api.BlockMicroMaterial;
+import codechicken.microblock.util.MicroMaterialRegistry;
 import mrtjp.projectred.illumination.BlockLightType;
 import mrtjp.projectred.illumination.part.IllumarLampMicroMaterial;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.registries.RegisterEvent;
 
 public class IlluminationMicroMaterials {
 
     public static void register() {
-        // Register mixin
-        // Nothing to do. IllumarLampMicroblock is registered via annotation
+        // Cannot register deferred since MicroMaterialRegistry.MICRO_MATERIALS registry is null at this point.
+        // So we register during registry event below
     }
 
     @SubscribeEvent
-    @SuppressWarnings({"unchecked","rawtypes"})
-    public void onRegisterMicroMaterials(RegistryEvent.Register event) {
-        if (event.getGenericType() == MicroMaterial.class) {
-            // Illumar lamp microblocks
+    public void onRegisterMicroMaterials(RegisterEvent event) {
+        event.register(MicroMaterialRegistry.MICRO_MATERIALS.getRegistryKey(), r -> {
             for (int color = 0; color < 16; color++) {
                 int colorFinal = color;
-                event.getRegistry().register(new IllumarLampMicroMaterial(() -> BlockLightType.ILLUMAR_LAMP.getBlock(colorFinal, true)));
+                IllumarLampMicroMaterial material = new IllumarLampMicroMaterial(() -> BlockLightType.ILLUMAR_LAMP.getBlock(colorFinal, true));
+                r.register(BlockMicroMaterial.makeMaterialKey(material.state), material);
             }
-        }
+        });
     }
 }

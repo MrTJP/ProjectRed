@@ -7,7 +7,7 @@ import net.minecraft.world.inventory.MenuType;
 
 import javax.annotation.Nullable;
 
-public class FabricationMachineContainer extends BasePoweredTileContainer {
+public abstract class FabricationMachineContainer extends BasePoweredTileContainer {
 
     private final FabricationMachineTile tile;
 

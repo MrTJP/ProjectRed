@@ -3,7 +3,7 @@ plugins {
 }
 
 minecraft {
-    mappings channel: mcp_mappings, version: mc_version
+    mappings channel: mcp_mappings, version: mcp_mappings_version
 //    accessTransformer = file("../core/src/main/resources/META-INF/accesstransformer.cfg")
 }
 

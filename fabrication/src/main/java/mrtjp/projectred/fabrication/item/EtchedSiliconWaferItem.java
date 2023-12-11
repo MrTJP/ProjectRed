@@ -5,7 +5,6 @@ import mrtjp.projectred.fabrication.init.FabricationItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -31,16 +30,18 @@ public class EtchedSiliconWaferItem extends Item {
 
         CompoundTag tag = stack.getTag();
 
+        //TODO localize
+
         // Blueprint data
-        tooltipList.add(new TextComponent("Name: " + tag.getString("ic_name")).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(new TextComponent("Tile count: " + tag.getInt("tilecount")).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(Component.literal("Name: " + tag.getString("ic_name")).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(Component.literal("Tile count: " + tag.getInt("tilecount")).withStyle(ChatFormatting.GRAY));
         byte bmask = tag.getByte("bmask");
-        tooltipList.add(new TextComponent("Input mask: " + "0x" + Integer.toHexString(bmask & 0xF)).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(new TextComponent("Output mask: " + "0x" + Integer.toHexString((bmask >> 4) & 0xF)).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(Component.literal("Input mask: " + "0x" + Integer.toHexString(bmask & 0xF)).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(Component.literal("Output mask: " + "0x" + Integer.toHexString((bmask >> 4) & 0xF)).withStyle(ChatFormatting.GRAY));
 
         // Wafer etching data
-        tooltipList.add(new TextComponent("Yield: " + tag.getDouble("yield")*100 + "%").withStyle(ChatFormatting.GRAY));
-        tooltipList.add(new TextComponent("Defects: " + tag.getInt("defectCount")).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(Component.literal("Yield: " + tag.getDouble("yield")*100 + "%").withStyle(ChatFormatting.GRAY));
+        tooltipList.add(Component.literal("Defects: " + tag.getInt("defectCount")).withStyle(ChatFormatting.GRAY));
         byte[] defects = tag.getByteArray("defects");
         int gridLen = tag.getInt("gridLen");
         for (int y = 0; y < gridLen; y++) {
@@ -49,7 +50,7 @@ public class EtchedSiliconWaferItem extends Item {
                 int i = y * gridLen + x;
                 s.append(defects[i] == 0 ? "[-]" : "[X]");
             }
-            tooltipList.add(new TextComponent("  " + s).withStyle(ChatFormatting.GRAY));
+            tooltipList.add(Component.literal("  " + s).withStyle(ChatFormatting.GRAY));
         }
     }
 

@@ -8,6 +8,7 @@ import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 
@@ -59,7 +60,7 @@ public class CoreBlockStateModelProvider extends BlockStateProvider {
     }
 
     private BlockModelBuilder createFrontFacedPoweredMachineModel(Block block, int state) {
-        String texture = block.getRegistryName().getPath();
+        String texture = ForgeRegistries.BLOCKS.getKey(block).getPath();
         String modelName = texture + (state > 0 ? "_state" + state : "");
 
         return models().orientableWithBottom(modelName,

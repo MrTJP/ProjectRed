@@ -22,6 +22,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
@@ -69,8 +70,8 @@ public class ExpansionClientInit {
         BlockRenderingRegistry.registerGlobalRenderer(MovingBlockSuppressorRenderer.INSTANCE);
 
         // Register item renderers
-        MODEL_HELPER.register(new ModelResourceLocation(FRAME_BLOCK.get().getRegistryName(), "inventory"), FrameBlockRenderer.INSTANCE);
-        MODEL_HELPER.register(new ModelResourceLocation(FRAME_MOTOR_BLOCK.get().getRegistryName(), "inventory"), FrameMotorBlockRenderer.INSTANCE);
+        MODEL_HELPER.register(new ModelResourceLocation(ForgeRegistries.BLOCKS.getKey(FRAME_BLOCK.get()), "inventory"), FrameBlockRenderer.INSTANCE);
+        MODEL_HELPER.register(new ModelResourceLocation(ForgeRegistries.BLOCKS.getKey(FRAME_MOTOR_BLOCK.get()), "inventory"), FrameMotorBlockRenderer.INSTANCE);
 
         // Register part renderers
         MultipartClientRegistry.register(FRAME_PART.get(), FramePartRenderer.INSTANCE);

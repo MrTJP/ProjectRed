@@ -22,6 +22,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -29,14 +30,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.world.ChunkEvent;
-import net.minecraftforge.event.world.ChunkWatchEvent;
-import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.event.level.ChunkEvent;
+import net.minecraftforge.event.level.ChunkWatchEvent;
+import net.minecraftforge.event.level.LevelEvent;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -78,33 +77,33 @@ public class MovementManager {
 
     //region Events
     public static void onChunkWatchEvent(ChunkWatchEvent.Watch event) {
-        getInstance(event.getWorld()).addChunkWatcher(event.getPos(), event.getPlayer());
+        getInstance(event.getLevel()).addChunkWatcher(event.getPos(), event.getPlayer());
     }
 
     public static void onChunkUnwatchEvent(ChunkWatchEvent.UnWatch event) {
-        getInstance(event.getWorld()).removeChunkWatcher(event.getPos(), event.getPlayer());
+        getInstance(event.getLevel()).removeChunkWatcher(event.getPos(), event.getPlayer());
     }
 
     public static void onChunkUnloadEvent(ChunkEvent.Unload event) {
-        if (event.getWorld() instanceof Level level) {
+        if (event.getLevel() instanceof Level level) {
             getInstance(level).cancelMovementsInChunk(level, event.getChunk().getPos());
         }
     }
 
-    public static void onLevelUnload(WorldEvent.Unload event) {
+    public static void onLevelUnload(LevelEvent.Unload event) {
         // Note: Client unloads levels as player changes dimensions, but
         //       server appears to always have all dims loaded and unloads only
         //       on shutdown
-        LOGGER.debug("Level {} unloaded", event.getWorld());
+        LOGGER.debug("Level {} unloaded", event.getLevel());
     }
 
-    public static void onLevelLoad(WorldEvent.Load event) {
-        LOGGER.debug("Level {} loaded", event.getWorld());
+    public static void onLevelLoad(LevelEvent.Load event) {
+        LOGGER.debug("Level {} loaded", event.getLevel());
     }
 
-    public static void onLevelTick(TickEvent.WorldTickEvent event) {
+    public static void onLevelTick(TickEvent.LevelTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            getInstance(event.world).tick(event.world);
+            getInstance(event.level).tick(event.level);
         }
     }
 
@@ -129,7 +128,7 @@ public class MovementManager {
         }
         if (renderType == null) return;
 
-        Random random = new Random();
+        RandomSource random = RandomSource.create();
 
         // Set up camera pose
         Vec3 cam = event.getCamera().getPosition();
@@ -152,20 +151,16 @@ public class MovementManager {
                     BlockPos p = it.next();
                     BlockState state = level.getBlockState(p);
 
-                    if (!ItemBlockRenderTypes.canRenderInLayer(state, renderType)) continue;
+                    if (!ItemBlockRenderTypes.getRenderLayers(state).contains(renderType)) continue;
 
                     // Render the moving block
                     stack.pushPose();
                     stack.translate(p.getX(), p.getY(), p.getZ());
 
-                    RenderType oldType = MinecraftForgeClient.getRenderType();
-                    ForgeHooksClient.setRenderType(renderType);
-
                     MovingBlockSuppressorRenderer.allowMovingRenderOnRenderThread = true;
-                    Minecraft.getInstance().getBlockRenderer().renderBatched(state, p, level, stack, buffers.getBuffer(renderType), false, random, EmptyModelData.INSTANCE);
+                    Minecraft.getInstance().getBlockRenderer().renderBatched(state, p, level, stack, buffers.getBuffer(renderType), false, random, ModelData.EMPTY, renderType);
                     MovingBlockSuppressorRenderer.allowMovingRenderOnRenderThread = false;
 
-                    ForgeHooksClient.setRenderType(oldType);
                     stack.popPose(); //p
                 }
             }

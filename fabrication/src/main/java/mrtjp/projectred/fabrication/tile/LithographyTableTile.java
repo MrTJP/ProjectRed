@@ -15,7 +15,6 @@ import mrtjp.projectred.fabrication.lithography.WaferType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
@@ -83,7 +82,9 @@ public class LithographyTableTile extends FabricationMachineTile {
     @Override
     public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
         if (!getLevel().isClientSide) {
-            ServerUtils.openContainer((ServerPlayer) player, new SimpleMenuProvider((id, inv, p) -> new LithographyTableContainer(inv, this, id), new TranslatableComponent(getBlockState().getBlock().getDescriptionId())), p -> p.writePos(getBlockPos()));
+            ServerUtils.openContainer((ServerPlayer) player,
+                    new SimpleMenuProvider((id, inv, p) -> new LithographyTableContainer(inv, this, id), getBlockState().getBlock().getName()),
+                    p -> p.writePos(getBlockPos()));
         }
 
         return InteractionResult.SUCCESS;

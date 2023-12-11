@@ -1,5 +1,6 @@
 package mrtjp.projectred.expansion.client;
 
+import codechicken.lib.model.PerspectiveModelState;
 import codechicken.lib.texture.AtlasRegistrar;
 import codechicken.lib.util.TransformUtils;
 import codechicken.lib.vec.uv.MultiIconTransformation;
@@ -8,7 +9,6 @@ import mrtjp.projectred.core.client.FullyOrientableBlockRenderer;
 import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -41,7 +41,7 @@ public class FrameMotorBlockRenderer extends FullyOrientableBlockRenderer {
     }
 
     @Override
-    public boolean canHandleBlock(BlockAndTintGetter world, BlockPos pos, BlockState blockState) {
+    public boolean canHandleBlock(BlockAndTintGetter world, BlockPos pos, BlockState blockState, @Nullable RenderType renderType) {
         return blockState.getBlock() == ExpansionBlocks.FRAME_MOTOR_BLOCK.get();
     }
 
@@ -106,6 +106,6 @@ public class FrameMotorBlockRenderer extends FullyOrientableBlockRenderer {
     @Override public boolean useAmbientOcclusion() { return true; }
     @Override public boolean isGui3d() { return true; }
     @Override public boolean usesBlockLight() { return true; }
-    @Override public ModelState getModelTransform() { return TransformUtils.DEFAULT_BLOCK; }
+    @Override public @Nullable PerspectiveModelState getModelState() { return TransformUtils.DEFAULT_BLOCK; }
     //@formatter:on
 }

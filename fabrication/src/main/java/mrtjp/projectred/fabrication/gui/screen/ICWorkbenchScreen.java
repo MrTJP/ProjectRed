@@ -17,10 +17,9 @@ import mrtjp.projectred.redui.RedUIScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
@@ -44,7 +43,7 @@ public class ICWorkbenchScreen extends RedUIScreen {
     private @Nullable InactiveOverlayNode overlayNode;
 
     public ICWorkbenchScreen(ICWorkbenchTile tile) {
-        super(304, 222, new TextComponent(Objects.requireNonNull(tile.getType().getRegistryName()).toString()));
+        super(304, 222, Component.literal(Objects.requireNonNull(ForgeRegistries.BLOCK_ENTITY_TYPES.getKey(tile.getType())).toString()));
 
         this.tile = tile;
         this.editor = tile.getEditor();
@@ -164,7 +163,7 @@ public class ICWorkbenchScreen extends RedUIScreen {
             blit(stack, getFrame().x(), getFrame().y(), 0, 222, getFrame().width(), getFrame().height(), 512, 512);
 
             Font fontRenderer = getRoot().getFontRenderer();
-            Component text = new TranslatableComponent(UL_PLACE_BLUEPRINT);
+            Component text = Component.translatable(UL_PLACE_BLUEPRINT);
 
             fontRenderer.draw(stack, text,
                     getFrame().midX() - fontRenderer.width(text) / 2f,
@@ -190,7 +189,7 @@ public class ICWorkbenchScreen extends RedUIScreen {
         protected void buildTooltip(List<Component> tooltip) {
             super.buildTooltip(tooltip);
             if (editor.getStateMachine().isSimulating()) {
-                tooltip.add(new TranslatableComponent(UL_SIM_RUNNING).withStyle(UNIFORM_GRAY));
+                tooltip.add(Component.translatable(UL_SIM_RUNNING).withStyle(UNIFORM_GRAY));
             }
         }
     }
@@ -221,15 +220,15 @@ public class ICWorkbenchScreen extends RedUIScreen {
 
             ICCompilerLog log = editor.getStateMachine().getCompilerLog();
             if (editor.getStateMachine().canTriggerCompile()) {
-                tooltip.add(new TranslatableComponent(UL_COMPILE_READY).withStyle(UNIFORM_GRAY));
+                tooltip.add(Component.translatable(UL_COMPILE_READY).withStyle(UNIFORM_GRAY));
             }
 
             if (editor.getStateMachine().isCompiling()) {
-                tooltip.add(new TranslatableComponent(UL_COMPILE_PROGRESS, log.getCompletedSteps(), log.getTotalSteps()).withStyle(UNIFORM_GRAY));
+                tooltip.add(Component.translatable(UL_COMPILE_PROGRESS, log.getCompletedSteps(), log.getTotalSteps()).withStyle(UNIFORM_GRAY));
             }
 
             if (editor.getStateMachine().didLastCompileFailed()) {
-                tooltip.add(new TranslatableComponent(UL_COMPILE_FAILED).withStyle(UNIFORM_RED));
+                tooltip.add(Component.translatable(UL_COMPILE_FAILED).withStyle(UNIFORM_RED));
             }
 
             ICWorkbenchCompileTab.appendProblemsInfo(log, tooltip);

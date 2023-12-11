@@ -13,6 +13,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Collection;
 import java.util.List;
@@ -166,10 +167,10 @@ public class ExplorationRecipeProvider extends RecipeProvider {
     }
 
     private void oreSmeltingRecipe(ItemLike result, Collection<ItemLike> sources, float xp) {
-        String resultName = result.asItem().getRegistryName().getPath();
+        String resultName = ForgeRegistries.ITEMS.getKey(result.asItem()).getPath();
 
         for (ItemLike source : sources) {
-            String sourceName = source.asItem().getRegistryName().getPath();
+            String sourceName = ForgeRegistries.ITEMS.getKey(source.asItem()).getPath();
 
             smelting(result, 1, new ResourceLocation(MOD_ID, resultName + "_from_" + sourceName + "_smelting"))
                     .ingredient(source)
@@ -186,7 +187,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .patternLine("SSS");
 
         // Block to item
-        shapelessRecipe(item, 9, new ResourceLocation(MOD_ID, item.asItem().getRegistryName().getPath() + "_from_nineblock"))
+        shapelessRecipe(item, 9, new ResourceLocation(MOD_ID, ForgeRegistries.ITEMS.getKey(item.asItem()).getPath() + "_from_nineblock"))
                 .addIngredient(block);
     }
 

@@ -14,12 +14,10 @@ public class FramePartRenderer implements PartRenderer<FramePart> {
     }
 
     @Override
-    public boolean renderStatic(FramePart part, @Nullable RenderType type, CCRenderState ccrs) {
+    public void renderStatic(FramePart part, @Nullable RenderType type, CCRenderState ccrs) {
         if (type == null || type == RenderType.cutout()) {
             ccrs.setBrightness(part.level(), part.pos());
             FrameModelRenderer.renderStatic(ccrs, part.getOccludedSideMask());
-            return true;
         }
-        return false;
     }
 }

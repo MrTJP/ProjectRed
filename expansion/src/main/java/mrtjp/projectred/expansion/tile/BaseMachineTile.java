@@ -5,7 +5,6 @@ import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -132,7 +131,7 @@ public abstract class BaseMachineTile extends LowLoadPoweredTile {
                 (ServerPlayer) player,
                 new SimpleMenuProvider(
                         this::createMenu,
-                        new TextComponent(getBlockState().getBlock().getDescriptionId())),
+                        getBlockState().getBlock().getName()),
                 p -> p.writePos(getBlockPos()));
     }
 

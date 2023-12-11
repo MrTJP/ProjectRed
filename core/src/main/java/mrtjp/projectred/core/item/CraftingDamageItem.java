@@ -10,12 +10,12 @@ public class CraftingDamageItem extends Item {
     }
 
     @Override
-    public boolean hasContainerItem(ItemStack stack) {
+    public boolean hasCraftingRemainingItem(ItemStack stack) {
         return true;
     }
 
     @Override
-    public ItemStack getContainerItem(ItemStack itemStack) {
+    public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
         if (canBeDepleted()) {
             ItemStack ret = itemStack.copy();
             ret.setDamageValue(ret.getDamageValue() + 1);

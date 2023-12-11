@@ -59,7 +59,7 @@ public class IllumarLampMicroMaterial extends BlockMicroMaterial {
 
             // Delegate the rest to super material
             //@formatter:off
-            @Override public boolean renderCuboids(CCRenderState ccrs, @Nullable RenderType layer, Iterable<MaskedCuboid> cuboids) { return superMicroMaterial.renderCuboids(ccrs, layer, cuboids); }
+            @Override public void renderCuboids(CCRenderState ccrs, @Nullable RenderType layer, Iterable<MaskedCuboid> cuboids) { superMicroMaterial.renderCuboids(ccrs, layer, cuboids); }
             @Override public void addHitEffects(MicroblockPart part, PartRayTraceResult hit, ParticleEngine engine) { superMicroMaterial.addHitEffects(part, hit, engine); }
             @Override public void addDestroyEffects(MicroblockPart part, PartRayTraceResult hit, ParticleEngine engine) { superMicroMaterial.addDestroyEffects(part, hit, engine); }
             @Override public void addLandingEffects(MicroblockPart part, PartRayTraceResult hit, Vector3 entity, int numberOfParticles) { superMicroMaterial.addLandingEffects(part, hit, entity, numberOfParticles); }

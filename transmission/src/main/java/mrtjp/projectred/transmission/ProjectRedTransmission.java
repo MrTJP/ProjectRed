@@ -15,13 +15,13 @@ import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -65,15 +65,11 @@ public class ProjectRedTransmission {
         DataGenerator generator = event.getGenerator();
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
 
-        if (event.includeClient()) {
-            generator.addProvider(new TransmissionItemModelProvider(generator, fileHelper));
-            generator.addProvider(new TransmissionLanguageProvider(generator));
-        }
-        if (event.includeServer()) {
-            generator.addProvider(new TransmissionItemTagsProvider(generator, fileHelper));
-            generator.addProvider(new TransmissionRecipeProvider(generator));
-        }
+        generator.addProvider(event.includeClient(), new TransmissionItemModelProvider(generator, fileHelper));
+        generator.addProvider(event.includeClient(), new TransmissionLanguageProvider(generator));
 
+        generator.addProvider(event.includeServer(), new TransmissionItemTagsProvider(generator, fileHelper));
+        generator.addProvider(event.includeServer(), new TransmissionRecipeProvider(generator));
     }
 
     private void onServerStartEvent(final ServerAboutToStartEvent event) {

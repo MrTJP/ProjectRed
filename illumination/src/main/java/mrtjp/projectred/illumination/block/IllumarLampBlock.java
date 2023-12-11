@@ -4,6 +4,7 @@ import codechicken.multipart.api.RedstoneConnectorBlock;
 import mrtjp.projectred.illumination.tile.IllumarLampTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -72,7 +73,7 @@ public class IllumarLampBlock extends Block implements EntityBlock, RedstoneConn
     }
 
     @Override
-    public void tick(BlockState state, ServerLevel world, BlockPos pos, Random rand) {
+    public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource rand) {
         super.tick(state, world, pos, rand);
 
         boolean isLit = state.getValue(LIT);
