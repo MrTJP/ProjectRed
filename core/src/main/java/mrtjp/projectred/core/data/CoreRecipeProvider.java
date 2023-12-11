@@ -9,7 +9,6 @@ import codechicken.microblock.util.MicroMaterialRegistry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.crafting.NBTIngredient;
@@ -218,8 +217,8 @@ public class CoreRecipeProvider extends RecipeProvider {
         }
 
         shapedRecipe(DRAW_PLATE_ITEM)
-                .key('I', new PublicNBTIngredient(ItemMicroBlock.create(3, 2, MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.IRON_BLOCK.defaultBlockState())))))
-                .key('D', new PublicNBTIngredient(ItemMicroBlock.create(0, 2, MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.DIAMOND_BLOCK.defaultBlockState())))))
+                .key('I', NBTIngredient.of(ItemMicroBlock.create(3, 2, MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.IRON_BLOCK.defaultBlockState())))))
+                .key('D', NBTIngredient.of(ItemMicroBlock.create(0, 2, MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.DIAMOND_BLOCK.defaultBlockState())))))
                 .patternLine(" I ")
                 .patternLine("IDI")
                 .patternLine(" I ");
@@ -246,13 +245,6 @@ public class CoreRecipeProvider extends RecipeProvider {
         shapelessRecipe(illumarItem)
                 .addIngredient(DUSTS_GLOWSTONE, 2)
                 .addIngredient(ItemTags.create(color.getDyeTagName()), 2);
-    }
-
-    // Forge PLS :(
-    private static class PublicNBTIngredient extends NBTIngredient {
-        public PublicNBTIngredient(ItemStack stack) {
-            super(stack);
-        }
     }
 
 }
