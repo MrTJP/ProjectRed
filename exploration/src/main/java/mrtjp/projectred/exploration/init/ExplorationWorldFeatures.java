@@ -32,7 +32,7 @@ import java.util.List;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 import static mrtjp.projectred.exploration.ProjectRedExploration.WORLD_CARVERS;
-import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
+import static mrtjp.projectred.exploration.init.ExplorationBlocks.*;
 import static net.minecraft.world.level.biome.Biome.BiomeCategory.*;
 
 @SuppressWarnings("NotNullFieldNotInitialized")
@@ -63,12 +63,12 @@ public class ExplorationWorldFeatures {
         // Load configurations of Ore features and world carvers. Happens during common init because there is no Forge registry for this
 
         // Create features
-        Holder<ConfiguredFeature<OreConfiguration, ?>> RUBY_ORE_CONFIGURED_FEATURE          = registerOreConfiguration("ruby_ore",        RUBY_ORE_BLOCK, DEEPSLATE_RUBY_ORE_BLOCK,         Configurator.gen_RubyVeinSize);
-        Holder<ConfiguredFeature<OreConfiguration, ?>> SAPPHIRE_ORE_CONFIGURED_FEATURE      = registerOreConfiguration("sapphire_ore",    SAPPHIRE_ORE_BLOCK, DEEPSLATE_SAPPHIRE_ORE_BLOCK, Configurator.gen_SapphireVeinSize);
-        Holder<ConfiguredFeature<OreConfiguration, ?>> PERIDOT_ORE_CONFIGURED_FEATURE       = registerOreConfiguration("peridot_ore",     PERIDOT_ORE_BLOCK, DEEPSLATE_PERIDOT_ORE_BLOCK,   Configurator.gen_PeridotVeinSize);
-        Holder<ConfiguredFeature<OreConfiguration, ?>> ELECTROTINE_ORE_CONFIGURED_FEATURE   = registerOreConfiguration("electrotine_ore", ELECTROTINE_ORE_BLOCK, DEEPSLATE_ELECTROTINE_ORE_BLOCK, Configurator.gen_ElectrotineVeinSize);
-        Holder<ConfiguredFeature<OreConfiguration, ?>> TIN_ORE_CONFIGURED_FEATURE           = registerOreConfiguration("tin_ore",         TIN_ORE_BLOCK, DEEPSLATE_TIN_ORE_BLOCK,           Configurator.gen_TinVeinSize);
-        Holder<ConfiguredFeature<OreConfiguration, ?>> SILVER_ORE_CONFIGURED_FEATURE        = registerOreConfiguration("silver_ore",      SILVER_ORE_BLOCK, DEEPSLATE_SILVER_ORE_BLOCK,     Configurator.gen_SilverVeinSize);
+        Holder<ConfiguredFeature<OreConfiguration, ?>> RUBY_ORE_CONFIGURED_FEATURE          = registerOreConfiguration("ruby_ore",        RUBY_ORE_BLOCK.get(), DEEPSLATE_RUBY_ORE_BLOCK.get(),         Configurator.gen_RubyVeinSize);
+        Holder<ConfiguredFeature<OreConfiguration, ?>> SAPPHIRE_ORE_CONFIGURED_FEATURE      = registerOreConfiguration("sapphire_ore",    SAPPHIRE_ORE_BLOCK.get(), DEEPSLATE_SAPPHIRE_ORE_BLOCK.get(), Configurator.gen_SapphireVeinSize);
+        Holder<ConfiguredFeature<OreConfiguration, ?>> PERIDOT_ORE_CONFIGURED_FEATURE       = registerOreConfiguration("peridot_ore",     PERIDOT_ORE_BLOCK.get(), DEEPSLATE_PERIDOT_ORE_BLOCK.get(),   Configurator.gen_PeridotVeinSize);
+        Holder<ConfiguredFeature<OreConfiguration, ?>> ELECTROTINE_ORE_CONFIGURED_FEATURE   = registerOreConfiguration("electrotine_ore", ELECTROTINE_ORE_BLOCK.get(), DEEPSLATE_ELECTROTINE_ORE_BLOCK.get(), Configurator.gen_ElectrotineVeinSize);
+        Holder<ConfiguredFeature<OreConfiguration, ?>> TIN_ORE_CONFIGURED_FEATURE           = registerOreConfiguration("tin_ore",         TIN_ORE_BLOCK.get(), DEEPSLATE_TIN_ORE_BLOCK.get(),           Configurator.gen_TinVeinSize);
+        Holder<ConfiguredFeature<OreConfiguration, ?>> SILVER_ORE_CONFIGURED_FEATURE        = registerOreConfiguration("silver_ore",      SILVER_ORE_BLOCK.get(), DEEPSLATE_SILVER_ORE_BLOCK.get(),     Configurator.gen_SilverVeinSize);
 
         // Create placements
         RUBY_ORE_PLACED_FEATURE         = createOrePlacements("ruby_ore",        RUBY_ORE_CONFIGURED_FEATURE,        -80, 80, 1);

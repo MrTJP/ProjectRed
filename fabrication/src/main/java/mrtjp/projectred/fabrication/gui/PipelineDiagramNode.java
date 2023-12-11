@@ -3,7 +3,6 @@ package mrtjp.projectred.fabrication.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.fabrication.gui.screen.ICWorkbenchInfoTab;
-import mrtjp.projectred.fabrication.init.FabricationReferences;
 import mrtjp.projectred.fabrication.lithography.LithographyPipeline;
 import mrtjp.projectred.fabrication.lithography.YieldCalculator;
 import mrtjp.projectred.lib.Point;
@@ -13,6 +12,10 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
+
+import static mrtjp.projectred.fabrication.init.FabricationBlocks.*;
+import static mrtjp.projectred.fabrication.init.FabricationItems.*;
+import static mrtjp.projectred.fabrication.init.FabricationParts.FABRICATED_GATE_ITEM;
 
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class PipelineDiagramNode extends AbstractGuiNode {
@@ -60,15 +63,15 @@ public class PipelineDiagramNode extends AbstractGuiNode {
         private final ArrayList<ItemStackNode> items = new ArrayList<>();
 
         public BasicPipelineItems() {
-            addItem(new ItemStack(FabricationReferences.IC_BLUEPRINT_ITEM), 30, 5);
-            addItem(new ItemStack(FabricationReferences.PLOTTING_TABLE_BLOCK), 64, 5);
-            addItem(new ItemStack(FabricationReferences.BLANK_PHOTOMASK_ITEM), 64, 39);
-            addItem(new ItemStack(FabricationReferences.PHOTOMASK_SET_ITEM), 98, 5);
-            addItem(new ItemStack(FabricationReferences.LITHOGRAPHY_TABLE_BLOCK), 132, 5);
-            addItem(new ItemStack(FabricationReferences.ROUGH_SILICON_WAFER_ITEM), 132, 39);
-            addItem(new ItemStack(FabricationReferences.VALID_DIE_ITEM), 166, 5);
-            addItem(new ItemStack(FabricationReferences.PACKAGING_TABLE_BLOCK), 200, 5);
-            addItem(new ItemStack(FabricationReferences.FABRICATED_GATE_ITEM), 234, 5);
+            addItem(new ItemStack(IC_BLUEPRINT_ITEM.get()), 30, 5);
+            addItem(new ItemStack(PLOTTING_TABLE_BLOCK.get()), 64, 5);
+            addItem(new ItemStack(BLANK_PHOTOMASK_ITEM.get()), 64, 39);
+            addItem(new ItemStack(PHOTOMASK_SET_ITEM.get()), 98, 5);
+            addItem(new ItemStack(LITHOGRAPHY_TABLE_BLOCK.get()), 132, 5);
+            addItem(new ItemStack(ROUGH_SILICON_WAFER_ITEM.get()), 132, 39);
+            addItem(new ItemStack(VALID_DIE_ITEM.get()), 166, 5);
+            addItem(new ItemStack(PACKAGING_TABLE_BLOCK.get()), 200, 5);
+            addItem(new ItemStack(FABRICATED_GATE_ITEM.get()), 234, 5);
         }
 
         private void addItem(ItemStack stack, int x, int y) {
@@ -92,7 +95,7 @@ public class PipelineDiagramNode extends AbstractGuiNode {
             ItemStackNode node = items.get(5); //Wafer slot
             switch (yieldCalculator.getWaferType()) {
                 case ROUGH_WAFER:
-                    node.setItemStack(new ItemStack(FabricationReferences.ROUGH_SILICON_WAFER_ITEM));
+                    node.setItemStack(new ItemStack(ROUGH_SILICON_WAFER_ITEM.get()));
                     break;
                 case POLISHED_WAFER:
                 case PURIFIED_WAFER:

@@ -9,7 +9,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import javax.annotation.Nullable;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
-import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
+import static mrtjp.projectred.exploration.init.ExplorationBlocks.*;
 import static mrtjp.projectred.exploration.init.ExplorationTags.*;
 
 public class ExplorationBlockTagsProvider extends BlockTagsProvider {
@@ -26,15 +26,15 @@ public class ExplorationBlockTagsProvider extends BlockTagsProvider {
     @Override
     protected void addTags() {
         tag(BlockTags.WALLS).add(
-                MARBLE_WALL,
-                MARBLE_BRICK_WALL,
-                BASALT_WALL,
-                BASALT_COBBLE_WALL,
-                BASALT_BRICK_WALL,
-                RUBY_BLOCK_WALL,
-                SAPPHIRE_BLOCK_WALL,
-                PERIDOT_BLOCK_WALL,
-                ELECTROTINE_BLOCK_WALL);
+                MARBLE_WALL.get(),
+                MARBLE_BRICK_WALL.get(),
+                BASALT_WALL.get(),
+                BASALT_COBBLE_WALL.get(),
+                BASALT_BRICK_WALL.get(),
+                RUBY_BLOCK_WALL.get(),
+                SAPPHIRE_BLOCK_WALL.get(),
+                PERIDOT_BLOCK_WALL.get(),
+                ELECTROTINE_BLOCK_WALL.get());
 
         tag(Tags.Blocks.ORES)
                 .addTag(RUBY_ORES_BLOCK_TAG)
@@ -59,116 +59,116 @@ public class ExplorationBlockTagsProvider extends BlockTagsProvider {
         /* Attach blocks to tags */
 
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
-                .add(RUBY_ORE_BLOCK)
-                .add(DEEPSLATE_RUBY_ORE_BLOCK)
-                .add(SAPPHIRE_ORE_BLOCK)
-                .add(DEEPSLATE_SAPPHIRE_ORE_BLOCK)
-                .add(PERIDOT_ORE_BLOCK)
-                .add(DEEPSLATE_PERIDOT_ORE_BLOCK)
-                .add(ELECTROTINE_ORE_BLOCK)
-                .add(DEEPSLATE_ELECTROTINE_ORE_BLOCK)
-                .add(TIN_ORE_BLOCK)
-                .add(DEEPSLATE_TIN_ORE_BLOCK)
-                .add(SILVER_ORE_BLOCK)
-                .add(DEEPSLATE_SILVER_ORE_BLOCK)
-                .add(MARBLE_BLOCK)
-                .add(MARBLE_BRICK_BLOCK)
-                .add(BASALT_BLOCK)
-                .add(BASALT_COBBLE_BLOCK)
-                .add(RUBY_BLOCK)
-                .add(SAPPHIRE_BLOCK)
-                .add(PERIDOT_BLOCK)
-                .add(ELECTROTINE_BLOCK)
-                .add(RAW_TIN_BLOCK)
-                .add(TIN_BLOCK)
-                .add(RAW_SILVER_BLOCK)
-                .add(SILVER_BLOCK)
-                .add(MARBLE_WALL)
-                .add(MARBLE_BRICK_WALL)
-                .add(BASALT_WALL)
-                .add(BASALT_COBBLE_WALL)
-                .add(BASALT_BRICK_WALL)
-                .add(RUBY_BLOCK_WALL)
-                .add(SAPPHIRE_BLOCK_WALL)
-                .add(PERIDOT_BLOCK_WALL)
-                .add(ELECTROTINE_BLOCK_WALL);
+                .add(RUBY_ORE_BLOCK.get())
+                .add(DEEPSLATE_RUBY_ORE_BLOCK.get())
+                .add(SAPPHIRE_ORE_BLOCK.get())
+                .add(DEEPSLATE_SAPPHIRE_ORE_BLOCK.get())
+                .add(PERIDOT_ORE_BLOCK.get())
+                .add(DEEPSLATE_PERIDOT_ORE_BLOCK.get())
+                .add(ELECTROTINE_ORE_BLOCK.get())
+                .add(DEEPSLATE_ELECTROTINE_ORE_BLOCK.get())
+                .add(TIN_ORE_BLOCK.get())
+                .add(DEEPSLATE_TIN_ORE_BLOCK.get())
+                .add(SILVER_ORE_BLOCK.get())
+                .add(DEEPSLATE_SILVER_ORE_BLOCK.get())
+                .add(MARBLE_BLOCK.get())
+                .add(MARBLE_BRICK_BLOCK.get())
+                .add(BASALT_BLOCK.get())
+                .add(BASALT_COBBLE_BLOCK.get())
+                .add(RUBY_BLOCK.get())
+                .add(SAPPHIRE_BLOCK.get())
+                .add(PERIDOT_BLOCK.get())
+                .add(ELECTROTINE_BLOCK.get())
+                .add(RAW_TIN_BLOCK.get())
+                .add(TIN_BLOCK.get())
+                .add(RAW_SILVER_BLOCK.get())
+                .add(SILVER_BLOCK.get())
+                .add(MARBLE_WALL.get())
+                .add(MARBLE_BRICK_WALL.get())
+                .add(BASALT_WALL.get())
+                .add(BASALT_COBBLE_WALL.get())
+                .add(BASALT_BRICK_WALL.get())
+                .add(RUBY_BLOCK_WALL.get())
+                .add(SAPPHIRE_BLOCK_WALL.get())
+                .add(PERIDOT_BLOCK_WALL.get())
+                .add(ELECTROTINE_BLOCK_WALL.get());
 
         tag(BlockTags.NEEDS_STONE_TOOL)
                 // Ores
-                .add(TIN_ORE_BLOCK)
-                .add(DEEPSLATE_TIN_ORE_BLOCK)
+                .add(TIN_ORE_BLOCK.get())
+                .add(DEEPSLATE_TIN_ORE_BLOCK.get())
                 // Decorative blocks
-                .add(MARBLE_BLOCK)
-                .add(MARBLE_BRICK_BLOCK)
-                .add(BASALT_BLOCK)
-                .add(BASALT_COBBLE_BLOCK)
-                .add(BASALT_BRICK_BLOCK)
-                .add(ELECTROTINE_BLOCK)
-                .add(RAW_TIN_BLOCK)
-                .add(TIN_BLOCK)
+                .add(MARBLE_BLOCK.get())
+                .add(MARBLE_BRICK_BLOCK.get())
+                .add(BASALT_BLOCK.get())
+                .add(BASALT_COBBLE_BLOCK.get())
+                .add(BASALT_BRICK_BLOCK.get())
+                .add(ELECTROTINE_BLOCK.get())
+                .add(RAW_TIN_BLOCK.get())
+                .add(TIN_BLOCK.get())
                 // Walls
-                .add(MARBLE_WALL)
-                .add(MARBLE_BRICK_WALL)
-                .add(BASALT_WALL)
-                .add(BASALT_COBBLE_WALL)
-                .add(BASALT_BRICK_WALL)
-                .add(ELECTROTINE_BLOCK_WALL);
+                .add(MARBLE_WALL.get())
+                .add(MARBLE_BRICK_WALL.get())
+                .add(BASALT_WALL.get())
+                .add(BASALT_COBBLE_WALL.get())
+                .add(BASALT_BRICK_WALL.get())
+                .add(ELECTROTINE_BLOCK_WALL.get());
 
         tag(BlockTags.NEEDS_IRON_TOOL)
                 // Ores
-                .add(RUBY_ORE_BLOCK)
-                .add(DEEPSLATE_RUBY_ORE_BLOCK)
-                .add(SAPPHIRE_ORE_BLOCK)
-                .add(DEEPSLATE_SAPPHIRE_ORE_BLOCK)
-                .add(PERIDOT_ORE_BLOCK)
-                .add(DEEPSLATE_PERIDOT_ORE_BLOCK)
-                .add(ELECTROTINE_ORE_BLOCK)
-                .add(DEEPSLATE_ELECTROTINE_ORE_BLOCK)
-                .add(SILVER_ORE_BLOCK)
-                .add(DEEPSLATE_SILVER_ORE_BLOCK)
+                .add(RUBY_ORE_BLOCK.get())
+                .add(DEEPSLATE_RUBY_ORE_BLOCK.get())
+                .add(SAPPHIRE_ORE_BLOCK.get())
+                .add(DEEPSLATE_SAPPHIRE_ORE_BLOCK.get())
+                .add(PERIDOT_ORE_BLOCK.get())
+                .add(DEEPSLATE_PERIDOT_ORE_BLOCK.get())
+                .add(ELECTROTINE_ORE_BLOCK.get())
+                .add(DEEPSLATE_ELECTROTINE_ORE_BLOCK.get())
+                .add(SILVER_ORE_BLOCK.get())
+                .add(DEEPSLATE_SILVER_ORE_BLOCK.get())
                 // Decorative blocks
-                .add(RUBY_BLOCK)
-                .add(SAPPHIRE_BLOCK)
-                .add(PERIDOT_BLOCK)
-                .add(RAW_SILVER_BLOCK)
-                .add(SILVER_BLOCK)
+                .add(RUBY_BLOCK.get())
+                .add(SAPPHIRE_BLOCK.get())
+                .add(PERIDOT_BLOCK.get())
+                .add(RAW_SILVER_BLOCK.get())
+                .add(SILVER_BLOCK.get())
                 // Walls
-                .add(RUBY_BLOCK_WALL)
-                .add(SAPPHIRE_BLOCK_WALL)
-                .add(PERIDOT_BLOCK_WALL);
+                .add(RUBY_BLOCK_WALL.get())
+                .add(SAPPHIRE_BLOCK_WALL.get())
+                .add(PERIDOT_BLOCK_WALL.get());
 
-        tag(RUBY_ORES_BLOCK_TAG).add(RUBY_ORE_BLOCK).add(DEEPSLATE_RUBY_ORE_BLOCK);
-        tag(SAPPHIRE_ORES_BLOCK_TAG).add(SAPPHIRE_ORE_BLOCK).add(DEEPSLATE_SAPPHIRE_ORE_BLOCK);
-        tag(PERIDOT_ORES_BLOCK_TAG).add(PERIDOT_ORE_BLOCK).add(DEEPSLATE_PERIDOT_ORE_BLOCK);
-        tag(TIN_ORES_BLOCK_TAG).add(TIN_ORE_BLOCK).add(DEEPSLATE_TIN_ORE_BLOCK);
-        tag(SILVER_ORES_BLOCK_TAG).add(SILVER_ORE_BLOCK).add(DEEPSLATE_SILVER_ORE_BLOCK);
-        tag(ELECTROTINE_ORES_BLOCK_TAG).add(ELECTROTINE_ORE_BLOCK).add(DEEPSLATE_ELECTROTINE_ORE_BLOCK);
+        tag(RUBY_ORES_BLOCK_TAG).add(RUBY_ORE_BLOCK.get()).add(DEEPSLATE_RUBY_ORE_BLOCK.get());
+        tag(SAPPHIRE_ORES_BLOCK_TAG).add(SAPPHIRE_ORE_BLOCK.get()).add(DEEPSLATE_SAPPHIRE_ORE_BLOCK.get());
+        tag(PERIDOT_ORES_BLOCK_TAG).add(PERIDOT_ORE_BLOCK.get()).add(DEEPSLATE_PERIDOT_ORE_BLOCK.get());
+        tag(TIN_ORES_BLOCK_TAG).add(TIN_ORE_BLOCK.get()).add(DEEPSLATE_TIN_ORE_BLOCK.get());
+        tag(SILVER_ORES_BLOCK_TAG).add(SILVER_ORE_BLOCK.get()).add(DEEPSLATE_SILVER_ORE_BLOCK.get());
+        tag(ELECTROTINE_ORES_BLOCK_TAG).add(ELECTROTINE_ORE_BLOCK.get()).add(DEEPSLATE_ELECTROTINE_ORE_BLOCK.get());
 
         tag(Tags.Blocks.ORES_IN_GROUND_STONE)
-                .add(RUBY_ORE_BLOCK)
-                .add(SAPPHIRE_ORE_BLOCK)
-                .add(PERIDOT_ORE_BLOCK)
-                .add(TIN_ORE_BLOCK)
-                .add(SILVER_ORE_BLOCK)
-                .add(ELECTROTINE_ORE_BLOCK);
+                .add(RUBY_ORE_BLOCK.get())
+                .add(SAPPHIRE_ORE_BLOCK.get())
+                .add(PERIDOT_ORE_BLOCK.get())
+                .add(TIN_ORE_BLOCK.get())
+                .add(SILVER_ORE_BLOCK.get())
+                .add(ELECTROTINE_ORE_BLOCK.get());
 
         tag(Tags.Blocks.ORES_IN_GROUND_DEEPSLATE)
-                .add(DEEPSLATE_RUBY_ORE_BLOCK)
-                .add(DEEPSLATE_SAPPHIRE_ORE_BLOCK)
-                .add(DEEPSLATE_PERIDOT_ORE_BLOCK)
-                .add(DEEPSLATE_TIN_ORE_BLOCK)
-                .add(DEEPSLATE_SILVER_ORE_BLOCK)
-                .add(DEEPSLATE_ELECTROTINE_ORE_BLOCK);
+                .add(DEEPSLATE_RUBY_ORE_BLOCK.get())
+                .add(DEEPSLATE_SAPPHIRE_ORE_BLOCK.get())
+                .add(DEEPSLATE_PERIDOT_ORE_BLOCK.get())
+                .add(DEEPSLATE_TIN_ORE_BLOCK.get())
+                .add(DEEPSLATE_SILVER_ORE_BLOCK.get())
+                .add(DEEPSLATE_ELECTROTINE_ORE_BLOCK.get());
 
-        tag(MARBLE_BLOCK_TAG).add(MARBLE_BLOCK);
-        tag(BASALT_BLOCK_TAG).add(BASALT_BLOCK);
-        tag(RUBY_STORAGE_BLOCK_TAG).add(RUBY_BLOCK);
-        tag(SAPPHIRE_STORAGE_BLOCK_TAG).add(SAPPHIRE_BLOCK);
-        tag(PERIDOT_STORAGE_BLOCK_TAG).add(PERIDOT_BLOCK);
-        tag(ELECTROTINE_STORAGE_BLOCK_TAG).add(ELECTROTINE_BLOCK);
-        tag(RAW_TIN_STORAGE_BLOCK_TAG).add(RAW_TIN_BLOCK);
-        tag(TIN_STORAGE_BLOCK_TAG).add(TIN_BLOCK);
-        tag(RAW_SILVER_STORAGE_BLOCK_TAG).add(RAW_SILVER_BLOCK);
-        tag(SILVER_STORAGE_BLOCK_TAG).add(SILVER_BLOCK);
+        tag(MARBLE_BLOCK_TAG).add(MARBLE_BLOCK.get());
+        tag(BASALT_BLOCK_TAG).add(BASALT_BLOCK.get());
+        tag(RUBY_STORAGE_BLOCK_TAG).add(RUBY_BLOCK.get());
+        tag(SAPPHIRE_STORAGE_BLOCK_TAG).add(SAPPHIRE_BLOCK.get());
+        tag(PERIDOT_STORAGE_BLOCK_TAG).add(PERIDOT_BLOCK.get());
+        tag(ELECTROTINE_STORAGE_BLOCK_TAG).add(ELECTROTINE_BLOCK.get());
+        tag(RAW_TIN_STORAGE_BLOCK_TAG).add(RAW_TIN_BLOCK.get());
+        tag(TIN_STORAGE_BLOCK_TAG).add(TIN_BLOCK.get());
+        tag(RAW_SILVER_STORAGE_BLOCK_TAG).add(RAW_SILVER_BLOCK.get());
+        tag(SILVER_STORAGE_BLOCK_TAG).add(SILVER_BLOCK.get());
     }
 }

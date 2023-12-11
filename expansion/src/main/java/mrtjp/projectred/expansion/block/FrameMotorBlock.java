@@ -5,7 +5,7 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.expansion.client.FrameMotorBlockRenderer;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import mrtjp.projectred.expansion.tile.FrameMotorTile;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.BlockPos;
@@ -66,7 +66,7 @@ public class FrameMotorBlock extends ProjectRedBlock {
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return ExpansionReferences.FRAME_MOTOR_TILE;
+        return ExpansionBlocks.FRAME_MOTOR_TILE.get();
     }
 
     @Nullable

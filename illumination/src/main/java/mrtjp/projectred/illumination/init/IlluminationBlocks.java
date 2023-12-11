@@ -10,7 +10,7 @@ public class IlluminationBlocks {
 
         // Block lights
         for (BlockLightType lampType : BlockLightType.values()) {
-            lampType.registerBlocks(BLOCKS, ITEMS, TILE_ENTITIES);
+            lampType.registerBlocks(BLOCKS, ITEMS, BLOCK_ENTITY_TYPES);
         }
     }
 }

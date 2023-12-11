@@ -1,6 +1,7 @@
 package mrtjp.projectred.exploration.inventory.container;
 
 import codechicken.lib.inventory.container.ICCLContainerFactory;
+import mrtjp.projectred.exploration.init.ExplorationMenus;
 import mrtjp.projectred.exploration.inventory.BackpackInventory;
 import mrtjp.projectred.exploration.item.BackpackItem;
 import mrtjp.projectred.lib.InventoryLib;
@@ -12,7 +13,6 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-import static mrtjp.projectred.exploration.init.ExplorationReferences.BACKPACK_CONTAINER;
 
 public class BackpackContainer extends AbstractContainerMenu {
 
@@ -23,7 +23,7 @@ public class BackpackContainer extends AbstractContainerMenu {
     private final Inventory playerInventory;
 
     public BackpackContainer(int windowId, Inventory playerInventory) {
-        super(BACKPACK_CONTAINER, windowId);
+        super(ExplorationMenus.BACKPACK_CONTAINER.get(), windowId);
 
         this.playerInventory = playerInventory;
 

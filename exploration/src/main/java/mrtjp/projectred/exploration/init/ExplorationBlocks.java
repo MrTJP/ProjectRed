@@ -18,7 +18,6 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryObject;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.*;
-import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
 
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class ExplorationBlocks {
@@ -60,57 +59,95 @@ public class ExplorationBlocks {
     public static final String ID_PERIDOT_BLOCK_WALL = "peridot_block_wall";
     public static final String ID_ELECTROTINE_BLOCK_WALL = "electrotine_block_wall";
 
-    // Direct references needed for early init and worldgen
+    // Ores
+    public static RegistryObject<Block> RUBY_ORE_BLOCK;
+    public static RegistryObject<Block> DEEPSLATE_RUBY_ORE_BLOCK;
+    public static RegistryObject<Block> SAPPHIRE_ORE_BLOCK;
+    public static RegistryObject<Block> DEEPSLATE_SAPPHIRE_ORE_BLOCK;
+    public static RegistryObject<Block> PERIDOT_ORE_BLOCK;
+    public static RegistryObject<Block> DEEPSLATE_PERIDOT_ORE_BLOCK;
+    public static RegistryObject<Block> TIN_ORE_BLOCK;
+    public static RegistryObject<Block> DEEPSLATE_TIN_ORE_BLOCK;
+    public static RegistryObject<Block> SILVER_ORE_BLOCK;
+    public static RegistryObject<Block> DEEPSLATE_SILVER_ORE_BLOCK;
+    public static RegistryObject<Block> ELECTROTINE_ORE_BLOCK;
+    public static RegistryObject<Block> DEEPSLATE_ELECTROTINE_ORE_BLOCK;
+
+    // Decorative blocks
     public static RegistryObject<Block> MARBLE_BLOCK;
     public static RegistryObject<Block> MARBLE_BRICK_BLOCK;
     public static RegistryObject<Block> BASALT_BLOCK;
     public static RegistryObject<Block> BASALT_COBBLE_BLOCK;
     public static RegistryObject<Block> BASALT_BRICK_BLOCK;
+    public static RegistryObject<Block> RUBY_BLOCK;
+    public static RegistryObject<Block> SAPPHIRE_BLOCK;
+    public static RegistryObject<Block> PERIDOT_BLOCK;
+    public static RegistryObject<Block> ELECTROTINE_BLOCK;
+    public static RegistryObject<Block> RAW_TIN_BLOCK;
+    public static RegistryObject<Block> RAW_SILVER_BLOCK;
+    public static RegistryObject<Block> TIN_BLOCK;
+    public static RegistryObject<Block> SILVER_BLOCK;
+
+    // Walls
+    public static RegistryObject<WallBlock> MARBLE_WALL;
+    public static RegistryObject<WallBlock> MARBLE_BRICK_WALL;
+    public static RegistryObject<WallBlock> BASALT_WALL;
+    public static RegistryObject<WallBlock> BASALT_COBBLE_WALL;
+    public static RegistryObject<WallBlock> BASALT_BRICK_WALL;
+    public static RegistryObject<WallBlock> RUBY_BLOCK_WALL;
+    public static RegistryObject<WallBlock> SAPPHIRE_BLOCK_WALL;
+    public static RegistryObject<WallBlock> PERIDOT_BLOCK_WALL;
+    public static RegistryObject<WallBlock> ELECTROTINE_BLOCK_WALL;
+
+
+//    // Direct references needed for early init and worldgen
+//    public static RegistryObject<Block> MARBLE_BLOCK;
+//    public static RegistryObject<Block> MARBLE_BRICK_BLOCK;
+//    public static RegistryObject<Block> BASALT_BLOCK;
+//    public static RegistryObject<Block> BASALT_COBBLE_BLOCK;
+//    public static RegistryObject<Block> BASALT_BRICK_BLOCK;
 
     public static void register() {
 
-        /* Blocks */
-
         // Ores
-        BLOCKS.register(ID_RUBY_ORE,                    () -> createOreBlock(false, 2, 7));
-        BLOCKS.register(ID_DEEPSLATE_RUBY_ORE,          () -> createOreBlock(true,  2, 7));
-        BLOCKS.register(ID_SAPPHIRE_ORE,                () -> createOreBlock(false, 2, 7));
-        BLOCKS.register(ID_DEEPSLATE_SAPPHIRE_ORE,      () -> createOreBlock(true,  2, 7));
-        BLOCKS.register(ID_PERIDOT_ORE,                 () -> createOreBlock(false, 2, 7));
-        BLOCKS.register(ID_DEEPSLATE_PERIDOT_ORE,       () -> createOreBlock(true,  2, 7));
-        BLOCKS.register(ID_TIN_ORE,                     () -> createOreBlock(false, 0, 0));
-        BLOCKS.register(ID_DEEPSLATE_TIN_ORE,           () -> createOreBlock(true,  0, 0));
-        BLOCKS.register(ID_SILVER_ORE,                  () -> createOreBlock(false, 0, 0));
-        BLOCKS.register(ID_DEEPSLATE_SILVER_ORE,        () -> createOreBlock(true,  0, 0));
-        BLOCKS.register(ID_ELECTROTINE_ORE,             () -> createElectrotineOreBlock(false, 1, 5));
-        BLOCKS.register(ID_DEEPSLATE_ELECTROTINE_ORE,   () -> createElectrotineOreBlock(true,  1, 5));
+        RUBY_ORE_BLOCK                  = BLOCKS.register(ID_RUBY_ORE,                    () -> createOreBlock(false, 2, 7));
+        DEEPSLATE_RUBY_ORE_BLOCK        = BLOCKS.register(ID_DEEPSLATE_RUBY_ORE,          () -> createOreBlock(true,  2, 7));
+        SAPPHIRE_ORE_BLOCK              = BLOCKS.register(ID_SAPPHIRE_ORE,                () -> createOreBlock(false, 2, 7));
+        DEEPSLATE_SAPPHIRE_ORE_BLOCK    = BLOCKS.register(ID_DEEPSLATE_SAPPHIRE_ORE,      () -> createOreBlock(true,  2, 7));
+        PERIDOT_ORE_BLOCK               = BLOCKS.register(ID_PERIDOT_ORE,                 () -> createOreBlock(false, 2, 7));
+        DEEPSLATE_PERIDOT_ORE_BLOCK     = BLOCKS.register(ID_DEEPSLATE_PERIDOT_ORE,       () -> createOreBlock(true,  2, 7));
+        TIN_ORE_BLOCK                   = BLOCKS.register(ID_TIN_ORE,                     () -> createOreBlock(false, 0, 0));
+        DEEPSLATE_TIN_ORE_BLOCK         = BLOCKS.register(ID_DEEPSLATE_TIN_ORE,           () -> createOreBlock(true,  0, 0));
+        SILVER_ORE_BLOCK                = BLOCKS.register(ID_SILVER_ORE,                  () -> createOreBlock(false, 0, 0));
+        DEEPSLATE_SILVER_ORE_BLOCK      = BLOCKS.register(ID_DEEPSLATE_SILVER_ORE,        () -> createOreBlock(true,  0, 0));
+        ELECTROTINE_ORE_BLOCK           = BLOCKS.register(ID_ELECTROTINE_ORE,             () -> createElectrotineOreBlock(false, 1, 5));
+        DEEPSLATE_ELECTROTINE_ORE_BLOCK = BLOCKS.register(ID_DEEPSLATE_ELECTROTINE_ORE,   () -> createElectrotineOreBlock(true,  1, 5));
 
         // Decorative blocks
-        MARBLE_BLOCK        = BLOCKS.register(ID_MARBLE,          () -> createDecorativeStoneBlock(1F, 14F));
-        MARBLE_BRICK_BLOCK  = BLOCKS.register(ID_MARBLE_BRICK,    () -> createDecorativeStoneBlock(1F, 14F));
-        BASALT_BLOCK        = BLOCKS.register(ID_BASALT,          () -> createDecorativeStoneBlock(2.5F, 16F));
-        BASALT_COBBLE_BLOCK = BLOCKS.register(ID_BASALT_COBBLE,   () -> createDecorativeStoneBlock(2.5F, 14F));
-        BASALT_BRICK_BLOCK  = BLOCKS.register(ID_BASALT_BRICK,    () -> createDecorativeStoneBlock(2.5F, 20F));
-        RegistryObject<Block> rubyBlock          = BLOCKS.register(ID_RUBY_BLOCK,      () -> createDecorativeGemBlock(5F, 10F));
-        RegistryObject<Block> sapphireBlock      = BLOCKS.register(ID_SAPPHIRE_BLOCK,  () -> createDecorativeGemBlock(5F, 10F));
-        RegistryObject<Block> peridotBlock       = BLOCKS.register(ID_PERIDOT_BLOCK,   () -> createDecorativeGemBlock(5F, 10F));
-        RegistryObject<Block> electrotineBlock   = BLOCKS.register(ID_ELECTROTINE_BLOCK, () -> createDecorativeMetalBlock(5F, 10F));
-        BLOCKS.register(ID_RAW_TIN_BLOCK,       () -> createDecorativeMetalBlock(2F, 6F));
-        BLOCKS.register(ID_TIN_BLOCK,           () -> createDecorativeMetalBlock(2F, 6F));
-        BLOCKS.register(ID_RAW_SILVER_BLOCK,    () -> createDecorativeMetalBlock(3F, 6F));
-        BLOCKS.register(ID_SILVER_BLOCK,        () -> createDecorativeMetalBlock(3F, 6F));
+        MARBLE_BLOCK        = BLOCKS.register(ID_MARBLE,            () -> createDecorativeStoneBlock(1F, 14F));
+        MARBLE_BRICK_BLOCK  = BLOCKS.register(ID_MARBLE_BRICK,      () -> createDecorativeStoneBlock(1F, 14F));
+        BASALT_BLOCK        = BLOCKS.register(ID_BASALT,            () -> createDecorativeStoneBlock(2.5F, 16F));
+        BASALT_COBBLE_BLOCK = BLOCKS.register(ID_BASALT_COBBLE,     () -> createDecorativeStoneBlock(2.5F, 14F));
+        BASALT_BRICK_BLOCK  = BLOCKS.register(ID_BASALT_BRICK,      () -> createDecorativeStoneBlock(2.5F, 20F));
+        RUBY_BLOCK          = BLOCKS.register(ID_RUBY_BLOCK,        () -> createDecorativeGemBlock(5F, 10F));
+        SAPPHIRE_BLOCK      = BLOCKS.register(ID_SAPPHIRE_BLOCK,    () -> createDecorativeGemBlock(5F, 10F));
+        PERIDOT_BLOCK       = BLOCKS.register(ID_PERIDOT_BLOCK,     () -> createDecorativeGemBlock(5F, 10F));
+        ELECTROTINE_BLOCK   = BLOCKS.register(ID_ELECTROTINE_BLOCK, () -> createDecorativeMetalBlock(5F, 10F));
+        RAW_TIN_BLOCK       = BLOCKS.register(ID_RAW_TIN_BLOCK,     () -> createDecorativeMetalBlock(2F, 6F));
+        RAW_SILVER_BLOCK    = BLOCKS.register(ID_TIN_BLOCK,         () -> createDecorativeMetalBlock(2F, 6F));
+        TIN_BLOCK           = BLOCKS.register(ID_RAW_SILVER_BLOCK,  () -> createDecorativeMetalBlock(3F, 6F));
+        SILVER_BLOCK        = BLOCKS.register(ID_SILVER_BLOCK,      () -> createDecorativeMetalBlock(3F, 6F));
 
         // Walls
-        //Note: Direct refs used here bc ExplorationReferences isnt filled out when wall block suppliers are run
-        BLOCKS.register(ID_MARBLE_WALL,         () -> createWallBlock(MARBLE_BLOCK));
-        BLOCKS.register(ID_MARBLE_BRICK_WALL,   () -> createWallBlock(MARBLE_BRICK_BLOCK));
-        BLOCKS.register(ID_BASALT_WALL,         () -> createWallBlock(BASALT_BLOCK));
-        BLOCKS.register(ID_BASALT_COBBLE_WALL,  () -> createWallBlock(BASALT_COBBLE_BLOCK));
-        BLOCKS.register(ID_BASALT_BRICK_WALL,   () -> createWallBlock(BASALT_BRICK_BLOCK));
-        BLOCKS.register(ID_RUBY_BLOCK_WALL,     () -> createWallBlock(rubyBlock));
-        BLOCKS.register(ID_SAPPHIRE_BLOCK_WALL, () -> createWallBlock(sapphireBlock));
-        BLOCKS.register(ID_PERIDOT_BLOCK_WALL,  () -> createWallBlock(peridotBlock));
-        BLOCKS.register(ID_ELECTROTINE_BLOCK_WALL, () -> createWallBlock(electrotineBlock));
+        MARBLE_WALL            = BLOCKS.register(ID_MARBLE_WALL,            () -> createWallBlock(MARBLE_BLOCK));
+        MARBLE_BRICK_WALL      = BLOCKS.register(ID_MARBLE_BRICK_WALL,      () -> createWallBlock(MARBLE_BRICK_BLOCK));
+        BASALT_WALL            = BLOCKS.register(ID_BASALT_WALL,            () -> createWallBlock(BASALT_BLOCK));
+        BASALT_COBBLE_WALL     = BLOCKS.register(ID_BASALT_COBBLE_WALL,     () -> createWallBlock(BASALT_COBBLE_BLOCK));
+        BASALT_BRICK_WALL      = BLOCKS.register(ID_BASALT_BRICK_WALL,      () -> createWallBlock(BASALT_BRICK_BLOCK));
+        RUBY_BLOCK_WALL        = BLOCKS.register(ID_RUBY_BLOCK_WALL,        () -> createWallBlock(RUBY_BLOCK));
+        SAPPHIRE_BLOCK_WALL    = BLOCKS.register(ID_SAPPHIRE_BLOCK_WALL,    () -> createWallBlock(SAPPHIRE_BLOCK));
+        PERIDOT_BLOCK_WALL     = BLOCKS.register(ID_PERIDOT_BLOCK_WALL,     () -> createWallBlock(PERIDOT_BLOCK));
+        ELECTROTINE_BLOCK_WALL = BLOCKS.register(ID_ELECTROTINE_BLOCK_WALL, () -> createWallBlock(ELECTROTINE_BLOCK));
 
         /* Block Items */
 
@@ -134,10 +171,10 @@ public class ExplorationBlocks {
         ITEMS.register(ID_BASALT,           () -> createBlockItem(BASALT_BLOCK));
         ITEMS.register(ID_BASALT_COBBLE,    () -> createBlockItem(BASALT_COBBLE_BLOCK));
         ITEMS.register(ID_BASALT_BRICK,     () -> createBlockItem(BASALT_BRICK_BLOCK));
-        ITEMS.register(ID_RUBY_BLOCK,       () -> createBlockItem(rubyBlock));
-        ITEMS.register(ID_SAPPHIRE_BLOCK,   () -> createBlockItem(sapphireBlock));
-        ITEMS.register(ID_PERIDOT_BLOCK,    () -> createBlockItem(peridotBlock));
-        ITEMS.register(ID_ELECTROTINE_BLOCK,() -> createBlockItem(electrotineBlock));
+        ITEMS.register(ID_RUBY_BLOCK,       () -> createBlockItem(RUBY_BLOCK));
+        ITEMS.register(ID_SAPPHIRE_BLOCK,   () -> createBlockItem(SAPPHIRE_BLOCK));
+        ITEMS.register(ID_PERIDOT_BLOCK,    () -> createBlockItem(PERIDOT_BLOCK));
+        ITEMS.register(ID_ELECTROTINE_BLOCK,() -> createBlockItem(ELECTROTINE_BLOCK));
         ITEMS.register(ID_RAW_TIN_BLOCK,    () -> createBlockItem(RAW_TIN_BLOCK));
         ITEMS.register(ID_TIN_BLOCK,        () -> createBlockItem(TIN_BLOCK));
         ITEMS.register(ID_RAW_SILVER_BLOCK, () -> createBlockItem(RAW_SILVER_BLOCK));
@@ -157,15 +194,15 @@ public class ExplorationBlocks {
 
     public static void onRegisterMicroMaterials(RegistryEvent.Register<MicroMaterial> event) {
         IForgeRegistry<MicroMaterial> r = event.getRegistry();
-        r.register(new BlockMicroMaterial(ExplorationReferences.MARBLE_BLOCK));
-        r.register(new BlockMicroMaterial(ExplorationReferences.MARBLE_BRICK_BLOCK));
-        r.register(new BlockMicroMaterial(ExplorationReferences.BASALT_BLOCK));
-        r.register(new BlockMicroMaterial(ExplorationReferences.BASALT_COBBLE_BLOCK));
-        r.register(new BlockMicroMaterial(ExplorationReferences.BASALT_BRICK_BLOCK));
-        r.register(new BlockMicroMaterial(ExplorationReferences.RUBY_BLOCK));
-        r.register(new BlockMicroMaterial(ExplorationReferences.SAPPHIRE_BLOCK));
-        r.register(new BlockMicroMaterial(ExplorationReferences.PERIDOT_BLOCK));
-        r.register(new BlockMicroMaterial(ExplorationReferences.ELECTROTINE_BLOCK));
+        r.register(new BlockMicroMaterial(MARBLE_BLOCK.get()));
+        r.register(new BlockMicroMaterial(MARBLE_BRICK_BLOCK.get()));
+        r.register(new BlockMicroMaterial(BASALT_BLOCK.get()));
+        r.register(new BlockMicroMaterial(BASALT_COBBLE_BLOCK.get()));
+        r.register(new BlockMicroMaterial(BASALT_BRICK_BLOCK.get()));
+        r.register(new BlockMicroMaterial(RUBY_BLOCK.get()));
+        r.register(new BlockMicroMaterial(SAPPHIRE_BLOCK.get()));
+        r.register(new BlockMicroMaterial(PERIDOT_BLOCK.get()));
+        r.register(new BlockMicroMaterial(ELECTROTINE_BLOCK.get()));
     }
 
     private static Block createOreBlock(boolean isDeepslate, int minxp, int maxxp) {
@@ -185,7 +222,7 @@ public class ExplorationBlocks {
                 .sound(isDeepslate ? SoundType.DEEPSLATE : SoundType.STONE), UniformInt.of(minxp, maxxp));
     }
 
-    private static Block createWallBlock(RegistryObject<Block> block) {
+    private static WallBlock createWallBlock(RegistryObject<Block> block) {
         return new WallBlock(BlockBehaviour.Properties.copy(block.get()));
     }
 
@@ -210,7 +247,7 @@ public class ExplorationBlocks {
                 .sound(SoundType.METAL));
     }
 
-    private static Item createBlockItem(RegistryObject<Block> block) {
+    private static Item createBlockItem(RegistryObject<? extends Block> block) {
         return new BlockItem(block.get(), new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
     }
 

@@ -6,7 +6,7 @@ import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.core.inventory.BaseInventory;
 import mrtjp.projectred.fabrication.editor.EditorDataUtils;
-import mrtjp.projectred.fabrication.init.FabricationReferences;
+import mrtjp.projectred.fabrication.init.FabricationBlocks;
 import mrtjp.projectred.fabrication.inventory.container.PlottingTableContainer;
 import mrtjp.projectred.fabrication.item.BlankPhotomaskItem;
 import mrtjp.projectred.fabrication.item.ICBlueprintItem;
@@ -53,7 +53,7 @@ public class PlottingTableTile extends FabricationMachineTile {
     };
 
     public PlottingTableTile(BlockPos pos, BlockState state) {
-        super(FabricationReferences.PLOTTING_TABLE_TILE, pos, state);
+        super(FabricationBlocks.PLOTTING_TABLE_TILE.get(), pos, state);
         inventory.addListener(c -> setChanged());
     }
 

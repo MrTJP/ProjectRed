@@ -6,7 +6,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
-import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
+import static mrtjp.projectred.exploration.init.ExplorationBlocks.*;
+import static mrtjp.projectred.exploration.init.ExplorationItems.*;
 
 public class ExplorationItemModelProvider extends ItemModelProvider {
 
@@ -25,44 +26,44 @@ public class ExplorationItemModelProvider extends ItemModelProvider {
         /* Block Items */
 
         // Ore Blocks
-        simpleItemBlock(RUBY_ORE_BLOCK);
-        simpleItemBlock(DEEPSLATE_RUBY_ORE_BLOCK);
-        simpleItemBlock(SAPPHIRE_ORE_BLOCK);
-        simpleItemBlock(DEEPSLATE_SAPPHIRE_ORE_BLOCK);
-        simpleItemBlock(PERIDOT_ORE_BLOCK);
-        simpleItemBlock(DEEPSLATE_PERIDOT_ORE_BLOCK);
-        simpleItemBlock(TIN_ORE_BLOCK);
-        simpleItemBlock(DEEPSLATE_TIN_ORE_BLOCK);
-        simpleItemBlock(SILVER_ORE_BLOCK);
-        simpleItemBlock(DEEPSLATE_SILVER_ORE_BLOCK);
-        simpleItemBlock(ELECTROTINE_ORE_BLOCK);
-        simpleItemBlock(DEEPSLATE_ELECTROTINE_ORE_BLOCK);
+        simpleItemBlock(RUBY_ORE_BLOCK.get());
+        simpleItemBlock(DEEPSLATE_RUBY_ORE_BLOCK.get());
+        simpleItemBlock(SAPPHIRE_ORE_BLOCK.get());
+        simpleItemBlock(DEEPSLATE_SAPPHIRE_ORE_BLOCK.get());
+        simpleItemBlock(PERIDOT_ORE_BLOCK.get());
+        simpleItemBlock(DEEPSLATE_PERIDOT_ORE_BLOCK.get());
+        simpleItemBlock(TIN_ORE_BLOCK.get());
+        simpleItemBlock(DEEPSLATE_TIN_ORE_BLOCK.get());
+        simpleItemBlock(SILVER_ORE_BLOCK.get());
+        simpleItemBlock(DEEPSLATE_SILVER_ORE_BLOCK.get());
+        simpleItemBlock(ELECTROTINE_ORE_BLOCK.get());
+        simpleItemBlock(DEEPSLATE_ELECTROTINE_ORE_BLOCK.get());
 
         // Decorative Blocks
-        simpleItemBlock(MARBLE_BLOCK);
-        simpleItemBlock(MARBLE_BRICK_BLOCK);
-        simpleItemBlock(BASALT_BLOCK);
-        simpleItemBlock(BASALT_COBBLE_BLOCK);
-        simpleItemBlock(BASALT_BRICK_BLOCK);
-        simpleItemBlock(RUBY_BLOCK);
-        simpleItemBlock(SAPPHIRE_BLOCK);
-        simpleItemBlock(PERIDOT_BLOCK);
-        simpleItemBlock(ELECTROTINE_BLOCK);
-        simpleItemBlock(RAW_TIN_BLOCK);
-        simpleItemBlock(TIN_BLOCK);
-        simpleItemBlock(RAW_SILVER_BLOCK);
-        simpleItemBlock(SILVER_BLOCK);
+        simpleItemBlock(MARBLE_BLOCK.get());
+        simpleItemBlock(MARBLE_BRICK_BLOCK.get());
+        simpleItemBlock(BASALT_BLOCK.get());
+        simpleItemBlock(BASALT_COBBLE_BLOCK.get());
+        simpleItemBlock(BASALT_BRICK_BLOCK.get());
+        simpleItemBlock(RUBY_BLOCK.get());
+        simpleItemBlock(SAPPHIRE_BLOCK.get());
+        simpleItemBlock(PERIDOT_BLOCK.get());
+        simpleItemBlock(ELECTROTINE_BLOCK.get());
+        simpleItemBlock(RAW_TIN_BLOCK.get());
+        simpleItemBlock(TIN_BLOCK.get());
+        simpleItemBlock(RAW_SILVER_BLOCK.get());
+        simpleItemBlock(SILVER_BLOCK.get());
 
         // Walls
-        wallItemBlock(MARBLE_WALL, MARBLE_BLOCK);
-        wallItemBlock(MARBLE_BRICK_WALL, MARBLE_BRICK_BLOCK);
-        wallItemBlock(BASALT_WALL, BASALT_BLOCK);
-        wallItemBlock(BASALT_COBBLE_WALL, BASALT_COBBLE_BLOCK);
-        wallItemBlock(BASALT_BRICK_WALL, BASALT_BRICK_BLOCK);
-        wallItemBlock(RUBY_BLOCK_WALL, RUBY_BLOCK);
-        wallItemBlock(SAPPHIRE_BLOCK_WALL, SAPPHIRE_BLOCK);
-        wallItemBlock(PERIDOT_BLOCK_WALL, PERIDOT_BLOCK);
-        wallItemBlock(ELECTROTINE_BLOCK_WALL, ELECTROTINE_BLOCK);
+        wallItemBlock(MARBLE_WALL.get(), MARBLE_BLOCK.get());
+        wallItemBlock(MARBLE_BRICK_WALL.get(), MARBLE_BRICK_BLOCK.get());
+        wallItemBlock(BASALT_WALL.get(), BASALT_BLOCK.get());
+        wallItemBlock(BASALT_COBBLE_WALL.get(), BASALT_COBBLE_BLOCK.get());
+        wallItemBlock(BASALT_BRICK_WALL.get(), BASALT_BRICK_BLOCK.get());
+        wallItemBlock(RUBY_BLOCK_WALL.get(), RUBY_BLOCK.get());
+        wallItemBlock(SAPPHIRE_BLOCK_WALL.get(), SAPPHIRE_BLOCK.get());
+        wallItemBlock(PERIDOT_BLOCK_WALL.get(), PERIDOT_BLOCK.get());
+        wallItemBlock(ELECTROTINE_BLOCK_WALL.get(), ELECTROTINE_BLOCK.get());
 
         /* Items */
 

@@ -2,7 +2,8 @@ package mrtjp.projectred.fabrication.item;
 
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
 import mrtjp.projectred.fabrication.engine.InterfaceSpec;
-import mrtjp.projectred.fabrication.init.FabricationReferences;
+import mrtjp.projectred.fabrication.init.FabricationBlocks;
+import mrtjp.projectred.fabrication.init.FabricationItems;
 import mrtjp.projectred.integration.GateType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -45,7 +46,7 @@ public class ICBlueprintItem extends Item {
 
         // Creative mode bypass: Convert blueprint directly to gate block
         BlockState blockState = context.getLevel().getBlockState(context.getClickedPos());
-        if (blockState.getBlock() == FabricationReferences.IC_WORKBENCH_BLOCK) { return InteractionResult.PASS; }
+        if (blockState.getBlock() == FabricationBlocks.IC_WORKBENCH_BLOCK.get()) { return InteractionResult.PASS; }
 
         if (!canFabricate(stack.getTag())) {
             return InteractionResult.PASS;
@@ -107,7 +108,7 @@ public class ICBlueprintItem extends Item {
 
     public static ItemStack createPhotomaskStack(ItemStack blueprintStack) {
 
-        ItemStack photomaskStack = new ItemStack(FabricationReferences.PHOTOMASK_SET_ITEM);
+        ItemStack photomaskStack = new ItemStack(FabricationItems.PHOTOMASK_SET_ITEM.get());
         CompoundTag blueprintTag = blueprintStack.getTag();
 
         if (!hasFabricationTarget(blueprintTag)) return photomaskStack;

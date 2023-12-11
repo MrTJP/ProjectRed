@@ -12,7 +12,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import javax.annotation.Nonnull;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
-import static mrtjp.projectred.core.init.CoreReferences.ELECTROTINE_GENERATOR_BLOCK;
+import static mrtjp.projectred.core.init.CoreBlocks.ELECTROTINE_GENERATOR_BLOCK;
 
 @SuppressWarnings("DataFlowIssue")
 public class CoreBlockStateModelProvider extends BlockStateProvider {
@@ -29,7 +29,7 @@ public class CoreBlockStateModelProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        quadStateFrontFacedPoweredMachineModel(ELECTROTINE_GENERATOR_BLOCK);
+        quadStateFrontFacedPoweredMachineModel(ELECTROTINE_GENERATOR_BLOCK.get());
     }
 
     private void quadStateFrontFacedPoweredMachineModel(Block block) {

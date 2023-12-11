@@ -33,7 +33,7 @@ public class ProjectRedTransmission {
     public static final String MOD_ID = "projectred_transmission";
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
-    public static final DeferredRegister<MultipartType<?>> PARTS = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
+    public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
 
     public static final SimpleCreativeTab TRANSMISSION_GROUP = new SimpleCreativeTab(MOD_ID, WireType.RED_ALLOY::makeStack);
 
@@ -52,7 +52,7 @@ public class ProjectRedTransmission {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> TransmissionClientInit::init);
 
         ITEMS.register(modEventBus);
-        PARTS.register(modEventBus);
+        PART_TYPES.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.addListener(this::onServerStartEvent);
     }

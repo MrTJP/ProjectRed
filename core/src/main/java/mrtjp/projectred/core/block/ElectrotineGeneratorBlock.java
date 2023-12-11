@@ -1,7 +1,7 @@
 package mrtjp.projectred.core.block;
 
 import codechicken.lib.vec.Rotation;
-import mrtjp.projectred.core.init.CoreReferences;
+import mrtjp.projectred.core.init.CoreBlocks;
 import mrtjp.projectred.core.tile.ElectrotineGeneratorTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -27,7 +27,7 @@ public class ElectrotineGeneratorBlock extends ProjectRedBlock {
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return CoreReferences.ELECTROTINE_GENERATOR_TILE;
+        return CoreBlocks.ELECTROTINE_GENERATOR_TILE.get();
     }
 
     @Nullable

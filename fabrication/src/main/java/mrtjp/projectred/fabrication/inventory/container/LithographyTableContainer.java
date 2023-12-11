@@ -2,7 +2,7 @@ package mrtjp.projectred.fabrication.inventory.container;
 
 import codechicken.lib.inventory.container.ICCLContainerFactory;
 import mrtjp.projectred.core.inventory.container.TakeOnlySlot;
-import mrtjp.projectred.fabrication.init.FabricationReferences;
+import mrtjp.projectred.fabrication.init.FabricationMenus;
 import mrtjp.projectred.fabrication.item.PhotomaskSetItem;
 import mrtjp.projectred.fabrication.item.RoughSiliconWaferItem;
 import mrtjp.projectred.fabrication.tile.LithographyTableTile;
@@ -26,7 +26,7 @@ public class LithographyTableContainer extends FabricationMachineContainer {
     private final LithographyTableTile tile;
 
     public LithographyTableContainer(Inventory playerInventory, LithographyTableTile tile, int windowId) {
-        super(FabricationReferences.LITHOGRAPHY_TABLE_CONTAINER, windowId, tile);
+        super(FabricationMenus.LITHOGRAPHY_TABLE_CONTAINER.get(), windowId, tile);
         this.playerInventory = playerInventory;
         this.tile = tile;
 

@@ -9,7 +9,6 @@ import mrtjp.projectred.fabrication.engine.log.ICCompilerLog;
 import mrtjp.projectred.fabrication.gui.SimpleUVTab;
 import mrtjp.projectred.fabrication.gui.TabButtonNode;
 import mrtjp.projectred.fabrication.gui.TabControllerNode;
-import mrtjp.projectred.fabrication.init.FabricationReferences;
 import mrtjp.projectred.fabrication.tile.ICWorkbenchTile;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractGuiNode;
@@ -30,6 +29,8 @@ import java.util.Objects;
 
 import static mrtjp.projectred.fabrication.editor.ICWorkbenchEditor.UNIFORM_GRAY;
 import static mrtjp.projectred.fabrication.editor.ICWorkbenchEditor.UNIFORM_RED;
+import static mrtjp.projectred.fabrication.init.FabricationBlocks.IC_WORKBENCH_BLOCK;
+import static mrtjp.projectred.fabrication.init.FabricationItems.IC_BLUEPRINT_ITEM;
 import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class ICWorkbenchScreen extends RedUIScreen {
@@ -148,11 +149,11 @@ public class ICWorkbenchScreen extends RedUIScreen {
         }
 
         private void initSubNodes() {
-            ItemStackNode blueprintNode = new ItemStackNode(new ItemStack(FabricationReferences.IC_BLUEPRINT_ITEM));
+            ItemStackNode blueprintNode = new ItemStackNode(new ItemStack(IC_BLUEPRINT_ITEM.get()));
             blueprintNode.setPosition(58, 24);
             addChild(blueprintNode);
 
-            ItemStackNode workbenchNode = new ItemStackNode(new ItemStack(FabricationReferences.IC_WORKBENCH_BLOCK));
+            ItemStackNode workbenchNode = new ItemStackNode(new ItemStack(IC_WORKBENCH_BLOCK.get()));
             workbenchNode.setPosition(58, 64);
             addChild(workbenchNode);
         }

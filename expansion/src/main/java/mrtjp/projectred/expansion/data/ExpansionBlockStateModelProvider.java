@@ -13,7 +13,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import javax.annotation.Nonnull;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
-import static mrtjp.projectred.expansion.init.ExpansionReferences.*;
+import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
 
 @SuppressWarnings("DataFlowIssue")
 public class ExpansionBlockStateModelProvider extends BlockStateProvider {
@@ -32,17 +32,17 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        addRotatableOppositeMatchingFacesBlock(PROJECT_BENCH_BLOCK);
-        addBatteryBoxBlock(BATTERY_BOX_BLOCK);
-        addTriStateFrontFacedPoweredMachineBlock(AUTO_CRAFTER_BLOCK);
-        addBiStateSideAndTopMachineBlock(CHARGING_BENCH_BLOCK);
-        addSidedOppositeMatchingFacesDeviceBlock(FIRE_STARTER_BLOCK);
-        addTriStateSidedPoweredDeviceBlock(FRAME_ACTUATOR_BLOCK);
+        addRotatableOppositeMatchingFacesBlock(PROJECT_BENCH_BLOCK.get());
+        addBatteryBoxBlock(BATTERY_BOX_BLOCK.get());
+        addTriStateFrontFacedPoweredMachineBlock(AUTO_CRAFTER_BLOCK.get());
+        addBiStateSideAndTopMachineBlock(CHARGING_BENCH_BLOCK.get());
+        addSidedOppositeMatchingFacesDeviceBlock(FIRE_STARTER_BLOCK.get());
+        addTriStateSidedPoweredDeviceBlock(FRAME_ACTUATOR_BLOCK.get());
 
         // Advanced models rendered programmatically. Tied to dummy model to suppress warnings.
         ModelFile dummy = models().withExistingParent("programmatically_rendered_block", "block");
-        simpleBlock(FRAME_BLOCK, dummy);
-        simpleBlock(FRAME_MOTOR_BLOCK, dummy);
+        simpleBlock(FRAME_BLOCK.get(), dummy);
+        simpleBlock(FRAME_MOTOR_BLOCK.get(), dummy);
     }
 
     private void addRotatableOppositeMatchingFacesBlock(Block block) {

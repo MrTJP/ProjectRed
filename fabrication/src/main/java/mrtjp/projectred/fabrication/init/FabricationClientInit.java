@@ -13,7 +13,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-import static mrtjp.projectred.fabrication.init.FabricationReferences.*;
+import static mrtjp.projectred.fabrication.init.FabricationMenus.*;
 
 @SuppressWarnings("DataFlowIssue")
 public class FabricationClientInit {
@@ -32,11 +32,11 @@ public class FabricationClientInit {
 
         // Register models
         ModelRegistryHelper modelRegistryHelper = new ModelRegistryHelper();
-        modelRegistryHelper.register(new ModelResourceLocation(FabricationReferences.FABRICATED_GATE_ITEM.getRegistryName(), "inventory"), GatePartItemRenderer.INSTANCE);
+        modelRegistryHelper.register(new ModelResourceLocation(FabricationParts.FABRICATED_GATE_ITEM.get().getRegistryName(), "inventory"), GatePartItemRenderer.INSTANCE);
 
         // Register screens
-        MenuScreens.register(PLOTTING_TABLE_CONTAINER, PlottingTableScreen::new);
-        MenuScreens.register(LITHOGRAPHY_TABLE_CONTAINER, LithographyTableScreen::new);
-        MenuScreens.register(PACKAGING_TABLE_CONTAINER, PackagingTableScreen::new);
+        MenuScreens.register(PLOTTING_TABLE_CONTAINER.get(), PlottingTableScreen::new);
+        MenuScreens.register(LITHOGRAPHY_TABLE_CONTAINER.get(), LithographyTableScreen::new);
+        MenuScreens.register(PACKAGING_TABLE_CONTAINER.get(), PackagingTableScreen::new);
     }
 }

@@ -1,7 +1,7 @@
 package mrtjp.projectred.expansion.inventory.container;
 
 import codechicken.lib.inventory.container.ICCLContainerFactory;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionMenus;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.expansion.tile.ProjectBenchTile;
 import mrtjp.projectred.lib.InventoryLib;
@@ -26,7 +26,7 @@ public class ProjectBenchContainer extends AbstractContainerMenu {
     private final Inventory playerInventory;
 
     public ProjectBenchContainer(Inventory playerInventory, ProjectBenchTile tile, int windowId) {
-        super(ExpansionReferences.PROJECT_BENCH_CONTAINER, windowId);
+        super(ExpansionMenus.PROJECT_BENCH_CONTAINER.get(), windowId);
         this.playerInventory = playerInventory;
         this.tile = tile;
 

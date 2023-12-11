@@ -20,7 +20,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import java.util.function.Function;
 
-import static mrtjp.projectred.exploration.init.ExplorationReferences.MARBLE_BLOCK;
+import static mrtjp.projectred.exploration.init.ExplorationBlocks.MARBLE_BLOCK;
 
 public class MarbleCaveWorldCarver extends CaveWorldCarver {
 
@@ -45,7 +45,7 @@ public class MarbleCaveWorldCarver extends CaveWorldCarver {
 
         if (carvedState.is(Blocks.AIR) || carvedState.is(Blocks.CAVE_AIR)) {
 
-            BlockState marbleState = MARBLE_BLOCK.defaultBlockState();
+            BlockState marbleState = MARBLE_BLOCK.get().defaultBlockState();
 
             for (int s = 0; s < 6; s++) {
                 pos.set(pos1).move(Direction.values()[s]);

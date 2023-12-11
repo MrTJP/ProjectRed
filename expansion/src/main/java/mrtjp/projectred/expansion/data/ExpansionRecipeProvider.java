@@ -7,10 +7,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
 
-import static mrtjp.projectred.core.init.CoreReferences.COPPER_COIL_ITEM;
-import static mrtjp.projectred.core.init.CoreReferences.MOTOR_ITEM;
+import static mrtjp.projectred.core.init.CoreItems.COPPER_COIL_ITEM;
+import static mrtjp.projectred.core.init.CoreItems.MOTOR_ITEM;
 import static mrtjp.projectred.core.init.CoreTags.*;
-import static mrtjp.projectred.expansion.init.ExpansionReferences.*;
+import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
+import static mrtjp.projectred.expansion.init.ExpansionItems.*;
 import static net.minecraftforge.common.Tags.Items.INGOTS_COPPER;
 
 public class ExpansionRecipeProvider extends RecipeProvider {
@@ -28,14 +29,14 @@ public class ExpansionRecipeProvider extends RecipeProvider {
     protected void registerRecipes() {
 
         //Blocks
-        shapedRecipe(FRAME_BLOCK, 8)
+        shapedRecipe(FRAME_BLOCK.get(), 8)
                 .key('S', Items.STICK)
                 .key('L', ItemTags.LOGS)
                 .patternLine("SLS")
                 .patternLine("LSL")
                 .patternLine("SLS");
 
-        shapedRecipe(PROJECT_BENCH_BLOCK, 1)
+        shapedRecipe(PROJECT_BENCH_BLOCK.get(), 1)
                 .key('S', Tags.Items.STONE)
                 .key('W', ItemTags.PLANKS)
                 .key('B', Blocks.CRAFTING_TABLE)
@@ -44,8 +45,8 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .patternLine("WBW")
                 .patternLine("WCW");
 
-        shapedRecipe(BATTERY_BOX_BLOCK, 1)
-                .key('B', BATTERY_ITEM)
+        shapedRecipe(BATTERY_BOX_BLOCK.get(), 1)
+                .key('B', BATTERY_ITEM.get())
                 .key('W', ItemTags.PLANKS)
                 .key('I', Tags.Items.INGOTS_IRON)
                 .key('E', ELECTROTINE_ALLOY_INGOT_TAG)
@@ -53,18 +54,18 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .patternLine("BIB")
                 .patternLine("IEI");
 
-        shapedRecipe(CHARGING_BENCH_BLOCK, 1)
+        shapedRecipe(CHARGING_BENCH_BLOCK.get(), 1)
                 .key('S', Tags.Items.STONE)
-                .key('C', COPPER_COIL_ITEM)
+                .key('C', COPPER_COIL_ITEM.get())
                 .key('W', ItemTags.PLANKS)
-                .key('B', BATTERY_ITEM)
+                .key('B', BATTERY_ITEM.get())
                 .key('I', Tags.Items.INGOTS_IRON)
                 .key('E', ELECTROTINE_ALLOY_INGOT_TAG)
                 .patternLine("SCS")
                 .patternLine("WBW")
                 .patternLine("IEI");
 
-        shapedRecipe(AUTO_CRAFTER_BLOCK, 1)
+        shapedRecipe(AUTO_CRAFTER_BLOCK.get(), 1)
                 .key('S', Tags.Items.STONE)
                 .key('B', Blocks.CRAFTING_TABLE)
                 .key('I', Tags.Items.INGOTS_IRON)
@@ -75,7 +76,7 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .patternLine("ICI")
                 .patternLine("WEW");
 
-        shapedRecipe(FIRE_STARTER_BLOCK, 1)
+        shapedRecipe(FIRE_STARTER_BLOCK.get(), 1)
                 .key('N', Blocks.NETHERRACK)
                 .key('F', Items.FLINT_AND_STEEL)
                 .key('C', Blocks.COBBLESTONE)
@@ -84,21 +85,21 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .patternLine("CFC")
                 .patternLine("CRC");
 
-        shapedRecipe(FRAME_MOTOR_BLOCK, 1)
+        shapedRecipe(FRAME_MOTOR_BLOCK.get(), 1)
                 .key('W', ItemTags.PLANKS)
                 .key('I', Tags.Items.INGOTS_IRON)
                 .key('R', Tags.Items.DUSTS_REDSTONE)
-                .key('M', MOTOR_ITEM)
+                .key('M', MOTOR_ITEM.get())
                 .key('S', Tags.Items.STONE)
                 .key('E', ELECTROTINE_ALLOY_INGOT_TAG)
                 .patternLine("WIW")
                 .patternLine("RMR")
                 .patternLine("SES");
 
-        shapedRecipe(FRAME_ACTUATOR_BLOCK, 1)
+        shapedRecipe(FRAME_ACTUATOR_BLOCK.get(), 1)
                 .key('W', ItemTags.PLANKS)
                 .key('I', Tags.Items.INGOTS_IRON)
-                .key('C', COPPER_COIL_ITEM)
+                .key('C', COPPER_COIL_ITEM.get())
                 .key('S', Tags.Items.STONE)
                 .key('E', ELECTROTINE_ALLOY_INGOT_TAG)
                 .patternLine("WIW")
@@ -106,7 +107,7 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .patternLine("SES");
 
         // Items
-        shapedRecipe(BATTERY_ITEM, 1)
+        shapedRecipe(BATTERY_ITEM.get(), 1)
                 .key('E', ELECTROTINE_DUST_TAG)
                 .key('T', TIN_INGOT_TAG)
                 .key('C', INGOTS_COPPER)
@@ -114,14 +115,14 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .patternLine("ECE")
                 .patternLine("ETE");
 
-        shapelessRecipe(RECIPE_PLAN_ITEM, 1)
+        shapelessRecipe(RECIPE_PLAN_ITEM.get(), 1)
                 .addIngredient(Tags.Items.DYES_BLUE)
                 .addIngredient(Items.PAPER);
 
-        shapedRecipe(ELECTRIC_SCREWDRIVER_ITEM, 1)
+        shapedRecipe(ELECTRIC_SCREWDRIVER_ITEM.get(), 1)
                 .key('I', Tags.Items.INGOTS_IRON)
                 .key('S', SAPPHIRE_GEM_TAG)
-                .key('B', BATTERY_ITEM)
+                .key('B', BATTERY_ITEM.get())
                 .patternLine("I  ")
                 .patternLine(" S ")
                 .patternLine("  B");

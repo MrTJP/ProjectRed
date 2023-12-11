@@ -3,7 +3,7 @@ package mrtjp.projectred.expansion.inventory.container;
 import codechicken.lib.inventory.container.ICCLContainerFactory;
 import mrtjp.projectred.core.inventory.container.BasePoweredTileContainer;
 import mrtjp.projectred.core.inventory.container.SimpleDataSlot;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionMenus;
 import mrtjp.projectred.expansion.item.IChargable;
 import mrtjp.projectred.expansion.tile.ChargingBenchTile;
 import mrtjp.projectred.lib.InventoryLib;
@@ -29,7 +29,7 @@ public class ChargingBenchContainer extends BasePoweredTileContainer {
     protected int powerStored = 0;
 
     public ChargingBenchContainer(Inventory inventory, ChargingBenchTile tile, int windowId) {
-        super(ExpansionReferences.CHARGING_BENCH_CONTAINER, windowId, tile);
+        super(ExpansionMenus.CHARGING_BENCH_CONTAINER.get(), windowId, tile);
         this.playerInventory = inventory;
         this.tile = tile;
 

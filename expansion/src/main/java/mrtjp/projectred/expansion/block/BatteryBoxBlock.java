@@ -1,7 +1,7 @@
 package mrtjp.projectred.expansion.block;
 
 import mrtjp.projectred.core.block.ProjectRedBlock;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import mrtjp.projectred.expansion.tile.BatteryBoxTile;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -45,7 +45,7 @@ public class BatteryBoxBlock extends ProjectRedBlock {
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return ExpansionReferences.BATTERY_BOX_TILE;
+        return ExpansionBlocks.BATTERY_BOX_TILE.get();
     }
 
     @Nullable

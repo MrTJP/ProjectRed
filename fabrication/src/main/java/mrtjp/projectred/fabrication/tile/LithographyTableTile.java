@@ -5,7 +5,8 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.core.inventory.BaseInventory;
-import mrtjp.projectred.fabrication.init.FabricationReferences;
+import mrtjp.projectred.fabrication.init.FabricationBlocks;
+import mrtjp.projectred.fabrication.init.FabricationItems;
 import mrtjp.projectred.fabrication.inventory.container.LithographyTableContainer;
 import mrtjp.projectred.fabrication.item.BaseSiliconWaferItem;
 import mrtjp.projectred.fabrication.item.PhotomaskSetItem;
@@ -54,7 +55,7 @@ public class LithographyTableTile extends FabricationMachineTile {
     };
 
     public LithographyTableTile(BlockPos pos, BlockState state) {
-        super(FabricationReferences.LITHOGRAPHY_TABLE_TILE, pos, state);
+        super(FabricationBlocks.LITHOGRAPHY_TABLE_TILE.get(), pos, state);
         inventory.addListener(c -> setChanged());
     }
 
@@ -161,7 +162,7 @@ public class LithographyTableTile extends FabricationMachineTile {
             inventory.setItem(2, validDieStack);
         }
         if (totalDefectiveDies > 0) {
-            ItemStack defectiveDieStack = new ItemStack(FabricationReferences.INVALID_DIE_ITEM, totalDefectiveDies);
+            ItemStack defectiveDieStack = new ItemStack(FabricationItems.INVALID_DIE_ITEM.get(), totalDefectiveDies);
             inventory.setItem(3, defectiveDieStack);
         }
 

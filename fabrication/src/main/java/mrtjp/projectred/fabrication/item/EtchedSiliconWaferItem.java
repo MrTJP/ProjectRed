@@ -1,7 +1,7 @@
 package mrtjp.projectred.fabrication.item;
 
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
-import mrtjp.projectred.fabrication.init.FabricationReferences;
+import mrtjp.projectred.fabrication.init.FabricationItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -80,7 +80,7 @@ public class EtchedSiliconWaferItem extends Item {
         tag.putByteArray("defects", defects);
 
         // Put NBT on new item stack and return
-        ItemStack output = new ItemStack(FabricationReferences.ETCHED_SILICON_WAFER_ITEM);
+        ItemStack output = new ItemStack(FabricationItems.ETCHED_SILICON_WAFER_ITEM.get());
         output.setTag(tag);
         return output;
     }

@@ -1,9 +1,11 @@
 package mrtjp.projectred.fabrication.init;
 
 import mrtjp.projectred.fabrication.item.*;
+import net.minecraftforge.registries.RegistryObject;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.ITEMS;
 
+@SuppressWarnings("NotNullFieldNotInitialized")
 public class FabricationItems {
 
     public static final String ID_IC_BLUEPRINT = "ic_blueprint";
@@ -14,15 +16,23 @@ public class FabricationItems {
     public static final String ID_VALID_DIE = "valid_die";
     public static final String ID_INVALID_DIE = "invalid_die";
 
+    public static RegistryObject<ICBlueprintItem> IC_BLUEPRINT_ITEM;
+    public static RegistryObject<BlankPhotomaskItem> BLANK_PHOTOMASK_ITEM;
+    public static RegistryObject<PhotomaskSetItem> PHOTOMASK_SET_ITEM;
+    public static RegistryObject<RoughSiliconWaferItem> ROUGH_SILICON_WAFER_ITEM;
+    public static RegistryObject<EtchedSiliconWaferItem> ETCHED_SILICON_WAFER_ITEM;
+    public static RegistryObject<ValidDieItem> VALID_DIE_ITEM;
+    public static RegistryObject<InvalidDieItem> INVALID_DIE_ITEM;
+
     public static void register() {
 
         // Items
-        ITEMS.register(ID_IC_BLUEPRINT, ICBlueprintItem::new);
-        ITEMS.register(ID_BLANK_PHOTOMASK, BlankPhotomaskItem::new);
-        ITEMS.register(ID_PHOTOMASK_SET, PhotomaskSetItem::new);
-        ITEMS.register(ID_ROUGH_SILICON_WAFER, RoughSiliconWaferItem::new);
-        ITEMS.register(ID_ETCHED_SILICON_WAFER, EtchedSiliconWaferItem::new);
-        ITEMS.register(ID_VALID_DIE, ValidDieItem::new);
-        ITEMS.register(ID_INVALID_DIE, InvalidDieItem::new);
+        IC_BLUEPRINT_ITEM = ITEMS.register(ID_IC_BLUEPRINT, ICBlueprintItem::new);
+        BLANK_PHOTOMASK_ITEM = ITEMS.register(ID_BLANK_PHOTOMASK, BlankPhotomaskItem::new);
+        PHOTOMASK_SET_ITEM = ITEMS.register(ID_PHOTOMASK_SET, PhotomaskSetItem::new);
+        ROUGH_SILICON_WAFER_ITEM = ITEMS.register(ID_ROUGH_SILICON_WAFER, RoughSiliconWaferItem::new);
+        ETCHED_SILICON_WAFER_ITEM = ITEMS.register(ID_ETCHED_SILICON_WAFER, EtchedSiliconWaferItem::new);
+        VALID_DIE_ITEM = ITEMS.register(ID_VALID_DIE, ValidDieItem::new);
+        INVALID_DIE_ITEM = ITEMS.register(ID_INVALID_DIE, InvalidDieItem::new);
     }
 }

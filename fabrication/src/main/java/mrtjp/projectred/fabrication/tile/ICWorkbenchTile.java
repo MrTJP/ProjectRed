@@ -11,7 +11,7 @@ import mrtjp.projectred.fabrication.block.ICWorkbenchBlock;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
 import mrtjp.projectred.fabrication.editor.IICWorkbenchEditorNetwork;
 import mrtjp.projectred.fabrication.gui.screen.ICWorkbenchScreen;
-import mrtjp.projectred.fabrication.init.FabricationReferences;
+import mrtjp.projectred.fabrication.init.FabricationBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
+import static mrtjp.projectred.fabrication.init.FabricationItems.IC_BLUEPRINT_ITEM;
 
 public class ICWorkbenchTile extends ProjectRedTile implements IPacketReceiverTile, IICWorkbenchEditorNetwork {
 
@@ -44,7 +45,7 @@ public class ICWorkbenchTile extends ProjectRedTile implements IPacketReceiverTi
     private final Set<ServerPlayer> playersWatchingScreen = new HashSet<>();
 
     public ICWorkbenchTile(BlockPos pos, BlockState state) {
-        super(FabricationReferences.IC_WORKBENCH_TILE, pos, state);
+        super(FabricationBlocks.IC_WORKBENCH_TILE.get(), pos, state);
     }
 
     public ICWorkbenchEditor getEditor() {
@@ -95,7 +96,7 @@ public class ICWorkbenchTile extends ProjectRedTile implements IPacketReceiverTi
             ItemStack stackInHand = player.getItemInHand(hand);
 
             boolean blueprintOnTable = getBlockState().getValue(ICWorkbenchBlock.BLUEPRINT_PROPERTY);
-            boolean blueprintInHand = !stackInHand.isEmpty() && stackInHand.getItem() == FabricationReferences.IC_BLUEPRINT_ITEM;
+            boolean blueprintInHand = !stackInHand.isEmpty() && stackInHand.getItem() == IC_BLUEPRINT_ITEM.get();
 
             if (!blueprintOnTable && blueprintInHand) {
                 // load blueprint and activate editor
@@ -129,7 +130,7 @@ public class ICWorkbenchTile extends ProjectRedTile implements IPacketReceiverTi
     }
 
     private ItemStack createBlueprintStack() {
-        ItemStack stack = new ItemStack(FabricationReferences.IC_BLUEPRINT_ITEM);
+        ItemStack stack = new ItemStack(IC_BLUEPRINT_ITEM.get());
         editor.writeBlueprintTagAndDeactivate(stack.getOrCreateTag());
         return stack;
     }

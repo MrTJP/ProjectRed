@@ -7,11 +7,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
 
-import static mrtjp.projectred.core.init.CoreReferences.PLATE_ITEM;
-import static mrtjp.projectred.core.init.CoreReferences.SILICON_ITEM;
+import static mrtjp.projectred.core.init.CoreItems.PLATE_ITEM;
+import static mrtjp.projectred.core.init.CoreItems.SILICON_ITEM;
 import static mrtjp.projectred.core.init.CoreTags.ELECTROTINE_ALLOY_INGOT_TAG;
 import static mrtjp.projectred.core.init.CoreTags.SAPPHIRE_GEM_TAG;
-import static mrtjp.projectred.fabrication.init.FabricationReferences.*;
+import static mrtjp.projectred.fabrication.init.FabricationBlocks.*;
+import static mrtjp.projectred.fabrication.init.FabricationItems.*;
 
 public class FabricationRecipeProvider extends RecipeProvider {
 
@@ -27,26 +28,26 @@ public class FabricationRecipeProvider extends RecipeProvider {
     @Override
     protected void registerRecipes() {
 
-        shapedRecipe(IC_WORKBENCH_BLOCK)
+        shapedRecipe(IC_WORKBENCH_BLOCK.get())
                 .key('s', Blocks.STONE)
                 .key('w', ItemTags.PLANKS)
-                .key('b', IC_BLUEPRINT_ITEM)
+                .key('b', IC_BLUEPRINT_ITEM.get())
                 .patternLine("sss")
                 .patternLine("wbw")
                 .patternLine("www");
 
-        shapedRecipe(PLOTTING_TABLE_BLOCK)
+        shapedRecipe(PLOTTING_TABLE_BLOCK.get())
                 .key('g', Blocks.GLASS)
                 .key('t', SAPPHIRE_GEM_TAG)
                 .key('s', Blocks.STONE)
-                .key('p', BLANK_PHOTOMASK_ITEM)
+                .key('p', BLANK_PHOTOMASK_ITEM.get())
                 .key('w', ItemTags.PLANKS)
                 .key('b', ELECTROTINE_ALLOY_INGOT_TAG)
                 .patternLine("gtg")
                 .patternLine("sps")
                 .patternLine("wbw");
 
-        shapedRecipe(LITHOGRAPHY_TABLE_BLOCK)
+        shapedRecipe(LITHOGRAPHY_TABLE_BLOCK.get())
                 .key('g', Blocks.GLASS)
                 .key('t', Tags.Items.GEMS_EMERALD)
                 .key('o', Tags.Items.OBSIDIAN)
@@ -57,17 +58,17 @@ public class FabricationRecipeProvider extends RecipeProvider {
                 .patternLine("oio")
                 .patternLine("wbw");
 
-        shapedRecipe(PACKAGING_TABLE_BLOCK)
+        shapedRecipe(PACKAGING_TABLE_BLOCK.get())
                 .key('g', Blocks.GLASS)
                 .key('t', Tags.Items.DUSTS_REDSTONE)
-                .key('p', PLATE_ITEM)
+                .key('p', PLATE_ITEM.get())
                 .key('w', ItemTags.PLANKS)
                 .key('b', ELECTROTINE_ALLOY_INGOT_TAG)
                 .patternLine("gtg")
                 .patternLine("ppp")
                 .patternLine("wbw");
 
-        shapedRecipe(IC_BLUEPRINT_ITEM)
+        shapedRecipe(IC_BLUEPRINT_ITEM.get())
                 .key('p', Items.PAPER)
                 .key('b', Tags.Items.DYES_BLUE)
                 .key('r', Tags.Items.DUSTS_REDSTONE)
@@ -75,14 +76,14 @@ public class FabricationRecipeProvider extends RecipeProvider {
                 .patternLine("brb")
                 .patternLine("pbp");
 
-        shapedRecipe(BLANK_PHOTOMASK_ITEM)
+        shapedRecipe(BLANK_PHOTOMASK_ITEM.get())
                 .key('g', Tags.Items.GLASS_PANES)
                 .key('q', Tags.Items.GEMS_QUARTZ)
                 .patternLine("ggg")
                 .patternLine("gqg")
                 .patternLine("ggg");
 
-        smelting(ROUGH_SILICON_WAFER_ITEM)
-                .ingredient(SILICON_ITEM);
+        smelting(ROUGH_SILICON_WAFER_ITEM.get())
+                .ingredient(SILICON_ITEM.get());
     }
 }
