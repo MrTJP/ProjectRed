@@ -14,7 +14,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nonnull;
 
-import static mrtjp.projectred.fabrication.init.FabricationReferences.*;
+import static mrtjp.projectred.fabrication.init.FabricationBlocks.*;
 
 @SuppressWarnings("DataFlowIssue")
 public class FabricationBlockStateModelProvider extends BlockStateProvider {
@@ -31,11 +31,11 @@ public class FabricationBlockStateModelProvider extends BlockStateProvider {
     @Override
     protected void registerStatesAndModels() {
 
-        addICWorkbenchVariants(IC_WORKBENCH_BLOCK);
+        addICWorkbenchVariants(IC_WORKBENCH_BLOCK.get());
 
-        addFabricationMachineVariants(PLOTTING_TABLE_BLOCK);
-        addFabricationMachineVariants(LITHOGRAPHY_TABLE_BLOCK);
-        addFabricationMachineVariants(PACKAGING_TABLE_BLOCK);
+        addFabricationMachineVariants(PLOTTING_TABLE_BLOCK.get());
+        addFabricationMachineVariants(LITHOGRAPHY_TABLE_BLOCK.get());
+        addFabricationMachineVariants(PACKAGING_TABLE_BLOCK.get());
     }
 
     private void addICWorkbenchVariants(Block block) {

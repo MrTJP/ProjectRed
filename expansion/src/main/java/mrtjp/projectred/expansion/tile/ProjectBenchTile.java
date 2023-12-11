@@ -8,7 +8,7 @@ import mrtjp.projectred.core.inventory.BaseInventory;
 import mrtjp.projectred.core.tile.IPacketReceiverTile;
 import mrtjp.projectred.core.tile.ProjectRedTile;
 import mrtjp.projectred.expansion.CraftingHelper;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import mrtjp.projectred.expansion.inventory.container.ProjectBenchContainer;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.lib.InventoryLib;
@@ -54,7 +54,7 @@ public class ProjectBenchTile extends ProjectRedTile implements IPacketReceiverT
     private boolean recipeNeedsUpdate = true;
 
     public ProjectBenchTile(BlockPos pos, BlockState state) {
-        super(ExpansionReferences.PROJECT_BENCH_TILE, pos, state);
+        super(ExpansionBlocks.PROJECT_BENCH_TILE.get(), pos, state);
 
         planInventory.addListener(this::onInventoryChanged);
         craftingGrid.addListener(this::onInventoryChanged);

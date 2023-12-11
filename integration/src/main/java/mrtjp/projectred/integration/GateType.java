@@ -57,7 +57,7 @@ public enum GateType
     private @Nullable String unlocalName;
     private @Nullable Function<GateType, GatePart> partFactory;
 
-    private @Nullable RegistryObject<Item> itemSupplier;
+    private @Nullable RegistryObject<? extends Item> itemSupplier;
     private @Nullable RegistryObject<MultipartType<GatePart>> partSupplier;
 
     GateType(@Nullable String unlocalName, @Nullable Function<GateType, GatePart> partFactory) {
@@ -99,7 +99,7 @@ public enum GateType
     }
 
     // TODO: Add proper gate registering mechanism
-    public void inject(String unlocalName, Function<GateType, GatePart> partFactory, RegistryObject<Item> itemSupplier, RegistryObject<MultipartType<GatePart>> partSupplier) {
+    public void inject(String unlocalName, Function<GateType, GatePart> partFactory, RegistryObject<? extends Item> itemSupplier, RegistryObject<MultipartType<GatePart>> partSupplier) {
         if (this.itemSupplier != null || this.partSupplier != null) {
             throw new RuntimeException("GateType " + name() + " already registered!");
         }

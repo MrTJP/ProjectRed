@@ -37,15 +37,15 @@ public class ProjectRedFabrication {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
-    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MOD_ID);
-    public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MOD_ID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.CONTAINERS, MOD_ID);
     public static final DeferredRegister<MultipartType<?>> PARTS = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
 
-    public static final SimpleCreativeTab FABRICATION_GROUP = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(FabricationReferences.IC_WORKBENCH_BLOCK));
+    public static final SimpleCreativeTab FABRICATION_GROUP = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(FabricationBlocks.IC_WORKBENCH_BLOCK.get()));
 
     static {
         FabricationBlocks.register();
-        FabricationContainers.register();
+        FabricationMenus.register();
         FabricationItems.register();
         FabricationParts.register();
     }
@@ -60,8 +60,8 @@ public class ProjectRedFabrication {
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
-        TILE_ENTITIES.register(modEventBus);
-        CONTAINERS.register(modEventBus);
+        BLOCK_ENTITY_TYPES.register(modEventBus);
+        MENU_TYPES.register(modEventBus);
         PARTS.register(modEventBus);
     }
 

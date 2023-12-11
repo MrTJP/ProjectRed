@@ -5,7 +5,7 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.core.inventory.BaseInventory;
 import mrtjp.projectred.expansion.CraftingHelper;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import mrtjp.projectred.expansion.inventory.container.AutoCrafterContainer;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import net.minecraft.core.BlockPos;
@@ -40,7 +40,7 @@ public class AutoCrafterTile extends BaseMachineTile implements CraftingHelper.I
     private int idleTicksOnPlan = 0;
 
     public AutoCrafterTile(BlockPos pos, BlockState state) {
-        super(ExpansionReferences.AUTO_CRAFTER_TILE, pos, state);
+        super(ExpansionBlocks.AUTO_CRAFTER_TILE.get(), pos, state);
         planInventory.addListener(this::onInventoryChanged);
         storageInventory.addListener(this::onInventoryChanged);
     }

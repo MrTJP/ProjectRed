@@ -3,7 +3,7 @@ package mrtjp.projectred.fabrication.inventory.container;
 import codechicken.lib.inventory.container.ICCLContainerFactory;
 import mrtjp.projectred.core.inventory.container.SimpleDataSlot;
 import mrtjp.projectred.core.inventory.container.TakeOnlySlot;
-import mrtjp.projectred.fabrication.init.FabricationReferences;
+import mrtjp.projectred.fabrication.init.FabricationMenus;
 import mrtjp.projectred.fabrication.item.ValidDieItem;
 import mrtjp.projectred.fabrication.tile.PackagingTableTile;
 import mrtjp.projectred.lib.InventoryLib;
@@ -28,7 +28,7 @@ public class PackagingTableContainer extends FabricationMachineContainer {
     protected int problematicSlotMask;
 
     public PackagingTableContainer(Inventory playerInventory, PackagingTableTile tile, int windowId) {
-        super(FabricationReferences.PACKAGING_TABLE_CONTAINER, windowId, tile);
+        super(FabricationMenus.PACKAGING_TABLE_CONTAINER.get(), windowId, tile);
         this.playerInventory = playerInventory;
         this.tile = tile;
 

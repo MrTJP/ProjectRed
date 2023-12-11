@@ -1,7 +1,7 @@
 package mrtjp.projectred.fabrication.item;
 
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
-import mrtjp.projectred.fabrication.init.FabricationReferences;
+import mrtjp.projectred.fabrication.init.FabricationItems;
 import mrtjp.projectred.integration.GateType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
@@ -43,7 +43,7 @@ public class PhotomaskSetItem extends Item {
     }
 
     public static ItemStack createDieStack(ItemStack photomask, int count) {
-        ItemStack validDieStack = new ItemStack(FabricationReferences.VALID_DIE_ITEM, count);
+        ItemStack validDieStack = new ItemStack(FabricationItems.VALID_DIE_ITEM.get(), count);
         validDieStack.setTag(Objects.requireNonNull(photomask.getTag()).copy()); //Nothing additional to add yet
         return validDieStack;
     }

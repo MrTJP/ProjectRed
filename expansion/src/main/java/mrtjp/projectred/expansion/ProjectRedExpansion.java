@@ -38,18 +38,18 @@ public class ProjectRedExpansion {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MOD_ID);
-    public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MOD_ID);
-    public static final DeferredRegister<MultipartType<?>> PARTS = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MOD_ID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.CONTAINERS, MOD_ID);
+    public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
     public static final DeferredRegister<PartConverter> PART_CONVERTERS = DeferredRegister.create(PartConverter.PART_CONVERTERS, MOD_ID);
 
-    public static final SimpleCreativeTab EXPANSION_GROUP = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(ExpansionReferences.PROJECT_BENCH_BLOCK));
+    public static final SimpleCreativeTab EXPANSION_GROUP = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(ExpansionBlocks.PROJECT_BENCH_BLOCK.get()));
 
     static {
         ProjectRedAPI.expansionAPI = ExpansionAPI.INSTANCE;
 
         ExpansionBlocks.register();
-        ExpansionContainers.register();
+        ExpansionMenus.register();
         ExpansionItems.register();
         ExpansionParts.register();
     }
@@ -64,9 +64,9 @@ public class ProjectRedExpansion {
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
-        BLOCK_ENTITIES.register(modEventBus);
-        CONTAINERS.register(modEventBus);
-        PARTS.register(modEventBus);
+        BLOCK_ENTITY_TYPES.register(modEventBus);
+        MENU_TYPES.register(modEventBus);
+        PART_TYPES.register(modEventBus);
         PART_CONVERTERS.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.addListener(MovementManager::onChunkWatchEvent);

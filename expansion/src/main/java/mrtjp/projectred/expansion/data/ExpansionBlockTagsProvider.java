@@ -7,7 +7,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
-import static mrtjp.projectred.expansion.init.ExpansionReferences.*;
+import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
 
 public class ExpansionBlockTagsProvider extends BlockTagsProvider {
 
@@ -24,23 +24,23 @@ public class ExpansionBlockTagsProvider extends BlockTagsProvider {
     protected void addTags() {
 
         tag(BlockTags.MINEABLE_WITH_AXE)
-                .add(BATTERY_BOX_BLOCK)
-                .add(FRAME_BLOCK);
+                .add(BATTERY_BOX_BLOCK.get())
+                .add(FRAME_BLOCK.get());
 
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
-                .add(PROJECT_BENCH_BLOCK)
-                .add(CHARGING_BENCH_BLOCK)
-                .add(AUTO_CRAFTER_BLOCK)
-                .add(FIRE_STARTER_BLOCK)
-                .add(FRAME_MOTOR_BLOCK)
-                .add(FRAME_ACTUATOR_BLOCK);
+                .add(PROJECT_BENCH_BLOCK.get())
+                .add(CHARGING_BENCH_BLOCK.get())
+                .add(AUTO_CRAFTER_BLOCK.get())
+                .add(FIRE_STARTER_BLOCK.get())
+                .add(FRAME_MOTOR_BLOCK.get())
+                .add(FRAME_ACTUATOR_BLOCK.get());
 
         tag(BlockTags.NEEDS_STONE_TOOL)
-                .add(PROJECT_BENCH_BLOCK)
-                .add(CHARGING_BENCH_BLOCK)
-                .add(AUTO_CRAFTER_BLOCK)
-                .add(FIRE_STARTER_BLOCK)
-                .add(FRAME_MOTOR_BLOCK)
-                .add(FRAME_ACTUATOR_BLOCK);
+                .add(PROJECT_BENCH_BLOCK.get())
+                .add(CHARGING_BENCH_BLOCK.get())
+                .add(AUTO_CRAFTER_BLOCK.get())
+                .add(FIRE_STARTER_BLOCK.get())
+                .add(FRAME_MOTOR_BLOCK.get())
+                .add(FRAME_ACTUATOR_BLOCK.get());
     }
 }

@@ -3,7 +3,7 @@ package mrtjp.projectred.expansion.inventory.container;
 import codechicken.lib.inventory.container.ICCLContainerFactory;
 import mrtjp.projectred.core.inventory.container.BasePoweredTileContainer;
 import mrtjp.projectred.core.inventory.container.SimpleDataSlot;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionMenus;
 import mrtjp.projectred.expansion.item.IChargable;
 import mrtjp.projectred.expansion.item.IRechargableBattery;
 import mrtjp.projectred.expansion.tile.BatteryBoxTile;
@@ -30,7 +30,7 @@ public class BatteryBoxContainer extends BasePoweredTileContainer {
     protected int powerStored = 0;
 
     public BatteryBoxContainer(Inventory inventory, BatteryBoxTile tile, int windowId) {
-        super(ExpansionReferences.BATTERY_BOX_CONTAINER, windowId, tile);
+        super(ExpansionMenus.BATTERY_BOX_CONTAINER.get(), windowId, tile);
         this.playerInventory = inventory;
         this.tile = tile;
 

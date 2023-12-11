@@ -1,5 +1,7 @@
 package mrtjp.projectred.exploration.item.crafting;
 
+import mrtjp.projectred.exploration.init.ExplorationItems;
+import mrtjp.projectred.exploration.init.ExplorationRecipeSerializers;
 import mrtjp.projectred.exploration.item.BackpackItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -11,9 +13,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.Tags;
 
 import java.util.Objects;
-
-import static mrtjp.projectred.exploration.init.ExplorationReferences.BACKPACK_DYE_RECIPE_SERIALIZER;
-import static mrtjp.projectred.exploration.init.ExplorationReferences.getBackpackByColor;
 
 public class BackpackDyeRecipe extends CustomRecipe {
 
@@ -81,7 +80,7 @@ public class BackpackDyeRecipe extends CustomRecipe {
 
         if (dyeColor == null || backpackColor == dyeColor) return ItemStack.EMPTY;
 
-        ItemStack result = new ItemStack(getBackpackByColor(dyeColor.getId()));
+        ItemStack result = new ItemStack(ExplorationItems.getBackpackByColor(dyeColor.getId()));
         if (backpack.hasTag()) {
             result.setTag(Objects.requireNonNull(backpack.getTag()).copy());
         }
@@ -96,6 +95,6 @@ public class BackpackDyeRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return BACKPACK_DYE_RECIPE_SERIALIZER;
+        return ExplorationRecipeSerializers.BACKPACK_DYE_RECIPE_SERIALIZER.get();
     }
 }

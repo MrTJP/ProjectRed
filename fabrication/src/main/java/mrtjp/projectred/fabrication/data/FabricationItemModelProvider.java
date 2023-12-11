@@ -5,7 +5,9 @@ import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.MOD_ID;
-import static mrtjp.projectred.fabrication.init.FabricationReferences.*;
+import static mrtjp.projectred.fabrication.init.FabricationBlocks.*;
+import static mrtjp.projectred.fabrication.init.FabricationItems.*;
+import static mrtjp.projectred.fabrication.init.FabricationParts.FABRICATED_GATE_ITEM;
 
 public class FabricationItemModelProvider extends ItemModelProvider {
 
@@ -21,11 +23,11 @@ public class FabricationItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
 
-        simpleItemBlock(IC_WORKBENCH_BLOCK);
+        simpleItemBlock(IC_WORKBENCH_BLOCK.get());
 
-        simpleItemBlock(PLOTTING_TABLE_BLOCK);
-        simpleItemBlock(LITHOGRAPHY_TABLE_BLOCK);
-        simpleItemBlock(PACKAGING_TABLE_BLOCK);
+        simpleItemBlock(PLOTTING_TABLE_BLOCK.get());
+        simpleItemBlock(LITHOGRAPHY_TABLE_BLOCK.get());
+        simpleItemBlock(PACKAGING_TABLE_BLOCK.get());
 
         generated(IC_BLUEPRINT_ITEM);
         generated(BLANK_PHOTOMASK_ITEM);

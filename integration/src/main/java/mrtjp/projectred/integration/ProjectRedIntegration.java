@@ -32,7 +32,7 @@ public class ProjectRedIntegration {
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
-    public static final DeferredRegister<MultipartType<?>> PARTS = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
+    public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
 
     public static final SimpleCreativeTab CREATIVE_TAB = new SimpleCreativeTab(MOD_ID, GateType.OR::makeStack);
 
@@ -49,7 +49,7 @@ public class ProjectRedIntegration {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> IntegrationClientInit::init);
 
         ITEMS.register(modEventBus);
-        PARTS.register(modEventBus);
+        PART_TYPES.register(modEventBus);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

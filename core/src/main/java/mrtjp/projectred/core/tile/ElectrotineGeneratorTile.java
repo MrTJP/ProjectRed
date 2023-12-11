@@ -30,8 +30,8 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static mrtjp.projectred.core.init.CoreReferences.ELECTROTINE_DUST_ITEM;
-import static mrtjp.projectred.core.init.CoreReferences.ELECTROTINE_GENERATOR_TILE;
+import static mrtjp.projectred.core.init.CoreBlocks.ELECTROTINE_GENERATOR_TILE;
+import static mrtjp.projectred.core.init.CoreItems.ELECTROTINE_DUST_ITEM;
 
 public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoadMachine {
 
@@ -46,7 +46,7 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
     private int powerStored = 0;
 
     public ElectrotineGeneratorTile(BlockPos pos, BlockState state) {
-        super(ELECTROTINE_GENERATOR_TILE, pos, state);
+        super(ELECTROTINE_GENERATOR_TILE.get(), pos, state);
     }
 
     @Override
@@ -244,7 +244,7 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
 
         @Override
         public boolean canPlaceItem(int slot, ItemStack stack) {
-            return stack.getItem() == ELECTROTINE_DUST_ITEM;
+            return stack.getItem() == ELECTROTINE_DUST_ITEM.get();
         }
     }
 }

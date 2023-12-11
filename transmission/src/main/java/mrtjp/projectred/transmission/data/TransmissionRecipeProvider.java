@@ -11,13 +11,12 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.Tags;
 
-import static mrtjp.projectred.core.init.CoreReferences.*;
+import static mrtjp.projectred.core.init.CoreItems.*;
 import static mrtjp.projectred.core.init.CoreTags.ELECTROTINE_ALLOY_INGOT_TAG;
 import static mrtjp.projectred.core.init.CoreTags.RED_ALLOY_INGOT_TAG;
 import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 import static mrtjp.projectred.transmission.init.TransmissionTags.*;
 
-@SuppressWarnings("DataFlowIssue")
 public class TransmissionRecipeProvider extends RecipeProvider {
 
     public TransmissionRecipeProvider(DataGenerator generatorIn) {
@@ -113,16 +112,16 @@ public class TransmissionRecipeProvider extends RecipeProvider {
         framedWireRecipe(WireType.FRAMED_POWER_LOWLOAD.getItem(), WireType.POWER_LOWLOAD.getItem());
 
         // Wired plate
-        shapedRecipe(WIRED_PLATE_ITEM, 1, new ResourceLocation(MOD_ID, WIRED_PLATE_ITEM.getRegistryName().getPath()))
+        shapedRecipe(WIRED_PLATE_ITEM.get(), 1, new ResourceLocation(MOD_ID, WIRED_PLATE_ITEM.get().getRegistryName().getPath()))
                 .key('W', WireType.RED_ALLOY.getItem())
-                .key('P', PLATE_ITEM)
+                .key('P', PLATE_ITEM.get())
                 .patternLine("W")
                 .patternLine("P");
 
         // Bundled plate
-        shapedRecipe(BUNDLED_PLATE_ITEM, 1, new ResourceLocation(MOD_ID, BUNDLED_PLATE_ITEM.getRegistryName().getPath()))
+        shapedRecipe(BUNDLED_PLATE_ITEM.get(), 1, new ResourceLocation(MOD_ID, BUNDLED_PLATE_ITEM.get().getRegistryName().getPath()))
                 .key('W', BUNDLED_WIRE_ITEM_TAG)
-                .key('P', PLATE_ITEM)
+                .key('P', PLATE_ITEM.get())
                 .patternLine("W")
                 .patternLine("P");
     }

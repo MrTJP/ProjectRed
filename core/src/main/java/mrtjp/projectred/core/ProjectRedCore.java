@@ -36,18 +36,18 @@ public class ProjectRedCore {
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MOD_ID);
-    public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MOD_ID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.CONTAINERS, MOD_ID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MOD_ID);
-    public static final DeferredRegister<MultipartType<?>> PARTS = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
+    public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
 
-    public static final SimpleCreativeTab CORE_CREATIVE_TAB = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(CoreReferences.RED_ALLOY_INGOT_ITEM));
+    public static final SimpleCreativeTab CORE_CREATIVE_TAB = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(CoreItems.RED_ALLOY_INGOT_ITEM.get()));
 
     static {
         CoreBlocks.register();
         CoreItems.register();
-        CoreContainers.register();
+        CoreMenus.register();
         CoreParts.register();
     }
 
@@ -61,9 +61,9 @@ public class ProjectRedCore {
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
-        BLOCK_ENTITIES.register(modEventBus);
-        CONTAINERS.register(modEventBus);
-        PARTS.register(modEventBus);
+        BLOCK_ENTITY_TYPES.register(modEventBus);
+        MENU_TYPES.register(modEventBus);
+        PART_TYPES.register(modEventBus);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -75,6 +75,7 @@ public class ProjectRedCore {
 
         // Load compatibility modules
         if (Configurator.compat_CCBundledCable) {
+            //noinspection Convert2MethodRef
             OptionalMod.of("computercraft").ifPresent(mod -> ComputerCraftCompatibility.init(mod));
         }
     }

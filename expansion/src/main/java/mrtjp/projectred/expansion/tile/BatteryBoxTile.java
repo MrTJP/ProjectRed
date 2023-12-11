@@ -6,7 +6,7 @@ import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.core.inventory.BaseInventory;
 import mrtjp.projectred.expansion.block.BatteryBoxBlock;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import mrtjp.projectred.expansion.inventory.container.BatteryBoxContainer;
 import mrtjp.projectred.expansion.item.IChargable;
 import mrtjp.projectred.expansion.item.IRechargableBattery;
@@ -32,7 +32,6 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.LOGGER;
-import static mrtjp.projectred.expansion.init.ExpansionReferences.BATTERY_BOX_BLOCK;
 
 public class BatteryBoxTile extends LowLoadPoweredTile {
 
@@ -45,7 +44,7 @@ public class BatteryBoxTile extends LowLoadPoweredTile {
     private int powerStored = 0;
 
     public BatteryBoxTile(BlockPos pos, BlockState state) {
-        super(ExpansionReferences.BATTERY_BOX_TILE, pos, state);
+        super(ExpansionBlocks.BATTERY_BOX_TILE.get(), pos, state);
         inventory.addListener(c -> setChanged());
     }
 
@@ -103,7 +102,7 @@ public class BatteryBoxTile extends LowLoadPoweredTile {
     }
 
     public ItemStack createStackWithStoredPower() {
-        ItemStack stack = new ItemStack(BATTERY_BOX_BLOCK, 1);
+        ItemStack stack = new ItemStack(ExpansionBlocks.BATTERY_BOX_BLOCK.get(), 1);
         if (powerStored > 0) {
             CompoundTag tag = stack.getOrCreateTag();
             tag.putInt(TAG_KEY_POWER_STORED, powerStored);

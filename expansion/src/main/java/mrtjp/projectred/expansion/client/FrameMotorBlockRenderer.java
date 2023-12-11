@@ -5,7 +5,7 @@ import codechicken.lib.util.TransformUtils;
 import codechicken.lib.vec.uv.MultiIconTransformation;
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.core.client.FullyOrientableBlockRenderer;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelState;
@@ -42,7 +42,7 @@ public class FrameMotorBlockRenderer extends FullyOrientableBlockRenderer {
 
     @Override
     public boolean canHandleBlock(BlockAndTintGetter world, BlockPos pos, BlockState blockState) {
-        return blockState.getBlock() == ExpansionReferences.FRAME_MOTOR_BLOCK;
+        return blockState.getBlock() == ExpansionBlocks.FRAME_MOTOR_BLOCK.get();
     }
 
     @Override

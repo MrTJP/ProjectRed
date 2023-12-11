@@ -4,12 +4,12 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
-import mrtjp.projectred.core.init.CoreReferences;
+import mrtjp.projectred.core.init.CoreItems;
 import mrtjp.projectred.core.inventory.BaseInventory;
 import mrtjp.projectred.core.tile.IPacketReceiverTile;
 import mrtjp.projectred.fabrication.engine.ICInterfaceType;
 import mrtjp.projectred.fabrication.engine.InterfaceSpec;
-import mrtjp.projectred.fabrication.init.FabricationReferences;
+import mrtjp.projectred.fabrication.init.FabricationBlocks;
 import mrtjp.projectred.fabrication.inventory.container.PackagingTableContainer;
 import mrtjp.projectred.fabrication.item.ValidDieItem;
 import net.minecraft.core.BlockPos;
@@ -61,7 +61,7 @@ public class PackagingTableTile extends FabricationMachineTile implements IPacke
     private int problematicSlotMask = 0; // Masks of slots that client should render red highlights
 
     public PackagingTableTile(BlockPos pos, BlockState state) {
-        super(FabricationReferences.PACKAGING_TABLE_TILE, pos, state);
+        super(FabricationBlocks.PACKAGING_TABLE_TILE.get(), pos, state);
         inventory.addListener(c -> setChanged());
     }
 
@@ -137,9 +137,9 @@ public class PackagingTableTile extends FabricationMachineTile implements IPacke
 
             // Each type of IO corresponds to a particular ingredient
             boolean match = inventory.getItem(slotMap[r]).is(switch (type) {
-                case NC       -> CoreReferences.PLATE_ITEM;
-                case REDSTONE -> CoreReferences.CONDUCTIVE_PLATE_ITEM;
-                case BUNDLED  -> CoreReferences.BUNDLED_PLATE_ITEM;
+                case NC       -> CoreItems.PLATE_ITEM.get();
+                case REDSTONE -> CoreItems.CONDUCTIVE_PLATE_ITEM.get();
+                case BUNDLED  -> CoreItems.BUNDLED_PLATE_ITEM.get();
             });
 
             if (!match) {
@@ -150,7 +150,7 @@ public class PackagingTableTile extends FabricationMachineTile implements IPacke
         // Check corner slots
         int[] cornerSlots = { 0, 2, 6, 8 };
         for (int slot : cornerSlots) {
-            if (!inventory.getItem(slot).is(CoreReferences.PLATE_ITEM)) {
+            if (!inventory.getItem(slot).is(CoreItems.PLATE_ITEM.get())) {
                 problematicSlotMask |= 1 << slot;
             }
         }

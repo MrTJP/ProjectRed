@@ -8,7 +8,7 @@ import codechicken.lib.util.TransformUtils;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -31,7 +31,7 @@ public class FrameBlockRenderer implements ICCBlockRenderer, IItemRenderer {
     //region ICCBlockRenderer
     @Override
     public boolean canHandleBlock(BlockAndTintGetter world, BlockPos pos, BlockState blockState) {
-        return blockState.getBlock() == ExpansionReferences.FRAME_BLOCK;
+        return blockState.getBlock() == ExpansionBlocks.FRAME_BLOCK.get();
     }
 
     @Override

@@ -1,7 +1,7 @@
 package mrtjp.projectred.expansion.tile;
 
 import codechicken.multipart.api.tile.RedstoneConnector;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 public class FireStarterTile extends BaseDeviceTile implements RedstoneConnector {
 
     public FireStarterTile(BlockPos pos, BlockState state) {
-        super(ExpansionReferences.FIRE_STARTER_TILE, pos, state);
+        super(ExpansionBlocks.FIRE_STARTER_TILE.get(), pos, state);
     }
 
     @Override

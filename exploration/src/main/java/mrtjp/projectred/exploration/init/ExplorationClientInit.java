@@ -6,7 +6,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-import static mrtjp.projectred.exploration.init.ExplorationReferences.BACKPACK_CONTAINER;
+import static mrtjp.projectred.exploration.init.ExplorationMenus.BACKPACK_CONTAINER;
 
 public class ExplorationClientInit {
 
@@ -19,6 +19,6 @@ public class ExplorationClientInit {
     private static void clientSetup(final FMLClientSetupEvent event) {
 
         // Register screens
-        MenuScreens.register(BACKPACK_CONTAINER, BackpackScreen::new);
+        MenuScreens.register(BACKPACK_CONTAINER.get(), BackpackScreen::new);
     }
 }

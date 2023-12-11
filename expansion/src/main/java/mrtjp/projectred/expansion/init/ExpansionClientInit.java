@@ -24,7 +24,10 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
-import static mrtjp.projectred.expansion.init.ExpansionReferences.*;
+import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
+import static mrtjp.projectred.expansion.init.ExpansionItems.RECIPE_PLAN_ITEM;
+import static mrtjp.projectred.expansion.init.ExpansionMenus.*;
+import static mrtjp.projectred.expansion.init.ExpansionParts.FRAME_PART;
 
 @SuppressWarnings("DataFlowIssue")
 public class ExpansionClientInit {
@@ -50,37 +53,37 @@ public class ExpansionClientInit {
     private static void clientSetup(final FMLClientSetupEvent event) {
 
         // Register screens
-        MenuScreens.register(PROJECT_BENCH_CONTAINER, ProjectBenchScreen::new);
-        MenuScreens.register(BATTERY_BOX_CONTAINER, BatteryBoxScreen::new);
-        MenuScreens.register(AUTO_CRAFTER_CONTAINER, AutoCrafterScreen::new);
-        MenuScreens.register(CHARGING_BENCH_CONTAINER, ChargingBenchScreen::new);
+        MenuScreens.register(PROJECT_BENCH_CONTAINER.get(), ProjectBenchScreen::new);
+        MenuScreens.register(BATTERY_BOX_CONTAINER.get(), BatteryBoxScreen::new);
+        MenuScreens.register(AUTO_CRAFTER_CONTAINER.get(), AutoCrafterScreen::new);
+        MenuScreens.register(CHARGING_BENCH_CONTAINER.get(), ChargingBenchScreen::new);
 
         // Register item model properties
         addItemModelProperties();
 
         // Register block renderers
-        ItemBlockRenderTypes.setRenderLayer(FRAME_BLOCK, RenderType.cutout());
-        BlockRenderingRegistry.registerRenderer(FRAME_BLOCK, FrameBlockRenderer.INSTANCE);
-        ItemBlockRenderTypes.setRenderLayer(FRAME_MOTOR_BLOCK, RenderType.solid());
-        BlockRenderingRegistry.registerRenderer(FRAME_MOTOR_BLOCK, FrameMotorBlockRenderer.INSTANCE);
+        ItemBlockRenderTypes.setRenderLayer(FRAME_BLOCK.get(), RenderType.cutout());
+        BlockRenderingRegistry.registerRenderer(FRAME_BLOCK.get(), FrameBlockRenderer.INSTANCE);
+        ItemBlockRenderTypes.setRenderLayer(FRAME_MOTOR_BLOCK.get(), RenderType.solid());
+        BlockRenderingRegistry.registerRenderer(FRAME_MOTOR_BLOCK.get(), FrameMotorBlockRenderer.INSTANCE);
         BlockRenderingRegistry.registerGlobalRenderer(MovingBlockSuppressorRenderer.INSTANCE);
 
         // Register item renderers
-        MODEL_HELPER.register(new ModelResourceLocation(FRAME_BLOCK.getRegistryName(), "inventory"), FrameBlockRenderer.INSTANCE);
-        MODEL_HELPER.register(new ModelResourceLocation(FRAME_MOTOR_BLOCK.getRegistryName(), "inventory"), FrameMotorBlockRenderer.INSTANCE);
+        MODEL_HELPER.register(new ModelResourceLocation(FRAME_BLOCK.get().getRegistryName(), "inventory"), FrameBlockRenderer.INSTANCE);
+        MODEL_HELPER.register(new ModelResourceLocation(FRAME_MOTOR_BLOCK.get().getRegistryName(), "inventory"), FrameMotorBlockRenderer.INSTANCE);
 
         // Register part renderers
-        MultipartClientRegistry.register(FRAME_PART, FramePartRenderer.INSTANCE);
+        MultipartClientRegistry.register(FRAME_PART.get(), FramePartRenderer.INSTANCE);
     }
 
     private static void addItemModelProperties() {
-        ItemProperties.register(BATTERY_BOX_BLOCK.asItem(), ITEM_MODEL_PROPERTY_CHARGE_LEVEL, (stack, world, entity, seed) -> {
+        ItemProperties.register(BATTERY_BOX_BLOCK.get().asItem(), ITEM_MODEL_PROPERTY_CHARGE_LEVEL, (stack, world, entity, seed) -> {
             if (stack.hasTag()) {
                 return stack.getTag().getInt(BatteryBoxTile.TAG_KEY_CHARGE_LEVEL_STATE);
             }
             return 0.0F;
         });
 
-        ItemProperties.register(RECIPE_PLAN_ITEM, ITEM_MODEL_PROPERTY_WRITTEN_RECIPE_PLAN, (stack, world, entity, seed) -> RecipePlanItem.hasRecipeInside(stack) ? 1.0F : 0.0F);
+        ItemProperties.register(RECIPE_PLAN_ITEM.get(), ITEM_MODEL_PROPERTY_WRITTEN_RECIPE_PLAN, (stack, world, entity, seed) -> RecipePlanItem.hasRecipeInside(stack) ? 1.0F : 0.0F);
     }
 }

@@ -6,7 +6,7 @@ import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.core.inventory.BaseInventory;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import mrtjp.projectred.expansion.inventory.container.ChargingBenchContainer;
 import mrtjp.projectred.expansion.item.IChargable;
 import mrtjp.projectred.lib.InventoryLib;
@@ -39,7 +39,7 @@ public class ChargingBenchTile extends LowLoadPoweredTile {
     private int powerStored = 0;
 
     public ChargingBenchTile(BlockPos pos, BlockState state) {
-        super(ExpansionReferences.CHARGING_BENCH_TILE, pos, state);
+        super(ExpansionBlocks.CHARGING_BENCH_TILE.get(), pos, state);
         inventory.addListener(c -> setChanged());
     }
 

@@ -7,8 +7,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
-
-import static mrtjp.projectred.core.init.CoreReferences.*;
+import static mrtjp.projectred.core.init.CoreBlocks.ELECTROTINE_GENERATOR_BLOCK;
 
 public class CoreBlockTagsProvider extends BlockTagsProvider {
 
@@ -25,7 +24,7 @@ public class CoreBlockTagsProvider extends BlockTagsProvider {
     protected void addTags() {
 
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
-                .add(ELECTROTINE_GENERATOR_BLOCK);
+                .add(ELECTROTINE_GENERATOR_BLOCK.get());
 
     }
 }

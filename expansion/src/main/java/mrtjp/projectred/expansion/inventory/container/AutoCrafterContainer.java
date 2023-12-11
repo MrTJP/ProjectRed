@@ -2,7 +2,7 @@ package mrtjp.projectred.expansion.inventory.container;
 
 import codechicken.lib.inventory.container.ICCLContainerFactory;
 import mrtjp.projectred.core.inventory.container.SimpleDataSlot;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionMenus;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.expansion.tile.AutoCrafterTile;
 import mrtjp.projectred.lib.InventoryLib;
@@ -27,7 +27,7 @@ public class AutoCrafterContainer extends BaseMachineContainer {
     private int planSlot;
 
     public AutoCrafterContainer(Inventory inventory, AutoCrafterTile tile, int windowId) {
-        super(ExpansionReferences.AUTO_CRAFTER_CONTAINER, windowId, tile);
+        super(ExpansionMenus.AUTO_CRAFTER_CONTAINER.get(), windowId, tile);
         this.playerInventory = inventory;
         this.tile = tile;
 

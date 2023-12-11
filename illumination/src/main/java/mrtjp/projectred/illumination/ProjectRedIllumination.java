@@ -33,8 +33,8 @@ public class ProjectRedIllumination {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
-    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MOD_ID);
-    public static final DeferredRegister<MultipartType<?>> PARTS = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MOD_ID);
+    public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
 
     public static final SimpleCreativeTab ILLUMINATION_GROUP = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(BlockLightType.ILLUMAR_LAMP.getBlock(EnumColour.RED.ordinal(), true)));
 
@@ -54,8 +54,8 @@ public class ProjectRedIllumination {
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
-        TILE_ENTITIES.register(modEventBus);
-        PARTS.register(modEventBus);
+        BLOCK_ENTITY_TYPES.register(modEventBus);
+        PART_TYPES.register(modEventBus);
 
         modEventBus.register(new IlluminationMicroMaterials());
     }

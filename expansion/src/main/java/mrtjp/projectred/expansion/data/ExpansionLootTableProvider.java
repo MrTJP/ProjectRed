@@ -3,7 +3,7 @@ package mrtjp.projectred.expansion.data;
 import codechicken.lib.datagen.LootTableProvider;
 import net.minecraft.data.DataGenerator;
 
-import static mrtjp.projectred.expansion.init.ExpansionReferences.*;
+import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
 
 public class ExpansionLootTableProvider extends LootTableProvider.BlockLootProvider {
 
@@ -19,13 +19,13 @@ public class ExpansionLootTableProvider extends LootTableProvider.BlockLootProvi
     @Override
     protected void registerTables() {
 
-        register(PROJECT_BENCH_BLOCK, singleItem(PROJECT_BENCH_BLOCK));
-        register(BATTERY_BOX_BLOCK, singleItem(BATTERY_BOX_BLOCK));
-        register(AUTO_CRAFTER_BLOCK, singleItem(AUTO_CRAFTER_BLOCK));
-        register(CHARGING_BENCH_BLOCK, singleItem(CHARGING_BENCH_BLOCK));
-        register(FIRE_STARTER_BLOCK, singleItem(FIRE_STARTER_BLOCK));
-        register(FRAME_BLOCK, singleItem(FRAME_BLOCK));
-        register(FRAME_MOTOR_BLOCK, singleItem(FRAME_MOTOR_BLOCK));
-        register(FRAME_ACTUATOR_BLOCK, singleItem(FRAME_ACTUATOR_BLOCK));
+        register(PROJECT_BENCH_BLOCK.get(), singleItem(PROJECT_BENCH_BLOCK.get()));
+        register(BATTERY_BOX_BLOCK.get(), singleItem(BATTERY_BOX_BLOCK.get()));
+        register(AUTO_CRAFTER_BLOCK.get(), singleItem(AUTO_CRAFTER_BLOCK.get()));
+        register(CHARGING_BENCH_BLOCK.get(), singleItem(CHARGING_BENCH_BLOCK.get()));
+        register(FIRE_STARTER_BLOCK.get(), singleItem(FIRE_STARTER_BLOCK.get()));
+        register(FRAME_BLOCK.get(), singleItem(FRAME_BLOCK.get()));
+        register(FRAME_MOTOR_BLOCK.get(), singleItem(FRAME_MOTOR_BLOCK.get()));
+        register(FRAME_ACTUATOR_BLOCK.get(), singleItem(FRAME_ACTUATOR_BLOCK.get()));
     }
 }

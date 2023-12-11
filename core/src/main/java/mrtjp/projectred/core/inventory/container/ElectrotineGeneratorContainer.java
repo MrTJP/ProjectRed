@@ -9,8 +9,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-import static mrtjp.projectred.core.init.CoreReferences.ELECTROTINE_DUST_ITEM;
-import static mrtjp.projectred.core.init.CoreReferences.ELECTROTINE_GENERATOR_CONTAINER;
+import static mrtjp.projectred.core.init.CoreItems.ELECTROTINE_DUST_ITEM;
+import static mrtjp.projectred.core.init.CoreMenus.ELECTROTINE_GENERATOR_CONTAINER;
 
 public class ElectrotineGeneratorContainer extends BasePoweredTileContainer {
 
@@ -28,7 +28,7 @@ public class ElectrotineGeneratorContainer extends BasePoweredTileContainer {
     private int powerStored = 0;
 
     public ElectrotineGeneratorContainer(Inventory playerInventory, ElectrotineGeneratorTile tile, int windowId) {
-        super(ELECTROTINE_GENERATOR_CONTAINER, windowId, tile);
+        super(ELECTROTINE_GENERATOR_CONTAINER.get(), windowId, tile);
 
         this.playerInventory = playerInventory;
         this.tile = tile;
@@ -44,7 +44,7 @@ public class ElectrotineGeneratorContainer extends BasePoweredTileContainer {
         addSlot(new Slot(tile.getInventory(), 0, 134, 42) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.getItem() == ELECTROTINE_DUST_ITEM;
+                return stack.getItem() == ELECTROTINE_DUST_ITEM.get();
             }
         });
     }
@@ -61,7 +61,7 @@ public class ElectrotineGeneratorContainer extends BasePoweredTileContainer {
         if (isFuel(slotIndex)) {
             if (!moveToEntireInventory(stack, false)) return ItemStack.EMPTY;
 
-        } else if (stack.getItem() == ELECTROTINE_DUST_ITEM) {
+        } else if (stack.getItem() == ELECTROTINE_DUST_ITEM.get()) {
             if (!moveToFuel(stack, false)) return ItemStack.EMPTY;
 
         } else if (isPlayerInventory(slotIndex)) {

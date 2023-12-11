@@ -27,7 +27,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
-import static mrtjp.projectred.exploration.init.ExplorationReferences.MARBLE_BRICK_BLOCK;
+import static mrtjp.projectred.exploration.init.ExplorationBlocks.MARBLE_BRICK_BLOCK;
 
 @Mod(MOD_ID)
 public class ProjectRedExploration {
@@ -36,17 +36,17 @@ public class ProjectRedExploration {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
-    public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MOD_ID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.CONTAINERS, MOD_ID);
     public static final DeferredRegister<WorldCarver<?>> WORLD_CARVERS = DeferredRegister.create(ForgeRegistries.WORLD_CARVERS, MOD_ID);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MOD_ID);
     public static final DeferredRegister<MicroMaterial> MICRO_MATERIALS = DeferredRegister.create(new ResourceLocation(CBMicroblock.MOD_ID, "micro_material"), MOD_ID);
 
-    public static final SimpleCreativeTab EXPLORATION_CREATIVE_TAB = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(MARBLE_BRICK_BLOCK));
+    public static final SimpleCreativeTab EXPLORATION_CREATIVE_TAB = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(MARBLE_BRICK_BLOCK.get()));
 
     static {
         ExplorationBlocks.register();
         ExplorationItems.register();
-        ExplorationContainers.register();
+        ExplorationMenus.register();
         ExplorationWorldFeatures.register();
         ExplorationRecipeSerializers.register();
     }
@@ -62,7 +62,7 @@ public class ProjectRedExploration {
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
-        CONTAINERS.register(modEventBus);
+        MENU_TYPES.register(modEventBus);
         WORLD_CARVERS.register(modEventBus);
         RECIPE_SERIALIZERS.register(modEventBus);
         MICRO_MATERIALS.register(modEventBus);

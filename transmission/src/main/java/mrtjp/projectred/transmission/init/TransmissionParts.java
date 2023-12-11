@@ -3,7 +3,7 @@ package mrtjp.projectred.transmission.init;
 import mrtjp.projectred.transmission.WireType;
 
 import static mrtjp.projectred.transmission.ProjectRedTransmission.ITEMS;
-import static mrtjp.projectred.transmission.ProjectRedTransmission.PARTS;
+import static mrtjp.projectred.transmission.ProjectRedTransmission.PART_TYPES;
 
 public class TransmissionParts {
 
@@ -93,7 +93,7 @@ public class TransmissionParts {
 
         // Register wires
         for (WireType type : WireType.values()) {
-            type.registerParts(PARTS, ITEMS);
+            type.registerParts(PART_TYPES, ITEMS);
         }
     }
 }

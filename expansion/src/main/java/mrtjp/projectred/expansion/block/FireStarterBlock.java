@@ -1,7 +1,7 @@
 package mrtjp.projectred.expansion.block;
 
 import mrtjp.projectred.core.tile.IBlockEventTile;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import mrtjp.projectred.expansion.tile.FireStarterTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -25,7 +25,7 @@ public class FireStarterBlock extends BaseDeviceBlock {
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return ExpansionReferences.FIRE_STARTER_TILE;
+        return ExpansionBlocks.FIRE_STARTER_TILE.get();
     }
 
     @Override

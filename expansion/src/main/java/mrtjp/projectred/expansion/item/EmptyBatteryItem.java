@@ -1,7 +1,7 @@
 package mrtjp.projectred.expansion.item;
 
 import mrtjp.projectred.expansion.ProjectRedExpansion;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionItems;
 import net.minecraft.world.item.Item;
 
 public class EmptyBatteryItem extends Item implements IRechargableBattery {
@@ -12,7 +12,7 @@ public class EmptyBatteryItem extends Item implements IRechargableBattery {
 
     @Override
     public Item getChargedVariant() {
-        return ExpansionReferences.BATTERY_ITEM;
+        return ExpansionItems.BATTERY_ITEM.get();
     }
 
     @Override

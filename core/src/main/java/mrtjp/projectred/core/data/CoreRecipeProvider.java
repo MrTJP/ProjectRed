@@ -13,30 +13,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.crafting.NBTIngredient;
 
-import static mrtjp.projectred.core.init.CoreReferences.*;
+import static mrtjp.projectred.core.init.CoreBlocks.ELECTROTINE_GENERATOR_BLOCK;
+import static mrtjp.projectred.core.init.CoreItems.*;
 import static mrtjp.projectred.core.init.CoreTags.*;
 import static net.minecraftforge.common.Tags.Items.*;
 
 public class CoreRecipeProvider extends RecipeProvider {
-
-    private static final Item[] ILLUMAR_ITEMS = {
-            WHITE_ILLUMAR_ITEM,
-            ORANGE_ILLUMAR_ITEM,
-            MAGENTA_ILLUMAR_ITEM,
-            LIGHT_BLUE_ILLUMAR_ITEM,
-            YELLOW_ILLUMAR_ITEM,
-            LIME_ILLUMAR_ITEM,
-            PINK_ILLUMAR_ITEM,
-            GRAY_ILLUMAR_ITEM,
-            LIGHT_GRAY_ILLUMAR_ITEM,
-            CYAN_ILLUMAR_ITEM,
-            PURPLE_ILLUMAR_ITEM,
-            BLUE_ILLUMAR_ITEM,
-            BROWN_ILLUMAR_ITEM,
-            GREEN_ILLUMAR_ITEM,
-            RED_ILLUMAR_ITEM,
-            BLACK_ILLUMAR_ITEM,
-    };
 
     public CoreRecipeProvider(DataGenerator gen) {
         super(gen);
@@ -50,7 +32,7 @@ public class CoreRecipeProvider extends RecipeProvider {
     @Override
     protected void registerRecipes() {
 
-        shapedRecipe(ELECTROTINE_GENERATOR_BLOCK)
+        shapedRecipe(ELECTROTINE_GENERATOR_BLOCK.get())
                 .patternLine("bbb")
                 .patternLine("bdb")
                 .patternLine("cec")
@@ -59,178 +41,178 @@ public class CoreRecipeProvider extends RecipeProvider {
                 .key('c', Blocks.CLAY)
                 .key('e', ELECTROTINE_ALLOY_INGOT_TAG);
 
-        smelting(PLATE_ITEM, 2)
+        smelting(PLATE_ITEM.get(), 2)
                 .ingredient(Blocks.SMOOTH_STONE);
 
-        smelting(SILICON_BOULE_ITEM)
-                .ingredient(SAND_COAL_COMP_ITEM);
+        smelting(SILICON_BOULE_ITEM.get())
+                .ingredient(SAND_COAL_COMP_ITEM.get());
 
-        smelting(INFUSED_SILICON_ITEM)
-                .ingredient(RED_SILICON_COMP_ITEM);
+        smelting(INFUSED_SILICON_ITEM.get())
+                .ingredient(RED_SILICON_COMP_ITEM.get());
 
-        smelting(ENERGIZED_SILICON_ITEM)
-                .ingredient(GLOW_SILICON_COMP_ITEM);
+        smelting(ENERGIZED_SILICON_ITEM.get())
+                .ingredient(GLOW_SILICON_COMP_ITEM.get());
 
-        smelting(RED_ALLOY_INGOT_ITEM)
-                .ingredient(RED_IRON_COMP_ITEM);
+        smelting(RED_ALLOY_INGOT_ITEM.get())
+                .ingredient(RED_IRON_COMP_ITEM.get());
 
-        smelting(ELECTROTINE_ALLOY_INGOT_ITEM)
-                .ingredient(ELECTROTINE_IRON_COMP_ITEM);
+        smelting(ELECTROTINE_ALLOY_INGOT_ITEM.get())
+                .ingredient(ELECTROTINE_IRON_COMP_ITEM.get());
 
-        smelting(ELECTROTINE_SILICON_ITEM)
-                .ingredient(ELECTROTINE_SILICON_COMP_ITEM);
+        smelting(ELECTROTINE_SILICON_ITEM.get())
+                .ingredient(ELECTROTINE_SILICON_COMP_ITEM.get());
 
-        shapedRecipe(CONDUCTIVE_PLATE_ITEM)
+        shapedRecipe(CONDUCTIVE_PLATE_ITEM.get())
                 .key('R', DUSTS_REDSTONE)
-                .key('P', PLATE_ITEM)
+                .key('P', PLATE_ITEM.get())
                 .patternLine("R")
                 .patternLine("P");
 
-        shapedRecipe(PLATFORMED_PLATE_ITEM)
-                .key('R', CONDUCTIVE_PLATE_ITEM)
+        shapedRecipe(PLATFORMED_PLATE_ITEM.get())
+                .key('R', CONDUCTIVE_PLATE_ITEM.get())
                 .key('S', RODS_WOODEN)
-                .key('P', PLATE_ITEM)
+                .key('P', PLATE_ITEM.get())
                 .patternLine(" R ")
                 .patternLine("SPS")
                 .patternLine("PRP");
 
-        shapedRecipe(ANODE_ITEM, 3)
+        shapedRecipe(ANODE_ITEM.get(), 3)
                 .key('R', DUSTS_REDSTONE)
-                .key('P', PLATE_ITEM)
+                .key('P', PLATE_ITEM.get())
                 .patternLine(" R ")
                 .patternLine("RRR")
                 .patternLine("PPP");
 
-        shapedRecipe(CATHODE_ITEM)
+        shapedRecipe(CATHODE_ITEM.get())
                 .key('T', Items.REDSTONE_TORCH)
-                .key('P', PLATE_ITEM)
+                .key('P', PLATE_ITEM.get())
                 .patternLine("T")
                 .patternLine("P");
 
-        shapedRecipe(POINTER_ITEM)
+        shapedRecipe(POINTER_ITEM.get())
                 .key('S', STONE)
                 .key('T', Items.REDSTONE_TORCH)
-                .key('P', PLATE_ITEM)
+                .key('P', PLATE_ITEM.get())
                 .patternLine("S")
                 .patternLine("T")
                 .patternLine("P");
 
-        shapedRecipe(SILICON_CHIP_ITEM)
-                .key('S', INFUSED_SILICON_ITEM)
-                .key('P', PLATE_ITEM)
+        shapedRecipe(SILICON_CHIP_ITEM.get())
+                .key('S', INFUSED_SILICON_ITEM.get())
+                .key('P', PLATE_ITEM.get())
                 .patternLine(" S ")
                 .patternLine("PPP");
 
-        shapedRecipe(ENERGIZED_SILICON_CHIP_ITEM)
-                .key('E', ENERGIZED_SILICON_ITEM)
-                .key('P', PLATE_ITEM)
+        shapedRecipe(ENERGIZED_SILICON_CHIP_ITEM.get())
+                .key('E', ENERGIZED_SILICON_ITEM.get())
+                .key('P', PLATE_ITEM.get())
                 .patternLine(" E ")
                 .patternLine("PPP");
 
-        shapedRecipe(SAND_COAL_COMP_ITEM)
+        shapedRecipe(SAND_COAL_COMP_ITEM.get())
                 .key('S', SAND)
                 .key('C', STORAGE_BLOCKS_COAL)
                 .patternLine("SSS")
                 .patternLine("SCS")
                 .patternLine("SSS");
 
-        shapedRecipe(RED_IRON_COMP_ITEM)
+        shapedRecipe(RED_IRON_COMP_ITEM.get())
                 .key('R', DUSTS_REDSTONE)
                 .key('I', INGOTS_IRON)
                 .patternLine("RRR")
                 .patternLine("RIR")
                 .patternLine("RRR");
 
-        shapedRecipe(ELECTROTINE_IRON_COMP_ITEM)
+        shapedRecipe(ELECTROTINE_IRON_COMP_ITEM.get())
                 .key('B', ELECTROTINE_DUST_TAG)
                 .key('I', INGOTS_IRON)
                 .patternLine("BBB")
                 .patternLine("BIB")
                 .patternLine("BBB");
 
-        shapedRecipe(SILICON_ITEM, 8)
+        shapedRecipe(SILICON_ITEM.get(), 8)
                 .key('S', CBMicroblockModContent.DIAMOND_SAW.get())
-                .key('B', SILICON_BOULE_ITEM)
+                .key('B', SILICON_BOULE_ITEM.get())
                 .patternLine("S")
                 .patternLine("B");
 
-        shapedRecipe(RED_SILICON_COMP_ITEM)
+        shapedRecipe(RED_SILICON_COMP_ITEM.get())
                 .key('R', DUSTS_REDSTONE)
-                .key('S', SILICON_ITEM)
+                .key('S', SILICON_ITEM.get())
                 .patternLine("RRR")
                 .patternLine("RSR")
                 .patternLine("RRR");
 
-        shapedRecipe(GLOW_SILICON_COMP_ITEM)
+        shapedRecipe(GLOW_SILICON_COMP_ITEM.get())
                 .key('G', DUSTS_GLOWSTONE)
-                .key('S', SILICON_ITEM)
+                .key('S', SILICON_ITEM.get())
                 .patternLine("GGG")
                 .patternLine("GSG")
                 .patternLine("GGG");
 
-        shapedRecipe(ELECTROTINE_SILICON_COMP_ITEM)
+        shapedRecipe(ELECTROTINE_SILICON_COMP_ITEM.get())
                 .key('E', ELECTROTINE_DUST_TAG)
-                .key('S', SILICON_ITEM)
+                .key('S', SILICON_ITEM.get())
                 .patternLine("EEE")
                 .patternLine("ESE")
                 .patternLine("EEE");
 
-        shapedRecipe(COPPER_COIL_ITEM)
+        shapedRecipe(COPPER_COIL_ITEM.get())
                 .key('C', INGOTS_COPPER)
-                .key('D', DRAW_PLATE_ITEM)
+                .key('D', DRAW_PLATE_ITEM.get())
                 .patternLine("CD");
 
-        shapedRecipe(IRON_COIL_ITEM)
+        shapedRecipe(IRON_COIL_ITEM.get())
                 .key('I', INGOTS_IRON)
-                .key('D', DRAW_PLATE_ITEM)
+                .key('D', DRAW_PLATE_ITEM.get())
                 .patternLine("ID");
 
-        shapedRecipe(GOLD_COIL_ITEM)
+        shapedRecipe(GOLD_COIL_ITEM.get())
                 .key('G', INGOTS_GOLD)
-                .key('D', DRAW_PLATE_ITEM)
+                .key('D', DRAW_PLATE_ITEM.get())
                 .patternLine("GD");
 
-        shapedRecipe(MOTOR_ITEM)
+        shapedRecipe(MOTOR_ITEM.get())
                 .key('I', INGOTS_IRON)
                 .key('S', STONE)
-                .key('C', COPPER_COIL_ITEM)
+                .key('C', COPPER_COIL_ITEM.get())
                 .key('R', DUSTS_REDSTONE)
                 .patternLine(" I ")
                 .patternLine("SCS")
                 .patternLine("RCR");
 
-        shapedRecipe(WOVEN_CLOTH_ITEM)
+        shapedRecipe(WOVEN_CLOTH_ITEM.get())
                 .key('S', STRING)
                 .key('W', RODS_WOODEN)
                 .patternLine("SSS")
                 .patternLine("SWS")
                 .patternLine("SSS");
 
-        shapedRecipe(SAIL_ITEM)
-                .key('S', WOVEN_CLOTH_ITEM)
+        shapedRecipe(SAIL_ITEM.get())
+                .key('S', WOVEN_CLOTH_ITEM.get())
                 .patternLine("SS")
                 .patternLine("SS")
                 .patternLine("SS");
 
         for (int i = 0; i < 16; i++) {
-            addIllumarRecipe(ILLUMAR_ITEMS[i], EnumColour.values()[i]);
+            addIllumarRecipe(getIllumarByIndex(i), EnumColour.values()[i]);
         }
 
-        shapedRecipe(DRAW_PLATE_ITEM)
+        shapedRecipe(DRAW_PLATE_ITEM.get())
                 .key('I', NBTIngredient.of(ItemMicroBlock.create(3, 2, MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.IRON_BLOCK.defaultBlockState())))))
                 .key('D', NBTIngredient.of(ItemMicroBlock.create(0, 2, MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.DIAMOND_BLOCK.defaultBlockState())))))
                 .patternLine(" I ")
                 .patternLine("IDI")
                 .patternLine(" I ");
 
-        shapedRecipe(SCREWDRIVER_ITEM)
+        shapedRecipe(SCREWDRIVER_ITEM.get())
                 .key('I', INGOTS_IRON)
                 .key('B', DYES_BLUE)
                 .patternLine("I  ")
                 .patternLine(" IB")
                 .patternLine(" BI");
 
-        shapedRecipe(MULTIMETER_ITEM)
+        shapedRecipe(MULTIMETER_ITEM.get())
                 .key('A', RED_ALLOY_INGOT_TAG)
                 .key('B', DYES_BLACK)
                 .key('E', DYES_GREEN)

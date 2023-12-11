@@ -2,7 +2,7 @@ package mrtjp.projectred.fabrication.inventory.container;
 
 import codechicken.lib.inventory.container.ICCLContainerFactory;
 import mrtjp.projectred.core.inventory.container.TakeOnlySlot;
-import mrtjp.projectred.fabrication.init.FabricationReferences;
+import mrtjp.projectred.fabrication.init.FabricationMenus;
 import mrtjp.projectred.fabrication.item.BlankPhotomaskItem;
 import mrtjp.projectred.fabrication.item.ICBlueprintItem;
 import mrtjp.projectred.fabrication.tile.PlottingTableTile;
@@ -26,7 +26,7 @@ public class PlottingTableContainer extends FabricationMachineContainer {
     private final PlottingTableTile tile;
 
     public PlottingTableContainer(Inventory playerInventory, PlottingTableTile tile, int windowId) {
-        super(FabricationReferences.PLOTTING_TABLE_CONTAINER, windowId, tile);
+        super(FabricationMenus.PLOTTING_TABLE_CONTAINER.get(), windowId, tile);
         this.playerInventory = playerInventory;
         this.tile = tile;
 

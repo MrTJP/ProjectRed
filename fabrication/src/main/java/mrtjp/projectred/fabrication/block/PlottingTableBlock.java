@@ -1,7 +1,7 @@
 package mrtjp.projectred.fabrication.block;
 
 import mrtjp.projectred.core.block.ProjectRedBlock;
-import mrtjp.projectred.fabrication.init.FabricationReferences;
+import mrtjp.projectred.fabrication.init.FabricationBlocks;
 import mrtjp.projectred.fabrication.tile.PlottingTableTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -23,6 +23,6 @@ public class PlottingTableBlock extends FabricationMachineBlock {
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return FabricationReferences.PLOTTING_TABLE_TILE;
+        return FabricationBlocks.PLOTTING_TABLE_TILE.get();
     }
 }

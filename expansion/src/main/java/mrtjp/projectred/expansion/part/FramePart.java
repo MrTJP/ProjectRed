@@ -14,7 +14,7 @@ import codechicken.multipart.util.PartRayTraceResult;
 import mrtjp.projectred.api.Frame;
 import mrtjp.projectred.expansion.block.FrameBlock;
 import mrtjp.projectred.expansion.client.FrameModelRenderer;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionParts;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 
-import static mrtjp.projectred.expansion.init.ExpansionReferences.FRAME_BLOCK;
+import static mrtjp.projectred.expansion.init.ExpansionBlocks.FRAME_BLOCK;
 
 public class FramePart extends BaseMultipart implements NormalOcclusionPart, IconHitEffectsPart, Frame {
 
@@ -122,28 +122,28 @@ public class FramePart extends BaseMultipart implements NormalOcclusionPart, Ico
     //region MultiPart properties
     @Override
     public MultipartType<?> getType() {
-        return ExpansionReferences.FRAME_PART;
+        return ExpansionParts.FRAME_PART.get();
     }
 
     @Override
     public float getStrength(Player player, PartRayTraceResult hit) {
-        return FRAME_BLOCK.defaultBlockState()
+        return FRAME_BLOCK.get().defaultBlockState()
                 .getDestroyProgress(player, player.level, new BlockPos(0, -1, 0));
     }
 
     @Override
     public @Nullable SoundType getPlacementSound(UseOnContext context) {
-        return FRAME_BLOCK.defaultBlockState().getSoundType();
+        return FRAME_BLOCK.get().defaultBlockState().getSoundType();
     }
 
     @Override
     public ItemStack getCloneStack(PartRayTraceResult hit) {
-        return new ItemStack(FRAME_BLOCK);
+        return new ItemStack(FRAME_BLOCK.get());
     }
 
     @Override
     public Iterable<ItemStack> getDrops() {
-        return Collections.singleton(new ItemStack(FRAME_BLOCK));
+        return Collections.singleton(new ItemStack(FRAME_BLOCK.get()));
     }
     //endregion
 

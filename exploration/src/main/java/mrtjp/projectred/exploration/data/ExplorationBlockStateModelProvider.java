@@ -7,7 +7,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import javax.annotation.Nonnull;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
-import static mrtjp.projectred.exploration.init.ExplorationReferences.*;
+import static mrtjp.projectred.exploration.init.ExplorationBlocks.*;
 
 public class ExplorationBlockStateModelProvider extends BlockStateProvider {
 
@@ -25,43 +25,43 @@ public class ExplorationBlockStateModelProvider extends BlockStateProvider {
     protected void registerStatesAndModels() {
 
         // Ores
-        simpleBlock(RUBY_ORE_BLOCK);
-        simpleBlock(DEEPSLATE_RUBY_ORE_BLOCK);
-        simpleBlock(SAPPHIRE_ORE_BLOCK);
-        simpleBlock(DEEPSLATE_SAPPHIRE_ORE_BLOCK);
-        simpleBlock(PERIDOT_ORE_BLOCK);
-        simpleBlock(DEEPSLATE_PERIDOT_ORE_BLOCK);
-        simpleBlock(TIN_ORE_BLOCK);
-        simpleBlock(DEEPSLATE_TIN_ORE_BLOCK);
-        simpleBlock(SILVER_ORE_BLOCK);
-        simpleBlock(DEEPSLATE_SILVER_ORE_BLOCK);
-        simpleBlock(ELECTROTINE_ORE_BLOCK);
-        simpleBlock(DEEPSLATE_ELECTROTINE_ORE_BLOCK);
+        simpleBlock(RUBY_ORE_BLOCK.get());
+        simpleBlock(DEEPSLATE_RUBY_ORE_BLOCK.get());
+        simpleBlock(SAPPHIRE_ORE_BLOCK.get());
+        simpleBlock(DEEPSLATE_SAPPHIRE_ORE_BLOCK.get());
+        simpleBlock(PERIDOT_ORE_BLOCK.get());
+        simpleBlock(DEEPSLATE_PERIDOT_ORE_BLOCK.get());
+        simpleBlock(TIN_ORE_BLOCK.get());
+        simpleBlock(DEEPSLATE_TIN_ORE_BLOCK.get());
+        simpleBlock(SILVER_ORE_BLOCK.get());
+        simpleBlock(DEEPSLATE_SILVER_ORE_BLOCK.get());
+        simpleBlock(ELECTROTINE_ORE_BLOCK.get());
+        simpleBlock(DEEPSLATE_ELECTROTINE_ORE_BLOCK.get());
 
         // Decorative blocks
-        simpleBlock(MARBLE_BLOCK);
-        simpleBlock(MARBLE_BRICK_BLOCK);
-        simpleBlock(BASALT_BLOCK);
-        simpleBlock(BASALT_COBBLE_BLOCK);
-        simpleBlock(BASALT_BRICK_BLOCK);
-        simpleBlock(RUBY_BLOCK);
-        simpleBlock(SAPPHIRE_BLOCK);
-        simpleBlock(PERIDOT_BLOCK);
-        simpleBlock(ELECTROTINE_BLOCK);
-        simpleBlock(RAW_TIN_BLOCK);
-        simpleBlock(RAW_SILVER_BLOCK);
-        simpleBlock(TIN_BLOCK);
-        simpleBlock(SILVER_BLOCK);
+        simpleBlock(MARBLE_BLOCK.get());
+        simpleBlock(MARBLE_BRICK_BLOCK.get());
+        simpleBlock(BASALT_BLOCK.get());
+        simpleBlock(BASALT_COBBLE_BLOCK.get());
+        simpleBlock(BASALT_BRICK_BLOCK.get());
+        simpleBlock(RUBY_BLOCK.get());
+        simpleBlock(SAPPHIRE_BLOCK.get());
+        simpleBlock(PERIDOT_BLOCK.get());
+        simpleBlock(ELECTROTINE_BLOCK.get());
+        simpleBlock(RAW_TIN_BLOCK.get());
+        simpleBlock(RAW_SILVER_BLOCK.get());
+        simpleBlock(TIN_BLOCK.get());
+        simpleBlock(SILVER_BLOCK.get());
 
         // Walls
-        wallBlock(MARBLE_WALL, blockTexture(MARBLE_BLOCK));
-        wallBlock(MARBLE_BRICK_WALL, blockTexture(MARBLE_BRICK_BLOCK));
-        wallBlock(BASALT_WALL, blockTexture(BASALT_BLOCK));
-        wallBlock(BASALT_COBBLE_WALL, blockTexture(BASALT_COBBLE_BLOCK));
-        wallBlock(BASALT_BRICK_WALL, blockTexture(BASALT_BRICK_BLOCK));
-        wallBlock(RUBY_BLOCK_WALL, blockTexture(RUBY_BLOCK));
-        wallBlock(SAPPHIRE_BLOCK_WALL, blockTexture(SAPPHIRE_BLOCK));
-        wallBlock(PERIDOT_BLOCK_WALL, blockTexture(PERIDOT_BLOCK));
-        wallBlock(ELECTROTINE_BLOCK_WALL, blockTexture(ELECTROTINE_BLOCK));
+        wallBlock(MARBLE_WALL.get(), blockTexture(MARBLE_BLOCK.get()));
+        wallBlock(MARBLE_BRICK_WALL.get(), blockTexture(MARBLE_BRICK_BLOCK.get()));
+        wallBlock(BASALT_WALL.get(), blockTexture(BASALT_BLOCK.get()));
+        wallBlock(BASALT_COBBLE_WALL.get(), blockTexture(BASALT_COBBLE_BLOCK.get()));
+        wallBlock(BASALT_BRICK_WALL.get(), blockTexture(BASALT_BRICK_BLOCK.get()));
+        wallBlock(RUBY_BLOCK_WALL.get(), blockTexture(RUBY_BLOCK.get()));
+        wallBlock(SAPPHIRE_BLOCK_WALL.get(), blockTexture(SAPPHIRE_BLOCK.get()));
+        wallBlock(PERIDOT_BLOCK_WALL.get(), blockTexture(PERIDOT_BLOCK.get()));
+        wallBlock(ELECTROTINE_BLOCK_WALL.get(), blockTexture(ELECTROTINE_BLOCK.get()));
     }
 }

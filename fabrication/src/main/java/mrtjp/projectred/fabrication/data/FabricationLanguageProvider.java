@@ -4,7 +4,9 @@ import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.MOD_ID;
-import static mrtjp.projectred.fabrication.init.FabricationReferences.*;
+import static mrtjp.projectred.fabrication.init.FabricationBlocks.*;
+import static mrtjp.projectred.fabrication.init.FabricationItems.*;
+import static mrtjp.projectred.fabrication.init.FabricationParts.FABRICATED_GATE_ITEM;
 import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class FabricationLanguageProvider extends LanguageProvider {
@@ -24,20 +26,20 @@ public class FabricationLanguageProvider extends LanguageProvider {
         // Creative tab
         add("itemGroup." + MOD_ID, "Project Red: Fabrication");
 
-        add(IC_WORKBENCH_BLOCK, "IC Workbench");
-        add(PLOTTING_TABLE_BLOCK, "Plotting Table");
-        add(LITHOGRAPHY_TABLE_BLOCK, "Lithography Table");
-        add(PACKAGING_TABLE_BLOCK, "Packaging Table");
+        add(IC_WORKBENCH_BLOCK.get(), "IC Workbench");
+        add(PLOTTING_TABLE_BLOCK.get(), "Plotting Table");
+        add(LITHOGRAPHY_TABLE_BLOCK.get(), "Lithography Table");
+        add(PACKAGING_TABLE_BLOCK.get(), "Packaging Table");
 
-        add(IC_BLUEPRINT_ITEM, "IC Blueprint");
-        add(BLANK_PHOTOMASK_ITEM, "Blank Photomask");
-        add(PHOTOMASK_SET_ITEM, "Photomask Set");
-        add(ROUGH_SILICON_WAFER_ITEM, "Rough Silicon Wafer");
-        add(ETCHED_SILICON_WAFER_ITEM, "Etched Silicon Wafer");
-        add(VALID_DIE_ITEM, "Valid Die");
-        add(INVALID_DIE_ITEM, "Invalid Die");
+        add(IC_BLUEPRINT_ITEM.get(), "IC Blueprint");
+        add(BLANK_PHOTOMASK_ITEM.get(), "Blank Photomask");
+        add(PHOTOMASK_SET_ITEM.get(), "Photomask Set");
+        add(ROUGH_SILICON_WAFER_ITEM.get(), "Rough Silicon Wafer");
+        add(ETCHED_SILICON_WAFER_ITEM.get(), "Etched Silicon Wafer");
+        add(VALID_DIE_ITEM.get(), "Valid Die");
+        add(INVALID_DIE_ITEM.get(), "Invalid Die");
 
-        add(FABRICATED_GATE_ITEM, "Fabricated Gate");
+        add(FABRICATED_GATE_ITEM.get(), "Fabricated Gate");
 
         add(UL_TAB_INFO, "Info");
         add(UL_TAB_EDIT, "Edit");

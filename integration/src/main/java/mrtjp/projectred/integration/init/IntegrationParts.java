@@ -3,7 +3,7 @@ package mrtjp.projectred.integration.init;
 import mrtjp.projectred.integration.GateType;
 
 import static mrtjp.projectred.integration.ProjectRedIntegration.ITEMS;
-import static mrtjp.projectred.integration.ProjectRedIntegration.PARTS;
+import static mrtjp.projectred.integration.ProjectRedIntegration.PART_TYPES;
 
 public class IntegrationParts {
 
@@ -45,7 +45,7 @@ public class IntegrationParts {
     public static void register() {
         for (GateType type : GateType.values()) {
             if (!type.isEnabled()) continue;
-            type.registerParts(PARTS, ITEMS);
+            type.registerParts(PART_TYPES, ITEMS);
         }
     }
 }

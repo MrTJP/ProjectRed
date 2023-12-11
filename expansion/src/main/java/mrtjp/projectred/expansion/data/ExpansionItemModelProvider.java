@@ -1,17 +1,18 @@
 package mrtjp.projectred.expansion.data;
 
 import codechicken.lib.datagen.ItemModelProvider;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
+import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
 import static mrtjp.projectred.expansion.init.ExpansionClientInit.ITEM_MODEL_PROPERTY_CHARGE_LEVEL;
 import static mrtjp.projectred.expansion.init.ExpansionClientInit.ITEM_MODEL_PROPERTY_WRITTEN_RECIPE_PLAN;
-import static mrtjp.projectred.expansion.init.ExpansionReferences.*;
+import static mrtjp.projectred.expansion.init.ExpansionItems.*;
 
 public class ExpansionItemModelProvider extends ItemModelProvider {
 
@@ -27,24 +28,24 @@ public class ExpansionItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
 
-        simpleItemBlock(PROJECT_BENCH_BLOCK);
-        simpleItemBlock(BATTERY_BOX_BLOCK);
-        simpleItemBlock(AUTO_CRAFTER_BLOCK);
-        simpleItemBlock(CHARGING_BENCH_BLOCK);
-        simpleItemBlock(FIRE_STARTER_BLOCK);
-        simpleItemBlock(FRAME_ACTUATOR_BLOCK);
+        simpleItemBlock(PROJECT_BENCH_BLOCK.get());
+        simpleItemBlock(BATTERY_BOX_BLOCK.get());
+        simpleItemBlock(AUTO_CRAFTER_BLOCK.get());
+        simpleItemBlock(CHARGING_BENCH_BLOCK.get());
+        simpleItemBlock(FIRE_STARTER_BLOCK.get());
+        simpleItemBlock(FRAME_ACTUATOR_BLOCK.get());
 
-        generated(FRAME_BLOCK).noTexture();
-        generated(FRAME_MOTOR_BLOCK).noTexture();
+        generated(FRAME_BLOCK.get()).noTexture();
+        generated(FRAME_MOTOR_BLOCK.get()).noTexture();
 
         generated(EMPTY_BATTERY_ITEM);
         generated(BATTERY_ITEM);
 
         handheld(ELECTRIC_SCREWDRIVER_ITEM);
 
-        writablePlanItem(RECIPE_PLAN_ITEM);
+        writablePlanItem(RECIPE_PLAN_ITEM.get());
 
-        chargeableItemBlock(BATTERY_BOX_BLOCK, 8);
+        chargeableItemBlock(BATTERY_BOX_BLOCK.get(), 8);
     }
 
     private void chargeableItemBlock(Block block, int chargeLevels) {

@@ -2,7 +2,7 @@ package mrtjp.projectred.expansion.block;
 
 import codechicken.lib.vec.Rotation;
 import mrtjp.projectred.core.block.ProjectRedBlock;
-import mrtjp.projectred.expansion.init.ExpansionReferences;
+import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import mrtjp.projectred.expansion.tile.ProjectBenchTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -28,7 +28,7 @@ public class ProjectBenchBlock extends ProjectRedBlock {
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return ExpansionReferences.PROJECT_BENCH_TILE;
+        return ExpansionBlocks.PROJECT_BENCH_TILE.get();
     }
 
     @Nullable
