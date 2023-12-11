@@ -11,6 +11,7 @@ import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 
@@ -72,7 +73,7 @@ public class FabricationBlockStateModelProvider extends BlockStateProvider {
     }
 
     private BlockModelBuilder createDomedMachineModelFileForBlock(Block block, int chargeState) {
-        String textureName = block.getRegistryName().getPath();
+        String textureName = ForgeRegistries.BLOCKS.getKey(block).getPath();
         String modelName = textureName + (chargeState > 0 ? "_state" + chargeState : "");
         return models()
                 .withExistingParent(modelName, modLoc("block/domed_machine"))
@@ -85,7 +86,7 @@ public class FabricationBlockStateModelProvider extends BlockStateProvider {
     }
 
     private BlockModelBuilder createICWorkbenchModel(Block block, boolean hasBlueprint) {
-        String textureName = block.getRegistryName().getPath();
+        String textureName = ForgeRegistries.BLOCKS.getKey(block).getPath();
         String suffix = hasBlueprint ? "" : "_empty";
         String modelName = textureName + suffix;
         return models().cube(modelName,

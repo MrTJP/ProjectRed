@@ -12,8 +12,6 @@ import mrtjp.projectred.fabrication.gui.ICRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +72,7 @@ public class MultipleDriversError extends CompileProblem {
 
     @Override
     public Component getName() {
-        return new TranslatableComponent(UL_MULTIPLE_DRIVERS_TITLE);
+        return Component.translatable(UL_MULTIPLE_DRIVERS_TITLE);
     }
 
     @Override
@@ -86,15 +84,15 @@ public class MultipleDriversError extends CompileProblem {
 
     @Override
     public void buildToolTip(List<Component> tooltip) {
-        tooltip.add(new TranslatableComponent(UL_MULTIPLE_DRIVERS_DESC).withStyle(UNIFORM_GRAY));
+        tooltip.add(Component.translatable(UL_MULTIPLE_DRIVERS_DESC).withStyle(UNIFORM_GRAY));
 
         StringBuilder s = new StringBuilder();
         for (int r : registerList) {
             s.append("R").append(r).append(", ");
         }
         s.delete(s.length() - 2, s.length()); // remove trailing comma
-        tooltip.add(new TextComponent("   ").withStyle(UNIFORM_GRAY).append(
-                new TextComponent(s.toString()).withStyle(UNIFORM_GRAY)));
+        tooltip.add(Component.literal("   ").withStyle(UNIFORM_GRAY).append(
+                Component.literal(s.toString()).withStyle(UNIFORM_GRAY)));
     }
 
     @Override

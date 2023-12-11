@@ -1,5 +1,6 @@
 package mrtjp.projectred.integration.client;
 
+import codechicken.lib.model.PerspectiveModelState;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.item.IItemRenderer;
 import codechicken.lib.util.TransformUtils;
@@ -9,8 +10,8 @@ import mrtjp.projectred.integration.item.GatePartItem;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public class GatePartItemRenderer implements IItemRenderer {
 
@@ -32,7 +33,7 @@ public class GatePartItemRenderer implements IItemRenderer {
     }
 
     @Override
-    public ModelState getModelTransform() {
+    public @Nullable PerspectiveModelState getModelState() {
         return TransformUtils.DEFAULT_BLOCK;
     }
 

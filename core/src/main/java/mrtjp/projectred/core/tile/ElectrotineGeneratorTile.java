@@ -12,7 +12,7 @@ import mrtjp.projectred.core.power.PowerConductor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -23,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
@@ -79,7 +80,7 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
         if (!getLevel().isClientSide) {
             ServerUtils.openContainer((ServerPlayer) player, new SimpleMenuProvider(
                             (id, inv, p) -> new ElectrotineGeneratorContainer(inv, this, id),
-                            new TranslatableComponent(getBlockState().getBlock().getDescriptionId())),
+                            getBlockState().getBlock().getName()),
                     p -> p.writePos(getBlockPos()));
         }
 
@@ -209,7 +210,7 @@ public class ElectrotineGeneratorTile extends BasePoweredTile implements ILowLoa
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (!this.remove && cap == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+        if (!this.remove && cap == ForgeCapabilities.ITEM_HANDLER) {
             return handler.cast();
         }
         return super.getCapability(cap, side);

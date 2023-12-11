@@ -20,10 +20,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import static mrtjp.projectred.core.part.IOrientableFacePart.flipMaskZ;
 import static mrtjp.projectred.integration.client.GateComponentModels.*;
@@ -122,7 +126,7 @@ public class GateModelRenderer {
     }
     //endregion
 
-    public void spawnParticles(GatePart part, Random random) {
+    public void spawnParticles(GatePart part, RandomSource random) {
         GateRenderer r = getRenderer(part.getGateType().ordinal());
         r.prepare(part);
         r.spawnParticles(part, random);
@@ -177,7 +181,7 @@ public class GateModelRenderer {
             renderModels(ccrs, reflect ? orient + 24 : orient, t);
         }
 
-        public void spawnParticles(GatePart gate, Random random) {
+        public void spawnParticles(GatePart gate, RandomSource random) {
             List<IRedstoneTorchComponentModel> torches = new LinkedList<>();
 
             for (ComponentModel m : getModels()) {

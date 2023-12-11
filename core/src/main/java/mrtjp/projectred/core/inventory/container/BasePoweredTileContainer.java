@@ -7,7 +7,7 @@ import net.minecraft.world.inventory.MenuType;
 
 import javax.annotation.Nullable;
 
-public class BasePoweredTileContainer extends AbstractContainerMenu {
+public abstract class BasePoweredTileContainer extends AbstractContainerMenu {
 
     private final BasePoweredTile tile;
 
@@ -23,10 +23,12 @@ public class BasePoweredTileContainer extends AbstractContainerMenu {
         addDataSlot(new SimpleDataSlot(() -> tile.getConductorFlow() >> 16 & 0xFFFF, value -> condFlow = condFlow & 0xFFFF | value << 16));
     }
 
-    @Override
-    public boolean stillValid(Player player) {
-        return !tile.isRemoved(); //TODO
-    }
+    // Needs to be implemented by subclass due to reobf bug
+    // TODO revisit in 1.20
+//    @Override
+//    public boolean stillValid(Player player) {
+//        return !tile.isRemoved();
+//    }
 
     public int getChargeScaled(int scale) {
         return Math.min(scale, scale * condCharge / 1000);

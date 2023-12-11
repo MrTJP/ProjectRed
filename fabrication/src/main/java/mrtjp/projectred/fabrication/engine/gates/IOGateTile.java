@@ -17,8 +17,6 @@ import mrtjp.projectred.fabrication.engine.log.MultipleDriversError;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -26,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
 import static mrtjp.projectred.fabrication.engine.PRFabricationEngine.*;
 import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
@@ -132,16 +129,16 @@ public class IOGateTile extends RedstoneGateTile implements IIOConnectionTile {
 
         switch (i) {
             case 0:
-                toolTip.add(new TranslatableComponent(UL_TOGGLE_STATE));
-                toolTip.add(new TextComponent(((getState() & 0x44) != 0 ? "0x1" : "0x0")).withStyle(ChatFormatting.GRAY));
+                toolTip.add(Component.translatable(UL_TOGGLE_STATE));
+                toolTip.add(Component.literal(((getState() & 0x44) != 0 ? "0x1" : "0x0")).withStyle(ChatFormatting.GRAY));
                 break;
             case 1:
-                toolTip.add(new TranslatableComponent(UL_TOGGLE_IO_MODE));
-                toolTip.add(new TranslatableComponent((isInputIOMode() ? UL_IO_MODE_INPUT : UL_IO_MODE_OUTPUT)).withStyle(ChatFormatting.GRAY));
+                toolTip.add(Component.translatable(UL_TOGGLE_IO_MODE));
+                toolTip.add(Component.translatable((isInputIOMode() ? UL_IO_MODE_INPUT : UL_IO_MODE_OUTPUT)).withStyle(ChatFormatting.GRAY));
                 break;
             case 2:
-                toolTip.add(new TranslatableComponent(UL_TOGGLE_COLOUR));
-                toolTip.add(new TranslatableComponent(EnumColour.values()[colour & 0xFF].getUnlocalizedName()).withStyle(ChatFormatting.GRAY));
+                toolTip.add(Component.translatable(UL_TOGGLE_COLOUR));
+                toolTip.add(Component.translatable(EnumColour.values()[colour & 0xFF].getUnlocalizedName()).withStyle(ChatFormatting.GRAY));
                 break;
             default:
         }

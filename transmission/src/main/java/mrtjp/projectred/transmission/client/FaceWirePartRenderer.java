@@ -18,13 +18,11 @@ public class FaceWirePartRenderer implements PartRenderer<BaseFaceWirePart> {
     public static final FaceWirePartRenderer INSTANCE = new FaceWirePartRenderer();
 
     @Override
-    public boolean renderStatic(BaseFaceWirePart part, @Nullable RenderType layer, CCRenderState ccrs) {
+    public void renderStatic(BaseFaceWirePart part, @Nullable RenderType layer, CCRenderState ccrs) {
         if (layer == null || (layer == RenderType.solid() && useStaticRenderer(part))) {
             ccrs.setBrightness(part.level(), part.pos());
             WireModelRenderer.render(ccrs, part);
-            return true;
         }
-        return false;
     }
 
     @Override

@@ -43,6 +43,7 @@ subprojects { p ->
         mavenLocal()
         maven { url = "https://proxy-maven.covers1624.net/" }
         maven { url = "https://squiddev.cc/maven/" }
+        maven { url = "https://maven.blamejared.com/" }
     }
 
     // Replace version tokens in mods.toml

@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Objects;
 
@@ -39,10 +40,10 @@ public class IlluminationClientInit {
         modelHelper.registerCallback(e -> {
             // Illumar lamp renderer
             for (int color = 0; color < 16; color++) {
-                ResourceLocation blockRL = Objects.requireNonNull(BlockLightType.ILLUMAR_LAMP.getBlock(color, true).getRegistryName());
+                ResourceLocation blockRL = Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(BlockLightType.ILLUMAR_LAMP.getBlock(color, true)));
                 // Override default BlockItem renderer for the lit variants to render lamp glow
-                BakedModel litModel = e.getModelRegistry().get(new ModelResourceLocation(blockRL, "lit=true"));
-                e.getModelRegistry().put(
+                BakedModel litModel = e.getModels().get(new ModelResourceLocation(blockRL, "lit=true"));
+                e.getModels().put(
                         new ModelResourceLocation(blockRL, "inventory"),
                         new IllumarLampItemRenderer(litModel));
             }

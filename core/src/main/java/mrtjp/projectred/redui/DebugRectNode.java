@@ -7,7 +7,7 @@ import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.lib.Size;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Collections;
@@ -47,7 +47,7 @@ public class DebugRectNode extends AbstractGuiNode {
         GuiComponent.fill(stack, cursorRect.x(), cursorRect.y(), cursorRect.maxX(), cursorRect.maxY(), EnumColour.WHITE.argb(clickDown ? 150 : 50));
 
         // Tooltip showing name
-        renderTooltip(stack, mouse, Collections.singletonList(new TextComponent(name)));
+        renderTooltip(stack, mouse, Collections.singletonList(Component.literal(name)));
     }
 
     @Override

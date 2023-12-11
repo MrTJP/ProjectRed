@@ -4,7 +4,6 @@ import mrtjp.projectred.expansion.ProjectRedExpansion;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +28,7 @@ public class RecipePlanItem extends Item {
 
         if (RecipePlanItem.hasRecipeInside(stack)) {
             ItemStack output = RecipePlanItem.loadPlanOutput(stack);
-            tooltip.add(new TextComponent(UL_PLAN_RESULT).append(": " + output.getDisplayName().getString()).withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable(UL_PLAN_RESULT).append(": " + output.getDisplayName().getString()).withStyle(ChatFormatting.GRAY));
         }
     }
 

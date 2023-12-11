@@ -9,7 +9,6 @@ import mrtjp.fengine.TileCoord;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class NoOutputsError extends CompileProblem {
 
     @Override
     public Component getName() {
-        return new TranslatableComponent(UL_NO_OUTPUTS_TITLE);
+        return Component.translatable(UL_NO_OUTPUTS_TITLE);
     }
 
     @Override
@@ -51,7 +50,7 @@ public class NoOutputsError extends CompileProblem {
 
     @Override
     public void buildToolTip(List<Component> tooltip) {
-        tooltip.add(new TranslatableComponent(UL_NO_OUTPUTS_DESC).withStyle(UNIFORM_GRAY));
+        tooltip.add(Component.translatable(UL_NO_OUTPUTS_DESC).withStyle(UNIFORM_GRAY));
     }
 
     @Override

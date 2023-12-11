@@ -45,6 +45,12 @@ public class ChargingBenchContainer extends BasePoweredTileContainer {
     }
 
     @Override
+    public boolean stillValid(Player player) {
+        //TODO move to superclass once reobf bug is fixed
+        return !tile.isRemoved();
+    }
+
+    @Override
     public ItemStack quickMoveStack(Player player, int slotIndex) {
 
         Slot slot = slots.get(slotIndex);

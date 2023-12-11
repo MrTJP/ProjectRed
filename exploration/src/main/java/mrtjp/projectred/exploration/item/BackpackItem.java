@@ -8,8 +8,6 @@ import mrtjp.projectred.exploration.inventory.container.BackpackContainer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -66,7 +64,7 @@ public class BackpackItem extends Item {
     private void openGui(ServerPlayer player) {
         ServerUtils.openContainer(player,
                 new SimpleMenuProvider((windowId, playerInventory, playerEntity) -> new BackpackContainer(windowId, playerInventory),
-                        new TranslatableComponent(this.getDescriptionId())));
+                        Component.translatable(this.getDescriptionId())));
     }
 
     @Override
@@ -74,7 +72,7 @@ public class BackpackItem extends Item {
         if (isBackpackOpened(stack)) return;
 
         int itemCount = getBackpackItemCount(stack);
-        tooltip.add(new TextComponent(itemCount + " / 27").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.literal(itemCount + " / 27").withStyle(ChatFormatting.GRAY));
     }
 
     public DyeColor getDyeColor() {

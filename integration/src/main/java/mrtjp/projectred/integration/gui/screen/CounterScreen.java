@@ -9,7 +9,7 @@ import mrtjp.projectred.integration.part.GatePart;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.ButtonNode;
 import mrtjp.projectred.redui.RedUIScreen;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Objects;
@@ -24,7 +24,7 @@ public class CounterScreen extends RedUIScreen {
     private final ComplexGatePart.ICounterGuiLogic counterGate;
 
     public CounterScreen(GatePart gate) {
-        super(256, 145, new TextComponent(Objects.requireNonNull(gate.getType().getRegistryName()).toString()));
+        super(256, 145, Component.translatable(gate.getType().getRegistryName().toString()));
         this.gate = gate;
         this.counterGate = (ComplexGatePart.ICounterGuiLogic) gate;
 

@@ -15,12 +15,12 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -33,7 +33,7 @@ public class ProjectRedIllumination {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MOD_ID);
     public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
 
     public static final SimpleCreativeTab ILLUMINATION_GROUP = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(BlockLightType.ILLUMAR_LAMP.getBlock(EnumColour.RED.ordinal(), true)));
@@ -68,14 +68,11 @@ public class ProjectRedIllumination {
         DataGenerator generator = event.getGenerator();
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
 
-        if (event.includeClient()) {
-            generator.addProvider(new IlluminationBlockStateModelProvider(generator, fileHelper));
-            generator.addProvider(new IlluminationItemModelProvider(generator, fileHelper));
-            generator.addProvider(new IlluminationLanguageProvider(generator));
-        }
-        if (event.includeServer()) {
-            generator.addProvider(new IlluminationBlockLootProvider(generator));
-            generator.addProvider(new IlluminationRecipeProvider(generator));
-        }
+        generator.addProvider(event.includeClient(), new IlluminationBlockStateModelProvider(generator, fileHelper));
+        generator.addProvider(event.includeClient(), new IlluminationItemModelProvider(generator, fileHelper));
+        generator.addProvider(event.includeClient(), new IlluminationLanguageProvider(generator));
+
+        generator.addProvider(event.includeServer(), new IlluminationBlockLootProvider(generator));
+        generator.addProvider(event.includeServer(), new IlluminationRecipeProvider(generator));
     }
 }

@@ -250,7 +250,7 @@ public class HaloRenderer {
     }
 
     private static boolean isFabulous() {
-        return Configurator.fabulousLights && Minecraft.getInstance().options.graphicsMode.getId() >= GraphicsStatus.FABULOUS.getId();
+        return Configurator.fabulousLights && Minecraft.getInstance().options.graphicsMode().get().getId() >= GraphicsStatus.FABULOUS.getId();
     }
     //endregion
 

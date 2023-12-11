@@ -19,8 +19,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 
@@ -118,27 +116,27 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
         // Progress text
         ICCompilerLog log = editor.getStateMachine().getCompilerLog();
         getRoot().getFontRenderer().draw(stack,
-                new TranslatableComponent(editor.getStateMachine().isCompiling() ? UL_COMPILE_PROGRESS : UL_COMPILE_DONE, log.getCompletedSteps(), log.getTotalSteps())
+                Component.translatable(editor.getStateMachine().isCompiling() ? UL_COMPILE_PROGRESS : UL_COMPILE_DONE, log.getCompletedSteps(), log.getTotalSteps())
                         .withStyle(UNIFORM_DARK_GRAY),
                 getFrame().x() + 208, getFrame().y() + 42, EnumColour.GRAY.argb());
 
         // Error Count
         Component errorText = log.getErrorCount() == 0 ?
-                new TextComponent("<!> ")
-                        .append(new TranslatableComponent(UL_NO_ERRORS))
+                Component.literal("<!> ")
+                        .append(Component.translatable(UL_NO_ERRORS))
                         .withStyle(UNIFORM_DARK_GRAY) :
-                new TextComponent("<!> ")
+                Component.literal("<!> ")
                         .withStyle(ICWorkbenchEditor.UNIFORM_RED)
-                        .append(new TranslatableComponent(UL_UNIT_ERRORS, log.getErrorCount())
+                        .append(Component.translatable(UL_UNIT_ERRORS, log.getErrorCount())
                                 .withStyle(UNIFORM_DARK_GRAY));
 
         Component warningText = log.getWarningCount() == 0 ?
-                new TextComponent("<!> ")
-                        .append(new TranslatableComponent(UL_NO_WARNINGS))
+                Component.literal("<!> ")
+                        .append(Component.translatable(UL_NO_WARNINGS))
                         .withStyle(UNIFORM_DARK_GRAY) :
-                new TextComponent("<!> ")
+                Component.literal("<!> ")
                         .withStyle(ICWorkbenchEditor.UNIFORM_YELLOW)
-                        .append(new TranslatableComponent(UL_UNIT_WARNINGS, log.getWarningCount())
+                        .append(Component.translatable(UL_UNIT_WARNINGS, log.getWarningCount())
                                 .withStyle(UNIFORM_DARK_GRAY));
 
         getRoot().getFontRenderer().draw(stack, errorText, getFrame().x() + 208, getFrame().y() + 52, EnumColour.GRAY.argb());
@@ -255,21 +253,21 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
     //region Utilities
     public static void appendProblemsInfo(ICCompilerLog log, List<Component> tooltip) {
         Component errorText = log.getErrorCount() == 0 ?
-                new TextComponent("<!> ")
-                        .append(new TranslatableComponent(UL_NO_ERRORS))
+                Component.literal("<!> ")
+                        .append(Component.translatable(UL_NO_ERRORS))
                         .withStyle(UNIFORM_GRAY) :
-                new TextComponent("<!> ")
+                Component.literal("<!> ")
                         .withStyle(UNIFORM_RED)
-                        .append(new TranslatableComponent(UL_UNIT_ERRORS, log.getErrorCount())
+                        .append(Component.translatable(UL_UNIT_ERRORS, log.getErrorCount())
                                 .withStyle(UNIFORM_GRAY));
 
         Component warningText = log.getWarningCount() == 0 ?
-                new TextComponent("<!> ")
-                        .append(new TranslatableComponent(UL_NO_WARNINGS))
+                Component.literal("<!> ")
+                        .append(Component.translatable(UL_NO_WARNINGS))
                         .withStyle(UNIFORM_GRAY) :
-                new TextComponent("<!> ")
+                Component.literal("<!> ")
                         .withStyle(ICWorkbenchEditor.UNIFORM_YELLOW)
-                        .append(new TranslatableComponent(UL_UNIT_WARNINGS, log.getWarningCount())
+                        .append(Component.translatable(UL_UNIT_WARNINGS, log.getWarningCount())
                                 .withStyle(UNIFORM_GRAY));
 
         tooltip.add(errorText);
@@ -314,9 +312,9 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
 
         @Override
         protected void buildTooltip(List<Component> tooltip) {
-            tooltip.add(new TranslatableComponent(UL_COMPILE));
+            tooltip.add(Component.translatable(UL_COMPILE));
             if (editor.getStateMachine().canTriggerCompile()) {
-                tooltip.add(new TranslatableComponent(UL_COMPILE_READY).withStyle(UNIFORM_GRAY));
+                tooltip.add(Component.translatable(UL_COMPILE_READY).withStyle(UNIFORM_GRAY));
             }
         }
     }
@@ -340,12 +338,12 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
 
         @Override
         protected void buildTooltip(List<Component> tooltip) {
-            tooltip.add(new TranslatableComponent(UL_AUTO_COMPILE));
-            tooltip.add(new TranslatableComponent(UL_AUTO_COMPILE_DESCRIPTION).withStyle(UNIFORM_GRAY));
+            tooltip.add(Component.translatable(UL_AUTO_COMPILE));
+            tooltip.add(Component.translatable(UL_AUTO_COMPILE_DESCRIPTION).withStyle(UNIFORM_GRAY));
             if (isDisabled()) {
-                tooltip.add(new TextComponent("<!> ")
+                tooltip.add(Component.literal("<!> ")
                         .withStyle(UNIFORM_RED)
-                        .append(new TranslatableComponent(UL_AUTO_COMPILE_DISABLED)
+                        .append(Component.translatable(UL_AUTO_COMPILE_DISABLED)
                                 .withStyle(UNIFORM_GRAY)));
             }
         }

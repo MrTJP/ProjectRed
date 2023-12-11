@@ -11,12 +11,12 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
@@ -60,12 +60,9 @@ public class ProjectRedIntegration {
         DataGenerator generator = event.getGenerator();
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
 
-        if (event.includeClient()) {
-            generator.addProvider(new IntegrationItemModelProvider(generator, fileHelper));
-            generator.addProvider(new IntegrationLanguageProvider(generator));
-        }
-        if (event.includeServer()) {
-            generator.addProvider(new IntegrationRecipeProvider(generator));
-        }
+        generator.addProvider(event.includeClient(), new IntegrationItemModelProvider(generator, fileHelper));
+        generator.addProvider(event.includeClient(), new IntegrationLanguageProvider(generator));
+
+        generator.addProvider(event.includeServer(), new IntegrationRecipeProvider(generator));
     }
 }

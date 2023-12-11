@@ -2,19 +2,19 @@ package mrtjp.projectred.exploration.init;
 
 import codechicken.microblock.api.BlockMicroMaterial;
 import codechicken.microblock.api.MicroMaterial;
+import codechicken.microblock.util.MicroMaterialRegistry;
 import mrtjp.projectred.exploration.block.ElectrotineOreBlock;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.OreBlock;
+import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.*;
@@ -99,13 +99,6 @@ public class ExplorationBlocks {
     public static RegistryObject<WallBlock> PERIDOT_BLOCK_WALL;
     public static RegistryObject<WallBlock> ELECTROTINE_BLOCK_WALL;
 
-
-//    // Direct references needed for early init and worldgen
-//    public static RegistryObject<Block> MARBLE_BLOCK;
-//    public static RegistryObject<Block> MARBLE_BRICK_BLOCK;
-//    public static RegistryObject<Block> BASALT_BLOCK;
-//    public static RegistryObject<Block> BASALT_COBBLE_BLOCK;
-//    public static RegistryObject<Block> BASALT_BRICK_BLOCK;
 
     public static void register() {
 
@@ -192,21 +185,27 @@ public class ExplorationBlocks {
         ITEMS.register(ID_ELECTROTINE_BLOCK_WALL, () -> createBlockItem(ELECTROTINE_BLOCK_WALL));
     }
 
-    public static void onRegisterMicroMaterials(RegistryEvent.Register<MicroMaterial> event) {
-        IForgeRegistry<MicroMaterial> r = event.getRegistry();
-        r.register(new BlockMicroMaterial(MARBLE_BLOCK.get()));
-        r.register(new BlockMicroMaterial(MARBLE_BRICK_BLOCK.get()));
-        r.register(new BlockMicroMaterial(BASALT_BLOCK.get()));
-        r.register(new BlockMicroMaterial(BASALT_COBBLE_BLOCK.get()));
-        r.register(new BlockMicroMaterial(BASALT_BRICK_BLOCK.get()));
-        r.register(new BlockMicroMaterial(RUBY_BLOCK.get()));
-        r.register(new BlockMicroMaterial(SAPPHIRE_BLOCK.get()));
-        r.register(new BlockMicroMaterial(PERIDOT_BLOCK.get()));
-        r.register(new BlockMicroMaterial(ELECTROTINE_BLOCK.get()));
+    public static void onRegisterMicroMaterials(RegisterEvent event) {
+
+        event.register(MicroMaterialRegistry.MICRO_MATERIALS.getRegistryKey(), r -> {
+            registerBlockMicro(r, new BlockMicroMaterial(MARBLE_BLOCK.get()));
+            registerBlockMicro(r, new BlockMicroMaterial(MARBLE_BRICK_BLOCK.get()));
+            registerBlockMicro(r, new BlockMicroMaterial(BASALT_BLOCK.get()));
+            registerBlockMicro(r, new BlockMicroMaterial(BASALT_COBBLE_BLOCK.get()));
+            registerBlockMicro(r, new BlockMicroMaterial(BASALT_BRICK_BLOCK.get()));
+            registerBlockMicro(r, new BlockMicroMaterial(RUBY_BLOCK.get()));
+            registerBlockMicro(r, new BlockMicroMaterial(SAPPHIRE_BLOCK.get()));
+            registerBlockMicro(r, new BlockMicroMaterial(PERIDOT_BLOCK.get()));
+            registerBlockMicro(r, new BlockMicroMaterial(ELECTROTINE_BLOCK.get()));
+        });
+    }
+
+    private static void registerBlockMicro(RegisterEvent.RegisterHelper<MicroMaterial> r, BlockMicroMaterial material) {
+        r.register(BlockMicroMaterial.makeMaterialKey(material.state), material);
     }
 
     private static Block createOreBlock(boolean isDeepslate, int minxp, int maxxp) {
-        return new OreBlock(BlockBehaviour.Properties.of(Material.STONE)
+        return new DropExperienceBlock(BlockBehaviour.Properties.of(Material.STONE)
                 .strength(isDeepslate ? 4.5F : 3.0F, 3.0F)
                 .requiresCorrectToolForDrops()
                 .color(isDeepslate ? MaterialColor.DEEPSLATE : MaterialColor.STONE)

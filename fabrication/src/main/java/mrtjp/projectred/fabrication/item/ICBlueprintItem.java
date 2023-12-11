@@ -8,8 +8,6 @@ import mrtjp.projectred.integration.GateType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -64,46 +62,46 @@ public class ICBlueprintItem extends Item {
         if (blueprintTag == null) return;
 
         if (!hasFabricationTarget(blueprintTag)) {
-            tooltipList.add(new TextComponent("<!> ").withStyle(ChatFormatting.RED)
-                    .append(new TranslatableComponent(UL_CORRUPTED_DISCARD).withStyle(ChatFormatting.GRAY)));
+            tooltipList.add(Component.literal("<!> ").withStyle(ChatFormatting.RED)
+                    .append(Component.translatable(UL_CORRUPTED_DISCARD).withStyle(ChatFormatting.GRAY)));
             return;
         }
 
-        tooltipList.add(new TranslatableComponent(UL_NAME).append(": " + blueprintTag.getString(KEY_IC_NAME)).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(new TranslatableComponent(UL_TILE_COUNT).append(": " + blueprintTag.getInt(KEY_TILE_COUNT)).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(new TranslatableComponent(UL_IO_TYPES).append(": ").withStyle(ChatFormatting.GRAY));
+        tooltipList.add(Component.translatable(UL_NAME).append(": " + blueprintTag.getString(KEY_IC_NAME)).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(Component.translatable(UL_TILE_COUNT).append(": " + blueprintTag.getInt(KEY_TILE_COUNT)).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(Component.translatable(UL_IO_TYPES).append(": ").withStyle(ChatFormatting.GRAY));
 
         InterfaceSpec spec = getInterfaceSpec(blueprintTag);
-        TextComponent indent = new TextComponent("  ");
-        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_TOP)).append(": ").append(new TranslatableComponent(spec.getInterfaceType(0).getUnlocalName())).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_RIGHT)).append(": ").append(new TranslatableComponent(spec.getInterfaceType(1).getUnlocalName())).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_BOTTOM)).append(": ").append(new TranslatableComponent(spec.getInterfaceType(2).getUnlocalName())).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(indent.copy().append(new TranslatableComponent(UL_LEFT)).append(": ").append(new TranslatableComponent(spec.getInterfaceType(3).getUnlocalName())).withStyle(ChatFormatting.GRAY));
+        Component indent = Component.literal("  ");
+        tooltipList.add(indent.copy().append(Component.translatable(UL_TOP)).append(": ").append(Component.translatable(spec.getInterfaceType(0).getUnlocalName())).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(indent.copy().append(Component.translatable(UL_RIGHT)).append(": ").append(Component.translatable(spec.getInterfaceType(1).getUnlocalName())).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(indent.copy().append(Component.translatable(UL_BOTTOM)).append(": ").append(Component.translatable(spec.getInterfaceType(2).getUnlocalName())).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(indent.copy().append(Component.translatable(UL_LEFT)).append(": ").append(Component.translatable(spec.getInterfaceType(3).getUnlocalName())).withStyle(ChatFormatting.GRAY));
 
-        tooltipList.add(new TranslatableComponent(UL_INPUT_MASK).append(String.format(": 0x%X", spec.getInputMask())).withStyle(ChatFormatting.GRAY));
-        tooltipList.add(new TranslatableComponent(UL_OUTPUT_MASK).append(String.format(": 0x%X", spec.getOutputMask())).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(Component.translatable(UL_INPUT_MASK).append(String.format(": 0x%X", spec.getInputMask())).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(Component.translatable(UL_OUTPUT_MASK).append(String.format(": 0x%X", spec.getOutputMask())).withStyle(ChatFormatting.GRAY));
 
         int warningCount = getWarningCount(blueprintTag);
         int errorCount = getErrorCount(blueprintTag);
         if (warningCount > 0) {
-            tooltipList.add(new TextComponent("<!> ").withStyle(ChatFormatting.YELLOW)
-                    .append(new TranslatableComponent(UL_UNIT_WARNINGS, warningCount).withStyle(ChatFormatting.GRAY)));
+            tooltipList.add(Component.literal("<!> ").withStyle(ChatFormatting.YELLOW)
+                    .append(Component.translatable(UL_UNIT_WARNINGS, warningCount).withStyle(ChatFormatting.GRAY)));
         }
         if (errorCount > 0) {
-            tooltipList.add(new TextComponent("<!> ").withStyle(ChatFormatting.RED)
-                    .append(new TranslatableComponent(UL_UNIT_ERRORS, errorCount).withStyle(ChatFormatting.GRAY)));
+            tooltipList.add(Component.literal("<!> ").withStyle(ChatFormatting.RED)
+                    .append(Component.translatable(UL_UNIT_ERRORS, errorCount).withStyle(ChatFormatting.GRAY)));
         }
 
         if (!canFabricate(blueprintTag)) {
-            tooltipList.add(new TextComponent(" - ")
-                    .append(new TranslatableComponent(UL_CANNOT_FABRICATE)).withStyle(ChatFormatting.RED));
+            tooltipList.add(Component.literal(" - ")
+                    .append(Component.translatable(UL_CANNOT_FABRICATE)).withStyle(ChatFormatting.RED));
         }
     }
 
-    private static TranslatableComponent getBundledIOTextComponent(byte bmask, int r) {
+    private static Component getBundledIOTextComponent(byte bmask, int r) {
         int i = 0x01 << r;
         int o = 0x10 << r;
-        return new TranslatableComponent((bmask & i) != 0 ? UL_BUNDLED_INPUT : (bmask & o) != 0 ? UL_BUNDLED_OUTPUT : UL_IO_NONE);
+        return Component.translatable((bmask & i) != 0 ? UL_BUNDLED_INPUT : (bmask & o) != 0 ? UL_BUNDLED_OUTPUT : UL_IO_NONE);
     }
 
     public static ItemStack createPhotomaskStack(ItemStack blueprintStack) {

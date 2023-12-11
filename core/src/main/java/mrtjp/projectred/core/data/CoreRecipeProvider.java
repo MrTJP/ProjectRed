@@ -11,7 +11,9 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.crafting.NBTIngredient;
+import net.minecraftforge.common.crafting.StrictNBTIngredient;
+
+import java.util.Objects;
 
 import static mrtjp.projectred.core.init.CoreBlocks.ELECTROTINE_GENERATOR_BLOCK;
 import static mrtjp.projectred.core.init.CoreItems.*;
@@ -199,8 +201,8 @@ public class CoreRecipeProvider extends RecipeProvider {
         }
 
         shapedRecipe(DRAW_PLATE_ITEM.get())
-                .key('I', NBTIngredient.of(ItemMicroBlock.create(3, 2, MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.IRON_BLOCK.defaultBlockState())))))
-                .key('D', NBTIngredient.of(ItemMicroBlock.create(0, 2, MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.DIAMOND_BLOCK.defaultBlockState())))))
+                .key('I', StrictNBTIngredient.of(ItemMicroBlock.create(3, 2, Objects.requireNonNull(MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.IRON_BLOCK.defaultBlockState()))))))
+                .key('D', StrictNBTIngredient.of(ItemMicroBlock.create(0, 2, Objects.requireNonNull(MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.DIAMOND_BLOCK.defaultBlockState()))))))
                 .patternLine(" I ")
                 .patternLine("IDI")
                 .patternLine(" I ");

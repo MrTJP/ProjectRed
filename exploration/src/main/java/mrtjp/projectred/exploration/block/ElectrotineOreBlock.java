@@ -5,7 +5,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.util.RandomSource;
+import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -15,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.OreBlock;
+import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -28,14 +29,14 @@ import java.util.Random;
 /**
  * All methods lifted straight from RedstoneOreBlock
  */
-public class ElectrotineOreBlock extends OreBlock {
+public class ElectrotineOreBlock extends DropExperienceBlock {
 
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
     public static final DustParticleOptions ELECTROTINE_PARTICLE = new DustParticleOptions(
             new Vector3f(15 / 255F, 103 / 255F, 178 / 255F), 0.6F);
 
-    public ElectrotineOreBlock(BlockBehaviour.Properties properties, UniformInt xpRange) {
+    public ElectrotineOreBlock(BlockBehaviour.Properties properties, IntProvider xpRange) {
         super(properties.lightLevel(s -> s.getValue(LIT) ? 9 : 0), xpRange);
 
         registerDefaultState(defaultBlockState().setValue(LIT, false));
@@ -82,7 +83,7 @@ public class ElectrotineOreBlock extends OreBlock {
     }
 
     @Override
-    public void animateTick(BlockState state, Level world, BlockPos pos, Random random) {
+    public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
         if (state.getValue(LIT)) {
             spawnParticles(world, pos);
         }
@@ -90,7 +91,7 @@ public class ElectrotineOreBlock extends OreBlock {
 
     private static void spawnParticles(Level world, BlockPos pos) {
         double d0 = 0.5625D;
-        Random random = world.random;
+        RandomSource random = world.random;
 
         for (Direction direction : Direction.values()) {
             BlockPos blockpos = pos.relative(direction);

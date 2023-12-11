@@ -26,7 +26,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
@@ -1498,7 +1497,7 @@ public class GateComponentModels {
 
         public void renderName(String name, PoseStack mStack, Transformation t1) {
 
-            Component nameComponent = new TextComponent(name).withStyle(UNIFORM);
+            Component nameComponent = Component.literal(name).withStyle(UNIFORM);
             Font fr = Minecraft.getInstance().font;
 
             // Calculate font scale

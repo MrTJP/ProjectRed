@@ -12,6 +12,7 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import static mrtjp.projectred.fabrication.init.FabricationMenus.*;
 
@@ -32,7 +33,7 @@ public class FabricationClientInit {
 
         // Register models
         ModelRegistryHelper modelRegistryHelper = new ModelRegistryHelper();
-        modelRegistryHelper.register(new ModelResourceLocation(FabricationParts.FABRICATED_GATE_ITEM.get().getRegistryName(), "inventory"), GatePartItemRenderer.INSTANCE);
+        modelRegistryHelper.register(new ModelResourceLocation(ForgeRegistries.ITEMS.getKey(FabricationParts.FABRICATED_GATE_ITEM.get()), "inventory"), GatePartItemRenderer.INSTANCE);
 
         // Register screens
         MenuScreens.register(PLOTTING_TABLE_CONTAINER.get(), PlottingTableScreen::new);

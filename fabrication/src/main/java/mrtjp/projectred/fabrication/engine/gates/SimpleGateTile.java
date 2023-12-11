@@ -4,7 +4,6 @@ import codechicken.lib.vec.*;
 import mrtjp.fengine.simulate.ICGate;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -78,7 +77,7 @@ public abstract class SimpleGateTile extends SidedRedstoneGateTile {
     public void buildInteractionToolTip(List<Component> toolTip, int i) {
 
         boolean isEnabled = (getShape() & (1 << (i-1))) == 0;
-        toolTip.add(new TranslatableComponent(isEnabled ? UL_SIDE_ENABLED : UL_SIDE_DISABLED));
+        toolTip.add(Component.translatable(isEnabled ? UL_SIDE_ENABLED : UL_SIDE_DISABLED));
     }
 
     @Override

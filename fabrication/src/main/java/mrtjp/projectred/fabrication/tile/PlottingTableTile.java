@@ -13,7 +13,6 @@ import mrtjp.projectred.fabrication.item.ICBlueprintItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
@@ -82,7 +81,7 @@ public class PlottingTableTile extends FabricationMachineTile {
     public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
         if (!getLevel().isClientSide) {
             ServerUtils.openContainer((ServerPlayer) player,
-                    new SimpleMenuProvider((id, inv, p) -> new PlottingTableContainer(inv, this, id), new TranslatableComponent(getBlockState().getBlock().getDescriptionId())),
+                    new SimpleMenuProvider((id, inv, p) -> new PlottingTableContainer(inv, this, id), getBlockState().getBlock().getName()),
                     p -> p.writePos(getBlockPos()));
         }
 

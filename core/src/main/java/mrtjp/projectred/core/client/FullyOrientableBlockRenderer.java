@@ -1,10 +1,12 @@
 package mrtjp.projectred.core.client;
 
+import codechicken.lib.model.PerspectiveModelState;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.block.ICCBlockRenderer;
 import codechicken.lib.render.buffer.TransformingVertexConsumer;
 import codechicken.lib.render.item.IItemRenderer;
+import codechicken.lib.util.TransformUtils;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
@@ -17,15 +19,14 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 /**
  * Needs to exist because Vanilla's default {@link ConfiguredModel} only supports a single x rotation and y rotation,
@@ -62,14 +63,13 @@ public abstract class FullyOrientableBlockRenderer implements ICCBlockRenderer, 
     //endregion
 
     @Override
-    public boolean renderBlock(BlockState state, BlockPos pos, BlockAndTintGetter world, PoseStack mStack, VertexConsumer builder, Random random, IModelData data) {
+    public void renderBlock(BlockState state, BlockPos pos, BlockAndTintGetter world, PoseStack mStack, VertexConsumer builder, RandomSource random, ModelData data, @Nullable RenderType renderType) {
         CCRenderState ccrs = CCRenderState.instance();
         ccrs.reset();
         ccrs.bind(new TransformingVertexConsumer(builder, mStack), DefaultVertexFormat.BLOCK);
         ccrs.lightMatrix.locate(world, pos);
 
-        render(ccrs, MinecraftForgeClient.getRenderType(), getBlockRenderData(state, pos, world));
-        return true;
+        render(ccrs, renderType, getBlockRenderData(state, pos, world));
     }
 
     @Override
@@ -104,6 +104,6 @@ public abstract class FullyOrientableBlockRenderer implements ICCBlockRenderer, 
 //    @Override public boolean useAmbientOcclusion() { return true; }
 //    @Override public boolean isGui3d() { return true; }
 //    @Override public boolean usesBlockLight() { return true; }
-//    @Override public ModelState getModelTransform() { return TransformUtils.DEFAULT_BLOCK; }
+//    @Override public @Nullable PerspectiveModelState getModelState() { return TransformUtils.DEFAULT_BLOCK; }
 //    //@formatter:on
 }

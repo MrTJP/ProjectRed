@@ -2,6 +2,7 @@ package mrtjp.projectred.illumination;
 
 import codechicken.lib.colour.Colour;
 import codechicken.lib.colour.EnumColour;
+import codechicken.lib.model.PerspectiveModelState;
 import codechicken.lib.raytracer.VoxelShapeCache;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
@@ -24,7 +25,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -120,7 +120,7 @@ public abstract class MultipartLightProperties {
             }
 
             //@formatter:off
-            @Override public ModelState getModelTransform() { return TransformUtils.DEFAULT_BLOCK; }
+            @Override public PerspectiveModelState getModelState() { return TransformUtils.DEFAULT_BLOCK; }
             @Override public boolean useAmbientOcclusion() { return false; }
             @Override public boolean isGui3d() { return true; }
             @Override public boolean usesBlockLight() { return true; }

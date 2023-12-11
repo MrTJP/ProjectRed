@@ -15,7 +15,7 @@ import mrtjp.projectred.fabrication.item.ValidDieItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
@@ -93,7 +93,7 @@ public class PackagingTableTile extends FabricationMachineTile implements IPacke
     public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
         if (!getLevel().isClientSide) {
             ServerUtils.openContainer((ServerPlayer) player,
-                    new SimpleMenuProvider((id, inv, p) -> new PackagingTableContainer(inv, this, id), new TranslatableComponent(getBlockState().getBlock().getDescriptionId())),
+                    new SimpleMenuProvider((id, inv, p) -> new PackagingTableContainer(inv, this, id), getBlockState().getBlock().getName()),
                     p -> p.writePos(getBlockPos()));
         }
 

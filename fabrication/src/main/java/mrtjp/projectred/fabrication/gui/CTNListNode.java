@@ -9,7 +9,6 @@ import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.redui.AbstractGuiNode;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -93,11 +92,11 @@ public class CTNListNode extends AbstractGuiNode {
             if (!isFirstHit(mouse)) return;
 
             List<Component> toolTip = new LinkedList<>();
-            toolTip.add(new TextComponent(node.step.toString())); //TODO localize
-            toolTip.add(new TextComponent("Positions: " + node.tileCoords.size()));
-            toolTip.add(new TextComponent("Registers: " + node.registerIds.size()));
-            toolTip.add(new TextComponent("Gates: " + node.gateIds.size()));
-            toolTip.add(new TextComponent("Remaps: " + node.registerRemaps.size()));
+            toolTip.add(Component.literal(node.step.toString())); //TODO localize
+            toolTip.add(Component.literal("Positions: " + node.tileCoords.size()));
+            toolTip.add(Component.literal("Registers: " + node.registerIds.size()));
+            toolTip.add(Component.literal("Gates: " + node.gateIds.size()));
+            toolTip.add(Component.literal("Remaps: " + node.registerRemaps.size()));
 
             renderTooltip(stack, mouse, toolTip);
         }

@@ -19,7 +19,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.List;
 
@@ -37,7 +36,7 @@ public class WirePlacerToolTab extends ICEditorToolTab {
 
     private void addWireButton(ICWireTileType type, boolean fullRow) {
         ButtonController buttonController = new ButtonController() {
-            @Override public void getTooltip(List<Component> tooltip) { tooltip.add(new TranslatableComponent(type.tileType.getUnlocalizedName())); }
+            @Override public void getTooltip(List<Component> tooltip) { tooltip.add(Component.translatable(type.tileType.getUnlocalizedName())); }
             @Override public void onClick() { tool.setWireType(type); }
             @Override public boolean isSelected() { return tool.getWireType() == type; }
 
@@ -104,7 +103,7 @@ public class WirePlacerToolTab extends ICEditorToolTab {
 
             @Override
             public void buildTooltip(List<Component> tooltip) {
-                tooltip.add(new TranslatableComponent(UL_WIRE_TOOL));
+                tooltip.add(Component.translatable(UL_WIRE_TOOL));
             }
         };
     }
