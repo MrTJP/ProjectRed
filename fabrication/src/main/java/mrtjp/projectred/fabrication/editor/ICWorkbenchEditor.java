@@ -79,7 +79,7 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
 
     //region ICWorkbenchTile utilities
     public void save(CompoundTag tag) {
-        LOGGER.info("ICWorkbenchEditor: saving to NBT");
+        LOGGER.debug("ICWorkbenchEditor: saving to NBT");
         tag.putInt(KEY_FORMAT, EDITOR_FORMAT);
         tag.putBoolean(KEY_ACTIVE, isActive);
         tag.putString(KEY_IC_NAME, icName);
@@ -92,7 +92,6 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
     }
 
     public void load(CompoundTag tag) {
-        LOGGER.info("ICWorkbenchEditor: reading form NBT");
         isActive = tag.getBoolean(KEY_ACTIVE);
         icName = tag.getString(KEY_IC_NAME);
         tileMap.load(tag.getCompound(KEY_TILE_MAP));
@@ -100,7 +99,6 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
     }
 
     public void writeDesc(MCDataOutput out) {
-        LOGGER.info("ICWorkbenchEditor: writing description");
         out.writeBoolean(isActive);
         out.writeString(icName);
         tileMap.writeDesc(out);
@@ -108,7 +106,6 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
     }
 
     public void readDesc(MCDataInput in) {
-        LOGGER.info("ICWorkbenchEditor: Reading description");
         isActive = in.readBoolean();
         icName = in.readString();
         tileMap.readDesc(in);
@@ -116,7 +113,6 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
     }
 
     private void clear() {
-        LOGGER.info("ICWorkbenchEditor: Preparing load of initial data (Should be server only)");
         tileMap.removeAll();
         stateMachine.reset();
         icName = "untitled";
@@ -310,17 +306,17 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
     //region State Machine callbacks
     @Override
     public void onCompileStart() {
-        LOGGER.info("Compiling...");
+        LOGGER.debug("Compiling...");
     }
 
     @Override
     public void onCompileComplete() {
-        LOGGER.info("Compilation complete");
+        LOGGER.debug("Compilation complete");
     }
 
     @Override
     public void onCompileFailed() {
-        LOGGER.info("Compilation failed");
+        LOGGER.debug("Compilation failed");
     }
 
     @Override

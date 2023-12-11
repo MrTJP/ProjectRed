@@ -21,6 +21,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.Objects;
 
+import static mrtjp.projectred.integration.ProjectRedIntegration.LOGGER;
 import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
 public class IntegrationNetwork {
@@ -128,7 +129,7 @@ public class IntegrationNetwork {
                         gate.setCounterDecr(gate.getCounterDecr() + packet.readShort());
                         break;
                     default:
-                        System.err.println("Unknown counter action id: " + actionId);
+                        LOGGER.error("Unknown counter action id: " + actionId);
                 }
             }
         }

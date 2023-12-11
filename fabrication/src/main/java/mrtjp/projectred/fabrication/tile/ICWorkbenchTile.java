@@ -150,7 +150,6 @@ public class ICWorkbenchTile extends ProjectRedTile implements IPacketReceiverTi
     private void openGuiFromServer(Player player) {
         if (getLevel().isClientSide || !(player instanceof ServerPlayer)) { throw new RuntimeException("Server only"); }
         filterAndGetWatchers().add((ServerPlayer) player);
-        LOGGER.info("Watcher added. Size: " + playersWatchingScreen.size());
         sendUpdateToPlayer(KEY_CLIENT_OPENED_SCREEN, editor::writeDesc, (ServerPlayer) player);
     }
 
@@ -186,7 +185,6 @@ public class ICWorkbenchTile extends ProjectRedTile implements IPacketReceiverTi
         switch (key) {
             case KEY_CLIENT_CLOSED_SCREEN: // Client closed screen
                 filterAndGetWatchers().remove(player);
-                LOGGER.info("Watcher removed. Size: " + playersWatchingScreen.size());
                 break;
             case KEY_EDITOR_PACKET: // Some packet for the editor
                 receiveBufferedStream(input);

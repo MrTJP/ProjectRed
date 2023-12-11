@@ -13,6 +13,7 @@ import mrtjp.projectred.fabrication.engine.ICInterfaceType;
 import mrtjp.projectred.fabrication.engine.ICSimulationContainer;
 import mrtjp.projectred.fabrication.engine.IIOConnectionTile;
 import mrtjp.projectred.fabrication.engine.IRotatableICTile;
+import mrtjp.projectred.fabrication.engine.log.MultipleDriversError;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -97,7 +98,6 @@ public class IOGateTile extends RedstoneGateTile implements IIOConnectionTile {
     }
 
     protected void toggleWorldInput() {
-        LOGGER.info("Toggling world input");
         getEditor().getStateMachine().onInputRegistersChanged(getIOSide(), i -> (short) (i ^ (1<<colour)));
     }
 
@@ -230,8 +230,7 @@ public class IOGateTile extends RedstoneGateTile implements IIOConnectionTile {
             int absDir = IRotatableICTile.rotationToDir(absR);
             PathFinderResult pfr = pathFinder.doPathFinding((d, p) -> d == absDir);
             if (pfr.outputRegisters.size() > 1) {
-                // TODO log this somewhere
-                System.out.println("ERR: Unexpected multiple drivers: " + pfr.outputRegisters);
+                getEditor().getStateMachine().getCompilerLog().addProblem(new MultipleDriversError(getPos(), pfr.outputRegisters));
             }
             if (!pfr.outputRegisters.isEmpty()) {
                 regId = pfr.outputRegisters.get(0);

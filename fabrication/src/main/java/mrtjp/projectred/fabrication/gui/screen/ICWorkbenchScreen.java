@@ -101,13 +101,11 @@ public class ICWorkbenchScreen extends RedUIScreen {
     public void removed() {
         super.removed();
         tile.closeGuiFromClient();
-        ProjectRedFabrication.LOGGER.info("ICWorkbenchScreen REMOVED");
     }
 
     @Override
     public void onClose() {
         super.onClose();
-        ProjectRedFabrication.LOGGER.info("ICWorkbenchScreen ONCLOSE");
     }
 
     @Override

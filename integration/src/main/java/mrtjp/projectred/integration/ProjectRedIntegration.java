@@ -19,6 +19,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
@@ -26,6 +28,8 @@ import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 public class ProjectRedIntegration {
 
     public static final String MOD_ID = "projectred_integration";
+
+    public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
     public static final DeferredRegister<MultipartType<?>> PARTS = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);

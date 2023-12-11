@@ -250,7 +250,7 @@ public class ICEditorStateMachine {
         currentState = id;
         states[currentState].onStateEntered(oldState);
 
-        LOGGER.info("State transition: " + oldState + " -> " + currentState);
+        LOGGER.debug("State transition: " + oldState + " -> " + currentState);
         editor.markDirty();
     }
 
@@ -269,7 +269,7 @@ public class ICEditorStateMachine {
         currentState = id;
         states[currentState].onClientStateEntered(oldState);
 
-        LOGGER.info("Client state transition: " + oldState + " -> " + currentState);
+        LOGGER.debug("Client state transition: " + oldState + " -> " + currentState);
     }
 
     public interface StateMachineCallback {
@@ -485,7 +485,7 @@ public class ICEditorStateMachine {
         public void onInputRegistersChanged(int rotation, Function<Short, Short> changeFunction) {
             short oldInput = simulationContainer.getInput(rotation);
             short newInput = changeFunction.apply(oldInput);
-            LOGGER.info("oldInput: " + oldInput + ", newInput: " + newInput);
+            LOGGER.debug("oldInput: " + oldInput + ", newInput: " + newInput);
             if (oldInput != newInput) {
                 simulationContainer.setInput(rotation, newInput);
                 simulationContainer.pushInputs(1 << rotation);
