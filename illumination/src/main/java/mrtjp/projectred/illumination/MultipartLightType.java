@@ -58,6 +58,10 @@ public enum MultipartLightType {
         }
     }
 
+    public RegistryObject<Item> getItemRegistryObject(int color, boolean inverted) {
+        return inverted ? invertedItemSuppliers.get(color) : itemSuppliers.get(color);
+    }
+
     public Item getItem(int color, boolean inverted) {
         return inverted ? invertedItemSuppliers.get(color).get() : itemSuppliers.get(color).get();
     }

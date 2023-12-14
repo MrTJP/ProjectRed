@@ -26,10 +26,9 @@ public class IntegrationItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
 
-        ModelFile.ExistingModelFile gate = getExistingFile(new ResourceLocation(MOD_ID, "item/gate"));
         for (GateType type : GateType.values()) {
-            if (!type.isEnabled()) continue;
-            getSimple(type.getItem()).noTexture().parent(gate);
+            if (type.isExternalGate()) continue;
+            generated(type.getItem()).noTexture();
         }
     }
 }

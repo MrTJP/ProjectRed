@@ -60,18 +60,26 @@ public enum GateType
     private @Nullable RegistryObject<? extends Item> itemSupplier;
     private @Nullable RegistryObject<MultipartType<GatePart>> partSupplier;
 
+    private boolean isExternalGate;
+
     GateType(@Nullable String unlocalName, @Nullable Function<GateType, GatePart> partFactory) {
         this.unlocalName = unlocalName;
         this.partFactory = partFactory;
+        this.isExternalGate = partFactory == null;
     }
 
-    public boolean isEnabled() {
-        return partFactory != null;
+    public boolean isExternalGate() {
+        return isExternalGate;
     }
 
     public String getUnlocalizedName() {
         assert unlocalName != null;
         return unlocalName;
+    }
+
+    public RegistryObject<? extends Item> getItemRegistryObject() {
+        assert itemSupplier != null;
+        return itemSupplier;
     }
 
     public Item getItem() {
