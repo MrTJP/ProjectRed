@@ -1,3 +1,3 @@
 {
-  "parent": "projectred_transmission:item/framed_wire"
+  "parent": "minecraft:item/generated"
 }

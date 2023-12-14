@@ -34,10 +34,9 @@ public class IlluminationItemModelProvider extends ItemModelProvider {
         }
 
         for (MultipartLightType type : MultipartLightType.values()) {
-            ModelFile modelFile = getExistingFile(modLoc("item/" + type.getUnlocalBaseName()));
             for (int color = 0; color < 16; color++) {
-                getSimple(type.getItem(color, false)).noTexture().parent(modelFile);
-                getSimple(type.getItem(color, true)).noTexture().parent(modelFile);
+                generated(type.getItem(color, false)).noTexture();
+                generated(type.getItem(color, true)).noTexture();
             }
         }
     }

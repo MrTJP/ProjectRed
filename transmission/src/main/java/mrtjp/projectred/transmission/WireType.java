@@ -157,6 +157,11 @@ public enum WireType {
         return isCenterPart;
     }
 
+    public RegistryObject<Item> getItemRegistryObject() {
+        assert itemSupplier != null;
+        return itemSupplier;
+    }
+
     public Item getItem() {
         return Objects.requireNonNull(itemSupplier).get();
     }
