@@ -192,29 +192,19 @@ public class VerticalListNode extends AbstractGuiNode {
         }
 
         private int getXForAlignment(Font fontRenderer, Component text) {
-            switch (horizontalAlignment) {
-                case LEFT:
-                    return getPaddedFrame().x();
-                case CENTER:
-                    return getPaddedFrame().midX() - fontRenderer.width(text) / 2;
-                case RIGHT:
-                    return getPaddedFrame().maxX() - fontRenderer.width(text);
-                default:
-                    return getPaddedFrame().x();
-            }
+            return switch (horizontalAlignment) {
+                case LEFT -> getPaddedFrame().x();
+                case CENTER -> getPaddedFrame().midX() - fontRenderer.width(text) / 2;
+                case RIGHT -> getPaddedFrame().maxX() - fontRenderer.width(text);
+            };
         }
 
         private int getYForAlignment(Font fontRenderer) {
-            switch (verticalAlignment) {
-                case TOP:
-                    return getPaddedFrame().y();
-                case CENTER:
-                    return getPaddedFrame().midY() - fontRenderer.lineHeight / 2;
-                case BOTTOM:
-                    return getPaddedFrame().maxY() - fontRenderer.lineHeight;
-                default:
-                    return getPaddedFrame().y();
-            }
+            return switch (verticalAlignment) {
+                case TOP -> getPaddedFrame().y();
+                case CENTER -> getPaddedFrame().midY() - fontRenderer.lineHeight / 2;
+                case BOTTOM -> getPaddedFrame().maxY() - fontRenderer.lineHeight;
+            };
         }
 
         public enum HorizontalAlignment {

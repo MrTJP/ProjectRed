@@ -37,12 +37,10 @@ public class IllumarLampItemRenderer extends WrappedItemModel implements IItemRe
     @Override
     public void renderItem(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack mStack, MultiBufferSource getter, int packedLight, int packedOverlay) {
         Item item = stack.getItem();
-        if (!(item instanceof BlockItem)) return;
+        if (!(item instanceof BlockItem blockItem)) return;
 
-        BlockItem blockItem = (BlockItem) item;
-        if (!(blockItem.getBlock() instanceof IllumarLampBlock)) return;
+        if (!(blockItem.getBlock() instanceof IllumarLampBlock block)) return;
 
-        IllumarLampBlock block = (IllumarLampBlock) blockItem.getBlock();
         if (!block.isInverted()) {
             // Non-inverted blocks can use default Minecraft BlockItem model. Shouldn't happen
             // because this renderer should only be registered to inverted variants.

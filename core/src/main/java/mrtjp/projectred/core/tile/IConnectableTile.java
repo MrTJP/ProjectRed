@@ -179,8 +179,7 @@ public interface IConnectableTile extends IBlockEventTile, IConnectable {
 
     default boolean discoverStraightCenter(int s) {
         MultiPart p = getStraightCenter(s);
-        if (p instanceof IConnectable) {
-            IConnectable connectable = (IConnectable) p;
+        if (p instanceof IConnectable connectable) {
             return canConnectPart(connectable, s, -1) && connectable.connectStraight(this, s ^ 1, -1);
         }
 
@@ -189,8 +188,7 @@ public interface IConnectableTile extends IBlockEventTile, IConnectable {
 
     default boolean discoverStraight(int s, int edgeRot) {
         MultiPart p = getStraight(s, edgeRot);
-        if (p instanceof IConnectable) {
-            IConnectable connectable = (IConnectable) p;
+        if (p instanceof IConnectable connectable) {
             return canConnectPart(connectable, s, edgeRot) && connectable.connectStraight(this, rotFromStraight(s, edgeRot), -1);
         }
 
@@ -199,8 +197,7 @@ public interface IConnectableTile extends IBlockEventTile, IConnectable {
 
     default boolean discoverCorner(int s, int edgeRot) {
         MultiPart p = getCorner(s, edgeRot);
-        if (p instanceof IConnectable) {
-            IConnectable connectable = (IConnectable) p;
+        if (p instanceof IConnectable connectable) {
             return canConnectPart(connectable, s, edgeRot) &&
                     outsideCornerEdgeOpen(s, edgeRot) &&
                     connectable.canConnectCorner(rotFromCorner(s, edgeRot)) && //TODO shouldnt this be handled by next line?
@@ -214,8 +211,7 @@ public interface IConnectableTile extends IBlockEventTile, IConnectable {
     default boolean discoverStraightCenterOverride(int s) {
         BlockPos pos = posOfStraight(s);
         BlockEntity tile = getBlockLevel().getBlockEntity(pos);
-        if (tile instanceof IConnectable) {
-            IConnectable connectable = (IConnectable) tile;
+        if (tile instanceof IConnectable connectable) {
             return canConnectPart(connectable, s, -1) && connectable.connectStraight(this, s, -1);
         }
 

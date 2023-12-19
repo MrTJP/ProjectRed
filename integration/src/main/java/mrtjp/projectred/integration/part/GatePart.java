@@ -419,8 +419,7 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
     public InteractionResult activate(Player player, PartRayTraceResult hit, ItemStack held, InteractionHand hand) {
         if (gateLogicActivate(player, held, hit)) return InteractionResult.SUCCESS;
 
-        if (!held.isEmpty() && held.getItem() instanceof IScrewdriver) {
-            IScrewdriver screwdriver = (IScrewdriver) held.getItem();
+        if (!held.isEmpty() && held.getItem() instanceof IScrewdriver screwdriver) {
             if (!level().isClientSide) {
                 if (player.isCrouching()) {
                     configure();

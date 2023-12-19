@@ -83,7 +83,7 @@ public class ModelVoxelShapeTest {
         assertTrue(a.equalsT(b));
     }
 
-    public List<TriTestCase> createTestCases() {
+    private List<TriTestCase> createTestCases() {
         List<TriTestCase> testCases = new LinkedList<>();
 
         // Simple half-quad on the XZ plane with normal facing up

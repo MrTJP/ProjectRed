@@ -133,8 +133,7 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
     public boolean discoverStraightOverride(int absDir) {
         BlockPos pos = pos().relative(Direction.values()[absDir]);
         BlockEntity tile = level().getBlockEntity(pos);
-        if (tile instanceof IMaskedBundledTile) {
-            IMaskedBundledTile b = (IMaskedBundledTile) tile;
+        if (tile instanceof IMaskedBundledTile b) {
             int r = Rotation.rotationTo(absDir, getSide());
             return b.canConnectBundled(absDir^1) && (b.getConnectionMask(absDir^1) & 1<< r) != 0;
         }
@@ -218,8 +217,7 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
                 tmpSignal[i] = (byte) Math.max(tmpSignal[i] & 0xFF, (signalIn[i] & 0xFF) - 1);
             }
 
-        } else if (lookup.part instanceof IInsulatedRedwirePart) {
-            IInsulatedRedwirePart insulatedWire = (IInsulatedRedwirePart) lookup.part;
+        } else if (lookup.part instanceof IInsulatedRedwirePart insulatedWire) {
             int c = insulatedWire.getInsulatedColour();
             int signalIn = insulatedWire.getRedwireSignal(lookup.otherRotation);
             tmpSignal[c] = (byte) Math.max(tmpSignal[c] & 0xFF, signalIn - 1);

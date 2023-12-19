@@ -24,23 +24,23 @@ public interface IRotatableICTile {
 
     //@formatter:off
     static int rotationToDir(int r) {
-        switch (r) {
-           case 0: return 3;
-            case 1: return 4;
-            case 2: return 2;
-            case 3: return 5;
-            default: return -1;
-        }
+        return switch (r) {
+            case 0 -> 3;
+            case 1 -> 4;
+            case 2 -> 2;
+            case 3 -> 5;
+            default -> -1;
+        };
     }
 
     static int dirToRotation(int dir) {
-        switch (dir) {
-            case 2: return 2;
-            case 3: return 0;
-            case 4: return 1;
-            case 5: return 3;
-            default: return -1;
-        }
+        return switch (dir) {
+            case 2 -> 2;
+            case 3 -> 0;
+            case 4 -> 1;
+            case 5 -> 3;
+            default -> -1;
+        };
     }
     //@formatter:on
 

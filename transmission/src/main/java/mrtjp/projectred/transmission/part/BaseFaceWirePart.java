@@ -242,8 +242,7 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
 
     @Override
     public boolean setRenderFlag(IConnectable part) {
-        if (part instanceof BaseFaceWirePart) {
-            BaseFaceWirePart wire = (BaseFaceWirePart) part;
+        if (part instanceof BaseFaceWirePart wire) {
             // For wires of same thickness, use side for tie-breaker as it
             // is guaranteed to be unique for a corner connected wire
             if (wire.getWireType().getThickness() == getWireType().getThickness()) {

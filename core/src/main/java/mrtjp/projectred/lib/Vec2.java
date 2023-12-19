@@ -108,8 +108,7 @@ public class Vec2 {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Vec2) {
-            Vec2 other = (Vec2) obj;
+        if (obj instanceof Vec2 other) {
             return dx == other.dx && dy == other.dy;
         }
         return false;

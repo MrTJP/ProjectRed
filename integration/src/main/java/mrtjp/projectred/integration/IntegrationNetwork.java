@@ -107,16 +107,14 @@ public class IntegrationNetwork {
 
         private void handleIncrTimerMessage(Level world, PacketCustom packet) {
             MultiPart part = readPartIndex(world, packet);
-            if (part instanceof ComplexGatePart.ITimerGuiLogic) {
-                ComplexGatePart.ITimerGuiLogic gate = (ComplexGatePart.ITimerGuiLogic) part;
+            if (part instanceof ComplexGatePart.ITimerGuiLogic gate) {
                 gate.setTimerMax(gate.getTimerMax() + packet.readShort());
             }
         }
 
         private void handleIncrCounterMessage(Level world, PacketCustom packet) {
             MultiPart part = readPartIndex(world, packet);
-            if (part instanceof ComplexGatePart.ICounterGuiLogic) {
-                ComplexGatePart.ICounterGuiLogic gate = (ComplexGatePart.ICounterGuiLogic) part;
+            if (part instanceof ComplexGatePart.ICounterGuiLogic gate) {
                 int actionId = packet.readByte();
                 switch (actionId) {
                     case 0:

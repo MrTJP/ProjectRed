@@ -40,8 +40,7 @@ public interface IPropagationCenterPart extends IPropagationHooks, IConnectableC
     default boolean propagateTo(@Nullable IConnectable to, @Nullable IPropagationPart prev, int mode) {
         if (to != null) {
             if (to == prev) return false;
-            if (to instanceof IPropagationPart) {
-                IPropagationPart part = (IPropagationPart) to;
+            if (to instanceof IPropagationPart part) {
                 if (shouldPropagate(part, mode)) {
                     RedstonePropagator.propagateTo(part, this, mode);
                     return true;

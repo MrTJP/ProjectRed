@@ -40,8 +40,7 @@ public class BundledSignalsLib {
             return ((IBundledTile) tile).getBundledSignal(side ^ 1);
         }
 
-        if (tile instanceof TileMultipart) {
-            TileMultipart tmp = (TileMultipart) tile;
+        if (tile instanceof TileMultipart tmp) {
             byte[] signal = null;
 
             // Source signal from all 4 perpendicular faces

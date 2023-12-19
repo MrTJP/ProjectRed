@@ -141,7 +141,7 @@ public class ICEditorToolTab extends AbstractGuiNode implements TabControllerNod
         };
     }
 
-    interface ButtonController {
+    protected interface ButtonController {
         void getTooltip(List<Component> tooltip);
         void onClick();
         boolean isSelected();
