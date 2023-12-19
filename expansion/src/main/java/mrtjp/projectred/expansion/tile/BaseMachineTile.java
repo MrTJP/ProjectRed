@@ -102,8 +102,7 @@ public abstract class BaseMachineTile extends LowLoadPoweredTile {
         ItemStack held = player.getItemInHand(hand);
 
         // Try to rotate block
-        if (held.getItem() instanceof IScrewdriver) {
-            IScrewdriver screwdriver = (IScrewdriver) held.getItem();
+        if (held.getItem() instanceof IScrewdriver screwdriver) {
 
             if (screwdriver.canUse(player, held)) {
                 if (!level.isClientSide) {

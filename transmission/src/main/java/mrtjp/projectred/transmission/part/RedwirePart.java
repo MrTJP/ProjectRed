@@ -267,8 +267,7 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
     protected int resolveSignal(FaceLookup lookup) {
 
         // Part signal resolution
-        if (lookup.part instanceof IRedwirePart) {
-            IRedwirePart redwirePart = (IRedwirePart) lookup.part;
+        if (lookup.part instanceof IRedwirePart redwirePart) {
             if (redwirePart.diminishOnSide(lookup.otherRotation)) {
                 return redwirePart.getRedwireSignal(lookup.otherRotation) - 1;
             }
@@ -278,8 +277,7 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
             return ((IRedwireEmitter) lookup.part).getRedwireSignal(lookup.otherRotation);
         }
 
-        if (lookup.part instanceof FaceRedstonePart) {
-            FaceRedstonePart faceRsPart = (FaceRedstonePart) lookup.part;
+        if (lookup.part instanceof FaceRedstonePart faceRsPart) {
             int s = Rotation.rotateSide(lookup.otherSide, lookup.otherRotation);
             return Math.max(faceRsPart.strongPowerLevel(s), faceRsPart.weakPowerLevel(s)) * 17;
         }

@@ -70,11 +70,8 @@ public class IOGateTile extends RedstoneGateTile implements IIOConnectionTile {
     @Override
     public void read(MCDataInput in, int key) {
         switch (key) {
-            case COLOUR_PACKET:
-                colour = in.readByte();
-                break;
-            default:
-                super.read(in, key);
+            case COLOUR_PACKET -> colour = in.readByte();
+            default -> super.read(in, key);
         }
     }
 

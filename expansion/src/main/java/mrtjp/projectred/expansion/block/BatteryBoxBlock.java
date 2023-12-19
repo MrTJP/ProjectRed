@@ -63,8 +63,7 @@ public class BatteryBoxBlock extends ProjectRedBlock {
     @Override
     public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
         BlockEntity tile = builder.getParameter(LootContextParams.BLOCK_ENTITY);
-        if (tile instanceof BatteryBoxTile) {
-            BatteryBoxTile batteryBoxTile = (BatteryBoxTile) tile;
+        if (tile instanceof BatteryBoxTile batteryBoxTile) {
             return Collections.singletonList(batteryBoxTile.createStackWithStoredPower()); // Retain power inside itemstack
         }
         return super.getDrops(state, builder);

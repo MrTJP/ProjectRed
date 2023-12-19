@@ -35,14 +35,11 @@ public class PlottingTableTile extends FabricationMachineTile {
 
         @Override
         public boolean canPlaceItem(int slot, ItemStack stack) {
-            switch (slot) {
-                case 0:
-                    return stack.getItem() instanceof ICBlueprintItem;
-                case 1:
-                    return stack.getItem() instanceof BlankPhotomaskItem;
-                default:
-                    return false;
-            }
+            return switch (slot) {
+                case 0 -> stack.getItem() instanceof ICBlueprintItem;
+                case 1 -> stack.getItem() instanceof BlankPhotomaskItem;
+                default -> false;
+            };
         }
 
         @Override

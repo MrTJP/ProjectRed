@@ -51,8 +51,7 @@ public class Size {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Size) {
-            Size size = (Size) obj;
+        if (obj instanceof Size size) {
             return size.width == width && size.height == height;
         }
         return false;

@@ -84,12 +84,10 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
     }
 
     private int sideDiff(@Nullable IPropagationPart p) {
-        if (!(p instanceof MultiPart)) return 0xF;
+        if (!(p instanceof MultiPart part)) return 0xF;
 
-        if (!(p instanceof IOrientableFacePart)) return 0xF;
+        if (!(p instanceof IOrientableFacePart facePart)) return 0xF;
 
-        MultiPart part = (MultiPart) p;
-        IOrientableFacePart facePart = (IOrientableFacePart) p;
         BlockPos here = pos();
         BlockPos there = part.pos();
 
@@ -165,8 +163,7 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
     protected int resolveSignal(FaceLookup lookup) {
 
         // Part signal resolution
-        if (lookup.part instanceof IRedwirePart) {
-            IRedwirePart redwirePart = (IRedwirePart) lookup.part;
+        if (lookup.part instanceof IRedwirePart redwirePart) {
             if (redwirePart.diminishOnSide(lookup.otherRotation)) {
                 return redwirePart.getRedwireSignal(lookup.otherRotation) - 1;
             }
@@ -177,8 +174,7 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
         }
 
         // Shouldn't matter, no space for a face part inside
-        if (lookup.part instanceof FaceRedstonePart) {
-            FaceRedstonePart faceRsPart = (FaceRedstonePart) lookup.part;
+        if (lookup.part instanceof FaceRedstonePart faceRsPart) {
             int s = Rotation.rotateSide(lookup.otherSide, lookup.otherRotation);
             return Math.max(faceRsPart.strongPowerLevel(s), faceRsPart.weakPowerLevel(s)) * 17;
         }
@@ -262,8 +258,7 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
         if (canCross() && player != null) {
             // Note: tile() is not available yet, must access from player.level
             MultiPart tpart = BlockMultipart.getPart(player.level, pos, getSide()^1);
-            if (tpart instanceof ArrayGatePart) {
-                ArrayGatePart part = (ArrayGatePart) tpart;
+            if (tpart instanceof ArrayGatePart part) {
                 if (part.getGateType() == getGateType() && (part.getRotation() & 1) == (getRotation() & 1)) {
                     setRotation((getRotation() + 1) % 4);
                 }
@@ -273,8 +268,7 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
 
     @Override
     public boolean occlusionTest(MultiPart npart) {
-        if (npart instanceof ArrayGatePart) {
-            ArrayGatePart part = (ArrayGatePart) npart;
+        if (npart instanceof ArrayGatePart part) {
             if (part.getGateType() == getGateType()
                     && part.getSide() == (getSide() ^ 1)
                     && (part.getRotation() & 1) != (getRotation() & 1)) { return true; }
@@ -352,9 +346,7 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
 
         static double getConnHeight(GatePart gate, int r) {
             IConnectable part = gate.getStraight(r);
-            if (part instanceof IGateWireRenderConnect && part instanceof GatePart) {
-                GatePart gPart = (GatePart) part;
-                IGateWireRenderConnect gConn = (IGateWireRenderConnect) part;
+            if (part instanceof IGateWireRenderConnect gConn && part instanceof GatePart gPart) {
                 int ir = gPart.toInternal(gate.rotFromStraight(r));
                 if ((gConn.renderConnectMask() & 1 << ir) != 0) return gConn.getHeight(ir);
             }

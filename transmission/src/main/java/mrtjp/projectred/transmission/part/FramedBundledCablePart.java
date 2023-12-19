@@ -129,8 +129,7 @@ public class FramedBundledCablePart extends BaseCenterWirePart implements IBundl
     public boolean discoverStraightOverride(int absDir) {
         BlockPos pos = pos().relative(Direction.values()[absDir]);
         BlockEntity tile = level().getBlockEntity(pos);
-        if (tile instanceof IMaskedBundledTile) {
-            IMaskedBundledTile b = (IMaskedBundledTile) tile;
+        if (tile instanceof IMaskedBundledTile b) {
             return b.canConnectBundled(absDir^1) && (b.getConnectionMask(absDir^1) & 0x10) != 0;
         }
 
@@ -198,8 +197,7 @@ public class FramedBundledCablePart extends BaseCenterWirePart implements IBundl
                 tmpSignal[i] = (byte) Math.max(tmpSignal[i] & 0xFF, (signalIn[i] & 0xFF) - 1);
             }
 
-        } else if (lookup.part instanceof IInsulatedRedwirePart) {
-            IInsulatedRedwirePart insulatedWire = (IInsulatedRedwirePart) lookup.part;
+        } else if (lookup.part instanceof IInsulatedRedwirePart insulatedWire) {
             int c = insulatedWire.getInsulatedColour();
             int signalIn = insulatedWire.getRedwireSignal(lookup.otherDirection);
             tmpSignal[c] = (byte) Math.max(tmpSignal[c] & 0xFF, signalIn - 1);

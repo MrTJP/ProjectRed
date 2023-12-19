@@ -37,14 +37,11 @@ public class LithographyTableTile extends FabricationMachineTile {
 
         @Override
         public boolean canPlaceItem(int slot, ItemStack stack) {
-            switch (slot) {
-                case 0:
-                    return stack.getItem() instanceof PhotomaskSetItem;
-                case 1:
-                    return stack.getItem() instanceof BaseSiliconWaferItem;
-                default:
-                    return false;
-            }
+            return switch (slot) {
+                case 0 -> stack.getItem() instanceof PhotomaskSetItem;
+                case 1 -> stack.getItem() instanceof BaseSiliconWaferItem;
+                default -> false;
+            };
         }
 
         @Override

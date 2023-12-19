@@ -24,8 +24,7 @@ public class FramedInsulatedRedAlloyWirePart extends FramedRedwirePart implement
     //region FramedRedwirePart overrides
     @Override
     protected int resolveSignal(CenterLookup lookup) {
-        if (lookup.part instanceof IBundledCablePart) {
-            IBundledCablePart bundledPart = (IBundledCablePart) lookup.part;
+        if (lookup.part instanceof IBundledCablePart bundledPart) {
             return (bundledPart.getBundledSignal()[getInsulatedColour()] & 0xFF) - 1;
         }
         return super.resolveSignal(lookup);

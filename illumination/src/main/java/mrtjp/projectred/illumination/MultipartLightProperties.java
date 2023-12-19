@@ -105,9 +105,8 @@ public abstract class MultipartLightProperties {
         return new IItemRenderer() {
             @Override
             public void renderItem(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack mStack, MultiBufferSource getter, int packedLight, int packedOverlay) {
-                if (!(stack.getItem() instanceof MultipartLightPartItem)) return;
+                if (!(stack.getItem() instanceof MultipartLightPartItem lightItem)) return;
 
-                MultipartLightPartItem lightItem = (MultipartLightPartItem) stack.getItem();
                 CCRenderState ccrs = CCRenderState.instance();
                 ccrs.reset();
                 ccrs.brightness = packedLight;

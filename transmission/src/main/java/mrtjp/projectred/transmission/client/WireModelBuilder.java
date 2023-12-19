@@ -90,17 +90,11 @@ public class WireModelBuilder {
 
     private void generateCenter() {
 
-        int tex; //0 = straight n/s, 1 = straight e/w, 2 = circle
-        switch (connCount) {
-            case 0:
-                tex = 1;
-                break;
-            case 1:
-                tex = (connMask & 5) != 0 ? 0 : 1;
-                break;
-            default:
-                tex = connMask == 5 ? 0 : connMask == 10 ? 1 : 2;
-        }
+        int tex = switch (connCount) {
+            case 0 -> 1;
+            case 1 -> (connMask & 5) != 0 ? 0 : 1;
+            default -> connMask == 5 ? 0 : connMask == 10 ? 1 : 2;
+        }; //0 = straight n/s, 1 = straight e/w, 2 = circle
 
         Vertex5[] verts = new Vertex5[] {
                 new Vertex5(0.5 - w, h, 0.5 + w, 8 - tw, 16 + tw),
@@ -253,16 +247,12 @@ public class WireModelBuilder {
     }
 
     private Vertex5[] generateSideFromType(int stype, int r) {
-        switch (stype) {
-            case 0x00:
-                return generateFlat(r);
-            case 0x01:
-                return generateCorner(r);
-            case 0x10:
-                return generateStraight(r);
-            default:
-                return generateInternal(r);
-        }
+        return switch (stype) {
+            case 0x00 -> generateFlat(r);
+            case 0x01 -> generateCorner(r);
+            case 0x10 -> generateStraight(r);
+            default -> generateInternal(r);
+        };
     }
 
     //region Utils

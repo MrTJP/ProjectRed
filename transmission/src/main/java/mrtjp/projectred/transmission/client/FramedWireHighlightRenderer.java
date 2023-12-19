@@ -30,14 +30,12 @@ public class FramedWireHighlightRenderer implements MicroHighlightRenderer {
             return false;
         }
 
-        if (!(hit instanceof PartRayTraceResult)) return false;
-        PartRayTraceResult partHit = (PartRayTraceResult) hit;
+        if (!(hit instanceof PartRayTraceResult partHit)) return false;
 
         TileMultipart tile = BlockMultipart.getTile(player.level, hit.getBlockPos());
         if (tile == null) return false;
 
-        if (partHit.part instanceof BaseCenterWirePart) {
-            BaseCenterWirePart wire = (BaseCenterWirePart) partHit.part;
+        if (partHit.part instanceof BaseCenterWirePart wire) {
             if (wire.getMaterial() == null || wire.getMaterial() != material) {
                 FramedWireModelRenderer.renderCoverHighlight(wire, material, CCRenderState.instance(), mStack, getter);
                 return true;

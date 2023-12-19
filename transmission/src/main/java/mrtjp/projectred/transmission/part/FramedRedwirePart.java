@@ -233,8 +233,7 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
             return signal;
         }
 
-        if (lookup.part instanceof RedstonePart) {
-            RedstonePart rw = (RedstonePart) lookup.part;
+        if (lookup.part instanceof RedstonePart rw) {
             return Math.max(rw.strongPowerLevel(lookup.otherDirection), rw.weakPowerLevel(lookup.otherDirection));
         }
 
@@ -242,8 +241,7 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
     }
 
     protected int resolveSignal(CenterLookup lookup) {
-        if (lookup.part instanceof IRedwirePart) {
-            IRedwirePart rw = (IRedwirePart) lookup.part;
+        if (lookup.part instanceof IRedwirePart rw) {
 
             int signal = rw.getRedwireSignal(lookup.otherDirection);
             if (rw.diminishOnSide(lookup.otherDirection)) {

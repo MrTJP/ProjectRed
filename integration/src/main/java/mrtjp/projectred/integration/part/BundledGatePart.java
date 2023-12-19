@@ -98,8 +98,7 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
     public boolean discoverStraightOverride(int absDir) {
         BlockPos pos = pos().relative(Direction.values()[absDir]);
         BlockEntity tile = level().getBlockEntity(pos);
-        if (tile instanceof IMaskedBundledTile) {
-            IMaskedBundledTile b = (IMaskedBundledTile) tile;
+        if (tile instanceof IMaskedBundledTile b) {
             int r = Rotation.rotationTo(absDir, getSide());
             return b.canConnectBundled(absDir ^ 1) && (b.getConnectionMask(absDir ^ 1) & 1 << r) != 0;
         }

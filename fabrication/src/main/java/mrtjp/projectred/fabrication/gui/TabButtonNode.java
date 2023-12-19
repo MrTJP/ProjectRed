@@ -128,7 +128,7 @@ public abstract class TabButtonNode extends AbstractGuiNode {
 
     public abstract void buildTooltip(List<Component> tooltip);
 
-    enum TabState {
+    public enum TabState {
         ALL_CLOSED, // Unselected with no extension
         CLOSED, // Unselected with extension
         MINIMIZED, // Selected with no extension

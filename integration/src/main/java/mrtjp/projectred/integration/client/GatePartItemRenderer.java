@@ -39,9 +39,7 @@ public class GatePartItemRenderer implements IItemRenderer {
     @Override
     public void renderItem(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack mStack, MultiBufferSource getter, int packedLight, int packedOverlay) {
 
-        if (!(stack.getItem() instanceof GatePartItem)) return;
-
-        GatePartItem gateItem = (GatePartItem) stack.getItem();
+        if (!(stack.getItem() instanceof GatePartItem gateItem)) return;
 
         CCRenderState ccrs = CCRenderState.instance();
         ccrs.reset();
