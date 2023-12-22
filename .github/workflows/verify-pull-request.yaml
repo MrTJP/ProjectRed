@@ -39,13 +39,27 @@ jobs:
           echo "short_sha=$short_sha" >> $GITHUB_OUTPUT
           echo "branch_name=$branch_name" >> $GITHUB_OUTPUT
 
+      # Install python and deps
+      - name: Set up Python 3.12.1
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12.1
+      - name: Cache PIP packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('.github/requirements.txt') }}
+      - name: Install python deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r .github/requirements.txt
+
       - name: Generate version
         id: versioning
-        uses: PaulHatch/semantic-version@v4.0.3
-        with:
-          major_pattern: "/^((fix)|(feat)|(perf))(\\([a-z]+\\))?!:/"
-          minor_pattern: "/^((fix)|(feat)|(perf))(\\([a-z]+\\))?:/"
-          format: "${major}.${minor}.${patch}-${{ steps.commit_info.outputs.branch_name }}.${increment}"
+        run: |
+          version=$(python .github/git_utils.py genVersion --format_str="{major}.{minor}.{patch}-${{ steps.commit_info.outputs.branch_name }}+{increment}")
+          echo "version=$version"
+          echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Set up JDK 1.8
         uses: actions/setup-java@v3

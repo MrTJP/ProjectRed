@@ -31,48 +31,43 @@ jobs:
               publish_maven=true
               publish_curse=true
               publish_gh_release=true
-              version_format="\${major}.\${minor}.\${patch}"
+              version_format="{major}.{minor}.{patch}"
               ;;
             "beta")
               publish_maven=true
               publish_curse=true
               publish_gh_release=false
-              version_format="\${major}.\${minor}.\${patch}-beta-\${increment}"
+              version_format="{major}.{minor}.{patch}-beta+{increment}"
               ;;
             "alpha")
               publish_maven=true
               publish_curse=false
               publish_gh_release=false
-              version_format="\${major}.\${minor}.\${patch}-alpha-\${increment}"
+              version_format="{major}.{minor}.{patch}-alpha+{increment}"
               ;;
             *)
               echo "::warning::Unknown release type: $release_type"
               publish_maven=false
               publish_curse=false
               publish_gh_release=false
-              version_format="\${major}.\${minor}.\${patch}-$release_type-\${increment}"
+              version_format="{major}.{minor}.{patch}-$release_type+{increment}"
           esac
-
+          
+          tag_format="v$release_channel-{major}.{minor}.{patch}"
+          
           echo "release_channel=$release_channel" >> $GITHUB_OUTPUT
           echo "release_type=$release_type" >> $GITHUB_OUTPUT
           echo "publish_maven=$publish_maven" >> $GITHUB_OUTPUT
           echo "publish_curse=$publish_curse" >> $GITHUB_OUTPUT
           echo "publish_gh_release=$publish_gh_release" >> $GITHUB_OUTPUT
           echo "version_format=$version_format" >> $GITHUB_OUTPUT
+          echo "tag_format=$tag_format" >> $GITHUB_OUTPUT
 
-      - name: Generate version
-        id: versioning
-        uses: PaulHatch/semantic-version@v4.0.3
-        with:
-          major_pattern: "/^((fix)|(feat)|(perf))(\\([a-z]+\\))?!:/"
-          minor_pattern: "/^((fix)|(feat)|(perf))(\\([a-z]+\\))?:/"
-          format: ${{ steps.release_type.outputs.version_format }}
-
-      # Install python and generate changelog
-      - name: Set up Python 3.8
+      # Install python and deps
+      - name: Set up Python 3.12.1
         uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: 3.12.1
       - name: Cache PIP packages
         uses: actions/cache@v3
         with:
@@ -82,10 +77,21 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r .github/requirements.txt
+
+      - name: Generate version
+        id: versioning
+        run: |
+          version=$(python .github/git_utils.py genVersion --format_str="${{ steps.release_type.outputs.version_format }}")
+          version_tag=$(python .github/git_utils.py genVersion --format_str="${{ steps.release_type.outputs.tag_format }}")
+          echo "version=$version"
+          echo "version_tag=$version_tag"
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "version_tag=$version_tag" >> $GITHUB_OUTPUT
+
       - name: Generate changelogs
         run: |
-          python .github/changelog.py generateRaw
-          python .github/changelog.py generateMarkdown --nextTag=${{ steps.versioning.outputs.version }}
+          python .github/git_utils.py genChangelogRaw
+          python .github/git_utils.py genChangelogMd --nextTag=${{ steps.versioning.outputs.version_tag }}
 
       # Install JDK and build with Gradle
       - name: Set up JDK 1.8
