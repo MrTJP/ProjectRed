@@ -91,7 +91,7 @@ jobs:
       - name: Generate changelogs
         run: |
           python .github/git_utils.py genChangelogRaw
-          python .github/git_utils.py genChangelogMd --nextTag=${{ steps.versioning.outputs.version_tag }}
+          python .github/git_utils.py genChangelogMd --next_tag=${{ steps.versioning.outputs.version_tag }}
 
       # Install JDK and build with Gradle
       - name: Set up JDK 1.8
