@@ -7,12 +7,15 @@ import mrtjp.projectred.exploration.item.AthameItem;
 import mrtjp.projectred.exploration.item.BackpackItem;
 import mrtjp.projectred.exploration.item.SickleItem;
 import mrtjp.projectred.exploration.item.WoolGinItem;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.common.TierSortingRegistry;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import static mrtjp.projectred.core.init.CoreTags.*;
@@ -249,6 +252,12 @@ public class ExplorationItems {
         WOOL_GIN = ITEMS.register(ID_WOOL_GIN, WoolGinItem::new);
         ATHAME = ITEMS.register(ID_ATHAME, () -> new AthameItem(ATHAME_ITEM_TIER, 3, -2.4F));
 
+        // Tiers
+        registerSubDiamondTeir(ATHAME_ITEM_TIER, "athame");
+        registerSubDiamondTeir(RUBY_ITEM_TIER, "ruby");
+        registerSubDiamondTeir(SAPPHIRE_ITEM_TIER, "sapphire");
+        registerSubDiamondTeir(PERIDOT_ITEM_TIER, "peridot");
+
         /* Tools */
 
         RUBY_AXE         = ITEMS.register(ID_RUBY_AXE,         () -> createAxeItem(RUBY_ITEM_TIER, 5.0F, -3.0F));
@@ -327,23 +336,23 @@ public class ExplorationItems {
         return () -> new Item(new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
     }
 
-    private static Item createAxeItem(SimpleItemTier tier, float attackDamage, float attackSpeed) {
+    private static Item createAxeItem(Tier tier, float attackDamage, float attackSpeed) {
         return new AxeItem(tier, attackDamage, attackSpeed, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
     }
 
-    private static Item createPickaxeItem(SimpleItemTier tier, int attackDamage, float attackSpeed) {
+    private static Item createPickaxeItem(Tier tier, int attackDamage, float attackSpeed) {
         return new PickaxeItem(tier, attackDamage, attackSpeed, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
     }
 
-    private static Item createShovelItem(SimpleItemTier tier, float attackDamage, float attackSpeed) {
+    private static Item createShovelItem(Tier tier, float attackDamage, float attackSpeed) {
         return new ShovelItem(tier, attackDamage, attackSpeed, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
     }
 
-    private static Item createHoeItem(SimpleItemTier tier, int attackDamage, float attackSpeed) {
+    private static Item createHoeItem(Tier tier, int attackDamage, float attackSpeed) {
         return new HoeItem(tier, attackDamage, attackSpeed, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
     }
 
-    private static Item createSwordItem(SimpleItemTier tier, int attackDamage, float attackSpeed) {
+    private static Item createSwordItem(Tier tier, int attackDamage, float attackSpeed) {
         return new SwordItem(tier, attackDamage, attackSpeed, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
     }
 
@@ -357,6 +366,14 @@ public class ExplorationItems {
 
     private static Item createArmorItem(SimpleArmorMaterial material, EquipmentSlot slot) {
         return new ArmorItem(material, slot, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
+    }
+
+    private static void registerSubDiamondTeir(Tier tier, String id) {
+        TierSortingRegistry.registerTier(
+                tier,
+                new ResourceLocation(MOD_ID, id),
+                List.of(Tiers.WOOD, Tiers.STONE, Tiers.IRON, Tiers.GOLD),
+                List.of(Tiers.DIAMOND, Tiers.NETHERITE));
     }
 
     //region Utilities

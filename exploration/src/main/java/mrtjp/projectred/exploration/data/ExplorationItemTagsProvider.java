@@ -1,5 +1,6 @@
 package mrtjp.projectred.exploration.data;
 
+import codechicken.microblock.init.CBMicroblockTags;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraftforge.common.Tags;
@@ -109,5 +110,11 @@ public class ExplorationItemTagsProvider extends ItemTagsProvider {
         tag(GREEN_BACKPACK_TAG).add(GREEN_BACKPACK.get());
         tag(RED_BACKPACK_TAG).add(RED_BACKPACK.get());
         tag(BLACK_BACKPACK_TAG).add(BLACK_BACKPACK.get());
+
+        tag(CBMicroblockTags.Items.TOOL_SAW)
+                .add(GOLD_SAW.get())
+                .add(RUBY_SAW.get())
+                .add(SAPPHIRE_SAW.get())
+                .add(PERIDOT_SAW.get());
     }
 }
