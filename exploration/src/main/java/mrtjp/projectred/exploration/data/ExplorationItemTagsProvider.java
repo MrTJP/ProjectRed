@@ -8,8 +8,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nullable;
 
-import static mrtjp.projectred.core.init.CoreTags.SILVER_INGOT_TAG;
-import static mrtjp.projectred.core.init.CoreTags.TIN_INGOT_TAG;
+import static mrtjp.projectred.core.init.CoreTags.*;
 import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 import static mrtjp.projectred.exploration.init.ExplorationBlocks.*;
 import static mrtjp.projectred.exploration.init.ExplorationItems.*;
@@ -30,6 +29,11 @@ public class ExplorationItemTagsProvider extends ItemTagsProvider {
                 //Note: Defined in Core
                 .addTag(TIN_INGOT_TAG)
                 .addTag(SILVER_INGOT_TAG);
+
+        tag(Tags.Items.RAW_MATERIALS)
+                //Note: Defined in Core
+                .addTag(RAW_TIN_TAG)
+                .addTag(RAW_SILVER_TAG);
 
         tag(Tags.Items.ORES)
                 .addTag(RUBY_ORES_BLOCK_ITEM_TAG)
@@ -75,6 +79,8 @@ public class ExplorationItemTagsProvider extends ItemTagsProvider {
         //Note: Defined in Core
         tag(TIN_INGOT_TAG).add(TIN_INGOT_ITEM.get());
         tag(SILVER_INGOT_TAG).add(SILVER_INGOT_ITEM.get());
+        tag(RAW_TIN_TAG).add(RAW_TIN_ITEM.get());
+        tag(RAW_SILVER_TAG).add(RAW_SILVER_ITEM.get());
 
         tag(RUBY_ORES_BLOCK_ITEM_TAG).add(RUBY_ORE_BLOCK.get().asItem()).add(DEEPSLATE_RUBY_ORE_BLOCK.get().asItem());
         tag(SAPPHIRE_ORES_BLOCK_ITEM_TAG).add(SAPPHIRE_ORE_BLOCK.get().asItem()).add(DEEPSLATE_SAPPHIRE_ORE_BLOCK.get().asItem());
