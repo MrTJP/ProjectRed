@@ -1,22 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_fabrication:ic_workbench"
+  "key": {
+    "b": {
+      "item": "projectred_fabrication:ic_blueprint"
+    },
+    "s": {
+      "item": "minecraft:stone"
+    },
+    "w": {
+      "tag": "minecraft:planks"
+    }
   },
   "pattern": [
     "sss",
     "wbw",
     "www"
   ],
-  "key": {
-    "w": {
-      "tag": "minecraft:planks"
-    },
-    "s": {
-      "item": "minecraft:stone"
-    },
-    "b": {
-      "item": "projectred_fabrication:ic_blueprint"
-    }
+  "result": {
+    "item": "projectred_fabrication:ic_workbench"
   }
 }

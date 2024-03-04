@@ -1,14 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:ruby_hoe",
-    "nbt": "{Damage:0}"
-  },
-  "pattern": [
-    "MM",
-    " S",
-    " S"
-  ],
   "key": {
     "M": {
       "tag": "forge:gems/ruby"
@@ -16,5 +7,14 @@
     "S": {
       "tag": "forge:rods/wooden"
     }
+  },
+  "pattern": [
+    "MM",
+    " S",
+    " S"
+  ],
+  "result": {
+    "item": "projectred_exploration:ruby_hoe",
+    "nbt": "{Damage:0}"
   }
 }

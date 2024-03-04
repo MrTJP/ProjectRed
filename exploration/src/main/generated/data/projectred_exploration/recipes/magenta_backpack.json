@@ -1,16 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:magenta_backpack"
+  "key": {
+    "C": {
+      "item": "projectred_core:woven_cloth"
+    }
   },
   "pattern": [
     "CCC",
     "C C",
     "CCC"
   ],
-  "key": {
-    "C": {
-      "item": "projectred_core:woven_cloth"
-    }
+  "result": {
+    "item": "projectred_exploration:magenta_backpack"
   }
 }

@@ -1,25 +1,25 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_illumination:pink_inverted_cage_light"
+  "key": {
+    "C": {
+      "item": "minecraft:iron_bars"
+    },
+    "I": {
+      "item": "projectred_core:pink_illumar"
+    },
+    "N": {
+      "item": "projectred_core:plate"
+    },
+    "P": {
+      "item": "projectred_core:cathode"
+    }
   },
   "pattern": [
     " C ",
     "CIC",
     "NPN"
   ],
-  "key": {
-    "N": {
-      "item": "projectred_core:plate"
-    },
-    "I": {
-      "item": "projectred_core:pink_illumar"
-    },
-    "C": {
-      "item": "minecraft:iron_bars"
-    },
-    "P": {
-      "item": "projectred_core:cathode"
-    }
+  "result": {
+    "item": "projectred_illumination:pink_inverted_cage_light"
   }
 }

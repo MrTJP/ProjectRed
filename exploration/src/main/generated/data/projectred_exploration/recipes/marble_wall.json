@@ -1,16 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:marble_wall",
-    "count": 6
+  "key": {
+    "S": {
+      "tag": "forge:stone/marble"
+    }
   },
   "pattern": [
     "SSS",
     "SSS"
   ],
-  "key": {
-    "S": {
-      "tag": "forge:stone/marble"
-    }
+  "result": {
+    "count": 6,
+    "item": "projectred_exploration:marble_wall"
   }
 }

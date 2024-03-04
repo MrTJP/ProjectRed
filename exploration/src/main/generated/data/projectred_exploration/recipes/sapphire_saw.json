@@ -1,22 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:sapphire_saw",
-    "nbt": "{Damage:0}"
+  "key": {
+    "M": {
+      "tag": "forge:gems/sapphire"
+    },
+    "R": {
+      "item": "cb_microblock:stone_rod"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    }
   },
   "pattern": [
     "SRR",
     "SMM"
   ],
-  "key": {
-    "M": {
-      "tag": "forge:gems/sapphire"
-    },
-    "S": {
-      "tag": "forge:rods/wooden"
-    },
-    "R": {
-      "item": "cb_microblock:stone_rod"
-    }
+  "result": {
+    "item": "projectred_exploration:sapphire_saw",
+    "nbt": "{Damage:0}"
   }
 }

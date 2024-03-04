@@ -1,25 +1,25 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_illumination:lime_inverted_fallout_light"
+  "key": {
+    "C": {
+      "item": "minecraft:iron_bars"
+    },
+    "I": {
+      "item": "projectred_core:lime_illumar"
+    },
+    "N": {
+      "tag": "forge:nuggets/gold"
+    },
+    "P": {
+      "item": "projectred_core:cathode"
+    }
   },
   "pattern": [
     "CCC",
     "CIC",
     "NPN"
   ],
-  "key": {
-    "N": {
-      "tag": "forge:nuggets/gold"
-    },
-    "I": {
-      "item": "projectred_core:lime_illumar"
-    },
-    "C": {
-      "item": "minecraft:iron_bars"
-    },
-    "P": {
-      "item": "projectred_core:cathode"
-    }
+  "result": {
+    "item": "projectred_illumination:lime_inverted_fallout_light"
   }
 }

@@ -3,14 +3,14 @@
     "charged=false,rotation=0,working=false": {
       "model": "projectred_expansion:block/auto_crafter"
     },
-    "charged=true,rotation=0,working=false": {
+    "charged=false,rotation=0,working=true": {
       "model": "projectred_expansion:block/auto_crafter_state1"
     },
     "charged=false,rotation=1,working=false": {
       "model": "projectred_expansion:block/auto_crafter",
       "y": 90
     },
-    "charged=true,rotation=1,working=false": {
+    "charged=false,rotation=1,working=true": {
       "model": "projectred_expansion:block/auto_crafter_state1",
       "y": 90
     },
@@ -18,7 +18,7 @@
       "model": "projectred_expansion:block/auto_crafter",
       "y": 180
     },
-    "charged=true,rotation=2,working=false": {
+    "charged=false,rotation=2,working=true": {
       "model": "projectred_expansion:block/auto_crafter_state1",
       "y": 180
     },
@@ -26,17 +26,17 @@
       "model": "projectred_expansion:block/auto_crafter",
       "y": 270
     },
-    "charged=true,rotation=3,working=false": {
+    "charged=false,rotation=3,working=true": {
       "model": "projectred_expansion:block/auto_crafter_state1",
       "y": 270
     },
-    "charged=false,rotation=0,working=true": {
+    "charged=true,rotation=0,working=false": {
       "model": "projectred_expansion:block/auto_crafter_state1"
     },
     "charged=true,rotation=0,working=true": {
       "model": "projectred_expansion:block/auto_crafter_state2"
     },
-    "charged=false,rotation=1,working=true": {
+    "charged=true,rotation=1,working=false": {
       "model": "projectred_expansion:block/auto_crafter_state1",
       "y": 90
     },
@@ -44,7 +44,7 @@
       "model": "projectred_expansion:block/auto_crafter_state2",
       "y": 90
     },
-    "charged=false,rotation=2,working=true": {
+    "charged=true,rotation=2,working=false": {
       "model": "projectred_expansion:block/auto_crafter_state1",
       "y": 180
     },
@@ -52,7 +52,7 @@
       "model": "projectred_expansion:block/auto_crafter_state2",
       "y": 180
     },
-    "charged=false,rotation=3,working=true": {
+    "charged=true,rotation=3,working=false": {
       "model": "projectred_expansion:block/auto_crafter_state1",
       "y": 270
     },

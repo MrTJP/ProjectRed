@@ -1,28 +1,28 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_fabrication:packaging_table"
-  },
-  "pattern": [
-    "gtg",
-    "ppp",
-    "wbw"
-  ],
   "key": {
+    "b": {
+      "tag": "forge:ingots/electrotine_alloy"
+    },
     "g": {
       "item": "minecraft:glass"
+    },
+    "p": {
+      "item": "projectred_core:plate"
     },
     "t": {
       "tag": "forge:dusts/redstone"
     },
     "w": {
       "tag": "minecraft:planks"
-    },
-    "p": {
-      "item": "projectred_core:plate"
-    },
-    "b": {
-      "tag": "forge:ingots/electrotine_alloy"
     }
+  },
+  "pattern": [
+    "gtg",
+    "ppp",
+    "wbw"
+  ],
+  "result": {
+    "item": "projectred_fabrication:packaging_table"
   }
 }

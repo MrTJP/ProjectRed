@@ -1,16 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:raw_silver_block"
+  "key": {
+    "S": {
+      "tag": "forge:raw_materials/silver"
+    }
   },
   "pattern": [
     "SSS",
     "SSS",
     "SSS"
   ],
-  "key": {
-    "S": {
-      "tag": "forge:raw_materials/silver"
-    }
+  "result": {
+    "item": "projectred_exploration:raw_silver_block"
   }
 }

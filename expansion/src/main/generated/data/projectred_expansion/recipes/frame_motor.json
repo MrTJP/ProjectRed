@@ -1,31 +1,31 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_expansion:frame_motor"
+  "key": {
+    "E": {
+      "tag": "forge:ingots/electrotine_alloy"
+    },
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "M": {
+      "item": "projectred_core:motor"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "S": {
+      "tag": "forge:stone"
+    },
+    "W": {
+      "tag": "minecraft:planks"
+    }
   },
   "pattern": [
     "WIW",
     "RMR",
     "SES"
   ],
-  "key": {
-    "I": {
-      "tag": "forge:ingots/iron"
-    },
-    "E": {
-      "tag": "forge:ingots/electrotine_alloy"
-    },
-    "M": {
-      "item": "projectred_core:motor"
-    },
-    "S": {
-      "tag": "forge:stone"
-    },
-    "R": {
-      "tag": "forge:dusts/redstone"
-    },
-    "W": {
-      "tag": "minecraft:planks"
-    }
+  "result": {
+    "item": "projectred_expansion:frame_motor"
   }
 }

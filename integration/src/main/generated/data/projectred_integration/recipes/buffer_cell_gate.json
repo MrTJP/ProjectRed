@@ -1,19 +1,11 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_integration:buffer_cell_gate"
-  },
-  "pattern": [
-    "PWP",
-    "WFW",
-    "PCC"
-  ],
   "key": {
-    "F": {
-      "item": "projectred_core:platformed_plate"
-    },
     "C": {
       "item": "projectred_core:cathode"
+    },
+    "F": {
+      "item": "projectred_core:platformed_plate"
     },
     "P": {
       "item": "projectred_core:plate"
@@ -21,5 +13,13 @@
     "W": {
       "item": "projectred_core:wired_plate"
     }
+  },
+  "pattern": [
+    "PWP",
+    "WFW",
+    "PCC"
+  ],
+  "result": {
+    "item": "projectred_integration:buffer_cell_gate"
   }
 }

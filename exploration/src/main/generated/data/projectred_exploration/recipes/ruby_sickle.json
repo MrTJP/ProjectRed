@@ -1,14 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:ruby_sickle",
-    "nbt": "{Damage:0}"
-  },
-  "pattern": [
-    " M ",
-    "  M",
-    "SM "
-  ],
   "key": {
     "M": {
       "tag": "forge:gems/ruby"
@@ -16,5 +7,14 @@
     "S": {
       "tag": "forge:rods/wooden"
     }
+  },
+  "pattern": [
+    " M ",
+    "  M",
+    "SM "
+  ],
+  "result": {
+    "item": "projectred_exploration:ruby_sickle",
+    "nbt": "{Damage:0}"
   }
 }

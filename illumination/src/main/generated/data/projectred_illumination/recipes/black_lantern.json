@@ -1,28 +1,28 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_illumination:black_lantern"
+  "key": {
+    "G": {
+      "tag": "forge:glass_panes/colorless"
+    },
+    "I": {
+      "item": "projectred_core:black_illumar"
+    },
+    "N": {
+      "tag": "forge:nuggets/gold"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    }
   },
   "pattern": [
     "PNP",
     "GIG",
     "PRP"
   ],
-  "key": {
-    "N": {
-      "tag": "forge:nuggets/gold"
-    },
-    "I": {
-      "item": "projectred_core:black_illumar"
-    },
-    "G": {
-      "tag": "forge:glass_panes/colorless"
-    },
-    "R": {
-      "tag": "forge:dusts/redstone"
-    },
-    "P": {
-      "item": "projectred_core:plate"
-    }
+  "result": {
+    "item": "projectred_illumination:black_lantern"
   }
 }

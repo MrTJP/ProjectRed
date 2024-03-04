@@ -1,11 +1,11 @@
 {
   "type": "minecraft:smelting",
-  "result": {
-    "item": "projectred_core:boule"
-  },
+  "cookingtime": 200,
+  "experience": 0.0,
   "ingredient": {
     "item": "projectred_core:sand_coal_comp"
   },
-  "experience": 0.0,
-  "cookingtime": 200
+  "result": {
+    "item": "projectred_core:boule"
+  }
 }

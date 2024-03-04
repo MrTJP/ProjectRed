@@ -1,11 +1,11 @@
 {
   "type": "minecraft:smelting",
-  "result": {
-    "item": "projectred_core:sapphire"
-  },
+  "cookingtime": 200,
+  "experience": 1.0,
   "ingredient": {
     "item": "projectred_exploration:sapphire_ore"
   },
-  "experience": 1.0,
-  "cookingtime": 200
+  "result": {
+    "item": "projectred_core:sapphire"
+  }
 }

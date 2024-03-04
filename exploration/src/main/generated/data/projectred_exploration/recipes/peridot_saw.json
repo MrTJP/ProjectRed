@@ -1,22 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:peridot_saw",
-    "nbt": "{Damage:0}"
+  "key": {
+    "M": {
+      "tag": "forge:gems/peridot"
+    },
+    "R": {
+      "item": "cb_microblock:stone_rod"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    }
   },
   "pattern": [
     "SRR",
     "SMM"
   ],
-  "key": {
-    "M": {
-      "tag": "forge:gems/peridot"
-    },
-    "S": {
-      "tag": "forge:rods/wooden"
-    },
-    "R": {
-      "item": "cb_microblock:stone_rod"
-    }
+  "result": {
+    "item": "projectred_exploration:peridot_saw",
+    "nbt": "{Damage:0}"
   }
 }

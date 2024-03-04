@@ -1,8 +1,5 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "result": {
-    "item": "projectred_transmission:purple_framed_bundled_wire"
-  },
   "ingredients": [
     {
       "tag": "projectred_transmission:framed_bundled_wire"
@@ -10,5 +7,8 @@
     {
       "tag": "forge:dyes/purple"
     }
-  ]
+  ],
+  "result": {
+    "item": "projectred_transmission:purple_framed_bundled_wire"
+  }
 }

@@ -1,13 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_core:silicon",
-    "count": 8
-  },
-  "pattern": [
-    "S",
-    "B"
-  ],
   "key": {
     "B": {
       "item": "projectred_core:boule"
@@ -15,5 +7,13 @@
     "S": {
       "item": "cb_microblock:diamond_saw"
     }
+  },
+  "pattern": [
+    "S",
+    "B"
+  ],
+  "result": {
+    "count": 8,
+    "item": "projectred_core:silicon"
   }
 }

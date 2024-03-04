@@ -3,16 +3,8 @@
     "active=false,side=0": {
       "model": "projectred_expansion:block/fire_starter"
     },
-    "active=true,side=0": {
-      "model": "projectred_expansion:block/fire_starter_active"
-    },
     "active=false,side=1": {
       "model": "projectred_expansion:block/fire_starter",
-      "x": 180,
-      "y": 180
-    },
-    "active=true,side=1": {
-      "model": "projectred_expansion:block/fire_starter_active",
       "x": 180,
       "y": 180
     },
@@ -21,17 +13,8 @@
       "x": 90,
       "y": 180
     },
-    "active=true,side=2": {
-      "model": "projectred_expansion:block/fire_starter_active",
-      "x": 90,
-      "y": 180
-    },
     "active=false,side=3": {
       "model": "projectred_expansion:block/fire_starter",
-      "x": 90
-    },
-    "active=true,side=3": {
-      "model": "projectred_expansion:block/fire_starter_active",
       "x": 90
     },
     "active=false,side=4": {
@@ -39,15 +22,32 @@
       "x": 90,
       "y": 90
     },
-    "active=true,side=4": {
-      "model": "projectred_expansion:block/fire_starter_active",
-      "x": 90,
-      "y": 90
-    },
     "active=false,side=5": {
       "model": "projectred_expansion:block/fire_starter",
       "x": 90,
       "y": 270
+    },
+    "active=true,side=0": {
+      "model": "projectred_expansion:block/fire_starter_active"
+    },
+    "active=true,side=1": {
+      "model": "projectred_expansion:block/fire_starter_active",
+      "x": 180,
+      "y": 180
+    },
+    "active=true,side=2": {
+      "model": "projectred_expansion:block/fire_starter_active",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,side=3": {
+      "model": "projectred_expansion:block/fire_starter_active",
+      "x": 90
+    },
+    "active=true,side=4": {
+      "model": "projectred_expansion:block/fire_starter_active",
+      "x": 90,
+      "y": 90
     },
     "active=true,side=5": {
       "model": "projectred_expansion:block/fire_starter_active",

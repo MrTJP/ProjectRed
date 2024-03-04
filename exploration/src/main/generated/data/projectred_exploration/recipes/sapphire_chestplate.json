@@ -1,17 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:sapphire_chestplate",
-    "nbt": "{Damage:0}"
+  "key": {
+    "M": {
+      "tag": "forge:gems/sapphire"
+    }
   },
   "pattern": [
     "M M",
     "MMM",
     "MMM"
   ],
-  "key": {
-    "M": {
-      "tag": "forge:gems/sapphire"
-    }
+  "result": {
+    "item": "projectred_exploration:sapphire_chestplate",
+    "nbt": "{Damage:0}"
   }
 }

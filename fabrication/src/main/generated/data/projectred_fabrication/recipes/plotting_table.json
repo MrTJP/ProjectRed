@@ -1,22 +1,11 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_fabrication:plotting_table"
-  },
-  "pattern": [
-    "gtg",
-    "sps",
-    "wbw"
-  ],
   "key": {
+    "b": {
+      "tag": "forge:ingots/electrotine_alloy"
+    },
     "g": {
       "item": "minecraft:glass"
-    },
-    "t": {
-      "tag": "forge:gems/sapphire"
-    },
-    "w": {
-      "tag": "minecraft:planks"
     },
     "p": {
       "item": "projectred_fabrication:blank_photomask"
@@ -24,8 +13,19 @@
     "s": {
       "item": "minecraft:stone"
     },
-    "b": {
-      "tag": "forge:ingots/electrotine_alloy"
+    "t": {
+      "tag": "forge:gems/sapphire"
+    },
+    "w": {
+      "tag": "minecraft:planks"
     }
+  },
+  "pattern": [
+    "gtg",
+    "sps",
+    "wbw"
+  ],
+  "result": {
+    "item": "projectred_fabrication:plotting_table"
   }
 }

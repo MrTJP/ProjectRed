@@ -1,8 +1,5 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "result": {
-    "item": "projectred_core:gray_illumar"
-  },
   "ingredients": [
     {
       "tag": "forge:dusts/glowstone"
@@ -16,5 +13,8 @@
     {
       "tag": "forge:dyes/gray"
     }
-  ]
+  ],
+  "result": {
+    "item": "projectred_core:gray_illumar"
+  }
 }

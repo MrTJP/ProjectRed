@@ -1,15 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_core:multimeter",
-    "nbt": "{Damage:0}"
-  },
-  "pattern": [
-    "A A",
-    "BER",
-    "BGR"
-  ],
   "key": {
+    "A": {
+      "tag": "forge:ingots/red_alloy"
+    },
     "B": {
       "tag": "forge:dyes/black"
     },
@@ -19,11 +13,17 @@
     "G": {
       "tag": "forge:dusts/glowstone"
     },
-    "A": {
-      "tag": "forge:ingots/red_alloy"
-    },
     "R": {
       "tag": "forge:dyes/red"
     }
+  },
+  "pattern": [
+    "A A",
+    "BER",
+    "BGR"
+  ],
+  "result": {
+    "item": "projectred_core:multimeter",
+    "nbt": "{Damage:0}"
   }
 }

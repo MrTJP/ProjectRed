@@ -1,16 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:basalt_wall",
-    "count": 6
+  "key": {
+    "S": {
+      "tag": "forge:stone/basalt"
+    }
   },
   "pattern": [
     "SSS",
     "SSS"
   ],
-  "key": {
-    "S": {
-      "tag": "forge:stone/basalt"
-    }
+  "result": {
+    "count": 6,
+    "item": "projectred_exploration:basalt_wall"
   }
 }

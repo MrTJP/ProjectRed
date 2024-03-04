@@ -1,19 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:white_backpack"
+  "key": {
+    "C": {
+      "item": "projectred_core:woven_cloth"
+    },
+    "D": {
+      "tag": "forge:dyes/white"
+    }
   },
   "pattern": [
     "CCC",
     "CDC",
     "CCC"
   ],
-  "key": {
-    "D": {
-      "tag": "forge:dyes/white"
-    },
-    "C": {
-      "item": "projectred_core:woven_cloth"
-    }
+  "result": {
+    "item": "projectred_exploration:white_backpack"
   }
 }

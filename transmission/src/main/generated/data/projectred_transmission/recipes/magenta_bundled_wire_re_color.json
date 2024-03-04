@@ -1,8 +1,5 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "result": {
-    "item": "projectred_transmission:magenta_bundled_wire"
-  },
   "ingredients": [
     {
       "tag": "projectred_transmission:bundled_wire"
@@ -10,5 +7,8 @@
     {
       "tag": "forge:dyes/magenta"
     }
-  ]
+  ],
+  "result": {
+    "item": "projectred_transmission:magenta_bundled_wire"
+  }
 }

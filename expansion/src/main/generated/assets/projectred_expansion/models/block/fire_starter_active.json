@@ -2,11 +2,11 @@
   "parent": "minecraft:block/cube",
   "textures": {
     "down": "projectred_expansion:block/fire_starter_bottom_active",
-    "up": "projectred_expansion:block/fire_starter_top_active",
-    "north": "projectred_expansion:block/fire_starter_front_back_active",
-    "south": "projectred_expansion:block/fire_starter_front_back_active",
     "east": "projectred_expansion:block/fire_starter_left_right_active",
-    "west": "projectred_expansion:block/fire_starter_left_right_active",
-    "particle": "projectred_expansion:block/fire_starter_front_back_active"
+    "north": "projectred_expansion:block/fire_starter_front_back_active",
+    "particle": "projectred_expansion:block/fire_starter_front_back_active",
+    "south": "projectred_expansion:block/fire_starter_front_back_active",
+    "up": "projectred_expansion:block/fire_starter_top_active",
+    "west": "projectred_expansion:block/fire_starter_left_right_active"
   }
 }

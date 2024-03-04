@@ -1,19 +1,8 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_expansion:auto_crafter"
-  },
-  "pattern": [
-    "SBS",
-    "ICI",
-    "WEW"
-  ],
   "key": {
     "B": {
       "item": "minecraft:crafting_table"
-    },
-    "I": {
-      "tag": "forge:ingots/iron"
     },
     "C": {
       "item": "minecraft:chest"
@@ -21,11 +10,22 @@
     "E": {
       "tag": "forge:ingots/electrotine_alloy"
     },
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
     "S": {
       "tag": "forge:stone"
     },
     "W": {
       "tag": "minecraft:planks"
     }
+  },
+  "pattern": [
+    "SBS",
+    "ICI",
+    "WEW"
+  ],
+  "result": {
+    "item": "projectred_expansion:auto_crafter"
   }
 }
