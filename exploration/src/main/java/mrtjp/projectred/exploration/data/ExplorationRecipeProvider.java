@@ -47,7 +47,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
         oreSmeltingRecipe(PERIDOT_ITEM.get(), List.of(PERIDOT_ORE_BLOCK.get(), DEEPSLATE_PERIDOT_ORE_BLOCK.get()), 1F);
         oreSmeltingRecipe(ELECTROTINE_DUST_ITEM.get(), List.of(ELECTROTINE_ORE_BLOCK.get(), DEEPSLATE_ELECTROTINE_ORE_BLOCK.get()), 0.7F);
         oreSmeltingRecipe(TIN_INGOT_ITEM.get(), List.of(TIN_ORE_BLOCK.get(), DEEPSLATE_TIN_ORE_BLOCK.get(), RAW_TIN_ITEM.get()), 0.7F);
-        oreSmeltingRecipe(SILVER_INGOT_ITEM.get(), List.of(SILVER_ORE_BLOCK.get(), DEEPSLATE_SILVER_ORE_BLOCK.get(), RAW_TIN_ITEM.get()), 0.7F);
+        oreSmeltingRecipe(SILVER_INGOT_ITEM.get(), List.of(SILVER_ORE_BLOCK.get(), DEEPSLATE_SILVER_ORE_BLOCK.get(), RAW_SILVER_ITEM.get()), 0.7F);
 
         // Decorative blocks
         smelting(BASALT_BLOCK.get())

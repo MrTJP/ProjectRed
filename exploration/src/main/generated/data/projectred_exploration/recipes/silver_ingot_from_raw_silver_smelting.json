@@ -3,7 +3,7 @@
   "cookingtime": 200,
   "experience": 0.7,
   "ingredient": {
-    "item": "projectred_exploration:raw_tin"
+    "item": "projectred_exploration:raw_silver"
   },
   "result": {
     "item": "projectred_exploration:silver_ingot"
