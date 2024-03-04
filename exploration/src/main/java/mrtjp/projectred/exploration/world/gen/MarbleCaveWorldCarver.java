@@ -1,13 +1,10 @@
 package mrtjp.projectred.exploration.world.gen;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
-import mrtjp.projectred.exploration.init.ExplorationBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.CarvingMask;
@@ -26,13 +23,12 @@ public class MarbleCaveWorldCarver extends CaveWorldCarver {
 
     public MarbleCaveWorldCarver(Codec<CaveCarverConfiguration> codec) {
         super(codec);
+    }
 
-        // A little awkward, but this is now NetherWorldCarver overrides this list
-        // TODO make this class generic, and intake the block for cave walls
-//        this.replaceableBlocks =  new ImmutableSet.Builder<Block>()
-//                .addAll(this.replaceableBlocks)
-//                .add(ExplorationBlocks.MARBLE_BLOCK.get())
-//                .build();
+    @Override
+    protected boolean canReplaceBlock(CaveCarverConfiguration pConfig, BlockState pState) {
+        // We must be able to carve the target wall type since we fill around every carved block
+        return super.canReplaceBlock(pConfig, pState) || pState.is(MARBLE_BLOCK.get());
     }
 
     @Override
