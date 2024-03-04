@@ -1,13 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_core:sand_coal_comp"
-  },
-  "pattern": [
-    "SSS",
-    "SCS",
-    "SSS"
-  ],
   "key": {
     "C": {
       "tag": "forge:storage_blocks/coal"
@@ -15,5 +7,13 @@
     "S": {
       "tag": "forge:sand"
     }
+  },
+  "pattern": [
+    "SSS",
+    "SCS",
+    "SSS"
+  ],
+  "result": {
+    "item": "projectred_core:sand_coal_comp"
   }
 }

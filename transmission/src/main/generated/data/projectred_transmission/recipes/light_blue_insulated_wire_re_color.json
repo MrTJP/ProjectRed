@@ -1,8 +1,5 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "result": {
-    "item": "projectred_transmission:light_blue_insulated_wire"
-  },
   "ingredients": [
     {
       "tag": "projectred_transmission:insulated_wire"
@@ -10,5 +7,8 @@
     {
       "tag": "forge:dyes/light_blue"
     }
-  ]
+  ],
+  "result": {
+    "item": "projectred_transmission:light_blue_insulated_wire"
+  }
 }

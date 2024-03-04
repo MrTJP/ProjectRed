@@ -1,16 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:ruby_block_wall",
-    "count": 6
+  "key": {
+    "S": {
+      "tag": "forge:storage_blocks/ruby"
+    }
   },
   "pattern": [
     "SSS",
     "SSS"
   ],
-  "key": {
-    "S": {
-      "tag": "forge:storage_blocks/ruby"
-    }
+  "result": {
+    "count": 6,
+    "item": "projectred_exploration:ruby_block_wall"
   }
 }

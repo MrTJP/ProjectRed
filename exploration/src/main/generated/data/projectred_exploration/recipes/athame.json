@@ -1,13 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:athame",
-    "nbt": "{Damage:0}"
-  },
-  "pattern": [
-    "S",
-    "W"
-  ],
   "key": {
     "S": {
       "tag": "forge:ingots/silver"
@@ -15,5 +7,13 @@
     "W": {
       "tag": "forge:rods/wooden"
     }
+  },
+  "pattern": [
+    "S",
+    "W"
+  ],
+  "result": {
+    "item": "projectred_exploration:athame",
+    "nbt": "{Damage:0}"
   }
 }

@@ -1,17 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:ruby_leggings",
-    "nbt": "{Damage:0}"
+  "key": {
+    "M": {
+      "tag": "forge:gems/ruby"
+    }
   },
   "pattern": [
     "MMM",
     "M M",
     "M M"
   ],
-  "key": {
-    "M": {
-      "tag": "forge:gems/ruby"
-    }
+  "result": {
+    "item": "projectred_exploration:ruby_leggings",
+    "nbt": "{Damage:0}"
   }
 }

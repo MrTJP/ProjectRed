@@ -1,25 +1,25 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_illumination:magenta_fallout_light"
+  "key": {
+    "C": {
+      "item": "minecraft:iron_bars"
+    },
+    "I": {
+      "item": "projectred_core:magenta_illumar"
+    },
+    "N": {
+      "tag": "forge:nuggets/gold"
+    },
+    "P": {
+      "item": "projectred_core:conductive_plate"
+    }
   },
   "pattern": [
     "CCC",
     "CIC",
     "NPN"
   ],
-  "key": {
-    "N": {
-      "tag": "forge:nuggets/gold"
-    },
-    "I": {
-      "item": "projectred_core:magenta_illumar"
-    },
-    "C": {
-      "item": "minecraft:iron_bars"
-    },
-    "P": {
-      "item": "projectred_core:conductive_plate"
-    }
+  "result": {
+    "item": "projectred_illumination:magenta_fallout_light"
   }
 }

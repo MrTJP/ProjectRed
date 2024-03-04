@@ -1,22 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_illumination:black_inverted_illumar_lamp"
+  "key": {
+    "G": {
+      "tag": "forge:glass_panes/colorless"
+    },
+    "I": {
+      "item": "projectred_core:black_illumar"
+    },
+    "R": {
+      "item": "minecraft:redstone_torch"
+    }
   },
   "pattern": [
     "GIG",
     "GIG",
     "GRG"
   ],
-  "key": {
-    "I": {
-      "item": "projectred_core:black_illumar"
-    },
-    "G": {
-      "tag": "forge:glass_panes/colorless"
-    },
-    "R": {
-      "item": "minecraft:redstone_torch"
-    }
+  "result": {
+    "item": "projectred_illumination:black_inverted_illumar_lamp"
   }
 }

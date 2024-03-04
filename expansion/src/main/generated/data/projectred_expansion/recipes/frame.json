@@ -1,14 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_expansion:frame",
-    "count": 8
-  },
-  "pattern": [
-    "SLS",
-    "LSL",
-    "SLS"
-  ],
   "key": {
     "L": {
       "tag": "minecraft:logs"
@@ -16,5 +7,14 @@
     "S": {
       "item": "minecraft:stick"
     }
+  },
+  "pattern": [
+    "SLS",
+    "LSL",
+    "SLS"
+  ],
+  "result": {
+    "count": 8,
+    "item": "projectred_expansion:frame"
   }
 }

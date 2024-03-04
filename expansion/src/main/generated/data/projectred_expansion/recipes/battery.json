@@ -1,14 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_expansion:battery",
-    "nbt": "{Damage:0}"
-  },
-  "pattern": [
-    "ETE",
-    "ECE",
-    "ETE"
-  ],
   "key": {
     "C": {
       "tag": "forge:ingots/copper"
@@ -19,5 +10,14 @@
     "T": {
       "tag": "forge:ingots/tin"
     }
+  },
+  "pattern": [
+    "ETE",
+    "ECE",
+    "ETE"
+  ],
+  "result": {
+    "item": "projectred_expansion:battery",
+    "nbt": "{Damage:0}"
   }
 }

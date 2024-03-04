@@ -1,11 +1,11 @@
 {
   "type": "minecraft:smelting",
-  "result": {
-    "item": "projectred_fabrication:rough_silicon_wafer"
-  },
+  "cookingtime": 200,
+  "experience": 0.0,
   "ingredient": {
     "item": "projectred_core:silicon"
   },
-  "experience": 0.0,
-  "cookingtime": 200
+  "result": {
+    "item": "projectred_fabrication:rough_silicon_wafer"
+  }
 }

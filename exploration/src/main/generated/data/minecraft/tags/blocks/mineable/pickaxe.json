@@ -1,5 +1,4 @@
 {
-  "replace": false,
   "values": [
     "projectred_exploration:ruby_ore",
     "projectred_exploration:deepslate_ruby_ore",
@@ -22,8 +21,8 @@
     "projectred_exploration:peridot_block",
     "projectred_exploration:electrotine_block",
     "projectred_exploration:raw_tin_block",
-    "projectred_exploration:tin_block",
     "projectred_exploration:raw_silver_block",
+    "projectred_exploration:tin_block",
     "projectred_exploration:silver_block",
     "projectred_exploration:marble_wall",
     "projectred_exploration:marble_brick_wall",

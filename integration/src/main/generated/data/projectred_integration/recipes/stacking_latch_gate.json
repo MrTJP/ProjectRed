@@ -1,22 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_integration:stacking_latch_gate"
+  "key": {
+    "C": {
+      "item": "projectred_core:cathode"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    },
+    "R": {
+      "item": "projectred_core:wired_plate"
+    }
   },
   "pattern": [
     "PCP",
     "RCR",
     "PCC"
   ],
-  "key": {
-    "C": {
-      "item": "projectred_core:cathode"
-    },
-    "R": {
-      "item": "projectred_core:wired_plate"
-    },
-    "P": {
-      "item": "projectred_core:plate"
-    }
+  "result": {
+    "item": "projectred_integration:stacking_latch_gate"
   }
 }

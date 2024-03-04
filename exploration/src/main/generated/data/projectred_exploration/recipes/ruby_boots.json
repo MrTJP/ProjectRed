@@ -1,16 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:ruby_boots",
-    "nbt": "{Damage:0}"
+  "key": {
+    "M": {
+      "tag": "forge:gems/ruby"
+    }
   },
   "pattern": [
     "M M",
     "M M"
   ],
-  "key": {
-    "M": {
-      "tag": "forge:gems/ruby"
-    }
+  "result": {
+    "item": "projectred_exploration:ruby_boots",
+    "nbt": "{Damage:0}"
   }
 }

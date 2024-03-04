@@ -1,16 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:basalt_brick_wall",
-    "count": 6
+  "key": {
+    "S": {
+      "item": "projectred_exploration:basalt_brick"
+    }
   },
   "pattern": [
     "SSS",
     "SSS"
   ],
-  "key": {
-    "S": {
-      "item": "projectred_exploration:basalt_brick"
-    }
+  "result": {
+    "count": 6,
+    "item": "projectred_exploration:basalt_brick_wall"
   }
 }

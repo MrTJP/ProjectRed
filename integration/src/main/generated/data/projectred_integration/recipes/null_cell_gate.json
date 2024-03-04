@@ -1,13 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_integration:null_cell_gate"
-  },
-  "pattern": [
-    "PWP",
-    "WFW",
-    "PWP"
-  ],
   "key": {
     "F": {
       "item": "projectred_core:platformed_plate"
@@ -18,5 +10,13 @@
     "W": {
       "item": "projectred_core:wired_plate"
     }
+  },
+  "pattern": [
+    "PWP",
+    "WFW",
+    "PWP"
+  ],
+  "result": {
+    "item": "projectred_integration:null_cell_gate"
   }
 }

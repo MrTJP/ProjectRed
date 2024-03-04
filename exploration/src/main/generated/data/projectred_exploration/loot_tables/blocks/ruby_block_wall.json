@@ -2,14 +2,14 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "rolls": 1.0,
       "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
           "name": "projectred_exploration:ruby_block_wall"
         }
-      ]
+      ],
+      "rolls": 1.0
     }
   ]
 }

@@ -1,12 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_core:wired_plate"
-  },
-  "pattern": [
-    "W",
-    "P"
-  ],
   "key": {
     "P": {
       "item": "projectred_core:plate"
@@ -14,5 +7,12 @@
     "W": {
       "item": "projectred_transmission:red_alloy_wire"
     }
+  },
+  "pattern": [
+    "W",
+    "P"
+  ],
+  "result": {
+    "item": "projectred_core:wired_plate"
   }
 }

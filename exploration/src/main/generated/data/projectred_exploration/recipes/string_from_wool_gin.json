@@ -1,12 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "minecraft:string",
-    "count": 4
-  },
-  "pattern": [
-    "GW"
-  ],
   "key": {
     "G": {
       "item": "projectred_exploration:wool_gin"
@@ -14,5 +7,12 @@
     "W": {
       "tag": "minecraft:wool"
     }
+  },
+  "pattern": [
+    "GW"
+  ],
+  "result": {
+    "count": 4,
+    "item": "minecraft:string"
   }
 }

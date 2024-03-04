@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/cube_bottom_top",
   "textures": {
-    "side": "projectred_expansion:block/battery_box_side_8",
     "bottom": "projectred_expansion:block/battery_box_bottom",
+    "side": "projectred_expansion:block/battery_box_side_8",
     "top": "projectred_expansion:block/battery_box_top"
   }
 }

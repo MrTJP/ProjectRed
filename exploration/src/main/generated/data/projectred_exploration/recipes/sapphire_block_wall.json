@@ -1,16 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:sapphire_block_wall",
-    "count": 6
+  "key": {
+    "S": {
+      "tag": "forge:storage_blocks/sapphire"
+    }
   },
   "pattern": [
     "SSS",
     "SSS"
   ],
-  "key": {
-    "S": {
-      "tag": "forge:storage_blocks/sapphire"
-    }
+  "result": {
+    "count": 6,
+    "item": "projectred_exploration:sapphire_block_wall"
   }
 }

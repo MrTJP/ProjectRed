@@ -1,11 +1,11 @@
 {
   "type": "minecraft:smelting",
-  "result": {
-    "item": "projectred_exploration:silver_ingot"
-  },
+  "cookingtime": 200,
+  "experience": 0.7,
   "ingredient": {
     "item": "projectred_exploration:silver_ore"
   },
-  "experience": 0.7,
-  "cookingtime": 200
+  "result": {
+    "item": "projectred_exploration:silver_ingot"
+  }
 }

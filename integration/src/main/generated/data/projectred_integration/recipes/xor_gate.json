@@ -1,22 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_integration:xor_gate"
+  "key": {
+    "A": {
+      "item": "projectred_core:anode"
+    },
+    "C": {
+      "item": "projectred_core:cathode"
+    },
+    "W": {
+      "item": "projectred_core:conductive_plate"
+    }
   },
   "pattern": [
     "AWA",
     "CAC",
     "WCW"
   ],
-  "key": {
-    "C": {
-      "item": "projectred_core:cathode"
-    },
-    "A": {
-      "item": "projectred_core:anode"
-    },
-    "W": {
-      "item": "projectred_core:conductive_plate"
-    }
+  "result": {
+    "item": "projectred_integration:xor_gate"
   }
 }

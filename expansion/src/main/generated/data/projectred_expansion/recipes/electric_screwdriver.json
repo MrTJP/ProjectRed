@@ -1,14 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_expansion:electric_screwdriver",
-    "nbt": "{Damage:0}"
-  },
-  "pattern": [
-    "I  ",
-    " S ",
-    "  B"
-  ],
   "key": {
     "B": {
       "item": "projectred_expansion:battery"
@@ -19,5 +10,14 @@
     "S": {
       "tag": "forge:gems/sapphire"
     }
+  },
+  "pattern": [
+    "I  ",
+    " S ",
+    "  B"
+  ],
+  "result": {
+    "item": "projectred_expansion:electric_screwdriver",
+    "nbt": "{Damage:0}"
   }
 }

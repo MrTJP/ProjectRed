@@ -2,52 +2,52 @@
   "parent": "projectred_expansion:block/battery_box",
   "overrides": [
     {
+      "model": "projectred_expansion:item/battery_box_charge1",
       "predicate": {
         "projectred_expansion:charge_level": 1.0
-      },
-      "model": "projectred_expansion:item/battery_box_charge1"
+      }
     },
     {
+      "model": "projectred_expansion:item/battery_box_charge2",
       "predicate": {
         "projectred_expansion:charge_level": 2.0
-      },
-      "model": "projectred_expansion:item/battery_box_charge2"
+      }
     },
     {
+      "model": "projectred_expansion:item/battery_box_charge3",
       "predicate": {
         "projectred_expansion:charge_level": 3.0
-      },
-      "model": "projectred_expansion:item/battery_box_charge3"
+      }
     },
     {
+      "model": "projectred_expansion:item/battery_box_charge4",
       "predicate": {
         "projectred_expansion:charge_level": 4.0
-      },
-      "model": "projectred_expansion:item/battery_box_charge4"
+      }
     },
     {
+      "model": "projectred_expansion:item/battery_box_charge5",
       "predicate": {
         "projectred_expansion:charge_level": 5.0
-      },
-      "model": "projectred_expansion:item/battery_box_charge5"
+      }
     },
     {
+      "model": "projectred_expansion:item/battery_box_charge6",
       "predicate": {
         "projectred_expansion:charge_level": 6.0
-      },
-      "model": "projectred_expansion:item/battery_box_charge6"
+      }
     },
     {
+      "model": "projectred_expansion:item/battery_box_charge7",
       "predicate": {
         "projectred_expansion:charge_level": 7.0
-      },
-      "model": "projectred_expansion:item/battery_box_charge7"
+      }
     },
     {
+      "model": "projectred_expansion:item/battery_box_charge8",
       "predicate": {
         "projectred_expansion:charge_level": 8.0
-      },
-      "model": "projectred_expansion:item/battery_box_charge8"
+      }
     }
   ]
 }

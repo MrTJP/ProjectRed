@@ -1,13 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_transmission:neutral_bundled_wire"
-  },
-  "pattern": [
-    "SWS",
-    "WWW",
-    "SWS"
-  ],
   "key": {
     "S": {
       "tag": "forge:string"
@@ -15,5 +7,13 @@
     "W": {
       "tag": "projectred_transmission:insulated_wire"
     }
+  },
+  "pattern": [
+    "SWS",
+    "WWW",
+    "SWS"
+  ],
+  "result": {
+    "item": "projectred_transmission:neutral_bundled_wire"
   }
 }

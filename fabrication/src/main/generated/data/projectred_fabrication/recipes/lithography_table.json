@@ -1,16 +1,14 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_fabrication:lithography_table"
-  },
-  "pattern": [
-    "gtg",
-    "oio",
-    "wbw"
-  ],
   "key": {
+    "b": {
+      "tag": "forge:ingots/electrotine_alloy"
+    },
     "g": {
       "item": "minecraft:glass"
+    },
+    "i": {
+      "tag": "forge:ingots/iron"
     },
     "o": {
       "tag": "forge:obsidian"
@@ -20,12 +18,14 @@
     },
     "w": {
       "tag": "minecraft:planks"
-    },
-    "b": {
-      "tag": "forge:ingots/electrotine_alloy"
-    },
-    "i": {
-      "tag": "forge:ingots/iron"
     }
+  },
+  "pattern": [
+    "gtg",
+    "oio",
+    "wbw"
+  ],
+  "result": {
+    "item": "projectred_fabrication:lithography_table"
   }
 }

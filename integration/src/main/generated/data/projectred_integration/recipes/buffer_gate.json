@@ -1,19 +1,11 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_integration:buffer_gate"
-  },
-  "pattern": [
-    "ACA",
-    "WCW",
-    "PWP"
-  ],
   "key": {
-    "C": {
-      "item": "projectred_core:cathode"
-    },
     "A": {
       "item": "projectred_core:anode"
+    },
+    "C": {
+      "item": "projectred_core:cathode"
     },
     "P": {
       "item": "projectred_core:plate"
@@ -21,5 +13,13 @@
     "W": {
       "item": "projectred_core:conductive_plate"
     }
+  },
+  "pattern": [
+    "ACA",
+    "WCW",
+    "PWP"
+  ],
+  "result": {
+    "item": "projectred_integration:buffer_gate"
   }
 }

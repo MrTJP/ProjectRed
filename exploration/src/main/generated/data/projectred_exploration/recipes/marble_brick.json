@@ -1,16 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:marble_brick",
-    "count": 4
+  "key": {
+    "B": {
+      "item": "projectred_exploration:marble"
+    }
   },
   "pattern": [
     "BB",
     "BB"
   ],
-  "key": {
-    "B": {
-      "item": "projectred_exploration:marble"
-    }
+  "result": {
+    "count": 4,
+    "item": "projectred_exploration:marble_brick"
   }
 }

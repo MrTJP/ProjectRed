@@ -1,13 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_expansion:project_bench"
-  },
-  "pattern": [
-    "SSS",
-    "WBW",
-    "WCW"
-  ],
   "key": {
     "B": {
       "item": "minecraft:crafting_table"
@@ -21,5 +13,13 @@
     "W": {
       "tag": "minecraft:planks"
     }
+  },
+  "pattern": [
+    "SSS",
+    "WBW",
+    "WCW"
+  ],
+  "result": {
+    "item": "projectred_expansion:project_bench"
   }
 }

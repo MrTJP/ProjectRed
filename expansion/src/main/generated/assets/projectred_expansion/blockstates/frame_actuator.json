@@ -3,7 +3,7 @@
     "charged=false,side=0,working=false": {
       "model": "projectred_expansion:block/frame_actuator"
     },
-    "charged=true,side=0,working=false": {
+    "charged=false,side=0,working=true": {
       "model": "projectred_expansion:block/frame_actuator_state1"
     },
     "charged=false,side=1,working=false": {
@@ -11,7 +11,7 @@
       "x": 180,
       "y": 180
     },
-    "charged=true,side=1,working=false": {
+    "charged=false,side=1,working=true": {
       "model": "projectred_expansion:block/frame_actuator_state1",
       "x": 180,
       "y": 180
@@ -21,7 +21,7 @@
       "x": 90,
       "y": 180
     },
-    "charged=true,side=2,working=false": {
+    "charged=false,side=2,working=true": {
       "model": "projectred_expansion:block/frame_actuator_state1",
       "x": 90,
       "y": 180
@@ -30,7 +30,7 @@
       "model": "projectred_expansion:block/frame_actuator",
       "x": 90
     },
-    "charged=true,side=3,working=false": {
+    "charged=false,side=3,working=true": {
       "model": "projectred_expansion:block/frame_actuator_state1",
       "x": 90
     },
@@ -39,7 +39,7 @@
       "x": 90,
       "y": 90
     },
-    "charged=true,side=4,working=false": {
+    "charged=false,side=4,working=true": {
       "model": "projectred_expansion:block/frame_actuator_state1",
       "x": 90,
       "y": 90
@@ -49,18 +49,18 @@
       "x": 90,
       "y": 270
     },
-    "charged=true,side=5,working=false": {
+    "charged=false,side=5,working=true": {
       "model": "projectred_expansion:block/frame_actuator_state1",
       "x": 90,
       "y": 270
     },
-    "charged=false,side=0,working=true": {
+    "charged=true,side=0,working=false": {
       "model": "projectred_expansion:block/frame_actuator_state1"
     },
     "charged=true,side=0,working=true": {
       "model": "projectred_expansion:block/frame_actuator_state2"
     },
-    "charged=false,side=1,working=true": {
+    "charged=true,side=1,working=false": {
       "model": "projectred_expansion:block/frame_actuator_state1",
       "x": 180,
       "y": 180
@@ -70,7 +70,7 @@
       "x": 180,
       "y": 180
     },
-    "charged=false,side=2,working=true": {
+    "charged=true,side=2,working=false": {
       "model": "projectred_expansion:block/frame_actuator_state1",
       "x": 90,
       "y": 180
@@ -80,7 +80,7 @@
       "x": 90,
       "y": 180
     },
-    "charged=false,side=3,working=true": {
+    "charged=true,side=3,working=false": {
       "model": "projectred_expansion:block/frame_actuator_state1",
       "x": 90
     },
@@ -88,7 +88,7 @@
       "model": "projectred_expansion:block/frame_actuator_state2",
       "x": 90
     },
-    "charged=false,side=4,working=true": {
+    "charged=true,side=4,working=false": {
       "model": "projectred_expansion:block/frame_actuator_state1",
       "x": 90,
       "y": 90
@@ -98,7 +98,7 @@
       "x": 90,
       "y": 90
     },
-    "charged=false,side=5,working=true": {
+    "charged=true,side=5,working=false": {
       "model": "projectred_expansion:block/frame_actuator_state1",
       "x": 90,
       "y": 270

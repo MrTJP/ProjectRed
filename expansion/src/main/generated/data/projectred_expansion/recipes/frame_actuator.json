@@ -1,22 +1,14 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_expansion:frame_actuator"
-  },
-  "pattern": [
-    "WIW",
-    "CIC",
-    "SES"
-  ],
   "key": {
-    "I": {
-      "tag": "forge:ingots/iron"
-    },
     "C": {
       "item": "projectred_core:copper_coil"
     },
     "E": {
       "tag": "forge:ingots/electrotine_alloy"
+    },
+    "I": {
+      "tag": "forge:ingots/iron"
     },
     "S": {
       "tag": "forge:stone"
@@ -24,5 +16,13 @@
     "W": {
       "tag": "minecraft:planks"
     }
+  },
+  "pattern": [
+    "WIW",
+    "CIC",
+    "SES"
+  ],
+  "result": {
+    "item": "projectred_expansion:frame_actuator"
   }
 }

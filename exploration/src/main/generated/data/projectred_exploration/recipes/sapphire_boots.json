@@ -1,16 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_exploration:sapphire_boots",
-    "nbt": "{Damage:0}"
+  "key": {
+    "M": {
+      "tag": "forge:gems/sapphire"
+    }
   },
   "pattern": [
     "M M",
     "M M"
   ],
-  "key": {
-    "M": {
-      "tag": "forge:gems/sapphire"
-    }
+  "result": {
+    "item": "projectred_exploration:sapphire_boots",
+    "nbt": "{Damage:0}"
   }
 }

@@ -1,11 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "result": {
-    "item": "projectred_core:gold_coil"
-  },
-  "pattern": [
-    "GD"
-  ],
   "key": {
     "D": {
       "item": "projectred_core:draw_plate"
@@ -13,5 +7,11 @@
     "G": {
       "tag": "forge:ingots/gold"
     }
+  },
+  "pattern": [
+    "GD"
+  ],
+  "result": {
+    "item": "projectred_core:gold_coil"
   }
 }

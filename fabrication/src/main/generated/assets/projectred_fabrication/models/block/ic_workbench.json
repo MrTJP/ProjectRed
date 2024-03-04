@@ -2,11 +2,11 @@
   "parent": "minecraft:block/cube",
   "textures": {
     "down": "projectred_fabrication:block/ic_workbench_bottom",
-    "up": "projectred_fabrication:block/ic_workbench_top",
-    "north": "projectred_fabrication:block/ic_workbench_front",
-    "south": "projectred_fabrication:block/ic_workbench_front",
     "east": "projectred_fabrication:block/ic_workbench_side",
-    "west": "projectred_fabrication:block/ic_workbench_side",
-    "particle": "projectred_fabrication:block/ic_workbench_front"
+    "north": "projectred_fabrication:block/ic_workbench_front",
+    "particle": "projectred_fabrication:block/ic_workbench_front",
+    "south": "projectred_fabrication:block/ic_workbench_front",
+    "up": "projectred_fabrication:block/ic_workbench_top",
+    "west": "projectred_fabrication:block/ic_workbench_side"
   }
 }
