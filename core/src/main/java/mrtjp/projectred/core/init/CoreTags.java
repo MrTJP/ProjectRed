@@ -17,6 +17,9 @@ public class CoreTags {
     public static final TagKey<Item> RED_ALLOY_INGOT_TAG = ItemTags.create(new ResourceLocation("forge:ingots/red_alloy"));
     public static final TagKey<Item> ELECTROTINE_ALLOY_INGOT_TAG = ItemTags.create(new ResourceLocation("forge:ingots/electrotine_alloy"));
 
+    public static final TagKey<Item> RAW_TIN_TAG = ItemTags.create(new ResourceLocation("forge:raw_materials/tin"));
+    public static final TagKey<Item> RAW_SILVER_TAG = ItemTags.create(new ResourceLocation("forge:raw_materials/silver"));
+
     public static final TagKey<Item> RUBY_GEM_TAG = ItemTags.create(new ResourceLocation("forge:gems/ruby"));
     public static final TagKey<Item> SAPPHIRE_GEM_TAG = ItemTags.create(new ResourceLocation("forge:gems/sapphire"));
     public static final TagKey<Item> PERIDOT_GEM_TAG = ItemTags.create(new ResourceLocation("forge:gems/peridot"));
