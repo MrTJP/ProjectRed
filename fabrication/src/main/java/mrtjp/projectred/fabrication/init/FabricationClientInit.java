@@ -2,11 +2,13 @@ package mrtjp.projectred.fabrication.init;
 
 import codechicken.lib.model.ModelRegistryHelper;
 import codechicken.lib.texture.SpriteRegistryHelper;
+import codechicken.multipart.api.MultipartClientRegistry;
 import mrtjp.projectred.fabrication.gui.ICRenderTypes;
 import mrtjp.projectred.fabrication.gui.screen.inventory.LithographyTableScreen;
 import mrtjp.projectred.fabrication.gui.screen.inventory.PackagingTableScreen;
 import mrtjp.projectred.fabrication.gui.screen.inventory.PlottingTableScreen;
 import mrtjp.projectred.integration.client.GatePartItemRenderer;
+import mrtjp.projectred.integration.client.GatePartRenderer;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -30,6 +32,9 @@ public class FabricationClientInit {
         // Register sprites
         SpriteRegistryHelper iconRegister = new SpriteRegistryHelper();
         iconRegister.addIIconRegister(ICRenderTypes::registerIcons);
+
+        // Register part renderers
+        MultipartClientRegistry.register(FabricationParts.FABRICATED_GATE_PART.get(), GatePartRenderer.INSTANCE);
 
         // Register models
         ModelRegistryHelper modelRegistryHelper = new ModelRegistryHelper();
