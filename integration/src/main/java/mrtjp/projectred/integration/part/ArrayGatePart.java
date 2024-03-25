@@ -11,6 +11,7 @@ import codechicken.multipart.api.RedstoneInteractions;
 import codechicken.multipart.api.part.MultiPart;
 import codechicken.multipart.api.part.redstone.FaceRedstonePart;
 import codechicken.multipart.block.BlockMultipart;
+import codechicken.multipart.util.MultipartPlaceContext;
 import com.google.common.collect.ImmutableSet;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.Configurator;
@@ -21,7 +22,6 @@ import mrtjp.projectred.integration.GateType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -252,18 +252,22 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
     //endregion
 
     //region Multipart properties
+
     @Override
-    public void preparePlacement(@Nullable Player player, BlockPos pos, int side) {
-        super.preparePlacement(player, pos, side);
-        if (canCross() && player != null) {
+    public boolean preparePlacement(MultipartPlaceContext context) {
+        if (!super.preparePlacement(context)) return false;
+
+        if (canCross() && context.getPlayer() != null) {
+            BlockPos onPos = context.getClickedPos().relative(context.getClickedFace().getOpposite());
             // Note: tile() is not available yet, must access from player.level
-            MultiPart tpart = BlockMultipart.getPart(player.level, pos, getSide()^1);
+            MultiPart tpart = BlockMultipart.getPart(context.getPlayer().getLevel(), onPos, getSide()^1);
             if (tpart instanceof ArrayGatePart part) {
                 if (part.getGateType() == getGateType() && (part.getRotation() & 1) == (getRotation() & 1)) {
                     setRotation((getRotation() + 1) % 4);
                 }
             }
         }
+        return true;
     }
 
     @Override

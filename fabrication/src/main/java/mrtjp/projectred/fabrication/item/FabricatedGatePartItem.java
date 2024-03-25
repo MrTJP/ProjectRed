@@ -1,8 +1,9 @@
 package mrtjp.projectred.fabrication.item;
 
 import mrtjp.projectred.integration.GateType;
-import mrtjp.projectred.integration.item.GatePartItem;
+import mrtjp.projectred.integration.item.BaseGatePartItem;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -10,10 +11,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class FabricatedGatePartItem extends GatePartItem {
+public class FabricatedGatePartItem extends BaseGatePartItem {
 
     public FabricatedGatePartItem(GateType gateType) {
-        super(gateType);
+        super(new Item.Properties(), gateType); // No creative tab
     }
 
     @Override

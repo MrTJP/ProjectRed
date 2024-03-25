@@ -6,7 +6,7 @@ import codechicken.lib.render.item.IItemRenderer;
 import codechicken.lib.util.TransformUtils;
 import codechicken.lib.vec.RedundantTransformation;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mrtjp.projectred.integration.item.GatePartItem;
+import mrtjp.projectred.integration.item.BaseGatePartItem;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -40,7 +40,7 @@ public class GatePartItemRenderer implements IItemRenderer {
     @Override
     public void renderItem(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack mStack, MultiBufferSource getter, int packedLight, int packedOverlay) {
 
-        if (!(stack.getItem() instanceof GatePartItem gateItem)) return;
+        if (!(stack.getItem() instanceof BaseGatePartItem gateItem)) return;
 
         CCRenderState ccrs = CCRenderState.instance();
         ccrs.reset();

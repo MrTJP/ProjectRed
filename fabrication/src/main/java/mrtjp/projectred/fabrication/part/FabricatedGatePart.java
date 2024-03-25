@@ -2,20 +2,20 @@ package mrtjp.projectred.fabrication.part;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.multipart.util.MultipartPlaceContext;
 import mrtjp.fengine.api.ICFlatMap;
 import mrtjp.projectred.core.BundledSignalsLib;
+import mrtjp.projectred.fabrication.editor.EditorDataUtils;
 import mrtjp.projectred.fabrication.engine.ICSimulationContainer;
 import mrtjp.projectred.fabrication.engine.InterfaceSpec;
 import mrtjp.projectred.fabrication.engine.PRFabricationEngine;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.part.BundledGatePart;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
 import static mrtjp.projectred.fabrication.editor.EditorDataUtils.*;
@@ -23,9 +23,10 @@ import static mrtjp.projectred.fabrication.editor.EditorDataUtils.*;
 public class FabricatedGatePart extends BundledGatePart {
 
     private final ICSimulationContainer simulationContainer = new ICSimulationContainer();
-    private String icName = "untitled";
     private final InterfaceSpec ifSpec = new InterfaceSpec();
 
+    private CompoundTag itemStackTag = new CompoundTag();
+    private String icName = "untitled";
     private long simulationTimeStart = -1L;
 
     public FabricatedGatePart() {
@@ -33,24 +34,31 @@ public class FabricatedGatePart extends BundledGatePart {
     }
 
     @Override
-    public void preparePlacement(@Nullable Player player, BlockPos pos, int side) {
-        super.preparePlacement(player, pos, side);
+    public boolean preparePlacement(MultipartPlaceContext context) {
 
-        if (player == null || player.level.isClientSide) return;
+        if (!super.preparePlacement(context)) return false;
 
-        ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND); // TODO handle offhand
+        if (context.getPlayer() == null || context.getPlayer().getLevel().isClientSide()) return false;
+
+        ItemStack stack = context.getItemInHand();
         if (stack.isEmpty() || !stack.hasTag()) {
             LOGGER.warn("Gate placement issue: no NBT on gate item");
-            return;
+            return false;
         }
 
         CompoundTag tag = stack.getTag();
-        if (tag != null) {
-            icName = tag.getString(KEY_IC_NAME);
-            ICFlatMap flatMap = PRFabricationEngine.instance.deserializeFlatMap(tag.getString(KEY_FLAT_MAP));
-            simulationContainer.setFlatMap(flatMap);
-            ifSpec.loadFrom(tag, KEY_IO_SPEC);
+        if (!EditorDataUtils.hasFabricationTarget(tag)) {
+            LOGGER.warn("Gate placement issue: no fabrication target in gate item");
+            return false;
         }
+
+        itemStackTag = EditorDataUtils.createFabricationCopy(tag);
+        icName = tag.getString(KEY_IC_NAME);
+        ICFlatMap flatMap = PRFabricationEngine.instance.deserializeFlatMap(tag.getString(KEY_FLAT_MAP));
+        simulationContainer.setFlatMap(flatMap);
+        ifSpec.loadFrom(tag, KEY_IO_SPEC);
+
+        return true;
     }
 
     @Override
@@ -74,6 +82,7 @@ public class FabricatedGatePart extends BundledGatePart {
     @Override
     public void writeDesc(MCDataOutput packet) {
         super.writeDesc(packet);
+        packet.writeCompoundNBT(itemStackTag); // Client needs tag for pick-blcok
         packet.writeString(icName);
         ifSpec.writeDesc(packet);
     }
@@ -81,13 +90,16 @@ public class FabricatedGatePart extends BundledGatePart {
     @Override
     public void readDesc(MCDataInput packet) {
         super.readDesc(packet);
+        itemStackTag = Objects.requireNonNullElse(packet.readCompoundNBT(), new CompoundTag());
         icName = packet.readString();
         ifSpec.readDesc(packet);
     }
 
     @Override
     public ItemStack getItem() {
-        return super.getItem(); //TODO set nbt on this item
+        ItemStack stack = super.getItem();
+        stack.setTag(itemStackTag);
+        return stack;
     }
 
     //region RedstoneGatePart overrides
