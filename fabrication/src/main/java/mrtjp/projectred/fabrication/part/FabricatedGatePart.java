@@ -28,6 +28,7 @@ public class FabricatedGatePart extends BundledGatePart {
     private CompoundTag itemStackTag = new CompoundTag();
     private String icName = "untitled";
     private long simulationTimeStart = -1L;
+    private int compileFormat = 0;
 
     public FabricatedGatePart() {
         super(GateType.FABRICATED_GATE);
@@ -47,8 +48,8 @@ public class FabricatedGatePart extends BundledGatePart {
         }
 
         CompoundTag tag = stack.getTag();
-        if (!EditorDataUtils.hasFabricationTarget(tag)) {
-            LOGGER.warn("Gate placement issue: no fabrication target in gate item");
+        if (!EditorDataUtils.canFabricate(tag)) {
+            LOGGER.warn("Gate placement issue: gate item contains invalid data");
             return false;
         }
 
@@ -57,6 +58,7 @@ public class FabricatedGatePart extends BundledGatePart {
         ICFlatMap flatMap = PRFabricationEngine.instance.deserializeFlatMap(tag.getString(KEY_FLAT_MAP));
         simulationContainer.setFlatMap(flatMap);
         ifSpec.loadFrom(tag, KEY_IO_SPEC);
+        compileFormat = tag.getInt(KEY_COMPILE_FORMAT);
 
         return true;
     }
@@ -66,6 +68,7 @@ public class FabricatedGatePart extends BundledGatePart {
         super.save(tag);
         tag.putString("ic_name", icName);
         tag.putLong("sim_time", level().getGameTime() - simulationTimeStart);
+        tag.putInt("compile_format", compileFormat);
         simulationContainer.save(tag);
         ifSpec.saveTo(tag, "io_spec");
     }
@@ -75,7 +78,12 @@ public class FabricatedGatePart extends BundledGatePart {
         super.load(tag);
         icName = tag.getString("ic_name");
         simulationTimeStart = tag.getLong("sim_time");
-        simulationContainer.load(tag);
+        compileFormat = tag.getInt("compile_format");
+        if (compileFormat == PRFabricationEngine.COMPILE_FORMAT) {
+            simulationContainer.load(tag);
+        } else {
+            LOGGER.warn("Fabricated Gate compile format mismatch ({} vs {})", compileFormat, PRFabricationEngine.COMPILE_FORMAT);
+        }
         ifSpec.loadFrom(tag, "io_spec");
     }
 
@@ -85,6 +93,7 @@ public class FabricatedGatePart extends BundledGatePart {
         packet.writeCompoundNBT(itemStackTag); // Client needs tag for pick-blcok
         packet.writeString(icName);
         ifSpec.writeDesc(packet);
+        packet.writeInt(compileFormat);
     }
 
     @Override
@@ -93,6 +102,7 @@ public class FabricatedGatePart extends BundledGatePart {
         itemStackTag = Objects.requireNonNullElse(packet.readCompoundNBT(), new CompoundTag());
         icName = packet.readString();
         ifSpec.readDesc(packet);
+        compileFormat = packet.readInt();
     }
 
     @Override
@@ -161,6 +171,11 @@ public class FabricatedGatePart extends BundledGatePart {
     @Override
     public String getGateName() {
         return icName;
+    }
+
+    @Override
+    public boolean hasRuntimeError() {
+        return compileFormat != PRFabricationEngine.COMPILE_FORMAT;
     }
     //endregion
 

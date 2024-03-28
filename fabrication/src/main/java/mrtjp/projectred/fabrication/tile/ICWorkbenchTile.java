@@ -4,6 +4,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.Vector3;
+import codechicken.lib.world.IChunkLoadTile;
 import mrtjp.projectred.core.CoreNetwork;
 import mrtjp.projectred.core.tile.IPacketReceiverTile;
 import mrtjp.projectred.core.tile.ProjectRedTile;
@@ -21,6 +22,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.HashMap;
@@ -32,7 +34,7 @@ import java.util.stream.Collectors;
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
 import static mrtjp.projectred.fabrication.init.FabricationItems.IC_BLUEPRINT_ITEM;
 
-public class ICWorkbenchTile extends ProjectRedTile implements IPacketReceiverTile, IICWorkbenchEditorNetwork {
+public class ICWorkbenchTile extends ProjectRedTile implements IPacketReceiverTile, IICWorkbenchEditorNetwork, IChunkLoadTile {
 
     private static final int KEY_CLIENT_OPENED_SCREEN = 0;
     private static final int KEY_CLIENT_CLOSED_SCREEN = 1;
@@ -204,6 +206,14 @@ public class ICWorkbenchTile extends ProjectRedTile implements IPacketReceiverTi
         }
     }
 
+    //region IChunkLoadTile
+    @Override
+    public void onChunkLoad(LevelChunk chunk) {
+        editor.onChunkLoad();
+    }
+    //endregion
+
+    //region IICWorkbenchEditorNetwork
     @Override
     public MCDataOutput getBufferedStream(int streamKey, int frameKey) {
         MCDataOutput out =  editorBufferedStreams.computeIfAbsent(streamKey, k -> {
@@ -243,4 +253,5 @@ public class ICWorkbenchTile extends ProjectRedTile implements IPacketReceiverTi
     public long getGameTime() {
         return getLevel().getGameTime();
     }
+    //endregion
 }
