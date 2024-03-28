@@ -2,6 +2,7 @@ package mrtjp.projectred.fabrication.editor;
 
 import mrtjp.fengine.TileCoord;
 import mrtjp.projectred.fabrication.engine.InterfaceSpec;
+import mrtjp.projectred.fabrication.engine.PRFabricationEngine;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -22,6 +23,8 @@ public class EditorDataUtils {
 
     // ICEditorStateMachine
     public static final String KEY_COMP_STATE = "state"; // byte
+    public static final String KEY_SIM_START_TIME = "sim_start_time"; // long
+    public static final String KEY_COMPILE_FORMAT = "compile_format"; // int
     public static final String KEY_FLAT_MAP = "flat_map"; // String
     public static final String KEY_SIMULATION = "sim_cont"; // CompoundTag
     public static final String KEY_COMPILER_LOG = "compiler_log"; // CompoundTag
@@ -54,7 +57,15 @@ public class EditorDataUtils {
     }
 
     public static boolean canFabricate(@Nullable CompoundTag tag) {
-        return hasFabricationTarget(tag) && tag.getBoolean(KEY_IS_BUILT) && getErrorCount(tag) == 0;
+        return hasFabricationTarget(tag) && isBuilt(tag) && isCompileFormatValid(tag) && getErrorCount(tag) == 0;
+    }
+
+    public static boolean isBuilt(CompoundTag tag) {
+        return tag.getBoolean(KEY_IS_BUILT);
+    }
+
+    public static boolean isCompileFormatValid(CompoundTag tag) {
+        return tag.getInt(KEY_COMPILE_FORMAT) == PRFabricationEngine.COMPILE_FORMAT;
     }
 
     public static int getErrorCount(CompoundTag tag) {
@@ -68,6 +79,7 @@ public class EditorDataUtils {
     // Creates copy of editor tag with only the data required to fabricate a gate
     public static CompoundTag createFabricationCopy(CompoundTag editorTag) {
         CompoundTag copy = new CompoundTag();
+        copy.putInt(KEY_COMPILE_FORMAT, editorTag.getInt(KEY_COMPILE_FORMAT));
         copy.putBoolean(KEY_IS_BUILT, editorTag.getBoolean(KEY_IS_BUILT));
         copy.putString(KEY_IC_NAME, editorTag.getString(KEY_IC_NAME));
         copy.putInt(KEY_TILE_COUNT, editorTag.getInt(KEY_TILE_COUNT));

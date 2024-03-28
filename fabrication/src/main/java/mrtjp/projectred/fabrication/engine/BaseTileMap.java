@@ -106,6 +106,7 @@ public class BaseTileMap implements FETileMap {
 
         for (BaseTile t : tileMap.values()) t.unbindMap();
         tileMap.clear();
+        layerToTileMap.clear();
 
         minBounds = defaultMinBounds;
         maxBounds = defaultMaxBounds;

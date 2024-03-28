@@ -118,7 +118,9 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_BUNDLED_INPUT, "Bundled input");
         add(UL_BUNDLED_OUTPUT, "Bundled output");
         add(UL_IO_NONE, "None");
-        add(UL_CANNOT_FABRICATE, "Cannot fabricate");
+        add(UL_FAB_ERR_NOT_COMPILED, "Cannot fabricate: Not compiled");
+        add(UL_FAB_ERR_COMPILE_FORMAT, "Cannot fabricate: Re-compile required");
+        add(UL_FAB_ERR_GENERIC, "Cannot fabricate");
 
         add(UL_IO_GATE_TILE, "IO Gate");
 

@@ -11,6 +11,7 @@ import codechicken.microblock.part.face.FaceMicroblockPart;
 import codechicken.multipart.api.MultipartType;
 import codechicken.multipart.api.part.*;
 import codechicken.multipart.block.TileMultipart;
+import codechicken.multipart.util.MultipartPlaceContext;
 import codechicken.multipart.util.PartRayTraceResult;
 import com.google.common.collect.ImmutableSet;
 import mrtjp.projectred.api.IConnectable;
@@ -80,9 +81,11 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
         this.type = type;
     }
 
-    public void preparePlacement(@Nullable Player player, BlockPos pos, int side) {
+    public boolean preparePlacement(MultipartPlaceContext context) {
+        int side = context.getClickedFace().ordinal();
         setSide(side ^ 1);
-        setRotation(player == null ? 0 : (Rotation.getSidedRotation(player, side) + 2) % 4);
+        setRotation(context.getPlayer() == null ? 0 : (Rotation.getSidedRotation(context.getPlayer(), side) + 2) % 4);
+        return true;
     }
 
     public final GateType getGateType() {

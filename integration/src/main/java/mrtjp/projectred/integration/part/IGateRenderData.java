@@ -46,5 +46,6 @@ public interface IGateRenderData {
 
     // Fabricated Gate
     default String getGateName() { return "???"; }
+    default boolean hasRuntimeError() { return false; }
     //@formatter:on
 }

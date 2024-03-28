@@ -14,6 +14,7 @@ import mrtjp.projectred.fabrication.engine.log.ICCompilerLog;
 import mrtjp.projectred.fabrication.engine.log.IODirectionMismatchError;
 import mrtjp.projectred.fabrication.engine.log.NoInputsError;
 import mrtjp.projectred.fabrication.engine.log.NoOutputsError;
+import net.covers1624.quack.collection.FastStream;
 import net.minecraft.nbt.CompoundTag;
 
 import javax.annotation.Nullable;
@@ -33,6 +34,7 @@ public class ICEditorStateMachine {
     public static final int KEY_COMPILER_LOG_NODE_EXECUTED = 3;
     public static final int KEY_COMPILER_LOG_PROBLEM_ADDED = 4;
     public static final int KEY_AUTO_COMPILE_STATE = 5;
+    public static final int KEY_SIM_START_TIME_CHANGED = 6;
 
     public static final int KEY_CLIENT_COMPILE_CLICKED = 10;
     public static final int KEY_CLIENT_AUTO_COMPILE_TOGGLED = 11;
@@ -60,6 +62,8 @@ public class ICEditorStateMachine {
     private final ICSimulationContainer simulationContainer = new ICSimulationContainer();
     private final ICCompilerLog compilerLog = new ICCompilerLog(this);
 
+    private int lastCompiledFormat = 0;
+    private long lastSimStartTime = 0;
     private String lastCompiledFlatMap = PRFabricationEngine.EMPTY_FLAT_MAP_SERIALIZED;
 
     private boolean autoCompileAvailable = true;
@@ -76,6 +80,8 @@ public class ICEditorStateMachine {
 
     public void save(CompoundTag tag) {
         tag.putByte(KEY_COMP_STATE, (byte) currentState);
+        tag.putInt(KEY_COMPILE_FORMAT, lastCompiledFormat);
+        tag.putLong(KEY_SIM_START_TIME, editor.getGameTime() - lastSimStartTime);
         tag.putString(KEY_FLAT_MAP, lastCompiledFlatMap);
 
         CompoundTag simTag = new CompoundTag();
@@ -92,6 +98,7 @@ public class ICEditorStateMachine {
 
     public void load(CompoundTag tag) {
         currentState = tag.getByte(KEY_COMP_STATE) & 0xFF;
+        lastCompiledFormat = tag.getInt(KEY_COMPILE_FORMAT);
         lastCompiledFlatMap = tag.getString(KEY_FLAT_MAP);
         simulationContainer.load(tag.getCompound(KEY_SIMULATION));
         compilerLog.load(tag.getCompound(KEY_COMPILER_LOG));
@@ -132,6 +139,9 @@ public class ICEditorStateMachine {
             case KEY_AUTO_COMPILE_STATE:
                 readAutoCompileState(in);
                 break;
+            case KEY_SIM_START_TIME_CHANGED:
+                lastSimStartTime = in.readLong();
+                break;
 
             // Client -> Server packets
             case KEY_CLIENT_COMPILE_CLICKED:
@@ -148,6 +158,10 @@ public class ICEditorStateMachine {
 
     public MCDataOutput getStateMachineStream(int key) {
         return editor.getStateMachineStream(key);
+    }
+
+    public void onChunkLoad() {
+        lastSimStartTime = editor.getGameTime() - lastSimStartTime;
     }
 
     //region State Machine events
@@ -195,6 +209,12 @@ public class ICEditorStateMachine {
         int acState = (autoCompileAvailable ? 0x1 : 0) | (enableAutoCompile ? 0x2 : 0);
         out.writeByte(acState);
     }
+
+    private void setLastSimStartTimeAndSend(long time) {
+        if (time == lastSimStartTime) return;
+        lastSimStartTime = time;
+        getStateMachineStream(KEY_SIM_START_TIME_CHANGED).writeLong(time);
+    }
     //endregion
 
     //region Client-side utilities
@@ -235,6 +255,10 @@ public class ICEditorStateMachine {
 
     public boolean isAutoCompileAvailable() {
         return autoCompileAvailable;
+    }
+
+    public long getSimSystemTime() {
+        return editor.getGameTime() - lastSimStartTime;
     }
     //endregion
 
@@ -382,6 +406,7 @@ public class ICEditorStateMachine {
             if (assembler.isDone()) {
                 ICFlatMap map = assembler.result();
                 assembler = null; //TODO make assemblers clearable
+                lastCompiledFormat = PRFabricationEngine.COMPILE_FORMAT;
                 lastCompiledFlatMap = PRFabricationEngine.instance.serializeFlatMap(map);
                 simulationContainer.setFlatMap(map);
 
@@ -438,7 +463,7 @@ public class ICEditorStateMachine {
                 int m = ioMask >> r*2 & 0x3;
                 if (m == 0x3) {
                     int finalR = r;
-                    List<TileCoord> coordList = ioTiles.stream()
+                    List<TileCoord> coordList = FastStream.of(ioTiles)
                             .filter(io -> io.getIOSide() == finalR)
                             .map(io -> ((BaseTile)io).getPos())
                             .toList();
@@ -459,24 +484,16 @@ public class ICEditorStateMachine {
 
     private class StateSimulating implements State {
 
-        private long lastTime = -1;
-
         @Override
         public void onTick(long time) {
-
-            // Note: Because this is always -1 initially, 1 tick will be missed on every chunk load. Not a big deal for
-            //       IC Workbench tile, because there are no external interaction. But FabricatedGateParts get around this
-            //       by saving the elapsed time to NBT, and then use IChunkLoadTile hook to convert the elapsed to new lastTime.
-            //       May be worth implementing IChunkLoadTile on workbench tile, but this is okay for now.
-            if (lastTime == -1) {
-                lastTime = time;
+            if (!checkFormat()) {
+                LOGGER.warn("Loaded simulation from incompatible format. Exiting simulation state.");
+                enterStateAndSend(STATE_AWAITING_COMPILE);
                 return;
             }
 
-            long elapsedTime = time - lastTime;
-            lastTime = time;
-
-            simulationContainer.progressTime(elapsedTime);
+            long elapsedTime = editor.getGameTime() - lastSimStartTime;
+            simulationContainer.setSystemTime(elapsedTime);
             simulationContainer.pushTime();
             propagateAndNotify();
         }
@@ -499,6 +516,10 @@ public class ICEditorStateMachine {
             if (callback != null) callback.onSimulationComplete(changeMask, simulationContainer);
         }
 
+        private boolean checkFormat() {
+            return lastCompiledFormat == PRFabricationEngine.COMPILE_FORMAT;
+        }
+
         @Override
         public void onTileMapChanged() {
             enterStateAndSend(STATE_AWAITING_COMPILE); //TODO enter initial if tile map was emptied
@@ -511,7 +532,7 @@ public class ICEditorStateMachine {
 
         @Override
         public void onStateEntered(int previousStateId) {
-            lastTime = -1;
+            setLastSimStartTimeAndSend(editor.getGameTime());
         }
     }
 

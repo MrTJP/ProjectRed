@@ -5,7 +5,6 @@ import codechicken.multipart.api.SimpleMultipartType;
 import mrtjp.projectred.fabrication.item.FabricatedGatePartItem;
 import mrtjp.projectred.fabrication.part.FabricatedGatePart;
 import mrtjp.projectred.integration.GateType;
-import mrtjp.projectred.integration.item.GatePartItem;
 import mrtjp.projectred.integration.part.GatePart;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -17,7 +16,7 @@ public class FabricationParts {
 
     public static final String ID_FABRICATED_GATE = "fabricated_gate";
 
-    public static RegistryObject<GatePartItem> FABRICATED_GATE_ITEM;
+    public static RegistryObject<FabricatedGatePartItem> FABRICATED_GATE_ITEM;
     public static RegistryObject<MultipartType<GatePart>> FABRICATED_GATE_PART;
 
     public static void register() {

@@ -1495,7 +1495,7 @@ public class GateComponentModels {
             icChipModel[orient].render(ccrs, t, icChipIcon);
         }
 
-        public void renderName(String name, PoseStack mStack, Transformation t1) {
+        public void renderName(String name, PoseStack mStack, Transformation t1, int argb) {
 
             Component nameComponent = Component.literal(name).withStyle(UNIFORM);
             Font fr = Minecraft.getInstance().font;
@@ -1519,7 +1519,7 @@ public class GateComponentModels {
             // Draw text
             mStack.pushPose();
             mStack.mulPoseMatrix(m.toMatrix4f());
-            fr.draw(mStack, nameComponent, 0, 0, 0xFFFFFFFF);
+            fr.draw(mStack, nameComponent, 0, 0, argb);
             mStack.popPose();
         }
 

@@ -3,13 +3,16 @@ package mrtjp.projectred.fabrication.engine.gates;
 import mrtjp.fengine.simulate.ByteRegister;
 import net.minecraft.nbt.CompoundTag;
 
+import java.util.Arrays;
+
 public abstract class TimedStateGateTile extends SidedRedstoneGateTile {
 
     protected int stateReg = -1;
-    protected int timeReg3 = -1;
-    protected int timeReg2 = -1;
-    protected int timeReg1 = -1;
-    protected int timeReg0 = -1;
+    protected int[] timeRegs = new int[8];
+
+    {
+        Arrays.fill(timeRegs, -1);
+    }
 
     public TimedStateGateTile(ICGateTileType gateType) {
         super(gateType);
@@ -19,30 +22,21 @@ public abstract class TimedStateGateTile extends SidedRedstoneGateTile {
     public void save(CompoundTag tag) {
         super.save(tag);
         tag.putInt("regS", stateReg);
-        tag.putInt("regT3", timeReg3);
-        tag.putInt("regT2", timeReg2);
-        tag.putInt("regT1", timeReg1);
-        tag.putInt("regT0", timeReg0);
+        tag.putIntArray("reg_time", timeRegs);
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
         stateReg = tag.getInt("regS");
-        timeReg3 = tag.getInt("regT3");
-        timeReg2 = tag.getInt("regT2");
-        timeReg1 = tag.getInt("regT1");
-        timeReg0 = tag.getInt("regT0");
+        timeRegs = tag.getIntArray("reg_time");
     }
 
     @Override
     protected void clearRegisterIds() {
         super.clearRegisterIds();
         stateReg = -1;
-        timeReg3 = -1;
-        timeReg2 = -1;
-        timeReg1 = -1;
-        timeReg0 = -1;
+        Arrays.fill(timeRegs, -1);
     }
 
     //region FETile overrides
@@ -51,31 +45,27 @@ public abstract class TimedStateGateTile extends SidedRedstoneGateTile {
     public void allocate(Allocator allocator) {
         super.allocate(allocator);
         stateReg = allocator.allocRegisterID();
-        timeReg3 = allocator.allocRegisterID();
-        timeReg2 = allocator.allocRegisterID();
-        timeReg1 = allocator.allocRegisterID();
-        timeReg0 = allocator.allocRegisterID();
+        for (int i = 0; i < 8; i++) {
+            timeRegs[i] = allocator.allocRegisterID();
+        }
     }
 
     @Override
     public void consumeRemaps(RemapProvider remapProvider) {
         super.consumeRemaps(remapProvider);
         stateReg = remapProvider.getRemappedRegisterID(stateReg);
-        timeReg3 = remapProvider.getRemappedRegisterID(timeReg3);
-        timeReg2 = remapProvider.getRemappedRegisterID(timeReg2);
-        timeReg1 = remapProvider.getRemappedRegisterID(timeReg1);
-        timeReg0 = remapProvider.getRemappedRegisterID(timeReg0);
+        for (int i = 0; i < 8; i++) {
+            timeRegs[i] = remapProvider.getRemappedRegisterID(timeRegs[i]);
+        }
     }
 
     @Override
     public void collect(Collector collector) {
         super.collect(collector);
-
         collector.addRegister(stateReg, new ByteRegister());
-        collector.addRegister(timeReg3, new ByteRegister());
-        collector.addRegister(timeReg2, new ByteRegister());
-        collector.addRegister(timeReg1, new ByteRegister());
-        collector.addRegister(timeReg0, new ByteRegister());
+        for (int timeReg : timeRegs) {
+            collector.addRegister(timeReg, new ByteRegister());
+        }
     }
 
     //endregion
