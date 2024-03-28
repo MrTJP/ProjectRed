@@ -92,9 +92,19 @@ public class ICBlueprintItem extends Item {
                     .append(Component.translatable(UL_UNIT_ERRORS, errorCount).withStyle(ChatFormatting.GRAY)));
         }
 
+        if (!isBuilt(blueprintTag)) {
+            tooltipList.add(Component.literal(" - ")
+                    .append(Component.translatable(UL_FAB_ERR_NOT_COMPILED)).withStyle(ChatFormatting.RED));
+        }
+
+        if (!isCompileFormatValid(blueprintTag)) {
+            tooltipList.add(Component.literal(" - ")
+                    .append(Component.translatable(UL_FAB_ERR_COMPILE_FORMAT)).withStyle(ChatFormatting.RED));
+        }
+
         if (!canFabricate(blueprintTag)) {
             tooltipList.add(Component.literal(" - ")
-                    .append(Component.translatable(UL_CANNOT_FABRICATE)).withStyle(ChatFormatting.RED));
+                    .append(Component.translatable(UL_FAB_ERR_GENERIC)).withStyle(ChatFormatting.RED));
         }
     }
 

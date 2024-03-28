@@ -5,6 +5,7 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.core.inventory.BaseInventory;
+import mrtjp.projectred.fabrication.editor.EditorDataUtils;
 import mrtjp.projectred.fabrication.init.FabricationBlocks;
 import mrtjp.projectred.fabrication.init.FabricationItems;
 import mrtjp.projectred.fabrication.inventory.container.LithographyTableContainer;
@@ -114,6 +115,8 @@ public class LithographyTableTile extends FabricationMachineTile {
 
         if (!(slot0.getItem() instanceof PhotomaskSetItem)) return false;
         if (!(slot1.getItem() instanceof BaseSiliconWaferItem)) return false;
+
+        if (!EditorDataUtils.canFabricate(slot0.getTag())) return false;
 
         return inventory.getItem(2).isEmpty() && inventory.getItem(3).isEmpty();
     }

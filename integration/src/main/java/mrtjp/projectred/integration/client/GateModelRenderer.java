@@ -1880,6 +1880,7 @@ public class GateModelRenderer {
                     tag.contains(KEY_FLAT_MAP);
         }
 
+        private boolean runtimeError = false;
         private String name = "untitled";
 
         public RenderFabricatedGate() {
@@ -1898,6 +1899,7 @@ public class GateModelRenderer {
         @Override
         protected void prepareInventory(@Nullable ItemStack stack) {
             if (stack == null  || !hasFabricationTarget(stack.getTag())) {
+                runtimeError = true;
                 name = "ERROR!";
                 simpleWires.sidemask = 0;
                 analogWires.sidemask = 0;
@@ -1907,6 +1909,7 @@ public class GateModelRenderer {
 
             //TODO use EditorDataUtils helpers once this class is moved to Fabrication
 
+            runtimeError = false;
             CompoundTag tag = stack.getTag();
             name = tag.getString("ic_name");
 
@@ -1945,6 +1948,7 @@ public class GateModelRenderer {
 
         @Override
         protected void prepareDynamic(IGateRenderData gate, float partialFrame) {
+            runtimeError = gate.hasRuntimeError();
             name = gate.getGateName();
         }
 
@@ -1956,7 +1960,7 @@ public class GateModelRenderer {
         public void renderCustomDynamic(CCRenderState ccrs, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
 
             // Render name
-            icHousing.renderName(name, mStack, t);
+            icHousing.renderName(name, mStack, t, runtimeError ? EnumColour.RED.argb() : EnumColour.WHITE.argb());
 
             // Render glass
             ccrs.reset();

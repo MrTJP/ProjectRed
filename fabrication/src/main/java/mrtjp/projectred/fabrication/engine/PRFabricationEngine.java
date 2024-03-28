@@ -19,21 +19,35 @@ public class PRFabricationEngine extends FabricationEngine {
     public static final int REG_IN_BASE = 0;
     public static final int REG_OUT_BASE = 64;
 
-    public static final int REG_TIME_3 = 128; // Upper 8 bits of time
-    public static final int REG_TIME_2 = 129;
-    public static final int REG_TIME_1 = 130;
-    public static final int REG_TIME_0 = 131; // Lower 8 bits of time
+    public static final int REG_TIME_7 = 128; // Upper 8 bits of time
+    public static final int REG_TIME_6 = 129;
+    public static final int REG_TIME_5 = 130;
+    public static final int REG_TIME_4 = 131;
+    public static final int REG_TIME_3 = 132;
+    public static final int REG_TIME_2 = 133;
+    public static final int REG_TIME_1 = 134;
+    public static final int REG_TIME_0 = 135; // Lower 8 bits of time
 
-    public static final int REG_ZERO = 132;
-    public static final int REG_ONE = 133;
+    public static final int REG_ZERO = 136;
+    public static final int REG_ONE = 137;
+
+    public static final int[] REG_TIME = { REG_TIME_7, REG_TIME_6, REG_TIME_5, REG_TIME_4, REG_TIME_3, REG_TIME_2, REG_TIME_1, REG_TIME_0 };
 
     public static final PRFabricationEngine instance = new PRFabricationEngine();
 
     public static final ICFlatMap EMPTY_FLAT_MAP = instance.newAssembler().result();
-    public static final ICSimulation EMPTY_SIMULATION = new ICSimulation(EMPTY_FLAT_MAP);
 
     public static final String EMPTY_FLAT_MAP_SERIALIZED = instance.serializeFlatMap(EMPTY_FLAT_MAP);
-    public static final String EMPTY_SIMULATION_SERIALIZED = instance.serializeSimulation(EMPTY_SIMULATION);
+    public static final String EMPTY_SIMULATION_SERIALIZED = instance.serializeSimulation(new ICSimulation(EMPTY_FLAT_MAP));
+
+    // Implementation-specific compilation format. A compiled flatmap is expected to have certain static registers and such
+    // in order to function. Additionally, gate classes are expected to be forward compatible. If any breaking changes need
+    // to be made, this format number should be incremented. Any incompatible compile formats should be dropped and players
+    // should be alerted. Example:
+    // * Gates already in-world with compiled designs should stop functioning with a clearly visible reason why
+    // * IC Blueprints with compiled designs should notify player that they must be re-compiled in the workbench
+    // * Etc.
+    public static final int COMPILE_FORMAT = 1;
 
     public static int inputRegisterId(int r, int i) {
         return REG_IN_BASE + r * 16 + i;
@@ -67,10 +81,9 @@ public class PRFabricationEngine extends FabricationEngine {
         }
 
         // Add time registers
-        assembler.addRegister(REG_TIME_3, new ByteRegister());
-        assembler.addRegister(REG_TIME_2, new ByteRegister());
-        assembler.addRegister(REG_TIME_1, new ByteRegister());
-        assembler.addRegister(REG_TIME_0, new ByteRegister());
+        for (int i = 0; i < 8; i++) {
+            assembler.addRegister(REG_TIME[i], new ByteRegister());
+        }
 
         // Add zero and one registers
         assembler.addRegister(REG_ZERO, new StaticByteRegister((byte) 0));

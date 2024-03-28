@@ -100,7 +100,9 @@ public class FabricationUnlocal {
     public static final String UL_BUNDLED_INPUT      = PREFIX + "tooltip.bundled_input";
     public static final String UL_BUNDLED_OUTPUT     = PREFIX + "tooltip.bundled_output";
     public static final String UL_IO_NONE            = PREFIX + "tooltip.io_none";
-    public static final String UL_CANNOT_FABRICATE   = PREFIX + "tooltip.cannot_fabricate";
+    public static final String UL_FAB_ERR_NOT_COMPILED      = PREFIX + "tooltip.fab_err.not_compiled";
+    public static final String UL_FAB_ERR_COMPILE_FORMAT    = PREFIX + "tooltip.fab_err.compile_format";
+    public static final String UL_FAB_ERR_GENERIC           = PREFIX + "tooltip.fab_err.generic";
 
     // Interfaces
     public static final String UL_INTERFACE_NC       = PREFIX + "interface.nc";
