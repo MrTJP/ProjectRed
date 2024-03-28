@@ -112,6 +112,10 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
         stateMachine.readDesc(in);
     }
 
+    public void onChunkLoad() {
+        stateMachine.onChunkLoad();
+    }
+
     private void clear() {
         tileMap.removeAll();
         stateMachine.reset();
@@ -243,6 +247,10 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
 
     public MCDataOutput getStateMachineStream(int key) {
         return network.getBufferedStream(STREAM_ID_FSM, key);
+    }
+
+    public long getGameTime() {
+        return network.getGameTime();
     }
 
     //region Server Utils

@@ -8,7 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 
 public class ICSimulationContainer {
 
-    private ICSimulation simulation = PRFabricationEngine.EMPTY_SIMULATION;
+    private ICSimulation simulation = PRFabricationEngine.instance.deserializeSimulation(PRFabricationEngine.EMPTY_SIMULATION_SERIALIZED);
 
     /**
      * Inputs to the simulation indexed by rotation (0-3).
@@ -48,6 +48,10 @@ public class ICSimulationContainer {
 
     public void setSystemTime(long systemTime) {
         this.systemTime = systemTime;
+    }
+
+    public long getSystemTime() {
+        return systemTime;
     }
 
     public void progressTime(long time) {
@@ -123,20 +127,11 @@ public class ICSimulationContainer {
     }
 
     public void pushTime() {
-
-        simulation.queueRegByteVal(PRFabricationEngine.REG_TIME_3, (byte) (systemTime >>> 24));
-        simulation.queueRegByteVal(PRFabricationEngine.REG_TIME_2, (byte) (systemTime >>> 16));
-        simulation.queueRegByteVal(PRFabricationEngine.REG_TIME_1, (byte) (systemTime >>> 8));
-        simulation.queueRegByteVal(PRFabricationEngine.REG_TIME_0, (byte) (systemTime));
+        simulation.queueRegLongVal(PRFabricationEngine.REG_TIME, 0, systemTime);
     }
 
     public void pullTime() {
-
-        systemTime = 0;
-        systemTime |= (long) (simulation.getRegByteVal(PRFabricationEngine.REG_TIME_3) & 0xFF) << 24;
-        systemTime |= (simulation.getRegByteVal(PRFabricationEngine.REG_TIME_2) & 0xFF) << 16;
-        systemTime |= (simulation.getRegByteVal(PRFabricationEngine.REG_TIME_1) & 0xFF) << 8;
-        systemTime |= (simulation.getRegByteVal(PRFabricationEngine.REG_TIME_0) & 0xFF);
+        systemTime = simulation.getRegLongVal(PRFabricationEngine.REG_TIME, 0);
     }
 
     public int pullOutputs() {
@@ -178,6 +173,14 @@ public class ICSimulationContainer {
 
     public byte pullRegisterValue(int regId) {
         return simulation.getRegByteVal(regId);
+    }
+
+    public long pullLongValue(int r7, int r6, int r5, int r4, int r3, int r2, int r1, int r0) {
+        return simulation.getRegLongVal(r7, r6, r5, r4, r3, r2, r1, r0);
+    }
+
+    public long pullLongValue(int[] r, int offset) {
+        return simulation.getRegLongVal(r, offset);
     }
 
     public void simulate() {
