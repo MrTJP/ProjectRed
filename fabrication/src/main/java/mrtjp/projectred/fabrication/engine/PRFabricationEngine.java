@@ -110,6 +110,7 @@ public class PRFabricationEngine extends FabricationEngine {
         map.put(ToggleLatchGateTile.ToggleLatchGate.class, "pr_tglatch");
         map.put(TransparentLatchGateTile.TransparentLatchGate.class, "pr_trlatch");
         map.put(TimerGateTile.TimerGate.class, "pr_timer");
+        map.put(SequencerGateTile.SequencerGate.class, "pr_seq");
 
         return map;
     }
