@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 
 public class ICEditorToolManager implements ICRenderNode.IICRenderNodeEventReceiver {
 
+    private final Vector3 lastMousePosition = new Vector3();
     private final Vector3 initialLeftMousePosition = new Vector3();
     private final Vector3 initialRightMousePosition = new Vector3();
 
@@ -87,7 +88,7 @@ public class ICEditorToolManager implements ICRenderNode.IICRenderNodeEventRecei
                 layerDownPressed = true;
                 break;
             default:
-                return false;
+                return selectedTool.toolKeyPressed(lastMousePosition, glfwKeyCode, glfwFlags);
         }
         return true;
     }
@@ -113,7 +114,7 @@ public class ICEditorToolManager implements ICRenderNode.IICRenderNodeEventRecei
                 layerDownPressed = false;
                 break;
             default:
-                return false;
+                return selectedTool.toolKeyReleased(lastMousePosition, glfwKeyCode, glfwFlags);
         }
 
         return true;
@@ -198,6 +199,7 @@ public class ICEditorToolManager implements ICRenderNode.IICRenderNodeEventRecei
 
     @Override
     public void onRenderOverlay(ICRenderNode renderNode, Vector3 mousePosition, boolean isFirstHit, CCRenderState ccrs, MultiBufferSource getter, PoseStack matrixStack) {
+        lastMousePosition.set(mousePosition); // Used to pass mouse position to tool key press events
         selectedTool.renderOverlay(mousePosition, isFirstHit, ccrs, getter, matrixStack);
     }
 

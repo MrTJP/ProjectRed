@@ -39,6 +39,14 @@ public interface IICEditorTool {
 
     void toolDeactivated();
 
+    default boolean toolKeyPressed(Vector3 mousePosition, int glfwKeyCode, int glfwFlags) {
+        return false;
+    }
+
+    default boolean toolKeyReleased(Vector3 mousePosition, int glfwKeyCode, int glfwFlags) {
+        return false;
+    }
+
     @OnlyIn(Dist.CLIENT)
     void renderOverlay(Vector3 mousePosition, boolean isFirstHit, CCRenderState ccrs, MultiBufferSource getter, PoseStack matrixStack);
 
@@ -67,13 +75,11 @@ public interface IICEditorTool {
      * Converts Cuboid from internal tile space to world space
      *
      * @param pos Position of the tile
-     * @param c Internal cuboid within bounds [0,0,0 -> 6,16,16]
+     * @param c Internal cuboid within bounds [0,0,0 -> 1, 1, 1]
      * @return Cuboid in world space
      */
     static Cuboid6 internalToGlobalCuboid(TileCoord pos, Cuboid6 c) {
         Cuboid6 box = c.copy();
-        box.min.multiply(1/16D);
-        box.max.multiply(1/16D);
         box.add(pos.x, pos.y, pos.z);
         return box;
     }

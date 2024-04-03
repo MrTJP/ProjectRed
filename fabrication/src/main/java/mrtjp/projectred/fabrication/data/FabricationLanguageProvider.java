@@ -53,14 +53,18 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_WIRE_TOOL, "Wires");
         add(UL_GATE_TOOL, "Gates");
 
-        add(UL_TOGGLE_STATE, "Toggle state");
-        add(UL_TOGGLE_IO_MODE, "Toggle IO mode");
-        add(UL_IO_MODE_INPUT, "Input");
-        add(UL_IO_MODE_OUTPUT, "Output");
-        add(UL_TOGGLE_COLOUR, "Toggle colour");
-        add(UL_TOGGLE_DELAY, "Toggle delay");
+        add(UL_ROTATE, "Rotate");
+        add(UL_REFLECT, "Reflect");
+        add(UL_SIM_INPUT, "Simulation input");
+        add(UL_SIM_OUTPUT, "Simulation output");
+        add(UL_IO_DIRECTION, "IO direction");
+        add(UL_IO_DIR_INPUT, "Input");
+        add(UL_IO_DIR_OUTPUT, "Output");
+        add(UL_SIGNAL_COLOUR, "Signal colour");
         add(UL_SIDE_ENABLED, "Side enabled");
         add(UL_SIDE_DISABLED, "Side disabled");
+        add(UL_TIME_DELAY, "Delay");
+        add(UL_DEFAULT_STATE, "Default state");
 
         add(UL_MULTIPLE_DRIVERS_TITLE, "Multiple drivers");
         add(UL_MULTIPLE_DRIVERS_DESC, "Multiple registers connected to an input:");

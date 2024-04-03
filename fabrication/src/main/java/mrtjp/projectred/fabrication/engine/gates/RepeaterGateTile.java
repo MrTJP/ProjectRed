@@ -1,66 +1,62 @@
 package mrtjp.projectred.fabrication.engine.gates;
 
-import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.Rotation;
-import codechicken.lib.vec.Transformation;
-import codechicken.lib.vec.Vector3;
+import codechicken.lib.vec.*;
 import mrtjp.fengine.simulate.ICGate;
 import mrtjp.fengine.simulate.ICSimulation;
+import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
+import mrtjp.projectred.fabrication.editor.tools.InteractionZone;
+import mrtjp.projectred.fabrication.editor.tools.SimpleInteractionZone;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
 import static mrtjp.projectred.fabrication.engine.PRFabricationEngine.REG_TIME;
-import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_TOGGLE_DELAY;
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_TIME_DELAY;
 import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_UNIT_TICKS;
 
 public class RepeaterGateTile extends TimedStateGateTile {
 
+    public static final Cuboid6[] DELAY_ZONE_BOUNDS = new Cuboid6[4];
+
     private static final int[] DELAYS = { 2, 4, 6, 8, 16, 32, 64, 128, 256 };
+
+    static {
+        for (int r = 0; r < 4; r++) {
+            Transformation t = new Scale(1/16D).with(Rotation.quarterRotations[r].at(Vector3.CENTER));
+            DELAY_ZONE_BOUNDS[r] = new Cuboid6(11.5, 2, 3, 13.5, 3, 13).apply(t);
+        }
+    }
 
     public RepeaterGateTile() {
         super(ICGateTileType.REPEATER);
     }
 
     //region GateTile overrides
-
     @Override
-    public List<Cuboid6> getInteractionZones() {
-        List<Cuboid6> zones = new LinkedList<>();
-        zones.add(new Cuboid6(1, 2, 1, 15, 3, 15));
-        Transformation rotation = Rotation.quarterRotations[getRotation()].at(new Vector3(8, 8, 8));
-        zones.forEach(c -> c.apply(rotation));
-        return zones;
+    public void buildInteractionZoneList(List<InteractionZone> zones) {
+        super.buildInteractionZoneList(zones);
+        zones.add(new SimpleInteractionZone.Builder()
+                .bounds(() -> DELAY_ZONE_BOUNDS[getRotation()])
+                .leftClickAction(() -> shiftDelay(true))
+                .rightClickAction(() -> shiftDelay(false))
+                .tooltip(toolTip -> {
+                    toolTip.add(Component.translatable(UL_TIME_DELAY)
+                            .append(Component.literal(": "))
+                            .append(Component.translatable(UL_UNIT_TICKS, DELAYS[getShape()]).withStyle(ChatFormatting.GRAY))
+                            .withStyle(ICWorkbenchEditor.UNIFORM_GRAY));
+                })
+                .build());
     }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void buildInteractionToolTip(List<Component> toolTip, int i) {
-
-        toolTip.add(Component.translatable(UL_TOGGLE_DELAY));
-        toolTip.add(Component.translatable(UL_UNIT_TICKS, DELAYS[getShape()]).withStyle(ChatFormatting.GRAY));
-    }
-
-    @Override
-    public void onInteractionZoneClicked(int i) {
-        configureAndSend();
-    }
-
     //endregion
 
-    //region RedstoneGateTile overrides
-
-    @Override
-    protected boolean cycleShape() {
-        setShape((getShape() + 1) % DELAYS.length);
-        return true;
+    protected void shiftDelay(boolean up) {
+        configureShapeAndSend((getShape() + (up ? 1 : DELAYS.length - 1)) % DELAYS.length);
     }
+
+    //region RedstoneGateTile overrides
 
     @Override
     protected int redstoneInputMask() {

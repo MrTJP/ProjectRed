@@ -3,24 +3,20 @@ package mrtjp.projectred.fabrication.engine.gates;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.Rotation;
-import codechicken.lib.vec.Transformation;
-import codechicken.lib.vec.Vector3;
+import codechicken.lib.vec.*;
 import mrtjp.fengine.api.IPathFinder;
 import mrtjp.fengine.assemble.PathFinderResult;
+import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
+import mrtjp.projectred.fabrication.editor.tools.InteractionZone;
+import mrtjp.projectred.fabrication.editor.tools.SimpleInteractionZone;
 import mrtjp.projectred.fabrication.engine.ICInterfaceType;
 import mrtjp.projectred.fabrication.engine.ICSimulationContainer;
 import mrtjp.projectred.fabrication.engine.IIOConnectionTile;
 import mrtjp.projectred.fabrication.engine.IRotatableICTile;
 import mrtjp.projectred.fabrication.engine.log.MultipleDriversError;
-import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +24,19 @@ import static mrtjp.projectred.fabrication.engine.PRFabricationEngine.*;
 import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class IOGateTile extends RedstoneGateTile implements IIOConnectionTile {
+
+    private static final Cuboid6[] INPUT_TOGGLE_ZONE_BOUNDS = new Cuboid6[4];
+    private static final Cuboid6[] DIR_ZONE_BOUNDS = new Cuboid6[4];
+    private static final Cuboid6[] COLOR_ZONE_BOUNDS = new Cuboid6[4];
+
+    static {
+        for (int r = 0; r < 4; r++) {
+            Transformation t = new Scale(1/16D).with(Rotation.quarterRotations[r].at(Vector3.CENTER));
+            INPUT_TOGGLE_ZONE_BOUNDS[r] = new Cuboid6(1, 2, 0, 15, 3, 5).apply(t);       // Toggle state of IO register
+            DIR_ZONE_BOUNDS[r]          = new Cuboid6(2, 2, 5, 6, 3, 8).apply(t);        // Toggle IO mode
+            COLOR_ZONE_BOUNDS[r]        = new Cuboid6(1, 2, 8.5, 5, 4, 12.5).apply(t);   // Toggle colour
+        }
+    }
 
     public static final int COLOUR_PACKET = 6;
 
@@ -76,6 +85,36 @@ public class IOGateTile extends RedstoneGateTile implements IIOConnectionTile {
         getWriteStream(COLOUR_PACKET).writeByte(colour);
     }
 
+    protected void toggleWorldInput() {
+        getEditor().getStateMachine().onInputRegistersChanged(getIOSide(), i -> (short) (i ^ (1<<colour)));
+    }
+
+    protected void shiftColour(boolean up) {
+        colour = (byte) ((colour + (up ? 1 : 15)) % 16);
+        sendColourUpdate();
+        getEditor().markTileChange();
+    }
+
+    protected void toggleDirection() {
+        configureShapeAndSend((getShape() + 1) % 2);
+    }
+
+    protected int getStaticOutputRegister(int colour) {
+        return outputRegisterId(getIOSide(), colour);
+    }
+
+    protected int getStaticInputRegister(int colour) {
+        return inputRegisterId(getIOSide(), colour);
+    }
+
+    //region GateTile overrides
+    @Override
+    protected boolean canRotate() {
+        return false;
+    }
+    //endregion
+
+    //region IIOConnectionTile overrides
     @Override
     public boolean isInputIOMode() {
         return getShape() == 0;
@@ -90,103 +129,49 @@ public class IOGateTile extends RedstoneGateTile implements IIOConnectionTile {
     public ICInterfaceType getInterfaceType() {
         return ICInterfaceType.BUNDLED;
     }
+    //endregion
 
-    protected void toggleWorldInput() {
-        getEditor().getStateMachine().onInputRegistersChanged(getIOSide(), i -> (short) (i ^ (1<<colour)));
-    }
-
-    protected void incrementColour() {
-        colour = (byte) ((colour + 1) % 16);
-        sendColourUpdate();
-        getEditor().markTileChange();
-    }
-
-    protected int getStaticOutputRegister(int colour) {
-        return outputRegisterId(getIOSide(), colour);
-    }
-
-    protected int getStaticInputRegister(int colour) {
-        return inputRegisterId(getIOSide(), colour);
-    }
-
+    //region BaseTile overrides
     @Override
-    public List<Cuboid6> getInteractionZones() {
-        List<Cuboid6> zones = new LinkedList<>();
+    public void buildInteractionZoneList(List<InteractionZone> zones) {
+        super.buildInteractionZoneList(zones);
 
-        zones.add(new Cuboid6(1, 2, 0, 15, 3, 5)); // Toggle state of IO register
-        zones.add(new Cuboid6(2, 2, 5, 6, 3, 8)); // Toggle IO mode
-        zones.add(new Cuboid6(1, 2, 8.5, 5, 4, 12.5));   // Toggle colour
+        // For toggling input to simulation
+        zones.add(new SimpleInteractionZone.Builder()
+                .bounds(() -> INPUT_TOGGLE_ZONE_BOUNDS[getRotation()])
+                .leftClickAction(this::toggleWorldInput)
+                .tooltip(toolTip -> {
+                    toolTip.add(Component.translatable(isInputIOMode() ? UL_SIM_INPUT : UL_SIM_OUTPUT)
+                            .append(Component.literal(": " + ((getState() & 0x44) != 0 ? "0x1" : "0x0")))
+                            .withStyle(ICWorkbenchEditor.UNIFORM_GRAY));
+                })
+                .build());
 
-        Transformation rotation = Rotation.quarterRotations[getRotation()].at(new Vector3(8, 8, 8));
-        zones.forEach(c -> c.apply(rotation));
+        // For toggling input/output direction
+        zones.add(new SimpleInteractionZone.Builder()
+                .bounds(() -> DIR_ZONE_BOUNDS[getRotation()])
+                .leftClickAction(this::toggleDirection)
+                .tooltip(toolTip -> {
+                    toolTip.add(Component.translatable(UL_IO_DIRECTION)
+                            .append(Component.literal(": "))
+                            .append(Component.translatable((isInputIOMode() ? UL_IO_DIR_INPUT : UL_IO_DIR_OUTPUT)))
+                            .withStyle(ICWorkbenchEditor.UNIFORM_GRAY));
+                })
+                .build());
 
-        return zones;
+        // For toggling colour
+        zones.add(new SimpleInteractionZone.Builder()
+                .bounds(() -> COLOR_ZONE_BOUNDS[getRotation()])
+                .leftClickAction(() -> shiftColour(true))
+                .rightClickAction(() -> shiftColour(false))
+                .tooltip(toolTip -> {
+                    toolTip.add(Component.translatable(UL_SIGNAL_COLOUR)
+                            .append(Component.literal(": "))
+                            .append(Component.translatable(EnumColour.values()[colour & 0xFF].getUnlocalizedName()))
+                            .withStyle(ICWorkbenchEditor.UNIFORM_GRAY));
+                })
+                .build());
     }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void buildInteractionToolTip(List<Component> toolTip, int i) {
-
-        switch (i) {
-            case 0:
-                toolTip.add(Component.translatable(UL_TOGGLE_STATE));
-                toolTip.add(Component.literal(((getState() & 0x44) != 0 ? "0x1" : "0x0")).withStyle(ChatFormatting.GRAY));
-                break;
-            case 1:
-                toolTip.add(Component.translatable(UL_TOGGLE_IO_MODE));
-                toolTip.add(Component.translatable((isInputIOMode() ? UL_IO_MODE_INPUT : UL_IO_MODE_OUTPUT)).withStyle(ChatFormatting.GRAY));
-                break;
-            case 2:
-                toolTip.add(Component.translatable(UL_TOGGLE_COLOUR));
-                toolTip.add(Component.translatable(EnumColour.values()[colour & 0xFF].getUnlocalizedName()).withStyle(ChatFormatting.GRAY));
-                break;
-            default:
-        }
-    }
-
-    @Override
-    public void onInteractionZoneClicked(int i) {
-
-        switch (i) {
-            case 0:
-                toggleWorldInput();
-                break;
-            case 1:
-                configureAndSend();
-                break;
-            case 2:
-                incrementColour();
-                break;
-            default:
-        }
-    }
-
-    // IGateRenderKey overrides
-
-    @Override
-    public int state2() {
-        return colour & 0xFF;
-    }
-
-    // RedstoneGateTile overrides
-
-    @Override
-    protected boolean cycleShape() {
-        setShape((getShape() + 1) % 2);
-        return true;
-    }
-
-    @Override
-    protected int redstoneOutputMask() {
-        return isInputIOMode() ? 0x0 : 0x4;
-    }
-
-    @Override
-    protected int redstoneInputMask() {
-        return isInputIOMode() ? 0x4 : 0x0;
-    }
-
-    // BaseTile overrides
 
     @Override
     public void onSimRegistersChanged(int rMask, ICSimulationContainer container) {
@@ -205,9 +190,28 @@ public class IOGateTile extends RedstoneGateTile implements IIOConnectionTile {
     protected int pullOutputMask(ICSimulationContainer container) {
         return isInputIOMode() && container.pullRegisterValue(regId) != 0 ? 0x4 : 0;
     }
+    //endregion
 
-    // FETile overrides
+    //region IGateRenderKey overrides
+    @Override
+    public int state2() {
+        return colour & 0xFF;
+    }
+    //endregion
 
+    //region RedstoneGateTile overrides
+    @Override
+    protected int redstoneOutputMask() {
+        return isInputIOMode() ? 0x0 : 0x4;
+    }
+
+    @Override
+    protected int redstoneInputMask() {
+        return isInputIOMode() ? 0x4 : 0x0;
+    }
+    //endregion
+
+    //region FETile overrides
     @Override
     public void allocate(Allocator allocator) {
         if (isInputIOMode()) { // Input from world, output into simulation
@@ -263,4 +267,5 @@ public class IOGateTile extends RedstoneGateTile implements IIOConnectionTile {
         int gateInputDir = IRotatableICTile.rotationToDir(toAbsoluteRotation(2));
         return !isInputIOMode() && inDir == gateInputDir ? Optional.of(regId) : Optional.empty();
     }
+    //endregion
 }

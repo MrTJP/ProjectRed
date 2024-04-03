@@ -1,14 +1,9 @@
 package mrtjp.projectred.fabrication.engine.gates;
 
-import codechicken.lib.vec.Cuboid6;
 import mrtjp.fengine.simulate.ICGate;
 import mrtjp.fengine.simulate.ICSimulation;
-import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -22,7 +17,6 @@ public class SRLatchGateTile extends InternalStateGateTile {
     }
 
     //region GateTile overrides
-
     @Override
     public void preparePlacement(int r) {
         super.preparePlacement(r);
@@ -30,39 +24,21 @@ public class SRLatchGateTile extends InternalStateGateTile {
     }
 
     @Override
-    public List<Cuboid6> getInteractionZones() {
-        List<Cuboid6> zones = new LinkedList<>();
-        zones.add(new Cuboid6(2, 2, 2, 14, 2.5, 14));
-        return zones;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void buildInteractionToolTip(List<Component> toolTip, int i) {
-        toolTip.add(Component.translatable("state: " + getShape()));
-    }
-
-    @Override
-    public void onInteractionZoneClicked(int i) {
-        if (cycleShape()) {
-            sendShapeUpdate();
-            notifyNeighbors(0xF);
-            getEditor().markTileChange();
-        }
-    }
-
-    //endregion
-
-    //region RedstoneGateTile overrides
-
-    @Override
-    protected boolean cycleShape() {
-        // TODO support inout connections
-//        setShape((getShape() + 1) % 4);
-        setShape(((getShape() + 1) % 2) + 2);
+    protected boolean canReflect() {
         return true;
     }
 
+    @Override
+    protected void reflectAndSend() {
+        configureShapeAndSend(getShape() ^ 1);
+    }
+    //endregion
+
+    protected void shiftModeAndSend() {
+        configureShapeAndSend(getShape() ^ 2);
+    }
+
+    //region RedstoneGateTile overrides
     @Override
     protected int redstoneInputMask() {
         return 0xA;
@@ -72,7 +48,6 @@ public class SRLatchGateTile extends InternalStateGateTile {
     protected int redstoneOutputMask() {
         return (getShape() >> 1) == 0 ? 0xF : 5;
     }
-
     //endregion
 
     @Override

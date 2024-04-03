@@ -20,6 +20,11 @@ public class BufferGateTile extends SimpleGateTile {
     }
 
     @Override
+    protected int interactMask() {
+        return 0xA;
+    }
+
+    @Override
     protected int getDeadSides() {
         return 2;
     }
@@ -27,6 +32,15 @@ public class BufferGateTile extends SimpleGateTile {
     @Override
     protected int getMaxDeadSides() {
         return 2;
+    }
+
+    @Override
+    protected int rotationToDeadSideBit(int r) {
+        return switch (r) {
+            case 1 -> 0x1;
+            case 3 -> 0x2;
+            default -> 0;
+        };
     }
 
     @Override

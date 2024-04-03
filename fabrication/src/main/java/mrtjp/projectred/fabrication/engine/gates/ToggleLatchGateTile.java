@@ -1,33 +1,56 @@
 package mrtjp.projectred.fabrication.engine.gates;
 
+import codechicken.lib.vec.*;
 import mrtjp.fengine.simulate.ICGate;
 import mrtjp.fengine.simulate.ICSimulation;
+import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
+import mrtjp.projectred.fabrication.editor.tools.InteractionZone;
+import mrtjp.projectred.fabrication.editor.tools.SimpleInteractionZone;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class ToggleLatchGateTile extends InternalStateGateTile {
+
+    private static final Cuboid6[] LEVER_ZONE_BOUNDS = new Cuboid6[4];
+
+    static {
+        for (int r = 0; r < 4; r++) {
+            Transformation t = new Scale(1/16D).with(Rotation.quarterRotations[r].at(Vector3.CENTER));
+            LEVER_ZONE_BOUNDS[r] = new Cuboid6(9, 2, 4, 13, 4, 12).apply(t);
+        }
+    }
 
     public ToggleLatchGateTile() {
         super(ICGateTileType.TOGGLE_LATCH);
     }
 
     //region GateTile overrides
-
-    //TODO interaction zones
-
+    @Override
+    public void buildInteractionZoneList(List<InteractionZone> zones) {
+        super.buildInteractionZoneList(zones);
+        zones.add(new SimpleInteractionZone.Builder()
+                .bounds(() -> LEVER_ZONE_BOUNDS[getRotation()])
+                .leftClickAction(this::toggleDefaultState)
+                .tooltip(toolTip -> {
+                    toolTip.add(Component.translatable(UL_DEFAULT_STATE)
+                            .append(Component.literal(": "))
+                            .append(Component.translatable(getShape() == 0 ? UL_TOP : UL_BOTTOM))
+                            .withStyle(ICWorkbenchEditor.UNIFORM_GRAY));
+                })
+                .build());
+    }
     //endregion
 
-    //region RedstoneGateTile overrides
-
-    @Override
-    protected boolean cycleShape() {
-        setShape((getShape() + 1) % 2);
-        return true;
+    protected void toggleDefaultState() {
+        configureShapeAndSend((getShape() + 1) % 2);
     }
 
+    //region RedstoneGateTile overrides
     @Override
     protected int redstoneInputMask() {
         return 0xA;
@@ -37,7 +60,19 @@ public class ToggleLatchGateTile extends InternalStateGateTile {
     protected int redstoneOutputMask() {
         return 5;
     }
+    //endregion
 
+    //region IGateRenderData
+    @Override
+    public int state() {
+        if (getEditor().getStateMachine().isSimulating()) {
+            return super.state();
+        }
+        // Force state to make render reflect lever pos outside of simulation.
+        // Required since renderer uses output state to determine pos, and that state is
+        // not valid until simulation starts.
+        return getShape() == 0 ? 0x10 : 0x40;
+    }
     //endregion
 
     @Override

@@ -16,18 +16,18 @@ public class TransparentLatchGateTile extends InternalStateGateTile {
 
     //region GateTile overrides
 
-    //TODO interaction zones
-
-    //endregion
-
-    //region RedstoneGateTile overrides
-
     @Override
-    protected boolean cycleShape() {
-        setShape((getShape() + 1) % 2);
+    protected boolean canReflect() {
         return true;
     }
 
+    @Override
+    protected void reflectAndSend() {
+        configureShapeAndSend((getShape() + 1) % 2);
+    }
+    //endregion
+
+    //region RedstoneGateTile overrides
     @Override
     protected int redstoneInputMask() {
         return getShape() == 0 ? 0xC : 0x6;
@@ -37,7 +37,6 @@ public class TransparentLatchGateTile extends InternalStateGateTile {
     protected int redstoneOutputMask() {
         return getShape() == 0 ? 0x3 : 0x9;
     }
-
     //endregion
 
     @Override

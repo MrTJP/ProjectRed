@@ -20,6 +20,11 @@ public class ANDGateTile extends SimpleGateTile {
     }
 
     @Override
+    protected int interactMask() {
+        return 0xE;
+    }
+
+    @Override
     protected int getDeadSides() {
         return 3;
     }
