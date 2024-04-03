@@ -79,6 +79,7 @@ public class FabricationUnlocal {
 
     // IC Tiles
     public static final String UL_IO_GATE_TILE       = PREFIX + "tiles.io_gate";
+    public static final String UL_TIMER_INTERVAL     = PREFIX + "tiles.timer.interval";
 
     // Tile Groups
     public static final String UL_TILEGROUP_REDWIRE = PREFIX + "tilegroup.redwire";
@@ -113,7 +114,7 @@ public class FabricationUnlocal {
     public static final String UL_INTERFACE_REDSTONE = PREFIX + "interface.redstone";
     public static final String UL_INTERFACE_BUNDLED  = PREFIX + "interface.bundled";
 
-    // Numbers and measurements
+    // Numbers and measurements //TODO drop this formattable ones and just do it in code
     public static final String UL_UNIT_WARNINGS          = PREFIX + "unit.warnings";
     public static final String UL_UNIT_ERRORS            = PREFIX + "unit.errors";
     public static final String UL_UNIT_TICKS             = PREFIX + "unit.ticks";
@@ -123,4 +124,6 @@ public class FabricationUnlocal {
     public static final String UL_DIMENSIONS_NM_TOTAL    = PREFIX + "dimensions.nm_total";
     public static final String UL_DIMENSIONS_TILES_TOTAL = PREFIX + "dimensions.tiles_total";
     public static final String UL_DIMENSIONS_DIES_TOTAL  = PREFIX + "dimensions.dies_total";
+
+    public static final String UL_UNIT_ONLY_TICKS        = PREFIX + "unit_only.ticks";
 }

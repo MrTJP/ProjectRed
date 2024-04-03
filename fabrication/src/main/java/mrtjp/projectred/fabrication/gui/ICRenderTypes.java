@@ -1,5 +1,6 @@
 package mrtjp.projectred.fabrication.gui;
 
+import codechicken.lib.colour.EnumColour;
 import codechicken.lib.render.BlockRenderer;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.texture.AtlasRegistrar;
@@ -18,6 +19,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.OptionalDouble;
@@ -279,19 +281,50 @@ public class ICRenderTypes {
         }
     }
 
-    public static void renderTextCenteredAt(PoseStack stack, Vector3 pos, String text, int bgColor, int textColor) {
+    public static void renderCenteredTextTopOfCuboid(Component text, Cuboid6 bounds, PoseStack stack, MultiBufferSource getter) {
+        double w = bounds.max.x - bounds.min.x;
+        double h = bounds.max.z - bounds.min.z;
+        double x = bounds.min.x + w / 2;
+        double y = bounds.max.y + 0.002;
+        double z = bounds.min.z + h / 2;
+
+        renderConstrainedCenteredText(text, stack, getter, x, y, z, w, h);
+    }
+
+    public static void renderConstrainedText(Component text, PoseStack stack, MultiBufferSource getter, double x, double y, double z, double maxW, double maxH) {
         Font fontRenderer = Minecraft.getInstance().font;
+        float h = fontRenderer.lineHeight;
+        float w = fontRenderer.width(text);
+        float s = (float) Math.min(maxW/w, maxH/h);
 
         stack.pushPose();
-
-        stack.translate(pos.x, pos.y, pos.z);
-        stack.scale(1.0f/fontRenderer.lineHeight, 1, 1.0f/fontRenderer.lineHeight);
+        stack.translate(x, y, z);
+        stack.scale(s, 1.0F, s);
         stack.mulPose(Vector3f.XP.rotationDegrees(90.0F));
 
-        fontRenderer.draw(stack, text, (float) (-fontRenderer.width(text) / 2), (float) (-fontRenderer.lineHeight / 2), textColor);
+        // Render text
+        fontRenderer.draw(stack, text, 0, 0, EnumColour.WHITE.rgba());
 
         stack.popPose();
     }
+
+    public static void renderConstrainedCenteredText(Component text, PoseStack stack, MultiBufferSource getter, double x, double y, double z, double maxW, double maxH) {
+        Font fontRenderer = Minecraft.getInstance().font;
+        float h = fontRenderer.lineHeight;
+        float w = fontRenderer.width(text);
+        float s = (float) Math.min(maxW/w, maxH/h);
+
+        stack.pushPose();
+        stack.translate(x, y, z);
+        stack.scale(s, 1.0F, s);
+        stack.mulPose(Vector3f.XP.rotationDegrees(90.0F));
+
+        // Render text ceneterd at desired position
+        fontRenderer.draw(stack, text, (float) (-fontRenderer.width(text) / 2), (float) (-fontRenderer.lineHeight / 2), EnumColour.WHITE.rgba());
+
+        stack.popPose();
+    }
+
 
     public void sortComponents(Cuboid6 c) {
 

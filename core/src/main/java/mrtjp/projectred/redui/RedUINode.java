@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.lib.Size;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
@@ -566,7 +567,8 @@ public interface RedUINode {
      * </ul>
      * @param stack The matrix stack that is translated to the parent
      * @param mouse Current mouse position, relative to the parent
-     * @param partialFrame Partial frames between ticks
+     * @param partialFrame Progress between frames ({@link Minecraft#getDeltaFrameTime()}).
+     *                     This is *not* the same as {@link Minecraft#getPartialTick()}
      */
     default void renderBackForSubtree(PoseStack stack, Point mouse, float partialFrame) {
         drawBack(stack, mouse, partialFrame);
@@ -630,7 +632,8 @@ public interface RedUINode {
      * Called once per render call prior to rendering the background via {@link RedUINode#drawBack(PoseStack, Point, float)}
      *
      * @param mouse        Mouse position in parent's coordinate space
-     * @param partialFrame Partial value representing the progress from one tick to the next
+     * @param partialFrame Progress between frames ({@link Minecraft#getDeltaFrameTime()}).
+     *                     This is *not* the same as {@link Minecraft#getPartialTick()}
      */
     default void frameUpdate(Point mouse, float partialFrame) { }
 
@@ -748,7 +751,8 @@ public interface RedUINode {
      *
      * @param stack        The matrix stack that is translated to the parent
      * @param mouse        Current mouse position, relative to the parent
-     * @param partialFrame Partial frames between ticks
+     * @param partialFrame Progress between frames ({@link Minecraft#getDeltaFrameTime()}).
+     *                     This is *not* the same as {@link Minecraft#getPartialTick()}
      */
     default void drawBack(PoseStack stack, Point mouse, float partialFrame) { }
 
@@ -757,7 +761,8 @@ public interface RedUINode {
      *
      * @param stack        The matrix stack that is translated to the parent
      * @param mouse        Current mouse position, relative to the parent
-     * @param partialFrame Partial frames between ticks
+     * @param partialFrame Progress between frames ({@link Minecraft#getDeltaFrameTime()}).
+     *                     This is *not* the same as {@link Minecraft#getPartialTick()}
      */
     default void drawFront(PoseStack stack, Point mouse, float partialFrame) { }
 

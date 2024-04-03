@@ -196,7 +196,7 @@ public class ICRenderNode extends ViewportRenderNode {
                 renderStack.translate(entry.getKey().x, y, entry.getKey().z);
                 ccrs.bind(ICRenderTypes.layersRenderType, getter, renderStack);
 
-                entry.getValue().renderTile(ccrs, RedundantTransformation.INSTANCE, partialFrame);
+                entry.getValue().renderTile(ccrs, RedundantTransformation.INSTANCE, Minecraft.getInstance().getPartialTick());
 
                 renderStack.popPose();
             }

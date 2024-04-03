@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -25,6 +26,7 @@ public class SimpleInteractionZone implements InteractionZone {
     private final int highlightColor;
     private final int boundingBoxColor;
     private final double boundingBoxLineWidth;
+    @Nullable private final Component text;
 
     private SimpleInteractionZone(Builder builder) {
         this.boundsSupplier = builder.boundsSupplier;
@@ -34,6 +36,7 @@ public class SimpleInteractionZone implements InteractionZone {
         this.highlightColor = builder.highlightColor;
         this.boundingBoxColor = builder.boundingBoxColor;
         this.boundingBoxLineWidth = builder.boundingBoxLineWidth;
+        this.text = builder.text;
     }
 
     @Override
@@ -65,16 +68,22 @@ public class SimpleInteractionZone implements InteractionZone {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void renderZone(CCRenderState ccrs, MultiBufferSource getter, PoseStack poseStack, boolean isSelected, boolean isMouseOver) {
+        Cuboid6 bounds = getBounds();
+
         ccrs.reset();
         ccrs.bind(ICRenderTypes.selectionRenderType, getter, poseStack);
         ccrs.baseColour = highlightColor;
         ccrs.alphaOverride = isSelected && isMouseOver ? 255 : isSelected ? 128 : isMouseOver ? 64 : 32;
-        BlockRenderer.renderCuboid(ccrs, getBounds(), 1);
+        BlockRenderer.renderCuboid(ccrs, bounds, 1);
 
         ccrs.reset();
         ccrs.bind(ICRenderTypes.interactionZoneLinesRenderType.apply(boundingBoxLineWidth), getter, poseStack);
         ccrs.baseColour = boundingBoxColor;
-        RenderUtils.bufferCuboidOutline(ccrs.getConsumer(), getBounds(), 1, 1, 1, 1);
+        RenderUtils.bufferCuboidOutline(ccrs.getConsumer(), bounds, 1, 1, 1, 1);
+
+        if (text != null) {
+            ICRenderTypes.renderCenteredTextTopOfCuboid(text, bounds, poseStack, getter);
+        }
     }
 
     public static class Builder {
@@ -86,6 +95,7 @@ public class SimpleInteractionZone implements InteractionZone {
         private int highlightColor = EnumColour.LIGHT_BLUE.rgba();
         private int boundingBoxColor = EnumColour.WHITE.rgba();
         private double boundingBoxLineWidth = 4.0;
+        @Nullable private Component text;
 
         public Builder bounds(Supplier<Cuboid6> boundsSupplier) {
             this.boundsSupplier = boundsSupplier;
@@ -134,6 +144,11 @@ public class SimpleInteractionZone implements InteractionZone {
 
         public Builder boundingBoxLineWidth(double width) {
             this.boundingBoxLineWidth = width;
+            return this;
+        }
+
+        public Builder text(Component text) {
+            this.text = text;
             return this;
         }
 

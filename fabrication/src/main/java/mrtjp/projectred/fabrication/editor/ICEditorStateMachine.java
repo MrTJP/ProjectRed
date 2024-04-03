@@ -408,6 +408,7 @@ public class ICEditorStateMachine {
                 assembler = null; //TODO make assemblers clearable
                 lastCompiledFormat = PRFabricationEngine.COMPILE_FORMAT;
                 lastCompiledFlatMap = PRFabricationEngine.instance.serializeFlatMap(map);
+                simulationContainer.setSystemTime(0);
                 simulationContainer.setFlatMap(map);
 
                 if (compilerLog.getErrorCount() > 0) {
