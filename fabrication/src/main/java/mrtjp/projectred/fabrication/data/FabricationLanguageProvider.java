@@ -127,6 +127,7 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_FAB_ERR_GENERIC, "Cannot fabricate");
 
         add(UL_IO_GATE_TILE, "IO Gate");
+        add(UL_TIMER_INTERVAL, "Interval");
 
         add(UL_TILEGROUP_REDWIRE, "Redwire");
         add(UL_TILEGROUP_BUNDLED, "Bundled");
@@ -148,5 +149,7 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_DIMENSIONS_NM_TOTAL, "%d nm x %d nm (%d nm^2)");
         add(UL_DIMENSIONS_TILES_TOTAL, "%d tiles x %d tiles (%d tiles^2)");
         add(UL_DIMENSIONS_DIES_TOTAL, "%d dies x %d dies (%d dies^2)");
+
+        add(UL_UNIT_ONLY_TICKS, "ticks");
     }
 }

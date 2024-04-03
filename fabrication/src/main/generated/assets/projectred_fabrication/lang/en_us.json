@@ -60,6 +60,7 @@
   "projectred_fabrication.tilegroup.redwire": "Redwire",
   "projectred_fabrication.tilegroup.timing": "Timing",
   "projectred_fabrication.tiles.io_gate": "IO Gate",
+  "projectred_fabrication.tiles.timer.interval": "Interval",
   "projectred_fabrication.tool.eraser": "Erase",
   "projectred_fabrication.tool.gates": "Gates",
   "projectred_fabrication.tool.interact": "Interact",
@@ -108,5 +109,6 @@
   "projectred_fabrication.ui.yield_calculator": "Yield Calculator",
   "projectred_fabrication.unit.errors": "%d errors",
   "projectred_fabrication.unit.ticks": "%d ticks",
-  "projectred_fabrication.unit.warnings": "%d warnings"
+  "projectred_fabrication.unit.warnings": "%d warnings",
+  "projectred_fabrication.unit_only.ticks": "ticks"
 }
