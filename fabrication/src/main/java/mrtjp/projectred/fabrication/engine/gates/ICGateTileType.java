@@ -27,7 +27,9 @@ public enum ICGateTileType {
     SR_LATCH(ICTileType.SR_LATCH_GATE,          GateModelRenderer.getRenderIndex(GateType.SR_LATCH)),
     TOGGLE_LATCH(ICTileType.TOGGLE_LATCH_GATE,  GateModelRenderer.getRenderIndex(GateType.TOGGLE_LATCH)),
     TRANSPARENT_LATCH(ICTileType.TRANSPARENT_LATCH_GATE, GateModelRenderer.getRenderIndex(GateType.TRANSPARENT_LATCH)),
-    TIMER(ICTileType.TIMER_GATE,                GateModelRenderer.getRenderIndex(GateType.TIMER));
+    TIMER(ICTileType.TIMER_GATE,                GateModelRenderer.getRenderIndex(GateType.TIMER)),
+    SEQUENCER(ICTileType.SEQUENCER_GATE,        GateModelRenderer.getRenderIndex(GateType.SEQUENCER)),
+    ;
 
     public final ICTileType tileType;
     public final int renderIndex;

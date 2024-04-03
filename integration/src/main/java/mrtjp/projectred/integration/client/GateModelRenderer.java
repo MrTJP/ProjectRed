@@ -1098,7 +1098,7 @@ public class GateModelRenderer {
         @Override
         protected void prepareDynamic(IGateRenderData gate, float partialFrame) {
             int max = gate.pointerMax() * 4;
-            float interpPointer = (gate.pointerValue() + partialFrame) / max;
+            float interpPointer = !gate.isPointerStarted() ? 0 : (gate.pointerValue() + partialFrame) / max;
             pointer.angle = interpPointer * MathHelper.pi * 2;
             if (gate.shape() == 1) pointer.angle *= -1;
         }
