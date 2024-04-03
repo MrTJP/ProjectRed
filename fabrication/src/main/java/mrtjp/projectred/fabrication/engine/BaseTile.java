@@ -3,19 +3,21 @@ package mrtjp.projectred.fabrication.engine;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.render.CCRenderState;
-import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Transformation;
 import mrtjp.fengine.TileCoord;
 import mrtjp.fengine.tiles.FETile;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
+import mrtjp.projectred.fabrication.editor.tools.InteractionZone;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+
+import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
 
 public abstract class BaseTile implements FETile {
 
@@ -23,6 +25,8 @@ public abstract class BaseTile implements FETile {
 
     private @Nullable BaseTileMap map;
     private @Nullable TileCoord pos;
+
+    private @Nullable InteractionZone[] interactionZones;
 
     public BaseTile(ICTileType tileType) {
         this.tileType = tileType;
@@ -71,10 +75,8 @@ public abstract class BaseTile implements FETile {
 
     public void read(MCDataInput in, int key) {
         switch (key) {
-            case 0:
-                readDesc(in);
-            default:
-                // Unknown key
+            case 0 -> readDesc(in);
+            default -> LOGGER.error("Invalid key: " + key);
         }
     }
 
@@ -92,9 +94,17 @@ public abstract class BaseTile implements FETile {
 
     public void onSimRegistersChanged(int rMask, ICSimulationContainer container) { }
 
-    public void onInteractionZoneClicked(int i) { }
+    public final InteractionZone[] getInteractionZones() {
+        if (interactionZones == null) {
+            LinkedList<InteractionZone> zoneList = new LinkedList<>();
+            buildInteractionZoneList(zoneList);
+            interactionZones = zoneList.toArray(new InteractionZone[0]);
+        }
+        return interactionZones;
+    }
 
-    public void onInteractionZoneActivated(int i) { }
+    public void buildInteractionZoneList(List<InteractionZone> zones) {
+    }
 
     @OnlyIn(Dist.CLIENT)
     public void buildToolTip(List<Component> toolTip) {
@@ -103,12 +113,4 @@ public abstract class BaseTile implements FETile {
 
     @OnlyIn(Dist.CLIENT)
     public void renderTile(CCRenderState ccrs, Transformation t, float partialFrame) { }
-
-    @OnlyIn(Dist.CLIENT)
-    public List<Cuboid6> getInteractionZones() {
-        return Collections.emptyList();
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public void buildInteractionToolTip(List<Component> toolTip, int i) { }
 }

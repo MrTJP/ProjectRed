@@ -16,12 +16,6 @@ public class PulseGateTile extends TimedStateGateTile {
     }
 
     //region RedstoneGateTile overrides
-
-    @Override
-    protected boolean cycleShape() {
-        return false;
-    }
-
     @Override
     protected int redstoneInputMask() {
         return 4;
@@ -31,7 +25,6 @@ public class PulseGateTile extends TimedStateGateTile {
     protected int redstoneOutputMask() {
         return 1;
     }
-
     //endregion
 
     @Override

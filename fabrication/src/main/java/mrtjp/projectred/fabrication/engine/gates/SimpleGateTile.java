@@ -1,103 +1,95 @@
 package mrtjp.projectred.fabrication.engine.gates;
 
-import codechicken.lib.vec.*;
+import codechicken.lib.vec.Cuboid6;
+import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.Scale;
+import codechicken.lib.vec.Vector3;
 import mrtjp.fengine.simulate.ICGate;
-import net.minecraft.nbt.CompoundTag;
+import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
+import mrtjp.projectred.fabrication.editor.tools.InteractionZone;
+import mrtjp.projectred.fabrication.editor.tools.SimpleInteractionZone;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_SIDE_DISABLED;
 import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_SIDE_ENABLED;
 
 public abstract class SimpleGateTile extends SidedRedstoneGateTile {
 
-    public static int[] DEAD_SIDES_MASKS = new int[] { 1, 2, 3, 0, 5, 6, 3 };
+    public static final Cuboid6[] ZONE_BOUNDS = new Cuboid6[16];
+
+    static {
+        Cuboid6[] sideBoxes = {
+            new Cuboid6(6, 2, 0, 10, 2.5, 6),
+            new Cuboid6(10, 2, 6, 16, 2.5, 10),
+            new Cuboid6(6, 2, 10, 10, 2.5, 16),
+            new Cuboid6(0, 2, 6, 6, 2.5, 10),
+        };
+
+        for (int sr = 0; sr < 4; sr++) {
+            for (int tr = 0; tr < 4; tr++) {
+                int i = sr << 2 | tr;
+                ZONE_BOUNDS[i] = sideBoxes[sr].copy()
+                        .apply(new Scale(1/16D))
+                        .apply(Rotation.quarterRotations[tr].at(Vector3.CENTER));
+            }
+        }
+    }
 
     public SimpleGateTile(ICGateTileType gateType) {
         super(gateType);
     }
 
-    @Override
-    public void save(CompoundTag tag) {
-        super.save(tag);
-    }
-
-    @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-    }
-
-    @Override
-    protected boolean cycleShape() {
-        int oldShape = getShape();
-        setShape(progressDeadSideShape(oldShape));
-        return oldShape != getShape();
-    }
-
-    private int progressDeadSideShape(int shape) {
-        if (getDeadSides() == 0) return shape;
-
-        int s = DEAD_SIDES_MASKS[shape];
-        s = ensureMaxDeadSides(s);
-        return s;
-    }
-
-    private int ensureMaxDeadSides(int s) {
-        while (Integer.bitCount(s) > getMaxDeadSides() || 32 - Integer.numberOfLeadingZeros(s) > getDeadSides()) {
-            s = DEAD_SIDES_MASKS[s];
-        }
-        return s;
-    }
-
     //region BaseTile overrides
-
     @Override
-    public List<Cuboid6> getInteractionZones() {
-        List<Cuboid6> zones = new LinkedList<>();
-        if (getDeadSides() > 0) {
-            zones.add(new Cuboid6(10, 2, 6, 16, 2.5, 10));
-            zones.add(new Cuboid6(6, 2, 10, 10, 2.5, 16));
-            zones.add(new Cuboid6(0, 2, 6, 6, 2.5, 10));
-
-            Transformation rotation = Rotation.quarterRotations[getRotation()].at(new Vector3(8, 8, 8));
-            Transformation t = isReflected() ? new Scale(1, -1, 1).with(rotation) : rotation;
-            zones.forEach(c -> c.apply(t));
-        }
-
-        return zones;
+    public void buildInteractionZoneList(List<InteractionZone> zones) {
+        super.buildInteractionZoneList(zones);
+        addDeadSidesInteractions(zones, interactMask(), this::getBoundsForIOToggleZone, this::toggleDeadSide, this::getDeadSideToolTip);
     }
 
-    @Override
     @OnlyIn(Dist.CLIENT)
-    public void buildInteractionToolTip(List<Component> toolTip, int i) {
-
-        boolean isEnabled = (getShape() & (1 << (i-1))) == 0;
-        toolTip.add(Component.translatable(isEnabled ? UL_SIDE_ENABLED : UL_SIDE_DISABLED));
+    protected Component getDeadSideToolTip(int r) {
+        boolean isEnabled = (getShape() & rotationToDeadSideBit(r)) == 0;
+        return Component.translatable(isEnabled ? UL_SIDE_ENABLED : UL_SIDE_DISABLED).withStyle(ICWorkbenchEditor.UNIFORM_GRAY);
     }
 
-    @Override
-    public void onInteractionZoneClicked(int i) {
+    protected Cuboid6 getBoundsForIOToggleZone(int r) {
+        return ZONE_BOUNDS[getRotation() << 2 | r];
+    }
+
+    protected void toggleDeadSide(int r) {
         if (getDeadSides() == 0) return;
 
         int oldShape = getShape();
-        int shape = oldShape ^ (1 << i);
-        shape = ensureMaxDeadSides(shape);
+        int shape = oldShape ^ rotationToDeadSideBit(r);
+        if (Integer.bitCount(shape) > getMaxDeadSides()) return;
 
-        if (oldShape != shape) {
-            setShape(shape);
-            sendShapeUpdate();
-            notifyNeighbors(0xF);
-            getEditor().markTileChange();
+        configureShapeAndSend(shape);
+    }
+
+    public static void addDeadSidesInteractions(List<InteractionZone> zones, int mask, Function<Integer, Cuboid6> boundsForR, Consumer<Integer> toggleForR, Function<Integer, Component> tooltipForR) {
+        for (int r = 0; r < 4; r++) {
+            if ((mask & (1 << r)) == 0) continue;
+            final int fr = r;
+            zones.add(new SimpleInteractionZone.Builder()
+                    .bounds(() -> boundsForR.apply(fr))
+                    .leftClickAction(() -> toggleForR.accept(fr))
+                    .tooltip(() -> tooltipForR.apply(fr))
+                    .build());
         }
     }
     //endregion
 
     //region SimpleGateTile logic override points
+    protected int interactMask() {
+        return 0;
+    }
 
     protected int getDeadSides() {
         return 0;
@@ -107,8 +99,8 @@ public abstract class SimpleGateTile extends SidedRedstoneGateTile {
         return getDeadSides() - 1;
     }
 
-    protected boolean isReflected() {
-        return false;
+    protected int rotationToDeadSideBit(int r) {
+        return 1 << (r - 1);
     }
 
     protected abstract ICGate createGate();
@@ -124,6 +116,5 @@ public abstract class SimpleGateTile extends SidedRedstoneGateTile {
 
         collector.addGate(gateId, createGate(), inputRegistersList, outputRegistersList);
     }
-
     //endregion
 }

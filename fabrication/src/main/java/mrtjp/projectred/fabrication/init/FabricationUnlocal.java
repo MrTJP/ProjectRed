@@ -21,14 +21,18 @@ public class FabricationUnlocal {
     public static final String UL_GATE_TOOL         = PREFIX + "tool.gates";
 
     // Tile interactions
-    public static final String UL_TOGGLE_STATE      = PREFIX + "interact.toggle_state";
-    public static final String UL_TOGGLE_IO_MODE    = PREFIX + "interact.toggle_io_mode";
-    public static final String UL_IO_MODE_INPUT     = PREFIX + "interact.io_mode.input";
-    public static final String UL_IO_MODE_OUTPUT    = PREFIX + "interact.io_mode.output";
-    public static final String UL_TOGGLE_COLOUR     = PREFIX + "interact.toggle_colour";
-    public static final String UL_TOGGLE_DELAY      = PREFIX + "interact.toggle_delay";
+    public static final String UL_ROTATE            = PREFIX + "interact.rotate";
+    public static final String UL_REFLECT           = PREFIX + "interact.reflect";
+    public static final String UL_SIM_INPUT         = PREFIX + "interact.sim_input";
+    public static final String UL_SIM_OUTPUT        = PREFIX + "interact.sim_output";
+    public static final String UL_IO_DIRECTION      = PREFIX + "interact.io_direction";
+    public static final String UL_IO_DIR_INPUT      = PREFIX + "interact.io_direction.input";
+    public static final String UL_IO_DIR_OUTPUT     = PREFIX + "interact.io_direction.output";
+    public static final String UL_SIGNAL_COLOUR     = PREFIX + "interact.io_signal_colour";
     public static final String UL_SIDE_ENABLED      = PREFIX + "interact.side_enabled";
     public static final String UL_SIDE_DISABLED     = PREFIX + "interact.side_disabled";
+    public static final String UL_TIME_DELAY        = PREFIX + "interact.delay";
+    public static final String UL_DEFAULT_STATE     = PREFIX + "interact.default_state";
 
     // Problems
     public static final String UL_MULTIPLE_DRIVERS_TITLE =  PREFIX + "problems.multiple_drivers.title";

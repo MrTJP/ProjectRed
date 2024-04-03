@@ -3,22 +3,30 @@ package mrtjp.projectred.fabrication.engine.gates;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.render.CCRenderState;
+import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Transformation;
+import mrtjp.projectred.fabrication.editor.tools.HotKeyInteractionZone;
+import mrtjp.projectred.fabrication.editor.tools.InteractionZone;
 import mrtjp.projectred.fabrication.engine.BaseTile;
 import mrtjp.projectred.fabrication.engine.IConnectableICTile;
 import mrtjp.projectred.fabrication.engine.IRotatableICTile;
+import mrtjp.projectred.fabrication.gui.ICRenderTypes;
 import mrtjp.projectred.integration.client.GateModelRenderer;
 import mrtjp.projectred.integration.part.IGateRenderData;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import org.lwjgl.glfw.GLFW;
 
+import java.util.List;
 import java.util.Optional;
+
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_REFLECT;
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_ROTATE;
 
 public abstract class GateTile extends BaseTile implements IConnectableICTile, IRotatableICTile, IGateRenderData {
 
     public static final int PACKET_ROTATION = 1;
     public static final int PACKET_SHAPE = 2;
-    public static final int PACKET_CLIENT_ROTATE_REQUEST = 3;
-    public static final int PACKET_CLIENT_CONFIGURE_REQUEST = 4;
 
     private byte connMask = 0;
     private byte gateShape = 0;
@@ -72,20 +80,9 @@ public abstract class GateTile extends BaseTile implements IConnectableICTile, I
     @Override
     public void read(MCDataInput in, int key) {
         switch (key) {
-            case PACKET_ROTATION:
-                gateRotation = in.readByte();
-                break;
-            case PACKET_SHAPE:
-                gateShape = in.readByte();
-                break;
-            case PACKET_CLIENT_ROTATE_REQUEST:
-                rotateAndSend();
-                break;
-            case PACKET_CLIENT_CONFIGURE_REQUEST:
-                configureAndSend();
-                break;
-            default:
-                super.read(in, key);
+            case PACKET_ROTATION -> gateRotation = in.readByte();
+            case PACKET_SHAPE -> gateShape = in.readByte();
+            default -> super.read(in, key);
         }
     }
 
@@ -105,8 +102,14 @@ public abstract class GateTile extends BaseTile implements IConnectableICTile, I
         getEditor().markTileChange();
     }
 
-    protected void configureAndSend() {
-        if (cycleShape()) {
+    protected void reflectAndSend() {
+        // Reflection is implementation sepecific.
+        // Override and call configureShapeAndSend with relected shape
+    }
+
+    protected void configureShapeAndSend(int newShape) {
+        if (getShape() != newShape) {
+            setShape(newShape);
             updateConns();
             sendShapeUpdate();
             notifyNeighbors(0xF);
@@ -146,6 +149,37 @@ public abstract class GateTile extends BaseTile implements IConnectableICTile, I
         for (int r = 0; r < 4; r++) if ((absRMask & 1 << r) != 0) {
             int absDir = IRotatableICTile.rotationToDir(r);
             getEditor().queueNeighborChange(getPos().offset(absDir));
+        }
+    }
+
+    @Override
+    public void buildInteractionZoneList(List<InteractionZone> zones) {
+        super.buildInteractionZoneList(zones);
+
+        double s = 2/16D;
+        double h = s + 0.5/16D;
+        Cuboid6 box = new Cuboid6(0, 0, 0, s, h, s);
+
+        int i = 1;
+        if (canRotate()) {
+            zones.add(new HotKeyInteractionZone.Builder()
+                    .keyCode(GLFW.GLFW_KEY_R)
+                    .text(Component.translatable(UL_ROTATE))
+                    .bounds(box.copy().add(1 - s * i, 0, 1 - s))
+                    .keyAction(this::rotateAndSend)
+                    .icon(() -> ICRenderTypes.rotateIcon)
+                    .build());
+            i++;
+        }
+        if (canReflect()) {
+            zones.add(new HotKeyInteractionZone.Builder()
+                    .keyCode(GLFW.GLFW_KEY_F)
+                    .text(Component.translatable(UL_REFLECT))
+                    .bounds(box.copy().add(1 - s * i, 0, 1 - s))
+                    .keyAction(this::reflectAndSend)
+                    .icon(() -> ICRenderTypes.reflectIcon)
+                    .build());
+            i++;
         }
     }
 
@@ -191,7 +225,6 @@ public abstract class GateTile extends BaseTile implements IConnectableICTile, I
     //endregion
 
     //region IGateRenderKey implementation
-
     @Override
     public int getRenderIndex() {
         return gateTileType.renderIndex;
@@ -211,8 +244,14 @@ public abstract class GateTile extends BaseTile implements IConnectableICTile, I
     //region GateTile logic override points
     protected void onGatePlaced() { }
 
-    protected abstract boolean canGateConnectTo(IConnectableICTile target, int r);
+    protected boolean canRotate() {
+        return true;
+    }
 
-    protected abstract boolean cycleShape();
+    protected boolean canReflect() {
+        return false;
+    }
+
+    protected abstract boolean canGateConnectTo(IConnectableICTile target, int r);
     //endregion
 }

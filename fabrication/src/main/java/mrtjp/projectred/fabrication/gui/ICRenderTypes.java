@@ -11,6 +11,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -20,15 +21,16 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.OptionalDouble;
+import java.util.function.Function;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.MOD_ID;
 
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class ICRenderTypes {
 
-    public static ResourceLocation PERFBOARD_TEXTURE = new ResourceLocation(MOD_ID, "textures/block/perfboard.png");
-    public static ResourceLocation PERFBOARD_EDGE_TEXTURE = new ResourceLocation(MOD_ID, "textures/block/perfboard_edge.png");
-    public static ResourceLocation PERFBOARD_CORNER_TEXTURE = new ResourceLocation(MOD_ID, "textures/block/perfboard_corner.png");
+    public static ResourceLocation PERFBOARD_TEXTURE = new ResourceLocation(MOD_ID, "textures/block/workbench_ui/perfboard.png");
+    public static ResourceLocation PERFBOARD_EDGE_TEXTURE = new ResourceLocation(MOD_ID, "textures/block/workbench_ui/perfboard_edge.png");
+    public static ResourceLocation PERFBOARD_CORNER_TEXTURE = new ResourceLocation(MOD_ID, "textures/block/workbench_ui/perfboard_corner.png");
 
     public static RenderType layersRenderType = RenderType.create(MOD_ID + ":ic_block", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 10000, false, true,
             RenderType.CompositeState.builder()
@@ -126,9 +128,28 @@ public class ICRenderTypes {
                     .setLineState(new RenderStateShard.LineStateShard(OptionalDouble.empty()))
                     .createCompositeState(false));
 
+    public static Function<Double, RenderType> interactionZoneLinesRenderType = Util.memoize(a -> RenderType.create(MOD_ID + ":interact_zone_lines", DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.LINES, 256, false, false,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
+                    .setTextureState(RenderStateShard.NO_TEXTURE)
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
+                    .setCullState(RenderStateShard.NO_CULL)
+                    .setLightmapState(RenderStateShard.NO_LIGHTMAP)
+                    .setOverlayState(RenderStateShard.NO_OVERLAY)
+                    .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
+                    .setOutputState(RenderStateShard.MAIN_TARGET)
+                    .setTexturingState(RenderStateShard.DEFAULT_TEXTURING)
+                    .setWriteMaskState(RenderStateShard.COLOR_DEPTH_WRITE)
+                    .setLineState(new RenderStateShard.LineStateShard(OptionalDouble.of(a)))
+                    .createCompositeState(false)));
+
+
     public static TextureAtlasSprite icSurfaceIcon;
     public static TextureAtlasSprite icSurfaceBorderIcon;
     public static TextureAtlasSprite icSurfaceCornerIcon;
+    public static TextureAtlasSprite rotateIcon;
+    public static TextureAtlasSprite reflectIcon;
 
     public static void renderICGrid(PoseStack renderStack, MultiBufferSource getter, Cuboid6 bounds, CCRenderState ccrs) {
         // Main
@@ -294,8 +315,10 @@ public class ICRenderTypes {
     }
 
     public static void registerIcons(AtlasRegistrar registrar) {
-        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/perfboard"), i -> icSurfaceIcon = i);
-        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/perfboard_edge"), i -> icSurfaceBorderIcon = i);
-        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/perfboard_corner"), i -> icSurfaceCornerIcon = i);
+        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/workbench_ui/perfboard"), i -> icSurfaceIcon = i);
+        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/workbench_ui/perfboard_edge"), i -> icSurfaceBorderIcon = i);
+        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/workbench_ui/perfboard_corner"), i -> icSurfaceCornerIcon = i);
+        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/workbench_ui/rotate"), i -> rotateIcon = i);
+        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/workbench_ui/reflect"), i -> reflectIcon = i);
     }
 }

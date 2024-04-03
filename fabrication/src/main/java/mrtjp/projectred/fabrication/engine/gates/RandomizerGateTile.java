@@ -8,27 +8,38 @@ import java.util.List;
 import java.util.Random;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
-import static mrtjp.projectred.fabrication.engine.PRFabricationEngine.*;
+import static mrtjp.projectred.fabrication.engine.PRFabricationEngine.REG_TIME;
+import static mrtjp.projectred.fabrication.engine.PRFabricationEngine.REG_ZERO;
 
-public class RandomizerGateTile extends TimedStateGateTile {
+public class RandomizerGateTile extends SimpleTimedStateGateTile {
 
     public RandomizerGateTile() {
         super(ICGateTileType.RANDOMIZER);
     }
 
-    //region GateTile overrides
+    //region SimpleTimedStateGateTile overrides
+    @Override
+    protected int interactMask() {
+        return 0xB;
+    }
 
-    //TODO interaction zones
+    @Override
+    protected int getDeadSides() {
+        return 3;
+    }
 
+    @Override
+    protected int rotationToDeadSideBit(int r) {
+        return switch (r) {
+            case 0 -> 0x2;
+            case 1 -> 0x1;
+            case 3 -> 0x4;
+            default -> 0;
+        };
+    }
     //endregion
 
     //region RedstoneGateTile overrides
-
-    @Override
-    protected boolean cycleShape() {
-        return false;
-    }
-
     @Override
     protected int redstoneInputMask() {
         return 4;
@@ -36,9 +47,8 @@ public class RandomizerGateTile extends TimedStateGateTile {
 
     @Override
     protected int redstoneOutputMask() {
-        return 0xB;
+        return ~((getShape() & 1) << 1 | (getShape() & 2) >> 1 | (getShape() & 4) << 1) & 0xB;
     }
-
     //endregion
 
     @Override

@@ -20,8 +20,23 @@ public class NOTGateTile extends SimpleGateTile {
     }
 
     @Override
+    protected int interactMask() {
+        return 0xB;
+    }
+
+    @Override
     protected int getDeadSides() {
         return 3;
+    }
+
+    @Override
+    protected int rotationToDeadSideBit(int r) {
+        return switch (r) {
+            case 0 -> 0x2;
+            case 1 -> 0x1;
+            case 3 -> 0x4;
+            default -> 0;
+        };
     }
 
     @Override
