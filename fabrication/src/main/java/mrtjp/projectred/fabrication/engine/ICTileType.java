@@ -37,6 +37,9 @@ public enum ICTileType {
     TRANSPARENT_LATCH_GATE(ID_OFFSET_GATE + 14, TRANSPARENT_LATCH, TransparentLatchGateTile::new),
     TIMER_GATE            (ID_OFFSET_GATE + 15, TIMER,             TimerGateTile::new),
     SEQUENCER_GATE        (ID_OFFSET_GATE + 16, SEQUENCER,         SequencerGateTile::new),
+    COUNTER_GATE          (ID_OFFSET_GATE + 17, COUNTER,           CounterGateTile::new),
+    STATE_CELL_GATE       (ID_OFFSET_GATE + 18, STATE_CELL,        StateCellGateTile::new),
+    SYNCHRONIZER_GATE     (ID_OFFSET_GATE + 19, SYNCHRONIZER,      SynchronizerGateTile::new),
 
     RED_ALLOY_WIRE           (ID_OFFSET_WIRE_RED,      RED_ALLOY,           RedAlloyWireTile::new),
     INSULATED_WHITE_WIRE     (ID_OFFSET_WIRE_RED + 1,  INSULATED_WHITE,      () -> new InsulatedWireTile(0)),

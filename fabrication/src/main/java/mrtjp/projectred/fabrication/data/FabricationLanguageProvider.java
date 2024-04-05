@@ -128,6 +128,10 @@ public class FabricationLanguageProvider extends LanguageProvider {
 
         add(UL_IO_GATE_TILE, "IO Gate");
         add(UL_TIMER_INTERVAL, "Interval");
+        add(UL_COUNTER_VALUE, "Value");
+        add(UL_COUNTER_MAX, "Max");
+        add(UL_COUNTER_INCR, "Increment");
+        add(UL_COUNTER_DECR, "Decrement");
 
         add(UL_TILEGROUP_REDWIRE, "Redwire");
         add(UL_TILEGROUP_BUNDLED, "Bundled");

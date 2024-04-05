@@ -88,11 +88,14 @@ public class GatePlacerToolTab extends ICEditorToolTab {
         addGateButton(ICGateTileType.RANDOMIZER);
         addGateButton(ICGateTileType.TIMER);
         addGateButton(ICGateTileType.SEQUENCER);
+        addGateButton(ICGateTileType.STATE_CELL);
+        addGateButton(ICGateTileType.SYNCHRONIZER);
 
         addGroup(UL_TILEGROUP_MEMORY);
         addGateButton(ICGateTileType.SR_LATCH);
         addGateButton(ICGateTileType.TOGGLE_LATCH);
         addGateButton(ICGateTileType.TRANSPARENT_LATCH);
+        addGateButton(ICGateTileType.COUNTER);
     }
 
     @Override
