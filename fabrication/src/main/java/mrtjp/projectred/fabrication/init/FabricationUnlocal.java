@@ -80,6 +80,10 @@ public class FabricationUnlocal {
     // IC Tiles
     public static final String UL_IO_GATE_TILE       = PREFIX + "tiles.io_gate";
     public static final String UL_TIMER_INTERVAL     = PREFIX + "tiles.timer.interval";
+    public static final String UL_COUNTER_VALUE      = PREFIX + "tiles.counter.value";
+    public static final String UL_COUNTER_MAX        = PREFIX + "tiles.counter.max";
+    public static final String UL_COUNTER_INCR       = PREFIX + "tiles.counter.incr";
+    public static final String UL_COUNTER_DECR       = PREFIX + "tiles.counter.decr";
 
     // Tile Groups
     public static final String UL_TILEGROUP_REDWIRE = PREFIX + "tilegroup.redwire";

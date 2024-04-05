@@ -175,6 +175,22 @@ public class ICSimulationContainer {
         return simulation.getRegByteVal(regId);
     }
 
+    public short pullShortValue(int r1, int r0) {
+        return simulation.getRegShortVal(r1, r0);
+    }
+
+    public short pullShortValue(int[] r, int offset) {
+        return simulation.getRegShortVal(r, offset);
+    }
+
+    public int pullIntValue(int r3, int r2, int r1, int r0) {
+        return simulation.getRegIntVal(r3, r2, r1, r0);
+    }
+
+    public int pullIntValue(int[] r, int offset) {
+        return simulation.getRegIntVal(r, offset);
+    }
+
     public long pullLongValue(int r7, int r6, int r5, int r4, int r3, int r2, int r1, int r0) {
         return simulation.getRegLongVal(r7, r6, r5, r4, r3, r2, r1, r0);
     }
