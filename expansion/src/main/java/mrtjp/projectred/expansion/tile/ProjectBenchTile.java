@@ -231,6 +231,11 @@ public class ProjectBenchTile extends ProjectRedTile implements IPacketReceiverT
     }
 
     @Override
+    public boolean canConsumeFromCraftingMatrix() {
+        return !isPlanRecipe;
+    }
+
+    @Override
     public Level getWorld() {
         return getLevel();
     }
