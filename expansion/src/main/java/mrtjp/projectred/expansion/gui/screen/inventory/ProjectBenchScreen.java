@@ -13,6 +13,7 @@ import mrtjp.projectred.redui.RedUIContainerScreen;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -77,10 +78,9 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
         blit(stack, x, y, 0, 0, getFrame().width(), getFrame().height());
 
         ProjectBenchTile tile = getMenu().getProjectBenchTile();
-        ItemStack plan = tile.getPlanInventory().getItem(0);
-        if (!plan.isEmpty() && tile.isPlanRecipe()) {
-            ItemStack[] inputs = RecipePlanItem.loadPlanInputs(plan);
-            int missingMask = getMenu().getProjectBenchTile().getCraftingHelper().getMissingIngredientMask();
+        if (tile.isPlanRecipe()) {
+            int missingMask = tile.getCraftingHelper().getMissingIngredientMask();
+            Container inputs = tile.getCraftingHelper().getCraftingInventory();
             drawPlanIngredientsOverlay(stack, inputs, missingMask, x + 48, y + 18);
         }
     }
@@ -93,7 +93,7 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
         }
     }
 
-    private void drawPlanIngredientsOverlay(PoseStack mStack, ItemStack[] ingredients, int missingMask, int xPos, int yPos) {
+    private void drawPlanIngredientsOverlay(PoseStack mStack, Container ingredients, int missingMask, int xPos, int yPos) {
 
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
@@ -101,8 +101,8 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
                 int drawPosY = yPos + (y * 18);
 
                 int index = (y * 3) + x;
-                ItemStack ingredient = ingredients[index];
-                int colour = (missingMask & 1 << index) != 0 ? EnumColour.RED.argb() : EnumColour.GRAY.argb();
+                ItemStack ingredient = ingredients.getItem(index);
+                int colour = (missingMask & 1 << index) != 0 ? EnumColour.RED.argb(0x77) : EnumColour.GRAY.argb(0x77);
 
                 if (!ingredient.isEmpty()) {
                     fillGradient(mStack, drawPosX, drawPosY, drawPosX + 16, drawPosY + 16, colour, colour);
