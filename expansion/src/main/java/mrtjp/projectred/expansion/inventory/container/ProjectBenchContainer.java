@@ -118,6 +118,10 @@ public class ProjectBenchContainer extends AbstractContainerMenu {
             if (!moveToStorage(stack, true) && !moveToEntireInventory(stack, false)) return ItemStack.EMPTY;
 
         } else if (isResultSlot(slotIndex)) {
+            // Usualy, mayPickup is only queried once, and then this method is called repeatedly until EMPTY is returned.
+            // Since this slot is allowed to remain non-empty even after pickup is not possible, we must check this every time.
+            // See AbstractContainerMenu#doClick
+            if (!slot.mayPickup(player)) return ItemStack.EMPTY;
             if (!moveToEntireInventory(stack, true) && !moveToStorage(stack, true)) return ItemStack.EMPTY;
 
         } else if (isPlayerInventory(slotIndex) || isHotbar(slotIndex)) {
