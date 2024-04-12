@@ -4,6 +4,8 @@ import codechicken.lib.config.ConfigCategory;
 import codechicken.lib.config.ConfigFile;
 
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 
@@ -27,19 +29,21 @@ public class Configurator {
     public static boolean fabulousLights = true;
 
     /* World Gen */
+    public static String rubyOreKey = "ruby_ore";
+    public static String sapphireOreKey = "sapphire_ore";
+    public static String peridotOreKey = "peridot_ore";
+    public static String tinOreKey = "tin_ore";
+    public static String silverOreKey = "silver_ore";
+    public static String electrotineOreKey = "electrotine_ore";
+    public static String marbleCaveKey = "marble_cave";
     public static boolean gen_MarbleCave = true;
     public static boolean gen_Ruby = true;
-    public static int gen_RubyVeinSize = 8;
     public static boolean gen_Sapphire = true;
-    public static int gen_SapphireVeinSize = 8;
     public static boolean gen_Peridot = true;
-    public static int gen_PeridotVeinSize = 10;
     public static boolean gen_Tin = true;
-    public static int gen_TinVeinSize = 8;
     public static boolean gen_Silver = true;
-    public static int gen_SilverVeinSize = 9;
     public static boolean gen_Electrotine = true;
-    public static int gen_ElectrotineVeinSize = 8;
+    public static Map<String, Boolean> worldFeatures = new HashMap<>();
 
     /* Compatibility */
     public static boolean compat_CCBundledCable = true;
@@ -52,6 +56,12 @@ public class Configurator {
         ConfigCategory config = configFile.load();
         loadValues(config);
         config.save();
+    }
+
+    private static boolean loadAndStoreFeature(ConfigCategory gen, String key, boolean def) {
+        boolean value = gen.getValue(key).setDefaultBoolean(def).getBoolean();
+        worldFeatures.put(key, value);
+        return value;
     }
 
     private static void loadValues(ConfigCategory config) {
@@ -77,19 +87,13 @@ public class Configurator {
         fabulousLights = rendering.getValue("fabulous_lights").setDefaultBoolean(fabulousLights).setComment("Use fabulous shader pipeline for lights when on Fabulous Graphics mode").getBoolean();
 
         ConfigCategory gen = config.getCategory("world_gen").setComment("World gen settings");
-        gen_Ruby                = gen.getValue("ruby_ore").setDefaultBoolean(gen_Ruby).setComment("Enable Ruby Ore generation").getBoolean();
-        gen_RubyVeinSize        = gen.getValue("ruby_ore_vein_size").setDefaultInt(gen_RubyVeinSize).setComment("Ruby Ore vein size").getInt();
-        gen_Sapphire            = gen.getValue("sapphire_ore").setDefaultBoolean(gen_Sapphire).setComment("Enable Sapphire Ore generation").getBoolean();
-        gen_SapphireVeinSize    = gen.getValue("sapphire_ore_vein_size").setDefaultInt(gen_SapphireVeinSize).setComment("Sapphire Ore vein size").getInt();
-        gen_Peridot             = gen.getValue("peridot_ore").setDefaultBoolean(gen_Peridot).setComment("Enable Peridot Ore generation").getBoolean();
-        gen_PeridotVeinSize     = gen.getValue("peridot_ore_vein_size").setDefaultInt(gen_PeridotVeinSize).setComment("Peridot Ore vein size").getInt();
-        gen_Tin                 = gen.getValue("tin_ore").setDefaultBoolean(gen_Tin).setComment("Enable Tin Ore generation").getBoolean();
-        gen_TinVeinSize         = gen.getValue("tin_ore_vein_size").setDefaultInt(gen_TinVeinSize).setComment("Tin Ore vein size").getInt();
-        gen_Silver              = gen.getValue("silver_ore").setDefaultBoolean(gen_Silver).setComment("Enable Silver Ore generation").getBoolean();
-        gen_SilverVeinSize      = gen.getValue("silver_ore_vein_size").setDefaultInt(gen_SilverVeinSize).setComment("Silver Ore vein size").getInt();
-        gen_Electrotine         = gen.getValue("electrotine_ore").setDefaultBoolean(gen_Electrotine).setComment("Enable Electrotine Ore generation").getBoolean();
-        gen_ElectrotineVeinSize = gen.getValue("electrotine_ore_vein_size").setDefaultInt(gen_ElectrotineVeinSize).setComment("Electrotine Ore vein size").getInt();
-        gen_MarbleCave          = gen.getValue("marble_cave").setDefaultBoolean(gen_MarbleCave).setComment("Enable Marble Cave generation").getBoolean();
+        gen_Ruby = loadAndStoreFeature(gen, rubyOreKey, true);
+        gen_Sapphire = loadAndStoreFeature(gen, sapphireOreKey, true);
+        gen_Peridot = loadAndStoreFeature(gen, peridotOreKey, true);
+        gen_Tin = loadAndStoreFeature(gen, tinOreKey, true);
+        gen_Silver = loadAndStoreFeature(gen, silverOreKey, true);
+        gen_Electrotine = loadAndStoreFeature(gen, electrotineOreKey, true);
+        gen_MarbleCave = loadAndStoreFeature(gen, marbleCaveKey, true);
 
         ConfigCategory compat = config.getCategory("compatibility").setComment("Control the loading of various compatibility hooks. These settings are ignored unless the Compatibility module is installed.");
         compat_CCBundledCable = compat.getValue("computercraft").setDefaultBoolean(compat_CCBundledCable).setComment("This allows computers to connect to bundled cables with the RS API.").getBoolean();
@@ -123,17 +127,11 @@ public class Configurator {
 
         ConfigCategory gen = config.getCategory("World Gen");
         gen_Ruby                = gen.getValue("Ruby Ore").setDefaultBoolean(gen_Ruby).getBoolean();
-        gen_RubyVeinSize        = gen.getValue("Ruby Ore vein size").setDefaultInt(gen_RubyVeinSize).getInt();
         gen_Sapphire            = gen.getValue("Sapphire Ore").setDefaultBoolean(gen_Sapphire).getBoolean();
-        gen_SapphireVeinSize    = gen.getValue("Sapphire Ore vein size").setDefaultInt(gen_SapphireVeinSize).getInt();
         gen_Peridot             = gen.getValue("Peridot Ore").setDefaultBoolean(gen_Peridot).getBoolean();
-        gen_PeridotVeinSize     = gen.getValue("Peridot Ore vein size").setDefaultInt(gen_PeridotVeinSize).getInt();
         gen_Tin                 = gen.getValue("Tin Ore").setDefaultBoolean(gen_Tin).getBoolean();
-        gen_TinVeinSize         = gen.getValue("Tin Ore vein size").setDefaultInt(gen_TinVeinSize).getInt();
         gen_Silver              = gen.getValue("Silver Ore").setDefaultBoolean(gen_Silver).getBoolean();
-        gen_SilverVeinSize      = gen.getValue("Silver Ore vein size").setDefaultInt(gen_SilverVeinSize).getInt();
         gen_Electrotine         = gen.getValue("Electrotine Ore").setDefaultBoolean(gen_Electrotine).getBoolean();
-        gen_ElectrotineVeinSize = gen.getValue("Electrotine Ore vein size").setDefaultInt(gen_ElectrotineVeinSize).getInt();
         gen_MarbleCave          = gen.getValue("Marble Caves").setDefaultBoolean(gen_MarbleCave).getBoolean();
 
         ConfigCategory compat = config.getCategory("Compatibility");

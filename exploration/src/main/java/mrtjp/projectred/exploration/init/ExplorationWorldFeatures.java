@@ -5,7 +5,8 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.exploration.world.gen.AddCarversBiomeModifier;
+import mrtjp.projectred.exploration.world.gen.ConfigFileControlledAddCarversBiomeModifier;
+import mrtjp.projectred.exploration.world.gen.ConfigFileControlledAddFeaturesBiomeModifier;
 import mrtjp.projectred.exploration.world.gen.MarbleCaveWorldCarver;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -35,7 +36,6 @@ import net.minecraft.world.level.levelgen.placement.*;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.JsonCodecProvider;
 import net.minecraftforge.common.world.BiomeModifier;
-import net.minecraftforge.common.world.ForgeBiomeModifiers;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -55,7 +55,8 @@ public class ExplorationWorldFeatures {
     public static RegistryObject<WorldCarver<CaveCarverConfiguration>> MARBLE_CAVE_CARVER;
 
     // Biome Modifier Codecs
-    public static RegistryObject<Codec<AddCarversBiomeModifier>> ADD_CARVER_BIOME_MODIFIER_CODEC;
+    public static RegistryObject<Codec<ConfigFileControlledAddCarversBiomeModifier>> ADD_CARVER_BIOME_MODIFIER_CODEC;
+    public static RegistryObject<Codec<ConfigFileControlledAddFeaturesBiomeModifier>> ADD_FEATURES_BIOME_MODIFIER_CODEC;
 
     public static void register() {
 
@@ -65,8 +66,9 @@ public class ExplorationWorldFeatures {
         // Features
         // None yet. For custom ores, we register a configured variant of Vanilla Feature.ORE
 
-        // Codecs (since forge doesnt provide a default "Add Carvers" biome modifier)
-        ADD_CARVER_BIOME_MODIFIER_CODEC = BIOME_MODIFIER_SERIALIZERS.register("add_carver", () -> AddCarversBiomeModifier.CODEC);
+        // Codecs
+        ADD_CARVER_BIOME_MODIFIER_CODEC = BIOME_MODIFIER_SERIALIZERS.register("add_carver", ConfigFileControlledAddCarversBiomeModifier::createCodec);
+        ADD_FEATURES_BIOME_MODIFIER_CODEC = BIOME_MODIFIER_SERIALIZERS.register("add_features", ConfigFileControlledAddFeaturesBiomeModifier::createCodec);
     }
 
     public static JsonCodecProvider<BiomeModifier> biomeModifiersProvider(DataGenerator dataGenerator, ExistingFileHelper existingFileHelper) {
@@ -88,12 +90,12 @@ public class ExplorationWorldFeatures {
                 UniformFloat.of(-1.0F, -0.4F))); // floor level
 
         // Configured ores
-        ConfiguredFeature<OreConfiguration, ?> rubyOreConfiguration          = createOreConfiguration(RUBY_ORE_BLOCK, DEEPSLATE_RUBY_ORE_BLOCK,         Configurator.gen_RubyVeinSize);
-        ConfiguredFeature<OreConfiguration, ?> sapphireOreConfiguration      = createOreConfiguration(SAPPHIRE_ORE_BLOCK, DEEPSLATE_SAPPHIRE_ORE_BLOCK, Configurator.gen_SapphireVeinSize);
-        ConfiguredFeature<OreConfiguration, ?> peridotOreConfiguration       = createOreConfiguration(PERIDOT_ORE_BLOCK, DEEPSLATE_PERIDOT_ORE_BLOCK,   Configurator.gen_PeridotVeinSize);
-        ConfiguredFeature<OreConfiguration, ?> electrotineOreConfiguration   = createOreConfiguration(ELECTROTINE_ORE_BLOCK, DEEPSLATE_ELECTROTINE_ORE_BLOCK, Configurator.gen_ElectrotineVeinSize);
-        ConfiguredFeature<OreConfiguration, ?> tinOreConfiguration           = createOreConfiguration(TIN_ORE_BLOCK, DEEPSLATE_TIN_ORE_BLOCK,           Configurator.gen_TinVeinSize);
-        ConfiguredFeature<OreConfiguration, ?> silverOreConfiguration        = createOreConfiguration(SILVER_ORE_BLOCK, DEEPSLATE_SILVER_ORE_BLOCK,     Configurator.gen_SilverVeinSize);
+        ConfiguredFeature<OreConfiguration, ?> rubyOreConfiguration          = createOreConfiguration(RUBY_ORE_BLOCK, DEEPSLATE_RUBY_ORE_BLOCK,         8);
+        ConfiguredFeature<OreConfiguration, ?> sapphireOreConfiguration      = createOreConfiguration(SAPPHIRE_ORE_BLOCK, DEEPSLATE_SAPPHIRE_ORE_BLOCK, 8);
+        ConfiguredFeature<OreConfiguration, ?> peridotOreConfiguration       = createOreConfiguration(PERIDOT_ORE_BLOCK, DEEPSLATE_PERIDOT_ORE_BLOCK,   10);
+        ConfiguredFeature<OreConfiguration, ?> electrotineOreConfiguration   = createOreConfiguration(ELECTROTINE_ORE_BLOCK, DEEPSLATE_ELECTROTINE_ORE_BLOCK, 8);
+        ConfiguredFeature<OreConfiguration, ?> tinOreConfiguration           = createOreConfiguration(TIN_ORE_BLOCK, DEEPSLATE_TIN_ORE_BLOCK,           8);
+        ConfiguredFeature<OreConfiguration, ?> silverOreConfiguration        = createOreConfiguration(SILVER_ORE_BLOCK, DEEPSLATE_SILVER_ORE_BLOCK,     9);
 
         // Placements
         PlacedFeature rubyOrePlacedFeature         = createOrePlacement(rubyOreConfiguration,        -80, 80, 1);
@@ -110,21 +112,16 @@ public class ExplorationWorldFeatures {
                 ops,
                 ForgeRegistries.Keys.BIOME_MODIFIERS,
                 Map.of(
-                        new ResourceLocation(MOD_ID, "add_overworld_ores"), new ForgeBiomeModifiers.AddFeaturesBiomeModifier(
-                                isOverworldBiomes,
-                                HolderSet.direct(
-                                        Holder.direct(rubyOrePlacedFeature),
-                                        Holder.direct(sapphireOrePlacedFeature),
-                                        Holder.direct(peridotOrePlacedFeature),
-                                        Holder.direct(electrotineOrePlacedFeature),
-                                        Holder.direct(tinOrePlacedFeature),
-                                        Holder.direct(silverOrePlacedFeature)
-                                ),
-                                GenerationStep.Decoration.UNDERGROUND_ORES),
-                        new ResourceLocation(MOD_ID, "add_overworld_carvers"), new AddCarversBiomeModifier(
-                                isOverworldBiomes,
-                                HolderSet.direct(Holder.direct(marbleCaveConfiguredCarver)),
-                                GenerationStep.Carving.AIR)
+                        // Overworld ores
+                        new ResourceLocation(MOD_ID, "add_ruby_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(isOverworldBiomes, HolderSet.direct(Holder.direct(rubyOrePlacedFeature)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.rubyOreKey),
+                        new ResourceLocation(MOD_ID, "add_sapphire_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(isOverworldBiomes, HolderSet.direct(Holder.direct(sapphireOrePlacedFeature)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.sapphireOreKey),
+                        new ResourceLocation(MOD_ID, "add_peridot_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(isOverworldBiomes, HolderSet.direct(Holder.direct(peridotOrePlacedFeature)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.peridotOreKey),
+                        new ResourceLocation(MOD_ID, "add_electrotine_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(isOverworldBiomes, HolderSet.direct(Holder.direct(electrotineOrePlacedFeature)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.electrotineOreKey),
+                        new ResourceLocation(MOD_ID, "add_tin_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(isOverworldBiomes, HolderSet.direct(Holder.direct(tinOrePlacedFeature)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.tinOreKey),
+                        new ResourceLocation(MOD_ID, "add_silver_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(isOverworldBiomes, HolderSet.direct(Holder.direct(silverOrePlacedFeature)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.silverOreKey),
+
+                        // Overworld carvers
+                        new ResourceLocation(MOD_ID, "add_marble_cave_to_overworld"), new ConfigFileControlledAddCarversBiomeModifier(isOverworldBiomes, HolderSet.direct(Holder.direct(marbleCaveConfiguredCarver)), GenerationStep.Carving.AIR, Configurator.marbleCaveKey)
                 ));
     }
 

@@ -72,5 +72,6 @@
       }
     }
   },
+  "configKey": "marble_cave",
   "step": "air"
 }
