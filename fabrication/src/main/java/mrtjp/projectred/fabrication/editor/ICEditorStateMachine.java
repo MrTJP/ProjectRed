@@ -108,6 +108,7 @@ public class ICEditorStateMachine {
 
     public void writeDesc(MCDataOutput out) {
         out.writeByte(currentState);
+        out.writeLong(lastSimStartTime);
         simulationContainer.writeDesc(out);
         compilerLog.writeDesc(out);
         writeAutoCompileState(out);
@@ -115,6 +116,7 @@ public class ICEditorStateMachine {
 
     public void readDesc(MCDataInput in) {
         currentState = in.readUByte();
+        lastSimStartTime = in.readLong();
         simulationContainer.readDesc(in);
         compilerLog.readDesc(in);
         readAutoCompileState(in);
