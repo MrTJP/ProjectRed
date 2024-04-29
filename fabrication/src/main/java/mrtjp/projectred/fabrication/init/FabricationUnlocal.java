@@ -34,6 +34,48 @@ public class FabricationUnlocal {
     public static final String UL_TIME_DELAY        = PREFIX + "interact.delay";
     public static final String UL_DEFAULT_STATE     = PREFIX + "interact.default_state";
 
+    // Compile
+    public static final String UL_COMPILE_TREE                = PREFIX + "compile.tree";
+    public static final String UL_COMPILE_STACK               = PREFIX + "compile.stack";
+    public static final String UL_COMPILE_CHECK_TILE_MAP      = PREFIX + "compile.step.check_tile_maps";
+    public static final String UL_COMPILE_CHECK_FLAT_MAP      = PREFIX + "compile.step.check_flat_maps";
+    public static final String UL_COMPILE_MERGE_TILE_MAP      = PREFIX + "compile.step.merge_tile_map";
+    public static final String UL_COMPILE_MERGE_FLAT_MAP      = PREFIX + "compile.step.merge_flat_map";
+    public static final String UL_COMPILE_MERGE_TILE_MAP_PRE  = PREFIX + "compile.step.merge_tile_map_pre";
+    public static final String UL_COMPILE_PHASE_1             = PREFIX + "compile.step.merge_tile_map_phase1";
+    public static final String UL_COMPILE_ALLOC               = PREFIX + "compile.step.merge_tile_map_alloc";
+    public static final String UL_COMPILE_PHASE_2             = PREFIX + "compile.step.merge_tile_map_phase2";
+    public static final String UL_COMPILE_PATHFIND            = PREFIX + "compile.step.merge_tile_map_pathfind";
+    public static final String UL_COMPILE_PHASE_3             = PREFIX + "compile.step.merge_tile_map_phase3";
+    public static final String UL_COMPILE_PF_MANIFEST         = PREFIX + "compile.step.merge_tile_map_manifest_search";
+    public static final String UL_COMPILE_PHASE_4             = PREFIX + "compile.step.merge_tile_map_phase4";
+    public static final String UL_COMPILE_ADD_REMAPS          = PREFIX + "compile.step.merge_tile_map_add_remaps";
+    public static final String UL_COMPILE_PHASE_5             = PREFIX + "compile.step.merge_tile_map_phase5";
+    public static final String UL_COMPILE_REMAP               = PREFIX + "compile.step.merge_tile_map_consume_remaps";
+    public static final String UL_COMPILE_PHASE_6             = PREFIX + "compile.step.merge_tile_map_phase6";
+    public static final String UL_COMPILE_COLLECT             = PREFIX + "compile.step.merge_tile_map_collect";
+    public static final String UL_COMPILE_MERGE_TILE_MAP_POST = PREFIX + "compile.step.merge_tile_map_post";
+
+    public static final String UL_COMPILE_CHECK_TILE_MAP_DESC      = PREFIX + "compile.step.check_tile_maps.desc";
+    public static final String UL_COMPILE_CHECK_FLAT_MAP_DESC      = PREFIX + "compile.step.check_flat_maps.desc";
+    public static final String UL_COMPILE_MERGE_TILE_MAP_DESC      = PREFIX + "compile.step.merge_tile_map.desc";
+    public static final String UL_COMPILE_MERGE_FLAT_MAP_DESC      = PREFIX + "compile.step.merge_flat_map.desc";
+    public static final String UL_COMPILE_MERGE_TILE_MAP_PRE_DESC  = PREFIX + "compile.step.merge_tile_map_pre.desc";
+    public static final String UL_COMPILE_PHASE_1_DESC             = PREFIX + "compile.step.merge_tile_map_phase1.desc";
+    public static final String UL_COMPILE_ALLOC_DESC               = PREFIX + "compile.step.merge_tile_map_alloc.desc";
+    public static final String UL_COMPILE_PHASE_2_DESC             = PREFIX + "compile.step.merge_tile_map_phase2.desc";
+    public static final String UL_COMPILE_PATHFIND_DESC            = PREFIX + "compile.step.merge_tile_map_pathfind.desc";
+    public static final String UL_COMPILE_PHASE_3_DESC             = PREFIX + "compile.step.merge_tile_map_phase3.desc";
+    public static final String UL_COMPILE_PF_MANIFEST_DESC         = PREFIX + "compile.step.merge_tile_map_manifest_search.desc";
+    public static final String UL_COMPILE_PHASE_4_DESC             = PREFIX + "compile.step.merge_tile_map_phase4.desc";
+    public static final String UL_COMPILE_ADD_REMAPS_DESC          = PREFIX + "compile.step.merge_tile_map_add_remaps.desc";
+    public static final String UL_COMPILE_PHASE_5_DESC             = PREFIX + "compile.step.merge_tile_map_phase5.desc";
+    public static final String UL_COMPILE_REMAP_DESC               = PREFIX + "compile.step.merge_tile_map_consume_remaps.desc";
+    public static final String UL_COMPILE_PHASE_6_DESC             = PREFIX + "compile.step.merge_tile_map_phase6.desc";
+    public static final String UL_COMPILE_COLLECT_DESC             = PREFIX + "compile.step.merge_tile_map_collect.desc";
+    public static final String UL_COMPILE_MERGE_TILE_MAP_POST_DESC = PREFIX + "compile.step.merge_tile_map_post.desc";
+
+
     // Problems
     public static final String UL_MULTIPLE_DRIVERS_TITLE =  PREFIX + "problems.multiple_drivers.title";
     public static final String UL_MULTIPLE_DRIVERS_DESC  =  PREFIX + "problems.multiple_drivers.desc";
@@ -119,15 +161,19 @@ public class FabricationUnlocal {
     public static final String UL_INTERFACE_BUNDLED  = PREFIX + "interface.bundled";
 
     // Numbers and measurements //TODO drop this formattable ones and just do it in code
-    public static final String UL_UNIT_WARNINGS          = PREFIX + "unit.warnings";
-    public static final String UL_UNIT_ERRORS            = PREFIX + "unit.errors";
-    public static final String UL_UNIT_TICKS             = PREFIX + "unit.ticks";
-    public static final String UL_DIMENSIONS_NM          = PREFIX + "dimensions.nm";
-    public static final String UL_DIMENSIONS_TILES       = PREFIX + "dimensions.tiles";
-    public static final String UL_DIMENSIONS_DIES        = PREFIX + "dimensions.dies";
-    public static final String UL_DIMENSIONS_NM_TOTAL    = PREFIX + "dimensions.nm_total";
-    public static final String UL_DIMENSIONS_TILES_TOTAL = PREFIX + "dimensions.tiles_total";
-    public static final String UL_DIMENSIONS_DIES_TOTAL  = PREFIX + "dimensions.dies_total";
+    public static final String UL_UNIT_WARNINGS          = PREFIX + "f.unit.warnings";
+    public static final String UL_UNIT_ERRORS            = PREFIX + "f.unit.errors";
+    public static final String UL_UNIT_TICKS             = PREFIX + "f.unit.ticks";
+    public static final String UL_DIMENSIONS_NM          = PREFIX + "f.dimensions.nm";
+    public static final String UL_DIMENSIONS_TILES       = PREFIX + "f.dimensions.tiles";
+    public static final String UL_DIMENSIONS_DIES        = PREFIX + "f.dimensions.dies";
+    public static final String UL_DIMENSIONS_NM_TOTAL    = PREFIX + "f.dimensions.nm_total";
+    public static final String UL_DIMENSIONS_TILES_TOTAL = PREFIX + "f.dimensions.tiles_total";
+    public static final String UL_DIMENSIONS_DIES_TOTAL  = PREFIX + "f.dimensions.dies_total";
 
-    public static final String UL_UNIT_ONLY_TICKS        = PREFIX + "unit_only.ticks";
+    public static final String UL_UNIT_ONLY_TICKS        = PREFIX + "unit.ticks";
+    public static final String UL_UNIT_ONLY_REGISTERS    = PREFIX + "unit.registers";
+    public static final String UL_UNIT_ONLY_GATES        = PREFIX + "unit.gates";
+    public static final String UL_UNIT_ONLY_REMAPS       = PREFIX + "unit.remaps";
+    public static final String UL_UNIT_ONLY_NONE         = PREFIX + "unit.none";
 }

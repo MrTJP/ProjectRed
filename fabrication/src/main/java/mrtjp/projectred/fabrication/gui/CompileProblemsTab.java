@@ -35,10 +35,10 @@ public class CompileProblemsTab extends AbstractGuiNode implements ICompileOverl
 
         // Stack
         issueListNode.setPosition(6, 31);
-        issueListNode.setSize(67, 95);
+        issueListNode.setSize(79, 95);
         addChild(issueListNode);
 
-        // Scrollbar //TODO
+        // Scrollbar
         ScrollBar scrollBar = new ScrollBar();
         scrollBar.setPosition(77, 31);
         scrollBar.setZPosition(0.2);
@@ -54,11 +54,13 @@ public class CompileProblemsTab extends AbstractGuiNode implements ICompileOverl
     }
 
     @Override
-    public void update() {
-        if (!isHidden()) {
-            // TODO only do this when issue log changes
-            issueListNode.setProblemList(editor.getStateMachine().getCompilerLog().getProblems());
-        }
+    public void onAddedToParent() {
+        editor.getStateMachine().getCompilerLog().addTreeChangedListener(this::refreshList);
+        refreshList();
+    }
+
+    private void refreshList() {
+        issueListNode.setProblemList(editor.getStateMachine().getCompilerLog().getProblems());
     }
 
     //region ICompileTabOverlayRenderer

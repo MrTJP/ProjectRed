@@ -1,9 +1,11 @@
 package mrtjp.projectred.redui;
 
+import codechicken.lib.colour.EnumColour;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.lib.Size;
+import net.minecraft.client.gui.GuiComponent;
 
 public abstract class ScrollBarNode extends AbstractGuiNode {
 
@@ -28,7 +30,12 @@ public abstract class ScrollBarNode extends AbstractGuiNode {
     @Override
     public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
 
-        // Draw scroll bar background
+        // Draw semi-transparent grey background
+        int x = getFrame().x();
+        int y = getFrame().y();
+        GuiComponent.fillGradient(stack, x, y, x + getFrame().width(), y + getFrame().height(), EnumColour.BLACK.argb(127), EnumColour.BLACK.argb(127), 0);
+
+        // Draw slider rectangle
         drawSlider(stack, sliderFrame);
     }
 

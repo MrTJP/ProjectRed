@@ -66,6 +66,46 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_TIME_DELAY, "Delay");
         add(UL_DEFAULT_STATE, "Default state");
 
+        add(UL_COMPILE_TREE, "Tree");
+        add(UL_COMPILE_STACK, "Stack");
+        add(UL_COMPILE_CHECK_TILE_MAP, "Check tile maps");
+        add(UL_COMPILE_CHECK_FLAT_MAP, "Check flat maps");
+        add(UL_COMPILE_MERGE_TILE_MAP, "Compile tile map");
+        add(UL_COMPILE_MERGE_FLAT_MAP, "Compile flat map");
+        add(UL_COMPILE_MERGE_TILE_MAP_PRE, "Pre-compile");
+        add(UL_COMPILE_PHASE_1, "Allocation phase");
+        add(UL_COMPILE_ALLOC, "Alloc");
+        add(UL_COMPILE_PHASE_2, "Pathfind phase");
+        add(UL_COMPILE_PATHFIND, "Pathfind");
+        add(UL_COMPILE_PHASE_3, "Lookup phase");
+        add(UL_COMPILE_PF_MANIFEST, "Lookup");
+        add(UL_COMPILE_PHASE_4, "Add remaps phase");
+        add(UL_COMPILE_ADD_REMAPS, "Add remaps");
+        add(UL_COMPILE_PHASE_5, "Remap phase");
+        add(UL_COMPILE_REMAP, "Remap");
+        add(UL_COMPILE_PHASE_6, "Collection phase");
+        add(UL_COMPILE_COLLECT, "Collect");
+        add(UL_COMPILE_MERGE_TILE_MAP_POST, "Post-compile");
+
+        add(UL_COMPILE_CHECK_TILE_MAP_DESC, "Check for tile maps to compile");
+        add(UL_COMPILE_CHECK_FLAT_MAP_DESC, "Check for flat maps to merge");
+        add(UL_COMPILE_MERGE_TILE_MAP_DESC, "Compile tile map");
+        add(UL_COMPILE_MERGE_FLAT_MAP_DESC, "Merge flat map");
+        add(UL_COMPILE_MERGE_TILE_MAP_PRE_DESC, "Pre-compile");
+        add(UL_COMPILE_PHASE_1_DESC, "Allocate memory for all tiles");
+        add(UL_COMPILE_ALLOC_DESC, "Output registers and gate allocation");
+        add(UL_COMPILE_PHASE_2_DESC, "Search for connected registers");
+        add(UL_COMPILE_PATHFIND_DESC, "Input register search");
+        add(UL_COMPILE_PHASE_3_DESC, "Look up passing signals");
+        add(UL_COMPILE_PF_MANIFEST_DESC, "Passing signals lookup");
+        add(UL_COMPILE_PHASE_4_DESC, "Declare register remaps");
+        add(UL_COMPILE_ADD_REMAPS_DESC, "Declare remaps");
+        add(UL_COMPILE_PHASE_5_DESC, "Apply register remaps");
+        add(UL_COMPILE_REMAP_DESC, "Apply remaps");
+        add(UL_COMPILE_PHASE_6_DESC, "Collect gates and registers");
+        add(UL_COMPILE_COLLECT_DESC, "Gates and registers collected");
+        add(UL_COMPILE_MERGE_TILE_MAP_POST_DESC, "Post-compile");
+
         add(UL_MULTIPLE_DRIVERS_TITLE, "Multiple drivers");
         add(UL_MULTIPLE_DRIVERS_DESC, "Multiple registers connected to an input:");
         add(UL_DEAD_WIRE_TITLE, "Dead wire");
@@ -155,5 +195,9 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_DIMENSIONS_DIES_TOTAL, "%d dies x %d dies (%d dies^2)");
 
         add(UL_UNIT_ONLY_TICKS, "ticks");
+        add(UL_UNIT_ONLY_REGISTERS, "registers");
+        add(UL_UNIT_ONLY_GATES, "gates");
+        add(UL_UNIT_ONLY_REMAPS, "remaps");
+        add(UL_UNIT_ONLY_NONE, "none");
     }
 }
