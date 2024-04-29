@@ -2,12 +2,13 @@ package mrtjp.projectred.fabrication.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
 import mrtjp.projectred.fabrication.engine.log.CompileProblem;
 import mrtjp.projectred.fabrication.gui.screen.ICWorkbenchCompileTab;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.redui.AbstractGuiNode;
-import net.minecraft.client.gui.GuiComponent;
+import mrtjp.projectred.redui.RedUISprite;
 import net.minecraft.network.chat.Component;
 
 import java.util.LinkedList;
@@ -84,21 +85,23 @@ public class ProblemListNode extends AbstractGuiNode {
 
     private class IssueListItemNode extends AbstractGuiNode {
 
+        private static final RedUISprite BACKGROUND_UNSELECTED = new RedUISprite(ICWorkbenchCompileTab.TAB_BACKGROUND, 1, 375, 79, 12, 512, 512);
+//        private static final RedUISprite BACKGROUND_SELECTED = new RedUISprite(ICWorkbenchCompileTab.TAB_BACKGROUND, 81, 375, 79, 12, 512, 512);
+
         private final CompileProblem issue;
 
         public IssueListItemNode(CompileProblem issue) {
             this.issue = issue;
-            setSize(67, 12);
+            setSize(79, 12);
         }
 
         @Override
         public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-            RenderSystem.setShaderTexture(0, ICWorkbenchCompileTab.TAB_BACKGROUND);
+            blitSprite(stack, BACKGROUND_UNSELECTED);
 
-            GuiComponent.blit(stack, getFrame().x(), getFrame().y(), 1, 375, getFrame().width(), getFrame().height(), 512, 512);
-
-            Component s = issue.getName();
-            getRoot().getFontRenderer().draw(stack, s, getFrame().x() + 2, getFrame().y() + 2, 0xFFFFFF);
+            var fr = getRoot().getFontRenderer();
+            Component c = issue.getName().copy().withStyle(ICWorkbenchEditor.UNIFORM);
+            fr.draw(stack, c, getFrame().x() + 2, getFrame().y() + getFrame().height() / 2f - fr.lineHeight / 2f, 0xFFFFFF);
         }
 
         @Override
@@ -106,6 +109,7 @@ public class ProblemListNode extends AbstractGuiNode {
             if (!isFirstHit(mouse)) return;
 
             List<Component> toolTip = new LinkedList<>();
+            toolTip.add(issue.getName());
             issue.buildToolTip(toolTip);
             renderTooltip(stack, mouse, toolTip);
         }

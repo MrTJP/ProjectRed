@@ -37,7 +37,7 @@ public class CompileStackTab extends AbstractGuiNode implements ICompileOverlayR
 
         // Stack
         ctnListNode.setPosition(6, 31);
-        ctnListNode.setSize(67, 95);
+        ctnListNode.setSize(79, 95);
         addChild(ctnListNode);
 
         // Scrollbar //TODO
@@ -56,12 +56,14 @@ public class CompileStackTab extends AbstractGuiNode implements ICompileOverlayR
     }
 
     @Override
-    public void update() {
-        if (!isHidden()) {
-            // TODO only do this when the stack changes
-            List<ICCompilerLog.CompileTreeNode> execStack = editor.getStateMachine().getCompilerLog().getCurrentStack();
-            ctnListNode.setNodeList(execStack);
-        }
+    public void onAddedToParent() {
+        editor.getStateMachine().getCompilerLog().addTreeChangedListener(this::refreshList);
+        refreshList();
+    }
+
+    private void refreshList() {
+        List<ICCompilerLog.CompileTreeNode> execStack = editor.getStateMachine().getCompilerLog().getCurrentStack();
+        ctnListNode.setNodeList(execStack);
     }
 
     private void renderCompileTreeNode(ICCompilerLog.CompileTreeNode node, CCRenderState ccrs, MultiBufferSource getter, PoseStack matrixStack) {

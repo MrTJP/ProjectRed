@@ -29,6 +29,8 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
     private int warningCount = 0;
     private int errorCount = 0;
 
+    private final List<Runnable> treeChangedListeners = new LinkedList<>();
+
     public ICCompilerLog(ICEditorStateMachine stateMachine) {
         this.stateMachine = stateMachine;
     }
@@ -100,6 +102,7 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
         problems.clear();
         warningCount = 0;
         errorCount = 0;
+        notifyListeners();
     }
 
     public int getTotalSteps() {
@@ -122,6 +125,16 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
         return warningCount;
     }
 
+    public void addTreeChangedListener(Runnable listener) {
+        treeChangedListeners.add(listener);
+    }
+
+    private void notifyListeners() {
+        for (Runnable listener : treeChangedListeners) {
+            listener.run();
+        }
+    }
+
     //region ICStepThroughAssembler.EventReceiver
     @Override
     public void onStepAdded(ICStepThroughAssembler.AssemblerStepDescriptor descriptor) {
@@ -129,6 +142,7 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
         node.step = descriptor.getStepType();
 
         sendNodeAdded(node, descriptor.getTreePath());
+        notifyListeners();
     }
 
     @Override
@@ -144,6 +158,7 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
         completedSteps++;
 
         sendNodeExecuted(node, result.getTreePath());
+        notifyListeners();
     }
     //endregion
 
@@ -162,20 +177,11 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
     //region Packet handling
     public void readLogStream(MCDataInput in, int key) {
         switch (key) {
-            case KEY_COMPILER_LOG_CLEARED:
-                clear();
-                break;
-            case KEY_COMPILER_LOG_NODE_ADDED:
-                readNodeAdded(in);
-                break;
-            case KEY_COMPILER_LOG_NODE_EXECUTED:
-                readNodeExecuted(in);
-                break;
-            case KEY_COMPILER_LOG_PROBLEM_ADDED:
-                readProblemAdded(in);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown compiler stream key: " + key);
+            case KEY_COMPILER_LOG_CLEARED -> clear();
+            case KEY_COMPILER_LOG_NODE_ADDED -> readNodeAdded(in);
+            case KEY_COMPILER_LOG_NODE_EXECUTED -> readNodeExecuted(in);
+            case KEY_COMPILER_LOG_PROBLEM_ADDED -> readProblemAdded(in);
+            default -> throw new IllegalArgumentException("Unknown compiler stream key: " + key);
         }
     }
     //endregion
@@ -215,6 +221,7 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
             case WARNING -> warningCount++;
             case ERROR -> errorCount++;
         }
+        notifyListeners();
     }
     //endregion
 
@@ -227,6 +234,7 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
         }
         CompileTreeNode node = compileTree.findOrCreateNode(path);
         node.step = ICStepThroughAssembler.AssemblerStepType.values()[in.readUByte()];
+        notifyListeners();
     }
 
     private void readNodeExecuted(MCDataInput in) {
@@ -241,6 +249,7 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
         currentPath.clear();
         currentPath.addAll(path);
         completedSteps++;
+        notifyListeners();
     }
 
     private void readProblemAdded(MCDataInput in) {
@@ -251,6 +260,10 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
 
     public List<CompileTreeNode> getCurrentStack() {
         return compileTree.getStack(currentPath);
+    }
+
+    public List<CompileTreeNode> getRootNodes() {
+        return compileTree.rootNodes;
     }
 
     public int getProgressScaled(int scale) {
@@ -397,6 +410,46 @@ public class ICCompilerLog implements ICStepThroughAssembler.EventReceiver {
                 CompileTreeNode child = new CompileTreeNode();
                 child.readDesc(in);
                 children.add(child);
+            }
+        }
+
+        public int countRegIdsInSubtree() {
+            //TODO cache
+            int count = registerIds.size();
+            for (CompileTreeNode child : children) {
+                count += child.countRegIdsInSubtree();
+            }
+            return count;
+        }
+
+        public int countGateIdsInSubtree() {
+            //TODO cache
+            int count = gateIds.size();
+            for (CompileTreeNode child : children) {
+                count += child.countGateIdsInSubtree();
+            }
+            return count;
+        }
+
+        public int countRemapsInSubtree() {
+            //TODO cache
+            int count = registerRemaps.size();
+            for (CompileTreeNode child : children) {
+                count += child.countRemapsInSubtree();
+            }
+            return count;
+        }
+
+        public boolean isEmpty() {
+            return registerIds.isEmpty() && gateIds.isEmpty() && registerRemaps.isEmpty();
+        }
+
+        public void getPositionsInTree(List<TileCoord> pList) {
+            if (!isEmpty()) {
+                pList.addAll(tileCoords);
+                for (CompileTreeNode child : children) {
+                    child.getPositionsInTree(pList);
+                }
             }
         }
     }

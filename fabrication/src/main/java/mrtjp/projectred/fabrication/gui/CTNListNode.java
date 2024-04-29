@@ -7,19 +7,22 @@ import mrtjp.projectred.fabrication.gui.screen.ICWorkbenchCompileTab;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.redui.AbstractGuiNode;
-import net.minecraft.client.gui.GuiComponent;
+import mrtjp.projectred.redui.RedUISprite;
 import net.minecraft.network.chat.Component;
 
+import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
+
+import static mrtjp.projectred.fabrication.editor.ICWorkbenchEditor.UNIFORM;
 
 public class CTNListNode extends AbstractGuiNode {
 
     private final List<CompileTreeNode> nodeList = new LinkedList<>();
-
     private final AbstractGuiNode listParent = new AbstractGuiNode() {
-
     };
+
+    private double scroll = 0;
 
     public CTNListNode() {
         initSubNodes();
@@ -30,9 +33,11 @@ public class CTNListNode extends AbstractGuiNode {
     }
 
     public void setNodeList(List<CompileTreeNode> nodeList) {
-        this.nodeList.clear();
-        this.nodeList.addAll(nodeList);
-        refreshListItems();
+        if (!this.nodeList.equals(nodeList)) {
+            this.nodeList.clear();
+            this.nodeList.addAll(nodeList);
+            refreshListItems();
+        }
     }
 
     private void refreshListItems() {
@@ -46,6 +51,32 @@ public class CTNListNode extends AbstractGuiNode {
             listParent.addChild(item);
             y += item.calculateAccumulatedFrame().height();
         }
+
+        moveListToScroll();
+    }
+
+    public void setScrollPercentage(double scrollPercentage) {
+        this.scroll = scrollPercentage;
+        moveListToScroll();
+    }
+
+    private void moveListToScroll() {
+        Rect subFrame = calculateChildrenFrame();
+        if (subFrame.height() <= getFrame().height()) return;
+
+        int totalScroll = subFrame.height() - getFrame().height(); // How much scroll is possible
+        int dist = (int) (totalScroll * scroll); // How much we want to scroll
+
+        listParent.setPosition(0, -dist);
+    }
+
+    public @Nullable CompileTreeNode getSelectedNode() {
+        for (var child : listParent.getOurChildren()) {
+            if (child instanceof CompileTreeNodeListItem item && item.selected) {
+                return item.node;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -63,27 +94,34 @@ public class CTNListNode extends AbstractGuiNode {
         RenderSystem.disableScissor();
     }
 
+    private void selectNodeInList(CompileTreeNodeListItem node) {
+        for (var child : listParent.getOurChildren()) {
+            if (child instanceof CompileTreeNodeListItem item) {
+                item.selected = item == node;
+            }
+        }
+    }
+
     private class CompileTreeNodeListItem extends AbstractGuiNode {
 
+        private static final RedUISprite BACKGROUND_UNSELECTED = new RedUISprite(ICWorkbenchCompileTab.TAB_BACKGROUND, 1, 375, 79, 12, 512, 512);
+        private static final RedUISprite BACKGROUND_SELECTED = new RedUISprite(ICWorkbenchCompileTab.TAB_BACKGROUND, 81, 375, 79, 12, 512, 512);
+
         private final CompileTreeNode node;
+        private boolean selected = false;
 
         public CompileTreeNodeListItem(CompileTreeNode node) {
             this.node = node;
-
-            setSize(67, 16);
+            setSize(68, 12);
         }
 
         @Override
         public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-            RenderSystem.setShaderTexture(0, ICWorkbenchCompileTab.TAB_BACKGROUND);
+            blitSprite(stack, selected ? BACKGROUND_SELECTED : BACKGROUND_UNSELECTED);
 
-            GuiComponent.blit(stack, getFrame().x(), getFrame().y(), 1, 358, getFrame().width(), getFrame().height(), 512, 512);
-
-            String s = node.step.toString();
-            if (s.length() > 10) {
-                s = s.substring(s.length() - 10);
-            }
-            getRoot().getFontRenderer().draw(stack, s, getFrame().x() + 2, getFrame().y() + 2, 0xFFFFFF);
+            var fr = getRoot().getFontRenderer();
+            Component c = CompileTreeTab.getTitleForCTNNode(node).copy().withStyle(UNIFORM);
+            fr.draw(stack, c, getFrame().x() + 2, getFrame().y() + getFrame().height() / 2f - fr.lineHeight / 2f, 0xFFFFFF);
         }
 
         @Override
@@ -92,18 +130,22 @@ public class CTNListNode extends AbstractGuiNode {
             if (!isFirstHit(mouse)) return;
 
             List<Component> toolTip = new LinkedList<>();
-            toolTip.add(Component.literal(node.step.toString())); //TODO localize
-            toolTip.add(Component.literal("Positions: " + node.tileCoords.size()));
-            toolTip.add(Component.literal("Registers: " + node.registerIds.size()));
-            toolTip.add(Component.literal("Gates: " + node.gateIds.size()));
-            toolTip.add(Component.literal("Remaps: " + node.registerRemaps.size()));
-
+            CompileTreeTab.buildTooltipForCTNNode(node, toolTip);
             renderTooltip(stack, mouse, toolTip);
         }
 
         @Override
         public boolean checkHit(Point absPoint) {
             return super.checkHit(absPoint) && CTNListNode.this.convertParentRectToScreen(CTNListNode.this.getFrame()).contains(absPoint);
+        }
+
+        @Override
+        public boolean mouseClicked(Point p, int glfwMouseButton, boolean consumed) {
+            if (!consumed && isFirstHit(p)) {
+                selectNodeInList(this);
+                return true;
+            }
+            return false;
         }
     }
 }
