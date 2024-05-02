@@ -1,7 +1,7 @@
 package mrtjp.projectred.fabrication.data;
 
 import codechicken.lib.datagen.recipe.RecipeProvider;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -11,18 +11,14 @@ import static mrtjp.projectred.core.init.CoreItems.PLATE_ITEM;
 import static mrtjp.projectred.core.init.CoreItems.SILICON_ITEM;
 import static mrtjp.projectred.core.init.CoreTags.ELECTROTINE_ALLOY_INGOT_TAG;
 import static mrtjp.projectred.core.init.CoreTags.SAPPHIRE_GEM_TAG;
+import static mrtjp.projectred.fabrication.ProjectRedFabrication.MOD_ID;
 import static mrtjp.projectred.fabrication.init.FabricationBlocks.*;
 import static mrtjp.projectred.fabrication.init.FabricationItems.*;
 
 public class FabricationRecipeProvider extends RecipeProvider {
 
-    public FabricationRecipeProvider(DataGenerator dataGenerator) {
-        super(dataGenerator);
-    }
-
-    @Override
-    public String getName() {
-        return "ProjectRed-Fabrication Recipes";
+    public FabricationRecipeProvider(PackOutput output) {
+        super(output, MOD_ID);
     }
 
     @Override

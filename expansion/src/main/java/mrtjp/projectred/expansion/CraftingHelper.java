@@ -1,12 +1,12 @@
 package mrtjp.projectred.expansion;
 
+import mrtjp.projectred.core.inventory.BaseInventory;
 import mrtjp.projectred.lib.InventoryLib;
 import net.covers1624.quack.util.LazyValue;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
@@ -16,21 +16,33 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeHooks;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.function.Predicate;
 
 public class CraftingHelper {
 
-    private final CraftingContainer craftingInventory = new CraftingContainer(new AbstractContainerMenu(null, -1) {
-        @Override
-        public boolean stillValid(Player p_75145_1_) {
-            return false;
+    private static class CraftingHelperContainer extends BaseInventory implements CraftingContainer {
+        public CraftingHelperContainer() {
+            super(9);
         }
 
         @Override
-        public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
-            return ItemStack.EMPTY;
+        public int getWidth() {
+            return 3;
         }
-    }, 3, 3);
+
+        @Override
+        public int getHeight() {
+            return 3;
+        }
+
+        @Override
+        public List<ItemStack> getItems() {
+            return List.copyOf(items);
+        }
+    }
+
+    private final CraftingContainer craftingInventory = new CraftingHelperContainer();
 
     private final ResultContainer craftResultInventory = new ResultContainer();
 
@@ -78,7 +90,7 @@ public class CraftingHelper {
         recipe = inputSource.getWorld().getRecipeManager()
                 .getRecipeFor(RecipeType.CRAFTING, craftingInventory, inputSource.getWorld()).orElse(null);
 
-        craftResultInventory.setItem(0, recipe == null ? ItemStack.EMPTY : recipe.assemble(craftingInventory));
+        craftResultInventory.setItem(0, recipe == null ? ItemStack.EMPTY : recipe.assemble(craftingInventory, inputSource.getWorld().registryAccess()));
     }
 
     public void loadOutput() {
@@ -174,7 +186,7 @@ public class CraftingHelper {
 
         if (!recipe.matches(craftingInventory, inputSource.getWorld())) return CraftingResult.EMPTY;
 
-        ItemStack result = recipe.assemble(craftingInventory);
+        ItemStack result = recipe.assemble(craftingInventory, inputSource.getWorld().registryAccess());
         if (result.isEmpty()) return CraftingResult.EMPTY;
 
         if (simulate) {
@@ -190,13 +202,13 @@ public class CraftingHelper {
 
             boolean isPresent = consumeIngredient(source, 0, input -> {
                 // Candidate ingredient must be same item
-                if (!input.sameItemStackIgnoreDurability(previousInput)) return false;
+                if (!ItemStack.isSameItem(input, previousInput)) return false;
 
                 // Recipe must still function with new input swapped in
                 craftingInventory.setItem(slot, input);
                 boolean canStillCraft =
                         recipe.matches(craftingInventory, inputSource.getWorld()) &&
-                        ItemStack.isSame(result, recipe.assemble(craftingInventory));
+                        ItemStack.isSameItem(result, recipe.assemble(craftingInventory, inputSource.getWorld().registryAccess()));
                 craftingInventory.setItem(slot, previousInput);
 
                 return canStillCraft;

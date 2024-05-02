@@ -16,7 +16,7 @@ import mrtjp.projectred.redui.AbstractButtonNode;
 import mrtjp.projectred.redui.AbstractCheckboxNode;
 import mrtjp.projectred.redui.AbstractGuiNode;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -99,26 +99,26 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
         RenderSystem.setShaderTexture(0, TAB_BACKGROUND);
-        GuiComponent.blit(stack, getFrame().x(), getFrame().y(), 0, 0, getFrame().width(), getFrame().height(), 512, 512);
+        graphics.blit(TAB_BACKGROUND, getFrame().x(), getFrame().y(), 0, 0, getFrame().width(), getFrame().height(), 512, 512);
 
         // Blueprint name in top left corner
-        getRoot().getFontRenderer().draw(stack, editor.getIcName(), getFrame().x() + 8, getFrame().y() + 6, EnumColour.GRAY.argb());
+        graphics.drawString(getRoot().getFontRenderer(), editor.getIcName(), getFrame().x() + 8, getFrame().y() + 6, EnumColour.GRAY.argb(), false);
 
         // Progress bar
         RenderSystem.setShaderTexture(0, TAB_BACKGROUND);
         int barWidth = 91;
         int progress = editor.getStateMachine().getCompilerLog().getProgressScaled(barWidth);
-        GuiComponent.blit(stack, getFrame().x() + 208, getFrame().y() + 36, 304, 0, barWidth, 5, 512, 512);
-        GuiComponent.blit(stack, getFrame().x() + 208, getFrame().y() + 36, 304, 5, progress, 5, 512, 512);
+        graphics.blit(TAB_BACKGROUND, getFrame().x() + 208, getFrame().y() + 36, 304, 0, barWidth, 5, 512, 512);
+        graphics.blit(TAB_BACKGROUND, getFrame().x() + 208, getFrame().y() + 36, 304, 5, progress, 5, 512, 512);
 
         // Progress text
         ICCompilerLog log = editor.getStateMachine().getCompilerLog();
-        getRoot().getFontRenderer().draw(stack,
+        graphics.drawString(getRoot().getFontRenderer(),
                 Component.translatable(editor.getStateMachine().isCompiling() ? UL_COMPILE_PROGRESS : UL_COMPILE_DONE, log.getCompletedSteps(), log.getTotalSteps())
                         .withStyle(UNIFORM_DARK_GRAY),
-                getFrame().x() + 208, getFrame().y() + 42, EnumColour.GRAY.argb());
+                getFrame().x() + 208, getFrame().y() + 42, EnumColour.GRAY.argb(), false);
 
         // Error Count
         Component errorText = log.getErrorCount() == 0 ?
@@ -139,8 +139,8 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
                         .append(Component.translatable(UL_UNIT_WARNINGS, log.getWarningCount())
                                 .withStyle(UNIFORM_DARK_GRAY));
 
-        getRoot().getFontRenderer().draw(stack, errorText, getFrame().x() + 208, getFrame().y() + 52, EnumColour.GRAY.argb());
-        getRoot().getFontRenderer().draw(stack, warningText, getFrame().x() + 208, getFrame().y() + 60, EnumColour.GRAY.argb());
+        graphics.drawString(getRoot().getFontRenderer(), errorText, getFrame().x() + 208, getFrame().y() + 52, EnumColour.GRAY.argb(), false);
+        graphics.drawString(getRoot().getFontRenderer(), warningText, getFrame().x() + 208, getFrame().y() + 60, EnumColour.GRAY.argb(), false);
     }
 
     //TODO Reduce this reused code (ICEditorToolManager)
@@ -287,24 +287,22 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
         }
 
         @Override
-        protected void drawButtonBody(PoseStack stack, boolean mouseover) {
-            RenderSystem.setShaderTexture(0, TAB_BACKGROUND);
-
+        protected void drawButtonBody(GuiGraphics graphics, boolean mouseover) {
             if (editor.getStateMachine().isCompiling()) {
                 // Spinner
                 long time = Minecraft.getInstance().level.getGameTime();
                 int progress = (int) (time / 2) % 8;
                 int u = 305 + (15 * progress);
                 int v = 26;
-                blitCentered(stack, u, v, 14, 14);
+                blitCentered(graphics, TAB_BACKGROUND, u, v, 14, 14);
             } else {
                 // Hammer icon
-                blitCentered(stack, 305, 11, 14, 14);
+                blitCentered(graphics, TAB_BACKGROUND, 305, 11, 14, 14);
             }
         }
 
-        private void blitCentered(PoseStack stack, int u, int v, int width, int height) {
-            GuiComponent.blit(stack,
+        private void blitCentered(GuiGraphics graphics, ResourceLocation background, int u, int v, int width, int height) {
+            graphics.blit(background,
                     getFrame().x() + (getFrame().width() - width) / 2,
                     getFrame().y() + (getFrame().height() - height) / 2, u, v,
                     width, height, 512, 512);

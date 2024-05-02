@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class SickleItem extends DiggerItem {
 
     public SickleItem(Tier itemTier, float attackDamage, float attackSpeed, Properties properties) {
-        super(attackDamage, attackSpeed, itemTier, BlockTags.REPLACEABLE_PLANTS, properties);
+        super(attackDamage, attackSpeed, itemTier, BlockTags.REPLACEABLE, properties); //TODO is this tag correct?
     }
 
     //TODO !!!!

@@ -6,15 +6,13 @@ import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.TransformationList;
 import codechicken.lib.vec.Translation;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.fabrication.editor.tools.WirePlacerTool;
 import mrtjp.projectred.fabrication.engine.wires.ICWireTileType;
 import mrtjp.projectred.fabrication.gui.screen.ICWorkbenchScreen;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.transmission.client.WireModelRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -41,11 +39,11 @@ public class WirePlacerToolTab extends ICEditorToolTab {
             @Override public boolean isSelected() { return tool.getWireType() == type; }
 
             @Override
-            public void renderIcon(PoseStack stack, Point absPos, float partialFrame) {
+            public void renderIcon(GuiGraphics graphics, Point absPos, float partialFrame) {
                 MultiBufferSource.BufferSource getter = Minecraft.getInstance().renderBuffers().bufferSource();
                 CCRenderState ccrs = CCRenderState.instance();
                 ccrs.reset();
-                ccrs.bind(RenderType.cutout(), getter, stack);
+                ccrs.bind(RenderType.cutout(), getter, graphics.pose());
                 ccrs.overlay = OverlayTexture.NO_OVERLAY;
                 ccrs.brightness = 0xF000F0;
 
@@ -95,10 +93,8 @@ public class WirePlacerToolTab extends ICEditorToolTab {
     public TabButtonNode createButtonNode() {
         return new TabButtonNode(this, TabButtonNode.TabSide.LEFT) {
             @Override
-            public void renderIcon(PoseStack stack, Point mouse, float partialFrame) {
-
-                RenderSystem.setShaderTexture(0, ICWorkbenchScreen.BACKGROUND);
-                GuiComponent.blit(stack, getFrame().x() + 3, getFrame().y() + 3, 390, 46, 14, 14, 512, 512);
+            public void renderIcon(GuiGraphics graphics, Point mouse, float partialFrame) {
+                graphics.blit(ICWorkbenchScreen.BACKGROUND, getFrame().x() + 3, getFrame().y() + 3, 390, 46, 14, 14, 512, 512);
             }
 
             @Override

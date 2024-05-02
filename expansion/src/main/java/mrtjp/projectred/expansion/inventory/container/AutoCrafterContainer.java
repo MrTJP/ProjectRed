@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 public class AutoCrafterContainer extends BaseMachineContainer {
 
     public static final ICCLContainerFactory<AutoCrafterContainer> FACTORY = (windowId, playerInv, packet) -> {
-        BlockEntity tile = playerInv.player.level.getBlockEntity(packet.readPos());
+        BlockEntity tile = playerInv.player.level().getBlockEntity(packet.readPos());
         if (!(tile instanceof AutoCrafterTile)) return null;
         return new AutoCrafterContainer(playerInv, (AutoCrafterTile) tile, windowId);
     };

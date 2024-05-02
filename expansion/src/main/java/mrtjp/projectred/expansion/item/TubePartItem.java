@@ -4,7 +4,6 @@ import codechicken.multipart.api.ItemMultipart;
 import codechicken.multipart.api.part.MultiPart;
 import codechicken.multipart.util.MultipartPlaceContext;
 import mrtjp.projectred.expansion.TubeType;
-import mrtjp.projectred.expansion.ProjectRedExpansion;
 import mrtjp.projectred.expansion.part.BaseTubePart;
 import net.minecraft.world.item.Item;
 
@@ -13,7 +12,7 @@ public class TubePartItem extends ItemMultipart {
     private final TubeType type;
 
     public TubePartItem(TubeType type) {
-        super(new Item.Properties().tab(ProjectRedExpansion.EXPANSION_GROUP));
+        super(new Item.Properties());
         this.type = type;
     }
 

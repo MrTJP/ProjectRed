@@ -2,20 +2,15 @@ package mrtjp.projectred.transmission.data;
 
 import codechicken.lib.datagen.ItemModelProvider;
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 
 public class TransmissionItemModelProvider extends ItemModelProvider {
 
-    public TransmissionItemModelProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-        super(generator, MOD_ID, existingFileHelper);
-    }
-
-    @Override
-    public String getName() {
-        return "ProjectRed-Transmission Item Models";
+    public TransmissionItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
+        super(output, MOD_ID, existingFileHelper);
     }
 
     @Override

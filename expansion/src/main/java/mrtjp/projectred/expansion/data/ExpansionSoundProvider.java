@@ -1,7 +1,7 @@
 package mrtjp.projectred.expansion.data;
 
 import mrtjp.projectred.expansion.init.ExpansionUnlocal;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.SoundDefinitionsProvider;
@@ -12,8 +12,8 @@ import static mrtjp.projectred.expansion.init.ExpansionSounds.PRESSURIZE;
 
 public class ExpansionSoundProvider extends SoundDefinitionsProvider {
 
-    public ExpansionSoundProvider(DataGenerator generator, ExistingFileHelper helper) {
-        super(generator, MOD_ID, helper);
+    public ExpansionSoundProvider(PackOutput output, ExistingFileHelper helper) {
+        super(output, MOD_ID, helper);
     }
 
     @Override

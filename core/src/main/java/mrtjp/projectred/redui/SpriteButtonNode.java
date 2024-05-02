@@ -1,6 +1,6 @@
 package mrtjp.projectred.redui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.function.Supplier;
 
@@ -33,7 +33,7 @@ public class SpriteButtonNode extends AbstractButtonNode {
     }
 
     @Override
-    protected void drawButtonBody(PoseStack stack, boolean mouseover) {
-        blitSpriteCentered(stack, sprite);
+    protected void drawButtonBody(GuiGraphics graphics, boolean mouseover) {
+        blitSpriteCentered(graphics, sprite);
     }
 }

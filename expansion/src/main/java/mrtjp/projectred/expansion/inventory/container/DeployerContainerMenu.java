@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 public class DeployerContainerMenu extends AbstractContainerMenu {
 
     public static final ICCLContainerFactory<DeployerContainerMenu> FACTORY = (windowId, playerInv, packet) -> {
-        BlockEntity tile = playerInv.player.level.getBlockEntity(packet.readPos());
+        BlockEntity tile = playerInv.player.level().getBlockEntity(packet.readPos());
         if (!(tile instanceof DeployerBlockEntity dbe)) return null;
         return new DeployerContainerMenu(playerInv, dbe, windowId);
     };

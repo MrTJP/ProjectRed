@@ -45,10 +45,10 @@ public class FabricationBlocks {
         PACKAGING_TABLE_BLOCK = BLOCKS.register(ID_PACKAGING_TABLE, PackagingTableBlock::new);
 
         // Block Items
-        ITEMS.register(ID_IC_WORKBENCH, () -> new BlockItem(IC_WORKBENCH_BLOCK.get(), new Item.Properties().tab(FABRICATION_GROUP)));
-        ITEMS.register(ID_PLOTTING_TABLE, () -> new BlockItem(PLOTTING_TABLE_BLOCK.get(), new Item.Properties().tab(FABRICATION_GROUP)));
-        ITEMS.register(ID_LITHOGRAPHY_TABLE, () -> new BlockItem(LITHOGRAPHY_TABLE_BLOCK.get(), new Item.Properties().tab(FABRICATION_GROUP)));
-        ITEMS.register(ID_PACKAGING_TABLE, () -> new BlockItem(PACKAGING_TABLE_BLOCK.get(), new Item.Properties().tab(FABRICATION_GROUP)));
+        ITEMS.register(ID_IC_WORKBENCH, () -> new BlockItem(IC_WORKBENCH_BLOCK.get(), new Item.Properties()));
+        ITEMS.register(ID_PLOTTING_TABLE, () -> new BlockItem(PLOTTING_TABLE_BLOCK.get(), new Item.Properties()));
+        ITEMS.register(ID_LITHOGRAPHY_TABLE, () -> new BlockItem(LITHOGRAPHY_TABLE_BLOCK.get(), new Item.Properties()));
+        ITEMS.register(ID_PACKAGING_TABLE, () -> new BlockItem(PACKAGING_TABLE_BLOCK.get(), new Item.Properties()));
 
         // Tiles
         IC_WORKBENCH_TILE = BLOCK_ENTITY_TYPES.register(ID_IC_WORKBENCH, () -> BlockEntityType.Builder.of(ICWorkbenchTile::new, IC_WORKBENCH_BLOCK.get()).build(null));

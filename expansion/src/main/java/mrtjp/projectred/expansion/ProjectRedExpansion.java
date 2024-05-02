@@ -1,17 +1,19 @@
 package mrtjp.projectred.expansion;
 
-import codechicken.lib.gui.SimpleCreativeTab;
 import codechicken.multipart.api.MultipartType;
 import codechicken.multipart.api.PartConverter;
 import codechicken.multipart.util.MultipartGenerator;
+import mrtjp.projectred.api.Frame;
 import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.expansion.data.*;
 import mrtjp.projectred.expansion.init.*;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -44,8 +46,7 @@ public class ProjectRedExpansion {
     public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MOD_ID);
     public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
     public static final DeferredRegister<PartConverter> PART_CONVERTERS = DeferredRegister.create(PartConverter.PART_CONVERTERS, MOD_ID);
-
-    public static final SimpleCreativeTab EXPANSION_GROUP = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(ExpansionBlocks.PROJECT_BENCH_BLOCK.get()));
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
 
     static {
         ProjectRedAPI.expansionAPI = ExpansionAPI.INSTANCE;
@@ -55,6 +56,7 @@ public class ProjectRedExpansion {
         ExpansionItems.register();
         ExpansionSounds.register();
         ExpansionParts.register();
+        ExpansionCreativeModeTabs.register();
     }
 
     public ProjectRedExpansion() {
@@ -72,6 +74,7 @@ public class ProjectRedExpansion {
         MENU_TYPES.register(modEventBus);
         PART_TYPES.register(modEventBus);
         PART_CONVERTERS.register(modEventBus);
+        CREATIVE_TABS.register(modEventBus);
 
         // MovementManager hooks
         MinecraftForge.EVENT_BUS.addListener(MovementManager::onChunkWatchEvent);
@@ -92,7 +95,7 @@ public class ProjectRedExpansion {
         ExpansionNetwork.init();
 
         // Register frame as Multipart tile passthrough interface
-        MultipartGenerator.INSTANCE.registerPassThroughInterface("mrtjp.projectred.api.Frame");
+        MultipartGenerator.INSTANCE.registerPassThroughInterface(Frame.class);
 
         // Init Movement registry
         MovementRegistry.init();
@@ -100,15 +103,16 @@ public class ProjectRedExpansion {
 
     private void onGatherDataEvent(final GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
+        PackOutput output = generator.getPackOutput();
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
 
-        generator.addProvider(event.includeClient(), new ExpansionBlockStateModelProvider(generator, fileHelper));
-        generator.addProvider(event.includeClient(), new ExpansionItemModelProvider(generator, fileHelper));
-        generator.addProvider(event.includeClient(), new ExpansionLanguageProvider(generator));
-        generator.addProvider(event.includeClient(), new ExpansionSoundProvider(generator, fileHelper));
+        generator.addProvider(event.includeClient(), new ExpansionBlockStateModelProvider(output, fileHelper));
+        generator.addProvider(event.includeClient(), new ExpansionItemModelProvider(output, fileHelper));
+        generator.addProvider(event.includeClient(), new ExpansionLanguageProvider(output));
+        generator.addProvider(event.includeClient(), new ExpansionSoundProvider(output, fileHelper));
 
-        generator.addProvider(event.includeServer(), new ExpansionBlockTagsProvider(generator, fileHelper));
-        generator.addProvider(event.includeServer(), new ExpansionRecipeProvider(generator));
-        generator.addProvider(event.includeServer(), new ExpansionLootTableProvider(generator));
+        generator.addProvider(event.includeServer(), new ExpansionBlockTagsProvider(output, event.getLookupProvider(), fileHelper));
+        generator.addProvider(event.includeServer(), new ExpansionRecipeProvider(output));
+        generator.addProvider(event.includeServer(), new ExpansionLootTableProvider(output));
     }
 }

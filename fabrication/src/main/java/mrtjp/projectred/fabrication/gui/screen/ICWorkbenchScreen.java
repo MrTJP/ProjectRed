@@ -1,8 +1,6 @@
 package mrtjp.projectred.fabrication.gui.screen;
 
 import codechicken.lib.colour.EnumColour;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
 import mrtjp.projectred.fabrication.engine.log.ICCompilerLog;
@@ -16,6 +14,7 @@ import mrtjp.projectred.redui.ItemStackNode;
 import mrtjp.projectred.redui.RedUIScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -93,8 +92,8 @@ public class ICWorkbenchScreen extends RedUIScreen {
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-        super.drawBack(stack, mouse, partialFrame);
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
+        super.drawBack(graphics, mouse, partialFrame);
     }
 
     @Override
@@ -158,16 +157,15 @@ public class ICWorkbenchScreen extends RedUIScreen {
         }
 
         @Override
-        public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-            RenderSystem.setShaderTexture(0, BACKGROUND);
-            blit(stack, getFrame().x(), getFrame().y(), 0, 222, getFrame().width(), getFrame().height(), 512, 512);
+        public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
+            graphics.blit(BACKGROUND, getFrame().x(), getFrame().y(), 0, 222, getFrame().width(), getFrame().height(), 512, 512);
 
             Font fontRenderer = getRoot().getFontRenderer();
             Component text = Component.translatable(UL_PLACE_BLUEPRINT);
 
-            fontRenderer.draw(stack, text,
-                    getFrame().midX() - fontRenderer.width(text) / 2f,
-                    getFrame().y() + 6, EnumColour.GRAY.argb());
+            graphics.drawString(fontRenderer, text,
+                    getFrame().midX() - fontRenderer.width(text) / 2,
+                    getFrame().y() + 6, EnumColour.GRAY.argb(), false);
         }
     }
 

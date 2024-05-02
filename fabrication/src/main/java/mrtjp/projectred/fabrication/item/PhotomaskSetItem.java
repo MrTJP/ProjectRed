@@ -1,6 +1,5 @@
 package mrtjp.projectred.fabrication.item;
 
-import mrtjp.projectred.fabrication.ProjectRedFabrication;
 import mrtjp.projectred.fabrication.init.FabricationItems;
 import mrtjp.projectred.integration.GateType;
 import net.minecraft.network.chat.Component;
@@ -18,8 +17,7 @@ import java.util.Objects;
 public class PhotomaskSetItem extends Item {
 
     public PhotomaskSetItem() {
-        super(new Item.Properties()
-                .tab(ProjectRedFabrication.FABRICATION_GROUP));
+        super(new Item.Properties());
     }
 
     @Override

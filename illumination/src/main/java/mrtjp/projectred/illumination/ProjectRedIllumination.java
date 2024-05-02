@@ -1,16 +1,16 @@
 package mrtjp.projectred.illumination;
 
-import codechicken.lib.colour.EnumColour;
-import codechicken.lib.gui.SimpleCreativeTab;
 import codechicken.multipart.api.MultipartType;
 import mrtjp.projectred.illumination.data.*;
 import mrtjp.projectred.illumination.init.IlluminationBlocks;
 import mrtjp.projectred.illumination.init.IlluminationClientInit;
 import mrtjp.projectred.illumination.init.IlluminationMicroMaterials;
 import mrtjp.projectred.illumination.init.IlluminationParts;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -39,13 +39,13 @@ public class ProjectRedIllumination {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MOD_ID);
     public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
-
-    public static final SimpleCreativeTab ILLUMINATION_GROUP = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(BlockLightType.ILLUMAR_LAMP.getBlock(EnumColour.RED.ordinal(), true)));
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
 
     static {
         IlluminationBlocks.register();
         IlluminationParts.register();
         IlluminationMicroMaterials.register();
+        IlluminationCreativeModeTabs.register();
     }
 
     public ProjectRedIllumination() {
@@ -60,6 +60,7 @@ public class ProjectRedIllumination {
         ITEMS.register(modEventBus);
         BLOCK_ENTITY_TYPES.register(modEventBus);
         PART_TYPES.register(modEventBus);
+        CREATIVE_TABS.register(modEventBus);
 
         modEventBus.register(new IlluminationMicroMaterials());
     }
@@ -70,13 +71,14 @@ public class ProjectRedIllumination {
 
     private void onGatherDataEvent(final GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
+        PackOutput output = generator.getPackOutput();
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
 
-        generator.addProvider(event.includeClient(), new IlluminationBlockStateModelProvider(generator, fileHelper));
-        generator.addProvider(event.includeClient(), new IlluminationItemModelProvider(generator, fileHelper));
-        generator.addProvider(event.includeClient(), new IlluminationLanguageProvider(generator));
+        generator.addProvider(event.includeClient(), new IlluminationBlockStateModelProvider(output, fileHelper));
+        generator.addProvider(event.includeClient(), new IlluminationItemModelProvider(output, fileHelper));
+        generator.addProvider(event.includeClient(), new IlluminationLanguageProvider(output));
 
-        generator.addProvider(event.includeServer(), new IlluminationBlockLootProvider(generator));
-        generator.addProvider(event.includeServer(), new IlluminationRecipeProvider(generator));
+        generator.addProvider(event.includeServer(), new IlluminationBlockLootProvider(output));
+        generator.addProvider(event.includeServer(), new IlluminationRecipeProvider(output));
     }
 }

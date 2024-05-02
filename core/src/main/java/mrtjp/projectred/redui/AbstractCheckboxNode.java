@@ -1,7 +1,7 @@
 package mrtjp.projectred.redui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -27,15 +27,15 @@ public abstract class AbstractCheckboxNode extends AbstractGuiNode {
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
 
         boolean mouseover = getFrame().contains(mouse) && isFirstHit(mouse);
         RedUISprite sprite = RedUISprites.getCheckboxSprite(isDisabled(), mouseover, isChecked());
-        blitSprite(stack, sprite);
+        blitSprite(graphics, sprite);
     }
 
     @Override
-    public void drawFront(PoseStack stack, Point mouse, float partialFrame) {
+    public void drawFront(GuiGraphics graphics, Point mouse, float partialFrame) {
         if (!isFirstHit(mouse))
             return;
 
@@ -43,7 +43,7 @@ public abstract class AbstractCheckboxNode extends AbstractGuiNode {
         buildTooltip(tooltip);
 
         if (!tooltip.isEmpty())
-            renderTooltip(stack, mouse, tooltip);
+            renderTooltip(graphics, mouse, tooltip);
     }
 
     @Override

@@ -1,8 +1,6 @@
 package mrtjp.projectred.fabrication.gui.screen;
 
 import codechicken.lib.colour.EnumColour;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.fabrication.editor.ICEditorToolType;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
 import mrtjp.projectred.fabrication.editor.tools.*;
@@ -11,7 +9,7 @@ import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.redui.AbstractGuiNode;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 
 public class ICWorkbenchEditTab extends AbstractGuiNode {
 
@@ -76,16 +74,14 @@ public class ICWorkbenchEditTab extends AbstractGuiNode {
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-        RenderSystem.setShaderTexture(0, ICWorkbenchScreen.BACKGROUND);
-
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
         Rect frame = getFrame();
         Font fontRenderer = getRoot().getFontRenderer();
 
-        GuiComponent.blit(stack, frame.x(), frame.y(), 0, 0, frame.width(), frame.height(), 512, 512);
+        graphics.blit(ICWorkbenchScreen.BACKGROUND, frame.x(), frame.y(), 0, 0, frame.width(), frame.height(), 512, 512);
 
         // Blueprint name in top left corner
-        fontRenderer.draw(stack, editor.getIcName(), frame.x() + 8, frame.y() + 6, EnumColour.GRAY.argb());
+        graphics.drawString(fontRenderer, editor.getIcName(), frame.x() + 8, frame.y() + 6, EnumColour.GRAY.argb(), false);
     }
 
     @Override

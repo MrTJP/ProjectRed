@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 public class ChargingBenchContainer extends BasePoweredTileContainer {
 
     public static final ICCLContainerFactory<ChargingBenchContainer> FACTORY = (windowId, inventory, packet) -> {
-        BlockEntity tile = inventory.player.level.getBlockEntity(packet.readPos());
+        BlockEntity tile = inventory.player.level().getBlockEntity(packet.readPos());
         if (!(tile instanceof ChargingBenchTile)) return null;
 
         return new ChargingBenchContainer(inventory, (ChargingBenchTile) tile, windowId);

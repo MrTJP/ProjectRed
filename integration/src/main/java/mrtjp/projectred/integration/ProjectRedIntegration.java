@@ -1,13 +1,16 @@
 package mrtjp.projectred.integration;
 
-import codechicken.lib.gui.SimpleCreativeTab;
 import codechicken.multipart.api.MultipartType;
 import mrtjp.projectred.integration.data.IntegrationItemModelProvider;
 import mrtjp.projectred.integration.data.IntegrationLanguageProvider;
 import mrtjp.projectred.integration.data.IntegrationRecipeProvider;
 import mrtjp.projectred.integration.init.IntegrationClientInit;
+import mrtjp.projectred.integration.init.IntegrationCreativeModeTabs;
 import mrtjp.projectred.integration.init.IntegrationParts;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -33,11 +36,11 @@ public class ProjectRedIntegration {
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
     public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
-
-    public static final SimpleCreativeTab CREATIVE_TAB = new SimpleCreativeTab(MOD_ID, GateType.OR::makeStack);
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
 
     static {
         IntegrationParts.register();
+        IntegrationCreativeModeTabs.register();
     }
 
     public ProjectRedIntegration() {
@@ -50,6 +53,7 @@ public class ProjectRedIntegration {
 
         ITEMS.register(modEventBus);
         PART_TYPES.register(modEventBus);
+        CREATIVE_TABS.register(modEventBus);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -58,11 +62,12 @@ public class ProjectRedIntegration {
 
     private void onGatherDataEvent(final GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
+        PackOutput output = generator.getPackOutput();
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
 
-        generator.addProvider(event.includeClient(), new IntegrationItemModelProvider(generator, fileHelper));
-        generator.addProvider(event.includeClient(), new IntegrationLanguageProvider(generator));
+        generator.addProvider(event.includeClient(), new IntegrationItemModelProvider(output, fileHelper));
+        generator.addProvider(event.includeClient(), new IntegrationLanguageProvider(output));
 
-        generator.addProvider(event.includeServer(), new IntegrationRecipeProvider(generator));
+        generator.addProvider(event.includeServer(), new IntegrationRecipeProvider(output));
     }
 }

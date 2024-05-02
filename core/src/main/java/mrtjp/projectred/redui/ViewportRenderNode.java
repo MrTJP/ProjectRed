@@ -5,10 +5,12 @@ import codechicken.lib.vec.Vector3;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexSorting;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.lib.Size;
 import mrtjp.projectred.lib.Vec2;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.opengl.GL11;
 
@@ -69,7 +71,7 @@ public abstract class ViewportRenderNode extends AbstractGuiNode {
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
 
         // Set up projection and view matrices
         Rect glFrame = getGlFrame();
@@ -87,7 +89,7 @@ public abstract class ViewportRenderNode extends AbstractGuiNode {
 
         // Apply projection matrix
         RenderSystem.backupProjectionMatrix();
-        RenderSystem.setProjectionMatrix(pvMatrix.getProjectionMatrix().toMatrix4f());
+        RenderSystem.setProjectionMatrix(pvMatrix.getProjectionMatrix().toMatrix4f(), VertexSorting.ORTHOGRAPHIC_Z);
 
         PoseStack mvStack = RenderSystem.getModelViewStack();
         mvStack.pushPose();
@@ -116,10 +118,10 @@ public abstract class ViewportRenderNode extends AbstractGuiNode {
     }
 
     @Override
-    public void drawFront(PoseStack stack, Point mouse, float partialFrame) {
+    public void drawFront(GuiGraphics graphics, Point mouse, float partialFrame) {
 
         List<Component> tooltip = getToolTip(mouse, isFirstHit(mouse));
 
-        renderTooltip(stack, mouse, tooltip);
+        renderTooltip(graphics, mouse, tooltip);
     }
 }

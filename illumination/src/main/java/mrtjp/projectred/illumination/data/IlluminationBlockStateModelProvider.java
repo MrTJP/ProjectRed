@@ -5,7 +5,7 @@ import mrtjp.projectred.illumination.BlockLightType;
 import mrtjp.projectred.illumination.ProjectRedIllumination;
 import mrtjp.projectred.illumination.block.IllumarLampBlock;
 import mrtjp.projectred.illumination.block.IllumarSmartLampBlock;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
@@ -14,8 +14,6 @@ import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nonnull;
-
 import static mrtjp.projectred.illumination.init.IlluminationBlocks.ILLUMAR_SMART_LAMP;
 
 public class IlluminationBlockStateModelProvider extends BlockStateProvider {
@@ -23,13 +21,8 @@ public class IlluminationBlockStateModelProvider extends BlockStateProvider {
     // XY rotations for non-rotatable sided devices
     private static final int[][] DEVICE_SIDED_ROTATIONS = { {0, 0}, {2, 2}, {1, 2}, {1, 0}, {1, 1}, {1, 3} };
 
-    public IlluminationBlockStateModelProvider(DataGenerator gen, ExistingFileHelper exFileHelper) {
-        super(gen, ProjectRedIllumination.MOD_ID, exFileHelper);
-    }
-
-    @Override
-    public @Nonnull String getName() {
-        return "ProjectRed-Illumination Block Models";
+    public IlluminationBlockStateModelProvider(PackOutput output, ExistingFileHelper exFileHelper) {
+        super(output, ProjectRedIllumination.MOD_ID, exFileHelper);
     }
 
     @Override

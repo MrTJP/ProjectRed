@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -36,7 +36,8 @@ public class FrameBlock extends Block implements Frame {
     private static final VoxelShape[] shapes = new VoxelShape[64];
 
     public FrameBlock() {
-        super(BlockBehaviour.Properties.of(Material.WOOD)
+        super(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.WOOD)
                 .strength(2.0F)
                 .sound(SoundType.WOOD)
                 .dynamicShape()); // To prevent early caching before modelVerts can be loaded

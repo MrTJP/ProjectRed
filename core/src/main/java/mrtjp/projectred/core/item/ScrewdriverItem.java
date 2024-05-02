@@ -8,16 +8,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelReader;
 
-import static mrtjp.projectred.core.ProjectRedCore.CORE_CREATIVE_TAB;
-
 public class ScrewdriverItem extends Item implements IScrewdriver {
 
     public ScrewdriverItem() {
         super(new Item.Properties()
                 .stacksTo(1)
                 .durability(128)
-                .setNoRepair()
-                .tab(CORE_CREATIVE_TAB));
+                .setNoRepair());
     }
 
     @Override

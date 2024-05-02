@@ -2,7 +2,7 @@ package mrtjp.projectred.illumination.data;
 
 import mrtjp.projectred.illumination.BlockLightType;
 import mrtjp.projectred.illumination.MultipartLightType;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.LanguageProvider;
 
 import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
@@ -14,8 +14,8 @@ public class IlluminationLanguageProvider extends LanguageProvider {
             "White", "Orange", "Magenta", "Light Blue", "Yellow", "Lime", "Pink", "Gray", "Light Gray", "Cyan", "Purple", "Blue", "Brown", "Green", "Red", "Black"
     };
 
-    public IlluminationLanguageProvider(DataGenerator gen) {
-        super(gen, MOD_ID, "en_us");
+    public IlluminationLanguageProvider(PackOutput output) {
+        super(output, MOD_ID, "en_us");
     }
 
     @Override

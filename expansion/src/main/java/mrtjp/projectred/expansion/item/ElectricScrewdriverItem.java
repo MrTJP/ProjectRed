@@ -1,6 +1,5 @@
 package mrtjp.projectred.expansion.item;
 
-import mrtjp.projectred.expansion.ProjectRedExpansion;
 import mrtjp.projectred.api.IScrewdriver;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
@@ -14,7 +13,6 @@ public class ElectricScrewdriverItem extends Item implements IScrewdriver, IChar
 
     public ElectricScrewdriverItem() {
         super(new Item.Properties()
-                .tab(ProjectRedExpansion.EXPANSION_GROUP)
                 .durability(400)
                 .setNoRepair());
     }

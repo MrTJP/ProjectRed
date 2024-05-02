@@ -4,7 +4,6 @@ import codechicken.multipart.api.ItemMultipart;
 import codechicken.multipart.api.part.MultiPart;
 import codechicken.multipart.util.MultipartPlaceContext;
 import mrtjp.projectred.core.PlacementLib;
-import mrtjp.projectred.transmission.ProjectRedTransmission;
 import mrtjp.projectred.transmission.WireType;
 import mrtjp.projectred.transmission.part.BaseWirePart;
 import net.minecraft.core.BlockPos;
@@ -16,7 +15,7 @@ public class FaceWirePartItem extends ItemMultipart {
     private final WireType type;
 
     public FaceWirePartItem(WireType type) {
-        super(new Item.Properties().tab(ProjectRedTransmission.TRANSMISSION_GROUP));
+        super(new Item.Properties());
         this.type = type;
     }
 

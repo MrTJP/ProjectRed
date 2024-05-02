@@ -2,19 +2,15 @@ package mrtjp.projectred.illumination.data;
 
 import codechicken.lib.datagen.LootTableProvider;
 import mrtjp.projectred.illumination.BlockLightType;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 
+import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
 import static mrtjp.projectred.illumination.init.IlluminationBlocks.ILLUMAR_SMART_LAMP;
 
 public class IlluminationBlockLootProvider extends LootTableProvider.BlockLootProvider {
 
-    public IlluminationBlockLootProvider(DataGenerator dataGenerator) {
-        super(dataGenerator);
-    }
-
-    @Override
-    public String getName() {
-        return "ProjectRed-Illumination Block Loot Tables";
+    public IlluminationBlockLootProvider(PackOutput output) {
+        super(output, MOD_ID);
     }
 
     @Override

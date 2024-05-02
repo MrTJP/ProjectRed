@@ -2,7 +2,6 @@ package mrtjp.projectred.core.client;
 
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.math.Matrix4f;
 import mrtjp.projectred.core.ProjectRedCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
@@ -10,6 +9,7 @@ import net.minecraft.client.renderer.PostPass;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
+import org.joml.Matrix4f;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -82,7 +82,7 @@ public class FixedScalePostChain extends PostChain {
 
         // Re-compute projection matrices scaled to each pass's input
         for (PostPass pass : this.passes) {
-            Matrix4f orthoMatrix = Matrix4f.orthographic(0.0F, (float) pass.inTarget.width, (float) pass.inTarget.height, 0.0F, 0.1F, 1000.0F);
+            Matrix4f orthoMatrix = new Matrix4f().setOrtho(0.0F, (float) pass.inTarget.width,  0.0F, (float) pass.inTarget.height, 0.1F, 1000.0F);
             pass.setOrthoMatrix(orthoMatrix);
         }
     }

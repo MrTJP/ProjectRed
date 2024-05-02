@@ -1,8 +1,6 @@
 package mrtjp.projectred.fabrication.gui.screen;
 
 import codechicken.lib.colour.EnumColour;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.fengine.TileCoord;
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
@@ -18,7 +16,7 @@ import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.redui.AbstractGuiNode;
 import mrtjp.projectred.redui.ScrollBarNode;
 import mrtjp.projectred.redui.TextBoxNode;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -86,9 +84,8 @@ public class ICWorkbenchInfoTab extends AbstractGuiNode {
 
         ScrollBarNode scrollBarNode = new ScrollBarNode(ScrollBarNode.ScrollAxis.VERTICAL) {
             @Override
-            protected void drawSlider(PoseStack stack, Rect sliderFrame) {
-                RenderSystem.setShaderTexture(0, TAB_BACKGROUND);
-                GuiComponent.blit(stack, sliderFrame.x(), sliderFrame.y(), 305, 58, sliderFrame.width(), sliderFrame.height(), 512, 512);
+            protected void drawSlider(GuiGraphics graphics, Rect sliderFrame) {
+                graphics.blit(TAB_BACKGROUND, sliderFrame.x(), sliderFrame.y(), 305, 58, sliderFrame.width(), sliderFrame.height(), 512, 512);
             }
 
             @Override
@@ -117,12 +114,11 @@ public class ICWorkbenchInfoTab extends AbstractGuiNode {
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-        RenderSystem.setShaderTexture(0, TAB_BACKGROUND);
-        GuiComponent.blit(stack, getFrame().x(), getFrame().y(), 0, 0, getFrame().width(), getFrame().height(), 512, 512);
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
+        graphics.blit(TAB_BACKGROUND, getFrame().x(), getFrame().y(), 0, 0, getFrame().width(), getFrame().height(), 512, 512);
 
         // Blueprint name in top left corner
-        getRoot().getFontRenderer().draw(stack, editor.getIcName(), getFrame().x() + 8, getFrame().y() + 6, EnumColour.GRAY.argb());
+        graphics.drawString(getRoot().getFontRenderer(), editor.getIcName(), getFrame().x() + 8, getFrame().y() + 6, EnumColour.GRAY.argb(), false);
     }
 
     private ButtonArrayNode createPipelineButtons() {

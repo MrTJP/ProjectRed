@@ -9,7 +9,6 @@ import mrtjp.projectred.exploration.item.SickleItem;
 import mrtjp.projectred.exploration.item.WoolGinItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.TierSortingRegistry;
@@ -19,7 +18,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import static mrtjp.projectred.core.init.CoreTags.*;
-import static mrtjp.projectred.exploration.ProjectRedExploration.*;
+import static mrtjp.projectred.exploration.ProjectRedExploration.ITEMS;
+import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class ExplorationItems {
@@ -294,23 +294,23 @@ public class ExplorationItems {
         SAPPHIRE_SICKLE  = ITEMS.register(ID_SAPPHIRE_SICKLE,  () -> createSickleItem(SAPPHIRE_ITEM_TIER, 1, -2.8F));
         PERIDOT_SICKLE   = ITEMS.register(ID_PERIDOT_SICKLE,   () -> createSickleItem(PERIDOT_ITEM_TIER, 1, -2.8F));
 
-        /* Armmor */
+        /* Armor */
 
-        RUBY_HELMET         = ITEMS.register(ID_RUBY_HELMET,           () -> createArmorItem(RUBY_ARMOR_MATERIAL, EquipmentSlot.HEAD));
-        SAPPHIRE_HELMET     = ITEMS.register(ID_SAPPHIRE_HELMET,       () -> createArmorItem(SAPPHIRE_ARMOR_MATERIAL, EquipmentSlot.HEAD));
-        PERIDOT_HELMET      = ITEMS.register(ID_PERIDOT_HELMET,        () -> createArmorItem(PERIDOT_ARMOR_MATERIAL, EquipmentSlot.HEAD));
+        RUBY_HELMET         = ITEMS.register(ID_RUBY_HELMET,           () -> createArmorItem(RUBY_ARMOR_MATERIAL, ArmorItem.Type.HELMET));
+        SAPPHIRE_HELMET     = ITEMS.register(ID_SAPPHIRE_HELMET,       () -> createArmorItem(SAPPHIRE_ARMOR_MATERIAL, ArmorItem.Type.HELMET));
+        PERIDOT_HELMET      = ITEMS.register(ID_PERIDOT_HELMET,        () -> createArmorItem(PERIDOT_ARMOR_MATERIAL, ArmorItem.Type.HELMET));
 
-        RUBY_CHESTPLATE     = ITEMS.register(ID_RUBY_CHESTPLATE,       () -> createArmorItem(RUBY_ARMOR_MATERIAL, EquipmentSlot.CHEST));
-        SAPPHIRE_CHESTPLATE = ITEMS.register(ID_SAPPHIRE_CHESTPLATE,   () -> createArmorItem(SAPPHIRE_ARMOR_MATERIAL, EquipmentSlot.CHEST));
-        PERIDOT_CHESTPLATE  = ITEMS.register(ID_PERIDOT_CHESTPLATE,    () -> createArmorItem(PERIDOT_ARMOR_MATERIAL, EquipmentSlot.CHEST));
+        RUBY_CHESTPLATE     = ITEMS.register(ID_RUBY_CHESTPLATE,       () -> createArmorItem(RUBY_ARMOR_MATERIAL, ArmorItem.Type.CHESTPLATE));
+        SAPPHIRE_CHESTPLATE = ITEMS.register(ID_SAPPHIRE_CHESTPLATE,   () -> createArmorItem(SAPPHIRE_ARMOR_MATERIAL, ArmorItem.Type.CHESTPLATE));
+        PERIDOT_CHESTPLATE  = ITEMS.register(ID_PERIDOT_CHESTPLATE,    () -> createArmorItem(PERIDOT_ARMOR_MATERIAL, ArmorItem.Type.CHESTPLATE));
 
-        RUBY_LEGGINGS       = ITEMS.register(ID_RUBY_LEGGINGS,         () -> createArmorItem(RUBY_ARMOR_MATERIAL, EquipmentSlot.LEGS));
-        SAPPHIRE_LEGGINGS   = ITEMS.register(ID_SAPPHIRE_LEGGINGS,     () -> createArmorItem(SAPPHIRE_ARMOR_MATERIAL, EquipmentSlot.LEGS));
-        PERIDOT_LEGGINGS    = ITEMS.register(ID_PERIDOT_LEGGINGS,      () -> createArmorItem(PERIDOT_ARMOR_MATERIAL, EquipmentSlot.LEGS));
+        RUBY_LEGGINGS       = ITEMS.register(ID_RUBY_LEGGINGS,         () -> createArmorItem(RUBY_ARMOR_MATERIAL, ArmorItem.Type.LEGGINGS));
+        SAPPHIRE_LEGGINGS   = ITEMS.register(ID_SAPPHIRE_LEGGINGS,     () -> createArmorItem(SAPPHIRE_ARMOR_MATERIAL, ArmorItem.Type.LEGGINGS));
+        PERIDOT_LEGGINGS    = ITEMS.register(ID_PERIDOT_LEGGINGS,      () -> createArmorItem(PERIDOT_ARMOR_MATERIAL, ArmorItem.Type.LEGGINGS));
 
-        RUBY_BOOTS          = ITEMS.register(ID_RUBY_BOOTS,            () -> createArmorItem(RUBY_ARMOR_MATERIAL, EquipmentSlot.FEET));
-        SAPPHIRE_BOOTS      = ITEMS.register(ID_SAPPHIRE_BOOTS,        () -> createArmorItem(SAPPHIRE_ARMOR_MATERIAL, EquipmentSlot.FEET));
-        PERIDOT_BOOTS       = ITEMS.register(ID_PERIDOT_BOOTS,         () -> createArmorItem(PERIDOT_ARMOR_MATERIAL, EquipmentSlot.FEET));
+        RUBY_BOOTS          = ITEMS.register(ID_RUBY_BOOTS,            () -> createArmorItem(RUBY_ARMOR_MATERIAL, ArmorItem.Type.BOOTS));
+        SAPPHIRE_BOOTS      = ITEMS.register(ID_SAPPHIRE_BOOTS,        () -> createArmorItem(SAPPHIRE_ARMOR_MATERIAL, ArmorItem.Type.BOOTS));
+        PERIDOT_BOOTS       = ITEMS.register(ID_PERIDOT_BOOTS,         () -> createArmorItem(PERIDOT_ARMOR_MATERIAL, ArmorItem.Type.BOOTS));
 
         /* Backpacks */
 
@@ -333,39 +333,39 @@ public class ExplorationItems {
     }
 
     private static Supplier<Item> createSimpleItemSupplier() {
-        return () -> new Item(new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
+        return () -> new Item(new Item.Properties());
     }
 
-    private static Item createAxeItem(Tier tier, float attackDamage, float attackSpeed) {
-        return new AxeItem(tier, attackDamage, attackSpeed, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
+    private static Item createAxeItem(SimpleItemTier tier, float attackDamage, float attackSpeed) {
+        return new AxeItem(tier, attackDamage, attackSpeed, new Item.Properties());
     }
 
-    private static Item createPickaxeItem(Tier tier, int attackDamage, float attackSpeed) {
-        return new PickaxeItem(tier, attackDamage, attackSpeed, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
+    private static Item createPickaxeItem(SimpleItemTier tier, int attackDamage, float attackSpeed) {
+        return new PickaxeItem(tier, attackDamage, attackSpeed, new Item.Properties());
     }
 
-    private static Item createShovelItem(Tier tier, float attackDamage, float attackSpeed) {
-        return new ShovelItem(tier, attackDamage, attackSpeed, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
+    private static Item createShovelItem(SimpleItemTier tier, float attackDamage, float attackSpeed) {
+        return new ShovelItem(tier, attackDamage, attackSpeed, new Item.Properties());
     }
 
-    private static Item createHoeItem(Tier tier, int attackDamage, float attackSpeed) {
-        return new HoeItem(tier, attackDamage, attackSpeed, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
+    private static Item createHoeItem(SimpleItemTier tier, int attackDamage, float attackSpeed) {
+        return new HoeItem(tier, attackDamage, attackSpeed, new Item.Properties());
     }
 
-    private static Item createSwordItem(Tier tier, int attackDamage, float attackSpeed) {
-        return new SwordItem(tier, attackDamage, attackSpeed, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
+    private static Item createSwordItem(SimpleItemTier tier, int attackDamage, float attackSpeed) {
+        return new SwordItem(tier, attackDamage, attackSpeed, new Item.Properties());
     }
 
     private static Item createSawItem(Tier tier) {
-        return new SawItem(tier, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
+        return new SawItem(tier, new Item.Properties());
     }
 
     private static Item createSickleItem(Tier tier, int attackDamage, float attackSpeed) {
-        return new SickleItem(tier, attackDamage, attackSpeed, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
+        return new SickleItem(tier, attackDamage, attackSpeed, new Item.Properties());
     }
 
-    private static Item createArmorItem(SimpleArmorMaterial material, EquipmentSlot slot) {
-        return new ArmorItem(material, slot, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
+    private static Item createArmorItem(SimpleArmorMaterial material, ArmorItem.Type slot) {
+        return new ArmorItem(material, slot, new Item.Properties());
     }
 
     private static void registerSubDiamondTeir(Tier tier, String id) {

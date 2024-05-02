@@ -5,6 +5,7 @@ import codechicken.multipart.api.MultipartType;
 import codechicken.multipart.api.SimpleMultipartType;
 import mrtjp.projectred.illumination.item.MultipartLightPartItem;
 import mrtjp.projectred.illumination.part.*;
+import net.covers1624.quack.collection.FastStream;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.DeferredRegister;
@@ -64,6 +65,10 @@ public enum MultipartLightType {
 
     public Item getItem(int color, boolean inverted) {
         return inverted ? invertedItemSuppliers.get(color).get() : itemSuppliers.get(color).get();
+    }
+
+    public Iterable<Item> getAllItems(boolean inverted) {
+        return FastStream.of(inverted ? invertedItemSuppliers : itemSuppliers).map(RegistryObject::get);
     }
 
     public ItemStack makeStack(int colour, boolean inverted) {

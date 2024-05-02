@@ -1,16 +1,17 @@
 package mrtjp.projectred.illumination.part;
 
 import codechicken.lib.render.CCModel;
-import codechicken.lib.texture.AtlasRegistrar;
 import codechicken.lib.vec.Cuboid6;
 import mrtjp.projectred.illumination.MultipartLightProperties;
 import mrtjp.projectred.illumination.MultipartLightType;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.TextureStitchEvent;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -43,8 +44,9 @@ public class FixtureLightProperties extends MultipartLightProperties {
     //region Rendering
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void registerIcons(AtlasRegistrar registrar) {
-        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/fixture"), i -> icon = i);
+    public void onTextureStitchEvent(TextureStitchEvent.Post event) {
+        if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
+        icon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/fixture"));
     }
 
     @Override

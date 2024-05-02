@@ -1,13 +1,11 @@
 package mrtjp.projectred.redui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import static net.minecraft.client.gui.GuiComponent.drawCenteredString;
 
 public class ButtonNode extends AbstractButtonNode {
 
@@ -68,9 +66,9 @@ public class ButtonNode extends AbstractButtonNode {
     }
 
     @Override
-    protected void drawButtonBody(PoseStack stack, boolean mouseover) {
+    protected void drawButtonBody(GuiGraphics graphics, boolean mouseover) {
 
-        drawCenteredString(stack, getRoot().getFontRenderer(), buttonText,
+        graphics.drawCenteredString(getRoot().getFontRenderer(), buttonText,
                 getPosition().x + getFrame().width()/2,
                 getPosition().y+(getFrame().height()-8)/2,
                 getTextColor(mouseover));

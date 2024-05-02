@@ -76,7 +76,7 @@ public class CoreNetwork {
         public void handlePacket(PacketCustom packet, ServerPlayer sender, ServerGamePacketListenerImpl handler) {
             switch (packet.getType()) {
                 case NET_TILE_PACKET_TO_SERVER:
-                    handleTilePacket(sender.getLevel(), packet, sender);
+                    handleTilePacket(sender.level(), packet, sender);
                     break;
                 default:
                     // unknown key

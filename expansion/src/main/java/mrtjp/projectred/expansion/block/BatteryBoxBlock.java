@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.Nullable;
@@ -60,7 +60,7 @@ public class BatteryBoxBlock extends ProjectRedBlock {
     }
 
     @Override
-    public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
         BlockEntity tile = builder.getParameter(LootContextParams.BLOCK_ENTITY);
         if (tile instanceof BatteryBoxTile batteryBoxTile) {
             return Collections.singletonList(batteryBoxTile.createStackWithStoredPower()); // Retain power inside itemstack

@@ -1,21 +1,16 @@
 package mrtjp.projectred.redui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.GuiGraphics;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 public interface RedUIRootNode extends RedUINode {
 
     Minecraft getMinecraft();
-
-    ItemRenderer getItemRenderer();
 
     Font getFontRenderer();
 
@@ -46,13 +41,11 @@ public interface RedUIRootNode extends RedUINode {
         return getZPosition(); // Assume screen's base z position is zero
     }
 
-    default void drawBackForSubtree(PoseStack stack, Point mouse, float partialFrame) {
-        renderBackForSubtree(stack, mouse, partialFrame);
+    default void drawBackForSubtree(GuiGraphics graphics, Point mouse, float partialFrame) {
+        renderBackForSubtree(graphics, mouse, partialFrame);
     }
 
-    default void drawFrontForSubtree(PoseStack stack, Point mouse, float partialFrame) {
-        renderFrontForSubtree(stack, mouse, partialFrame);
+    default void drawFrontForSubtree(GuiGraphics graphics, Point mouse, float partialFrame) {
+        renderFrontForSubtree(graphics, mouse, partialFrame);
     }
-
-    void renderTooltipScreenSpace(PoseStack stack, Point screenSpacePoint, List<Component> tooltip);
 }

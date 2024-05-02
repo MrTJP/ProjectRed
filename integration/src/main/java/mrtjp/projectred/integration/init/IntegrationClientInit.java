@@ -1,7 +1,6 @@
 package mrtjp.projectred.integration.init;
 
 import codechicken.lib.model.ModelRegistryHelper;
-import codechicken.lib.texture.SpriteRegistryHelper;
 import codechicken.lib.util.ResourceUtils;
 import codechicken.multipart.api.MultipartClientRegistry;
 import mrtjp.projectred.integration.GateType;
@@ -25,8 +24,7 @@ public class IntegrationClientInit {
         modEventBus.addListener(IntegrationClientInit::clientSetup);
 
         // Register sprites
-        SpriteRegistryHelper spriteHelper = new SpriteRegistryHelper(modEventBus);
-        spriteHelper.addIIconRegister(GateModelRenderer::registerIcons);
+        modEventBus.addListener(GateModelRenderer::onTextureStitchEvent);
     }
 
     private static void clientSetup(final FMLClientSetupEvent event) {

@@ -1,6 +1,6 @@
 package mrtjp.projectred.exploration.data;
 
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -11,8 +11,8 @@ import static mrtjp.projectred.exploration.init.ExplorationBlocks.*;
 
 public class ExplorationBlockStateModelProvider extends BlockStateProvider {
 
-    public ExplorationBlockStateModelProvider(DataGenerator gen, ExistingFileHelper exFileHelper) {
-        super(gen, MOD_ID, exFileHelper);
+    public ExplorationBlockStateModelProvider(PackOutput output, ExistingFileHelper exFileHelper) {
+        super(output, MOD_ID, exFileHelper);
     }
 
     @Nonnull

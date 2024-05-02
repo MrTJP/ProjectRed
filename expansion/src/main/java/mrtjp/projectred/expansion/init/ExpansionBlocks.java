@@ -69,16 +69,16 @@ public class ExpansionBlocks {
         DEPLOYER_BLOCK = BLOCKS.register(ID_DEPLOYER, DeployerBlock::new);
 
         // Block Items
-        ITEMS.register(ID_PROJECT_BENCH, () -> new BlockItem(PROJECT_BENCH_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
-        ITEMS.register(ID_BATTERY_BOX, () -> new BlockItem(BATTERY_BOX_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
-        ITEMS.register(ID_AUTO_CRAFTER, () -> new BlockItem(AUTO_CRAFTER_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
-        ITEMS.register(ID_CHARGING_BENCH, () -> new BlockItem(CHARGING_BENCH_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
-        ITEMS.register(ID_FIRE_STARTER, () -> new BlockItem(FIRE_STARTER_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
-        ITEMS.register(ID_FRAME_MOTOR, () -> new BlockItem(FRAME_MOTOR_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
-        ITEMS.register(ID_FRAME_ACTUATOR, () -> new BlockItem(FRAME_ACTUATOR_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
-        ITEMS.register(ID_TRANSPOSER, () -> new BlockItem(TRANSPOSER_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
-        ITEMS.register(ID_BLOCK_BREAKER, () -> new BlockItem(BLOCK_BREAKER_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
-        ITEMS.register(ID_DEPLOYER, () -> new BlockItem(DEPLOYER_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
+        ITEMS.register(ID_PROJECT_BENCH, () -> new BlockItem(PROJECT_BENCH_BLOCK.get(), new Item.Properties()));
+        ITEMS.register(ID_BATTERY_BOX, () -> new BlockItem(BATTERY_BOX_BLOCK.get(), new Item.Properties()));
+        ITEMS.register(ID_AUTO_CRAFTER, () -> new BlockItem(AUTO_CRAFTER_BLOCK.get(), new Item.Properties()));
+        ITEMS.register(ID_CHARGING_BENCH, () -> new BlockItem(CHARGING_BENCH_BLOCK.get(), new Item.Properties()));
+        ITEMS.register(ID_FIRE_STARTER, () -> new BlockItem(FIRE_STARTER_BLOCK.get(), new Item.Properties()));
+        ITEMS.register(ID_FRAME_MOTOR, () -> new BlockItem(FRAME_MOTOR_BLOCK.get(), new Item.Properties()));
+        ITEMS.register(ID_FRAME_ACTUATOR, () -> new BlockItem(FRAME_ACTUATOR_BLOCK.get(), new Item.Properties()));
+        ITEMS.register(ID_TRANSPOSER, () -> new BlockItem(TRANSPOSER_BLOCK.get(), new Item.Properties()));
+        ITEMS.register(ID_BLOCK_BREAKER, () -> new BlockItem(BLOCK_BREAKER_BLOCK.get(), new Item.Properties()));
+        ITEMS.register(ID_DEPLOYER, () -> new BlockItem(DEPLOYER_BLOCK.get(), new Item.Properties()));
 
         // Tiles
         PROJECT_BENCH_TILE = BLOCK_ENTITY_TYPES.register(ID_PROJECT_BENCH, () -> BlockEntityType.Builder.of(ProjectBenchTile::new, PROJECT_BENCH_BLOCK.get()).build(null));
@@ -95,7 +95,7 @@ public class ExpansionBlocks {
         /* Blocks */
         FRAME_BLOCK = BLOCKS.register(ID_FRAME, FrameBlock::new);
 
-        ITEMS.register(ID_FRAME, () -> new BlockItem(FRAME_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
+        ITEMS.register(ID_FRAME, () -> new BlockItem(FRAME_BLOCK.get(), new Item.Properties()));
     }
 
 }

@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 public class ProjectBenchContainer extends AbstractContainerMenu {
 
     public static final ICCLContainerFactory<ProjectBenchContainer> FACTORY = (windowId, playerInv, packet) -> {
-        BlockEntity tile = playerInv.player.level.getBlockEntity(packet.readPos());
+        BlockEntity tile = playerInv.player.level().getBlockEntity(packet.readPos());
         if (!(tile instanceof ProjectBenchTile)) return null;
         return new ProjectBenchContainer(playerInv, (ProjectBenchTile) tile, windowId);
     };

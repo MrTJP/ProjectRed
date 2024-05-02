@@ -1,6 +1,5 @@
 package mrtjp.projectred.fabrication.item;
 
-import mrtjp.projectred.fabrication.ProjectRedFabrication;
 import mrtjp.projectred.fabrication.engine.InterfaceSpec;
 import mrtjp.projectred.fabrication.init.FabricationBlocks;
 import mrtjp.projectred.fabrication.init.FabricationItems;
@@ -27,7 +26,6 @@ public class ICBlueprintItem extends Item {
 
     public ICBlueprintItem() {
         super(new Item.Properties()
-                .tab(ProjectRedFabrication.FABRICATION_GROUP)
                 .stacksTo(1));
     }
 

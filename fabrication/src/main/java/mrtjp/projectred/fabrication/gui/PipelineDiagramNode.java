@@ -1,14 +1,12 @@
 package mrtjp.projectred.fabrication.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.fabrication.gui.screen.ICWorkbenchInfoTab;
 import mrtjp.projectred.fabrication.lithography.LithographyPipeline;
 import mrtjp.projectred.fabrication.lithography.YieldCalculator;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractGuiNode;
 import mrtjp.projectred.redui.ItemStackNode;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -43,7 +41,7 @@ public class PipelineDiagramNode extends AbstractGuiNode {
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
 
     }
 
@@ -82,11 +80,9 @@ public class PipelineDiagramNode extends AbstractGuiNode {
         }
 
         @Override
-        public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-            RenderSystem.setShaderTexture(0, ICWorkbenchInfoTab.TAB_BACKGROUND);
-
+        public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
             // Draw the diagram centered in this node
-            GuiComponent.blit(stack, getFrame().x(), getFrame().y(), 1, 223, 280, 56, 512, 512);
+            graphics.blit(ICWorkbenchInfoTab.TAB_BACKGROUND, getFrame().x(), getFrame().y(), 1, 223, 280, 56, 512, 512);
         }
 
         @Override

@@ -1,19 +1,20 @@
 package mrtjp.projectred.expansion.client;
 
 import codechicken.lib.model.PerspectiveModelState;
-import codechicken.lib.texture.AtlasRegistrar;
 import codechicken.lib.util.TransformUtils;
 import codechicken.lib.vec.uv.MultiIconTransformation;
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.core.client.FullyOrientableBlockRenderer;
 import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.event.TextureStitchEvent;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -81,14 +82,15 @@ public class FrameMotorBlockRenderer extends FullyOrientableBlockRenderer {
         }
     }
 
-    public static void registerIcons(AtlasRegistrar registrar) {
-        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/frame_motor_top"), i -> topIcon = i);
-        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/frame_motor_front_back_0"), i -> frontBack0Icon = i);
-        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/frame_motor_front_back_1"), i -> frontBack1Icon = i);
-        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/frame_motor_front_back_2"), i -> frontBack2Icon = i);
-        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/frame_motor_left"), i -> leftIcon = i);
-        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/frame_motor_right"), i -> rightIcon = i);
-        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/frame_motor_bottom"), i -> bottomIcon = i);
+    public static  void onTextureStitchEvent(TextureStitchEvent.Post event) {
+        if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
+        topIcon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_top"));
+        frontBack0Icon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_front_back_0"));
+        frontBack1Icon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_front_back_1"));
+        frontBack2Icon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_front_back_2"));
+        leftIcon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_left"));
+        rightIcon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_right"));
+        bottomIcon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_bottom"));
     }
 
     public static TextureAtlasSprite getParticleIcon(BlockState state, int side) {

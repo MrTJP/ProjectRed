@@ -11,15 +11,15 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RedstoneTorchBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class IllumarLampBlock extends Block implements EntityBlock, RedstoneConnectorBlock {
 
@@ -29,7 +29,9 @@ public class IllumarLampBlock extends Block implements EntityBlock, RedstoneConn
     private final boolean inverted;
 
     public IllumarLampBlock(int color, boolean inverted) {
-        super(BlockBehaviour.Properties.of(Material.BUILDABLE_GLASS)
+        super(BlockBehaviour.Properties.of()
+                .mapColor(state -> state.getValue(LIT) ? MapColor.byId(MapColor.TERRACOTTA_WHITE.id + color) : MapColor.COLOR_GRAY)
+                .sound(SoundType.GLASS)
                 .strength(0.5F)
                 .lightLevel((state) -> state.getValue(LIT) ? 15 : 0));
 

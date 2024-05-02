@@ -1,6 +1,5 @@
 package mrtjp.projectred.expansion.item;
 
-import mrtjp.projectred.expansion.ProjectRedExpansion;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -20,7 +19,7 @@ import static mrtjp.projectred.expansion.init.ExpansionUnlocal.UL_PLAN_RESULT;
 public class RecipePlanItem extends Item {
 
     public RecipePlanItem() {
-        super(new Item.Properties().tab(ProjectRedExpansion.EXPANSION_GROUP));
+        super(new Item.Properties());
     }
 
     @Override

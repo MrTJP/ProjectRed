@@ -1,7 +1,7 @@
 package mrtjp.projectred.exploration.data;
 
 import codechicken.lib.datagen.ItemModelProvider;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -12,13 +12,8 @@ import static mrtjp.projectred.exploration.init.ExplorationItems.*;
 
 public class ExplorationItemModelProvider extends ItemModelProvider {
 
-    public ExplorationItemModelProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-        super(generator, MOD_ID, existingFileHelper);
-    }
-
-    @Override
-    public String getName() {
-        return "ProjectRed-Exploration Item Models";
+    public ExplorationItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
+        super(output, MOD_ID, existingFileHelper);
     }
 
     @Override

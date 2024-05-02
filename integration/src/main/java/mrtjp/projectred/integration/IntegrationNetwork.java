@@ -94,10 +94,10 @@ public class IntegrationNetwork {
             switch (packet.getType()) {
 
                 case INCR_TIMER_FROM_CLIENT:
-                    handleIncrTimerMessage(sender.level, packet);
+                    handleIncrTimerMessage(sender.level(), packet);
                     break;
                 case INCR_COUNTER_FROM_CLIENT:
-                    handleIncrCounterMessage(sender.level, packet);
+                    handleIncrCounterMessage(sender.level(), packet);
                     break;
                 default:
                     // unknown key

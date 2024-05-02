@@ -7,13 +7,13 @@ import codechicken.multipart.api.part.render.PartRenderer;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.expansion.part.BaseTubePart;
-import mrtjp.projectred.expansion.pneumatics.PneumaticTransportContainer;
 import mrtjp.projectred.expansion.part.PneumaticTubePayload;
+import mrtjp.projectred.expansion.pneumatics.PneumaticTransportContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemDisplayContext;
 
 import javax.annotation.Nullable;
 
@@ -79,13 +79,10 @@ public class TubePartRenderer implements PartRenderer<BaseTubePart> {
 
             var itemRenderer = Minecraft.getInstance().getItemRenderer();
             var model = itemRenderer.getModel(p.getItemStack(), part.level(), null, 0); //TODO last int is seed
-            itemRenderer.render(p.getItemStack(), ItemTransforms.TransformType.FIXED, false, mStack, buffers, packedLight, packedOverlay, model);
+            itemRenderer.render(p.getItemStack(), ItemDisplayContext.FIXED, false, mStack, buffers, packedLight, packedOverlay, model);
 
             mStack.popPose();
-
-//            ProjectRedExpansion.LOGGER.info("Rendered payload with pf {}, pt {}", pf, partialTicks);
         }
-
     }
 
 }

@@ -698,7 +698,7 @@ public class MovementManager {
         public boolean canMove(Level level) {
             if (!level.isLoaded(pos)) return false;
             BlockState state = level.getBlockState(pos);
-            if (!(state.isAir() || state.getMaterial().isReplaceable())) return false;
+            if (!(state.isAir() || state.canBeReplaced())) return false;
 
             Iterator<BlockPos> it = iteratePreMove();
             while (it.hasNext()) {

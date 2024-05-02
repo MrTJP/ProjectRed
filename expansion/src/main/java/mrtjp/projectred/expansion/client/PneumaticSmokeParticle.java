@@ -2,7 +2,6 @@ package mrtjp.projectred.expansion.client;
 
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.render.buffer.TransformingVertexConsumer;
-import codechicken.lib.texture.AtlasRegistrar;
 import codechicken.lib.vec.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -11,9 +10,11 @@ import mrtjp.projectred.core.client.particle.BaseActionParticle;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.event.TextureStitchEvent;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -134,7 +135,8 @@ public class PneumaticSmokeParticle extends BaseActionParticle {
         return PARTICLE_TYPE_SMOKE;
     }
 
-    public static void registerIcons(AtlasRegistrar registrar) {
-        registrar.registerSprite(new ResourceLocation(MOD_ID, "particle/smoke"), i -> SMOKE_PARTICLE_SPRITE = i);
+    public static void onTextureStitchEvent(TextureStitchEvent.Post event) {
+        if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
+        SMOKE_PARTICLE_SPRITE = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "particle/smoke"));
     }
 }

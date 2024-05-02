@@ -15,11 +15,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,6 +29,7 @@ import java.util.List;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 import static net.minecraft.client.renderer.RenderStateShard.*;
+import static net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL;
 import static net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES;
 
 public class HaloRenderer {
@@ -108,11 +108,9 @@ public class HaloRenderer {
     public static void onRenderLevelStageEvent(final RenderLevelStageEvent event) {
         if (event.getStage().equals(AFTER_PARTICLES)) {
             onRenderStageAfterParticles(event);
+        } else if (event.getStage().equals(AFTER_LEVEL)) {
+            onRenderStageAfterLevel(event);
         }
-    }
-
-    public static void onRenderLevelLastEvent(final RenderLevelLastEvent event) {
-        onRenderStageAfterLevel(event);
     }
 
     public static void onResourceManagerReload(ResourceManager manager) {
@@ -146,8 +144,7 @@ public class HaloRenderer {
         }
     }
 
-    public static void onRenderStageAfterParticles(final RenderLevelStageEvent event) {
-
+    private static void onRenderStageAfterParticles(final RenderLevelStageEvent event) {
         if (levelHalos.isEmpty() && entityHalos.isEmpty()) {
             return;
         }
@@ -210,8 +207,7 @@ public class HaloRenderer {
         postChainFlushPending = true;
     }
 
-    public static void onRenderStageAfterLevel(final RenderLevelLastEvent event) {
-
+    private static void onRenderStageAfterLevel(final RenderLevelStageEvent event) {
         // Unfabulous rendering. Batched rendering doesn't seem to work from stage events when not
         // on fabulous for some reason, so we have to do it here instead.
         if (!isFabulous()) {
@@ -316,7 +312,7 @@ public class HaloRenderer {
         renderToCCRS(ccrs, cuboid, pos.translation(), rgba);
     }
 
-    public static void addItemRendererBloom(ItemTransforms.TransformType transformType, PoseStack stack, Vector3 pos, Cuboid6 box, int colourIndex) {
+    public static void addItemRendererBloom(ItemDisplayContext transformType, PoseStack stack, Vector3 pos, Cuboid6 box, int colourIndex) {
         if (isEntityItemRenderType(transformType)) {
             addItemRendererBloom(stack, pos, box, colourIndex);
         }
@@ -327,7 +323,7 @@ public class HaloRenderer {
         addHalo(entityHalos, new HaloRenderData(box, t).setColourIndex(colourIndex));
     }
 
-    public static void addItemRendererMultiBloom(ItemTransforms.TransformType transformType, PoseStack stack, Vector3 pos, Cuboid6 box, byte[] alphas) {
+    public static void addItemRendererMultiBloom(ItemDisplayContext transformType, PoseStack stack, Vector3 pos, Cuboid6 box, byte[] alphas) {
         if (isEntityItemRenderType(transformType)) {
             addItemRendererMultiBloom(stack, pos, box, alphas);
         }
@@ -338,7 +334,7 @@ public class HaloRenderer {
         addHalo(entityHalos, new HaloRenderData(box, t).setMultiColourAlphas(alphas));
     }
 
-    private static boolean isEntityItemRenderType(ItemTransforms.TransformType transformType) {
+    private static boolean isEntityItemRenderType(ItemDisplayContext transformType) {
         return switch (transformType) {
             case FIXED, GROUND, THIRD_PERSON_LEFT_HAND, THIRD_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND, FIRST_PERSON_RIGHT_HAND -> true;
             default -> false;

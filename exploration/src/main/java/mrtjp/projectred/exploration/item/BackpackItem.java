@@ -2,7 +2,6 @@ package mrtjp.projectred.exploration.item;
 
 import codechicken.lib.util.ServerUtils;
 import mrtjp.projectred.core.inventory.BaseInventory;
-import mrtjp.projectred.exploration.ProjectRedExploration;
 import mrtjp.projectred.exploration.init.ExplorationTags;
 import mrtjp.projectred.exploration.inventory.container.BackpackContainer;
 import net.minecraft.ChatFormatting;
@@ -34,8 +33,7 @@ public class BackpackItem extends Item {
 
     public BackpackItem(int colour) {
         super(new Item.Properties()
-                .stacksTo(1)
-                .tab(ProjectRedExploration.EXPLORATION_CREATIVE_TAB));
+                .stacksTo(1));
 
         this.colour = colour;
     }

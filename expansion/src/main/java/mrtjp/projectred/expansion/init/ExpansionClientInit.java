@@ -2,7 +2,6 @@ package mrtjp.projectred.expansion.init;
 
 import codechicken.lib.model.ModelRegistryHelper;
 import codechicken.lib.render.block.BlockRenderingRegistry;
-import codechicken.lib.texture.SpriteRegistryHelper;
 import codechicken.multipart.api.MultipartClientRegistry;
 import mrtjp.projectred.expansion.GraphDebugManager;
 import mrtjp.projectred.expansion.MovementManager;
@@ -31,7 +30,6 @@ import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
 import static mrtjp.projectred.expansion.init.ExpansionItems.RECIPE_PLAN_ITEM;
 import static mrtjp.projectred.expansion.init.ExpansionMenus.*;
 import static mrtjp.projectred.expansion.init.ExpansionParts.FRAME_PART;
-import static net.minecraft.client.renderer.texture.TextureAtlas.LOCATION_PARTICLES;
 
 @SuppressWarnings("DataFlowIssue")
 public class ExpansionClientInit {
@@ -53,13 +51,12 @@ public class ExpansionClientInit {
         MinecraftForge.EVENT_BUS.addListener(GraphDebugManager::onRenderLevelStage);
 
         // Register sprites
-        SpriteRegistryHelper spriteHelper = new SpriteRegistryHelper(modEventBus);
-        spriteHelper.addIIconRegister(FrameModelRenderer::registerIcons);
-        spriteHelper.addIIconRegister(FrameMotorBlockRenderer::registerIcons);
-        for (TubeType type : TubeType.values()) {
-            type.registerTextures(spriteHelper);
+        modEventBus.addListener(FrameModelRenderer::onTextureStitchEvent);
+        modEventBus.addListener(FrameMotorBlockRenderer::onTextureStitchEvent);
+        modEventBus.addListener(PneumaticSmokeParticle::onTextureStitchEvent);
+        for (var type : TubeType.values()) {
+            modEventBus.addListener(type::onTextureStitchEvent);
         }
-        spriteHelper.addIIconRegister(LOCATION_PARTICLES, PneumaticSmokeParticle::registerIcons);
     }
 
     private static void clientSetup(final FMLClientSetupEvent event) {

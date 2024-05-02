@@ -24,7 +24,7 @@ Redstone. The way it was meant to be.
 [[dependencies.projectred_transmission]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.2]"
+    versionRange="[1.20.1]"
     ordering="NONE"
     side="BOTH"
 [[dependencies.projectred_transmission]]
