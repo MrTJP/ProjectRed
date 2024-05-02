@@ -1,11 +1,9 @@
 package mrtjp.projectred.fabrication.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.fabrication.gui.screen.ICWorkbenchScreen;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractGuiNode;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -48,9 +46,7 @@ public abstract class TabButtonNode extends AbstractGuiNode {
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-        RenderSystem.setShaderTexture(0, ICWorkbenchScreen.BACKGROUND);
-
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
         int x = getPosition().x;
         int y = getPosition().y;
         int u = side.u;
@@ -73,18 +69,18 @@ public abstract class TabButtonNode extends AbstractGuiNode {
             ev += side.inactiveOffsetV;
         }
 
-        GuiComponent.blit(stack, x, y, u, v, w, h, 512, 512);
+        graphics.blit(ICWorkbenchScreen.BACKGROUND, x, y, u, v, w, h, 512, 512);
 
         // Render extension if needed
         if (renderState == TabState.CLOSED || renderState == TabState.OPEN) {
-            GuiComponent.blit(stack, ex, ey, eu, ev, ew, eh, 512, 512);
+            graphics.blit(ICWorkbenchScreen.BACKGROUND, ex, ey, eu, ev, ew, eh, 512, 512);
         }
 
-        renderIcon(stack, mouse, partialFrame);
+        renderIcon(graphics, mouse, partialFrame);
     }
 
     @Override
-    public void drawFront(PoseStack stack, Point mouse, float partialFrame) {
+    public void drawFront(GuiGraphics graphics, Point mouse, float partialFrame) {
 
         if (!isFirstHit(mouse))
             return;
@@ -92,7 +88,7 @@ public abstract class TabButtonNode extends AbstractGuiNode {
         List<Component> tooltip = new LinkedList<>();
         buildTooltip(tooltip);
 
-        renderTooltip(stack, mouse, tooltip);
+        renderTooltip(graphics, mouse, tooltip);
     }
 
     @Override
@@ -124,7 +120,7 @@ public abstract class TabButtonNode extends AbstractGuiNode {
         }
     }
 
-    public abstract void renderIcon(PoseStack stack, Point mouse, float partialFrame);
+    public abstract void renderIcon(GuiGraphics graphics, Point mouse, float partialFrame);
 
     public abstract void buildTooltip(List<Component> tooltip);
 

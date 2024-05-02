@@ -4,12 +4,13 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.lighting.LightModel;
 import codechicken.lib.render.model.OBJParser;
-import codechicken.lib.texture.AtlasRegistrar;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vertex5;
 import codechicken.lib.vec.uv.IconTransformation;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import java.io.FileWriter;
@@ -44,8 +45,9 @@ public class FrameModelRenderer {
         return getOrGenerateModel(mask).verts;
     }
 
-    public static void registerIcons(AtlasRegistrar registrar) {
-        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/frame"), i -> frameIcon = new IconTransformation(i));
+    public static void onTextureStitchEvent(TextureStitchEvent.Post event) {
+        if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
+        frameIcon = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame")));
     }
 
     private static Map<String, CCModel> loadModels(String path) {

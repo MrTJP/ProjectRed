@@ -1,27 +1,31 @@
 package mrtjp.projectred.exploration.data;
 
 import codechicken.microblock.init.CBMicroblockTags;
-import net.minecraft.data.DataGenerator;
+import mrtjp.projectred.core.ProjectRedCore;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.data.tags.TagsProvider;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nullable;
+import java.util.concurrent.CompletableFuture;
 
 import static mrtjp.projectred.core.init.CoreTags.*;
-import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 import static mrtjp.projectred.exploration.init.ExplorationBlocks.*;
 import static mrtjp.projectred.exploration.init.ExplorationItems.*;
 import static mrtjp.projectred.exploration.init.ExplorationTags.*;
 
 public class ExplorationItemTagsProvider extends ItemTagsProvider {
 
-    public ExplorationItemTagsProvider(DataGenerator gen, @Nullable ExistingFileHelper existingFileHelper) {
-        super(gen, new ExplorationBlockTagsProvider(gen, existingFileHelper), MOD_ID, existingFileHelper);
+    public ExplorationItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> blockTags, @Nullable ExistingFileHelper helper) {
+        super(output, lookupProvider, blockTags, ProjectRedCore.MOD_ID, helper);
     }
 
     @Override
-    protected void addTags() {
+    protected void addTags(HolderLookup.Provider pProvider) {
 
         /* Attach tags to other tags */
 

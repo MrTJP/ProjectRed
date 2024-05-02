@@ -1,9 +1,7 @@
 plugins {
-    id 'net.minecraftforge.gradle'
+    id 'net.neoforged.gradle'
     id 'com.matthewprenger.cursegradle'
 }
-
-apply plugin: 'net.minecraftforge.gradle'
 
 String mod_id = 'projectred_transmission'
 
@@ -28,10 +26,10 @@ minecraft {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+    minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
 
-    implementation fg.deobf("codechicken:CodeChickenLib:${mc_version}-${ccl_version}:universal")
-    implementation fg.deobf("codechicken:CBMultipart:${mc_version}-${cbm_version}:universal")
+    implementation fg.deobf("io.codechicken:CodeChickenLib:${mc_version}-${ccl_version}:universal")
+    implementation fg.deobf("io.codechicken:CBMultipart:${mc_version}-${cbm_version}:universal")
 
     implementation project(":core")
 }

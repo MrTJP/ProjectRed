@@ -1,7 +1,6 @@
 package mrtjp.projectred.transmission.init;
 
 import codechicken.lib.model.ModelRegistryHelper;
-import codechicken.lib.texture.SpriteRegistryHelper;
 import codechicken.microblock.client.MicroMaterialClientRegistry;
 import codechicken.multipart.api.MultipartClientRegistry;
 import mrtjp.projectred.transmission.WireType;
@@ -24,9 +23,8 @@ public class TransmissionClientInit {
         modEventBus.addListener(TransmissionClientInit::clientSetup);
 
         // Register sprites
-        SpriteRegistryHelper spriteHelper = new SpriteRegistryHelper(modEventBus);
         for (WireType type : WireType.values()) {
-            type.registerTextures(spriteHelper);
+            modEventBus.addListener(type::onTextureStitchEvent);
         }
     }
 

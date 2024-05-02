@@ -1,7 +1,7 @@
 package mrtjp.projectred.core.data;
 
 import codechicken.lib.datagen.ItemModelProvider;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
@@ -10,13 +10,8 @@ import static mrtjp.projectred.core.init.CoreItems.*;
 
 public class CoreItemModelProvider extends ItemModelProvider {
 
-    public CoreItemModelProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-        super(generator, MOD_ID, existingFileHelper);
-    }
-
-    @Override
-    public String getName() {
-        return "ProjectRed-Core Item Models";
+    public CoreItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
+        super(output, MOD_ID, existingFileHelper);
     }
 
     @Override

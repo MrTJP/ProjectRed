@@ -3,7 +3,6 @@ package mrtjp.projectred.fabrication.gui;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Vector3;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.fengine.TileCoord;
 import mrtjp.fengine.api.ICStepThroughAssembler;
@@ -17,7 +16,7 @@ import mrtjp.projectred.redui.RedUISprite;
 import mrtjp.projectred.redui.ScrollBarNode;
 import mrtjp.projectred.redui.SpriteButtonNode;
 import net.covers1624.quack.collection.FastStream;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -130,15 +129,14 @@ public class CompileTreeTab extends AbstractGuiNode implements ICompileOverlayRe
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-        RenderSystem.setShaderTexture(0, ICWorkbenchCompileTab.TAB_BACKGROUND);
-        GuiComponent.blit(stack, getFrame().x(), getFrame().y(), 92, 223, getFrame().width(), getFrame().height(), 512, 512);
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
+        graphics.blit(ICWorkbenchCompileTab.TAB_BACKGROUND, getFrame().x(), getFrame().y(), 92, 223, getFrame().width(), getFrame().height(), 512, 512);
 
         // Title of current node
         if (currentNode != null) {
             var fr = getRoot().getFontRenderer();
             Component c = getTitleForCTNNode(currentNode).copy().withStyle(UNIFORM_DARK_GRAY);
-            fr.draw(stack, c, getFrame().x() + 6, getFrame().y() + 21, 0xFFFFFF);
+            graphics.drawString(fr, c, getFrame().x() + 6, getFrame().y() + 21, 0xFFFFFF, false);
         }
     }
 
@@ -323,9 +321,8 @@ public class CompileTreeTab extends AbstractGuiNode implements ICompileOverlayRe
         }
 
         @Override
-        protected void drawSlider(PoseStack stack, Rect sliderFrame) {
-            RenderSystem.setShaderTexture(0, ICWorkbenchCompileTab.TAB_BACKGROUND);
-            GuiComponent.blit(stack, sliderFrame.x(), sliderFrame.y(), 305, 58, sliderFrame.width(), sliderFrame.height(), 512, 512);
+        protected void drawSlider(GuiGraphics graphics, Rect sliderFrame) {
+            graphics.blit(ICWorkbenchCompileTab.TAB_BACKGROUND, sliderFrame.x(), sliderFrame.y(), 305, 58, sliderFrame.width(), sliderFrame.height(), 512, 512);
         }
 
         @Override

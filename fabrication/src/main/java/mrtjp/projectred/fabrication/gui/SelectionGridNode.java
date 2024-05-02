@@ -1,11 +1,9 @@
 package mrtjp.projectred.fabrication.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.fabrication.gui.screen.ICWorkbenchScreen;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractGuiNode;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -72,10 +70,7 @@ public class SelectionGridNode extends AbstractGuiNode {
         }
 
         @Override
-        public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-
-            RenderSystem.setShaderTexture(0, ICWorkbenchScreen.BACKGROUND);
-
+        public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
             boolean mouseover = getFrame().contains(mouse) && isFirstHit(mouse);
 
             int state = SelectionGridNode.this.selectionCheckFunction.test(i) ? 2 :
@@ -88,20 +83,19 @@ public class SelectionGridNode extends AbstractGuiNode {
             int u = BUTTON_U;
             int v = BUTTON_V + BUTTON_V_SHIFT * state;
 
-            GuiComponent.blit(stack, x, y, u, v, w, h, 512, 512);
-
+            graphics.blit(ICWorkbenchScreen.BACKGROUND, x, y, u, v, w, h, 512, 512);
 
         }
 
         @Override
-        public void drawFront(PoseStack stack, Point mouse, float partialFrame) {
+        public void drawFront(GuiGraphics graphics, Point mouse, float partialFrame) {
 
             if (!isFirstHit(mouse)) return;
 
             List<Component> tooltip = new LinkedList<>();
             tooltipBuilder.accept(i, tooltip);
 
-            renderTooltip(stack, mouse, tooltip);
+            renderTooltip(graphics, mouse, tooltip);
         }
 
         @Override

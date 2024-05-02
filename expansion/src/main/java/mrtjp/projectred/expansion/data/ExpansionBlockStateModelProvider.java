@@ -2,7 +2,7 @@ package mrtjp.projectred.expansion.data;
 
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.expansion.block.BatteryBoxBlock;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
@@ -10,8 +10,6 @@ import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import javax.annotation.Nonnull;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
@@ -22,13 +20,8 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
     // XY rotations for non-rotatable sided devices
     private static final int[][] DEVICE_SIDED_ROTATIONS = { {0, 0}, {2, 2}, {1, 2}, {1, 0}, {1, 1}, {1, 3} };
 
-    public ExpansionBlockStateModelProvider(DataGenerator gen, ExistingFileHelper exFileHelper) {
-        super(gen, MOD_ID, exFileHelper);
-    }
-
-    @Override
-    public @Nonnull String getName() {
-        return "ProjectRed-Expansion Block State Models";
+    public ExpansionBlockStateModelProvider(PackOutput output, ExistingFileHelper exFileHelper) {
+        super(output, MOD_ID, exFileHelper);
     }
 
     @Override

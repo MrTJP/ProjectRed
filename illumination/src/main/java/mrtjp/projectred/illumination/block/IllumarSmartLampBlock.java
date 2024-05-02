@@ -8,13 +8,14 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.LightBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.ToIntFunction;
@@ -25,7 +26,9 @@ public class IllumarSmartLampBlock extends ProjectRedBlock implements EntityBloc
     public static final ToIntFunction<BlockState> LIGHT_EMISSION = LightBlock.LIGHT_EMISSION;
 
     public IllumarSmartLampBlock() {
-        super(BlockBehaviour.Properties.of(Material.BUILDABLE_GLASS)
+        super(BlockBehaviour.Properties.of()
+                .mapColor(state -> state.getValue(LEVEL) > 0 ? MapColor.TERRACOTTA_WHITE : MapColor.COLOR_GRAY) // TODO Actual color
+                .sound(SoundType.GLASS)
                 .strength(0.5F)
                 .lightLevel(LIGHT_EMISSION));
 

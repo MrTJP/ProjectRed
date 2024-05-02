@@ -1,7 +1,7 @@
 package mrtjp.projectred.compatibility;
 
 import dan200.computercraft.api.ComputerCraftAPI;
-import dan200.computercraft.api.redstone.IBundledRedstoneProvider;
+import dan200.computercraft.api.redstone.BundledRedstoneProvider;
 import mrtjp.projectred.api.IBundledTileInteraction;
 import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.core.BundledSignalsLib;
@@ -26,7 +26,7 @@ public class ComputerCraftCompatibility {
     /**
      * This is used by ComputerCraft to query bundled signals from third-party entities
      */
-    private static class CCPRBundledRedstoneProvider implements IBundledRedstoneProvider {
+    private static class CCPRBundledRedstoneProvider implements BundledRedstoneProvider {
         @Override
         public int getBundledRedstoneOutput(@Nonnull Level world, @Nonnull BlockPos pos, @Nonnull Direction side) {
             assert ProjectRedAPI.transmissionAPI != null;

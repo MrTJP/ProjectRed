@@ -2,7 +2,6 @@ package mrtjp.projectred.expansion.gui.screen.inventory;
 
 import codechicken.lib.colour.EnumColour;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.expansion.ProjectRedExpansion;
 import mrtjp.projectred.expansion.inventory.container.ProjectBenchContainer;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
@@ -10,7 +9,7 @@ import mrtjp.projectred.expansion.tile.ProjectBenchTile;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractButtonNode;
 import mrtjp.projectred.redui.RedUIContainerScreen;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -43,9 +42,8 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
             }
 
             @Override
-            protected void drawButtonBody(PoseStack stack, boolean mouseover) {
-                RenderSystem.setShaderTexture(0, BACKGROUND);
-                blit(stack, getPosition().x, getPosition().y, 176, 0, 14, 14);
+            protected void drawButtonBody(GuiGraphics graphics, boolean mouseover) {
+                graphics.blit(BACKGROUND, getPosition().x, getPosition().y, 176, 0, 14, 14);
             }
         };
         writePlanButton.setPosition(18, 56);
@@ -59,9 +57,9 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
             }
 
             @Override
-            protected void drawButtonBody(PoseStack stack, boolean mouseover) {
+            protected void drawButtonBody(GuiGraphics graphics, boolean mouseover) {
                 RenderSystem.setShaderTexture(0, BACKGROUND);
-                blit(stack, getPosition().x, getPosition().y, 176, 15, 8, 8);
+                graphics.blit(BACKGROUND, getPosition().x, getPosition().y, 176, 15, 8, 8);
             }
         };
         clearGridButton.setPosition(37, 17);
@@ -70,31 +68,29 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-        RenderSystem.setShaderTexture(0, BACKGROUND);
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
         int x = getFrame().x();
         int y = getFrame().y();
 
-        blit(stack, x, y, 0, 0, getFrame().width(), getFrame().height());
+        graphics.blit(BACKGROUND, x, y, 0, 0, getFrame().width(), getFrame().height());
 
         ProjectBenchTile tile = getMenu().getProjectBenchTile();
         if (tile.isPlanRecipe()) {
             int missingMask = tile.getCraftingHelper().getMissingIngredientMask();
             Container inputs = tile.getCraftingHelper().getCraftingInventory();
-            drawPlanIngredientsOverlay(stack, inputs, missingMask, x + 48, y + 18);
+            drawPlanIngredientsOverlay(graphics, inputs, missingMask, x + 48, y + 18);
         }
     }
 
     @Override
-    public void drawFront(PoseStack stack, Point mouse, float partialFrame) {
+    public void drawFront(GuiGraphics graphics, Point mouse, float partialFrame) {
 
         if (isShiftDown) {
-            drawPlanOutputsOverlay(stack, getFrame().x(), getFrame().y());
+            drawPlanOutputsOverlay(graphics, getFrame().x(), getFrame().y());
         }
     }
 
-    private void drawPlanIngredientsOverlay(PoseStack mStack, Container ingredients, int missingMask, int xPos, int yPos) {
-
+    private void drawPlanIngredientsOverlay(GuiGraphics graphics, Container ingredients, int missingMask, int xPos, int yPos) {
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
                 int drawPosX = xPos + (x * 18);
@@ -105,14 +101,14 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
                 int colour = (missingMask & 1 << index) != 0 ? EnumColour.RED.argb(0x77) : EnumColour.GRAY.argb(0x77);
 
                 if (!ingredient.isEmpty()) {
-                    fillGradient(mStack, drawPosX, drawPosY, drawPosX + 16, drawPosY + 16, colour, colour);
-                    getItemRenderer().renderGuiItem(ingredient, drawPosX, drawPosY);
+                    graphics.fillGradient(drawPosX, drawPosY, drawPosX + 16, drawPosY + 16, colour, colour);
+                    graphics.renderItem(ingredient, drawPosX, drawPosY);
                 }
             }
         }
     }
 
-    private void drawPlanOutputsOverlay(PoseStack mStack, int xPos, int yPos) {
+    private void drawPlanOutputsOverlay(GuiGraphics graphics, int xPos, int yPos) {
 
         for (Slot slot : getMenu().slots) {
             ItemStack stack = slot.getItem();
@@ -120,12 +116,10 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
 
                 ItemStack output = RecipePlanItem.loadPlanOutput(stack);
                 int colour = EnumColour.LIGHT_BLUE.argb(0xCC);
-                fillGradient(mStack, xPos + slot.x, yPos + slot.y, xPos + slot.x + 16, yPos + slot.y + 16, colour, colour);
+                graphics.fillGradient(xPos + slot.x, yPos + slot.y, xPos + slot.x + 16, yPos + slot.y + 16, colour, colour);
 
-                ItemRenderer renderer = getItemRenderer();
-                renderer.blitOffset += 200;
-                renderer.renderGuiItem(output, xPos + slot.x, yPos + slot.y);
-                renderer.blitOffset -= 200;
+                // Render item at Z +200
+                graphics.renderItem(output, xPos + slot.x, yPos + slot.y, 0, 200);
             }
         }
     }

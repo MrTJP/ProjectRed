@@ -1,19 +1,15 @@
 package mrtjp.projectred.fabrication.data;
 
 import codechicken.lib.datagen.LootTableProvider;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 
+import static mrtjp.projectred.fabrication.ProjectRedFabrication.MOD_ID;
 import static mrtjp.projectred.fabrication.init.FabricationBlocks.*;
 
 public class FabricationLootTableProvider extends LootTableProvider.BlockLootProvider {
 
-    public FabricationLootTableProvider(DataGenerator dataGenerator) {
-        super(dataGenerator);
-    }
-
-    @Override
-    public String getName() {
-        return "ProjectRed-Fabrication Block Loot Tables";
+    public FabricationLootTableProvider(PackOutput output) {
+        super(output, MOD_ID);
     }
 
     @Override

@@ -1,24 +1,22 @@
 package mrtjp.projectred.exploration;
 
-import codechicken.lib.gui.SimpleCreativeTab;
 import codechicken.microblock.CBMicroblock;
 import codechicken.microblock.api.MicroMaterial;
 import com.mojang.serialization.Codec;
 import mrtjp.projectred.exploration.data.*;
 import mrtjp.projectred.exploration.init.*;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.carver.WorldCarver;
-import net.minecraft.world.level.levelgen.placement.PlacementFilter;
-import net.minecraft.world.level.levelgen.placement.PlacementModifier;
-import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.world.BiomeModifier;
 import net.minecraftforge.data.event.GatherDataEvent;
@@ -31,7 +29,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
-import static mrtjp.projectred.exploration.init.ExplorationBlocks.MARBLE_BRICK_BLOCK;
 
 @Mod(MOD_ID)
 public class ProjectRedExploration {
@@ -45,10 +42,7 @@ public class ProjectRedExploration {
     public static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MOD_ID);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MOD_ID);
     public static final DeferredRegister<MicroMaterial> MICRO_MATERIALS = DeferredRegister.create(new ResourceLocation(CBMicroblock.MOD_ID, "micro_material"), MOD_ID);
-
-    public static final DeferredRegister<PlacementModifierType<?>> PLACEMENT_MODIFIERS = DeferredRegister.create(Registry.PLACEMENT_MODIFIER_REGISTRY, MOD_ID);
-
-    public static final SimpleCreativeTab EXPLORATION_CREATIVE_TAB = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(MARBLE_BRICK_BLOCK.get()));
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
 
     static {
         ExplorationBlocks.register();
@@ -56,6 +50,7 @@ public class ProjectRedExploration {
         ExplorationMenus.register();
         ExplorationWorldFeatures.register();
         ExplorationRecipeSerializers.register();
+        ExplorationCreativeModeTabs.register();
     }
 
     public ProjectRedExploration() {
@@ -74,6 +69,7 @@ public class ProjectRedExploration {
         BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
         RECIPE_SERIALIZERS.register(modEventBus);
         MICRO_MATERIALS.register(modEventBus);
+        CREATIVE_TABS.register(modEventBus);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -82,16 +78,19 @@ public class ProjectRedExploration {
 
     private void onGatherDataEvent(final GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
+        PackOutput output = generator.getPackOutput();
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
 
-        generator.addProvider(event.includeClient(), new ExplorationBlockStateModelProvider(generator, fileHelper));
-        generator.addProvider(event.includeClient(), new ExplorationItemModelProvider(generator, fileHelper));
-        generator.addProvider(event.includeClient(), new ExplorationLanguageProvider(generator));
+        generator.addProvider(event.includeClient(), new ExplorationBlockStateModelProvider(output, fileHelper));
+        generator.addProvider(event.includeClient(), new ExplorationItemModelProvider(output, fileHelper));
+        generator.addProvider(event.includeClient(), new ExplorationLanguageProvider(output));
 
-        generator.addProvider(event.includeServer(), new ExplorationBlockTagsProvider(generator, fileHelper));
-        generator.addProvider(event.includeServer(), new ExplorationItemTagsProvider(generator, fileHelper));
-        generator.addProvider(event.includeServer(), new ExplorationLootTableProvider(generator));
-        generator.addProvider(event.includeServer(), new ExplorationRecipeProvider(generator));
-        generator.addProvider(event.includeServer(), ExplorationWorldFeatures.biomeModifiersProvider(generator, fileHelper));
+        ExplorationBuiltInEntriesProvider explorationProvider = new ExplorationBuiltInEntriesProvider(output, event.getLookupProvider());
+        generator.addProvider(event.includeServer(), explorationProvider);
+        BlockTagsProvider blockTagsProvider = new ExplorationBlockTagsProvider(output, event.getLookupProvider(), fileHelper);
+        generator.addProvider(event.includeServer(), blockTagsProvider);
+        generator.addProvider(event.includeServer(), new ExplorationItemTagsProvider(output, event.getLookupProvider(), blockTagsProvider.contentsGetter(), fileHelper));
+        generator.addProvider(event.includeServer(), new ExplorationLootTableProvider(output));
+        generator.addProvider(event.includeServer(), new ExplorationRecipeProvider(output));
     }
 }

@@ -1,27 +1,25 @@
 package mrtjp.projectred.fabrication.data;
 
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
+import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.CompletableFuture;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.MOD_ID;
 import static mrtjp.projectred.fabrication.init.FabricationBlocks.*;
 
 public class FabricationBlockTagsProvider extends BlockTagsProvider {
 
-    public FabricationBlockTagsProvider(DataGenerator gen, @Nullable ExistingFileHelper existingFileHelper) {
-        super(gen, MOD_ID, existingFileHelper);
+    public FabricationBlockTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
+        super(output, lookupProvider, MOD_ID, existingFileHelper);
     }
 
     @Override
-    public String getName() {
-        return "ProjectRed-Fabrication Block Tags";
-    }
-
-    @Override
-    protected void addTags() {
+    protected void addTags(HolderLookup.Provider lookup) {
 
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(IC_WORKBENCH_BLOCK.get())

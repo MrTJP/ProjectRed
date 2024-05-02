@@ -1,15 +1,15 @@
 package mrtjp.projectred.integration.data;
 
 import mrtjp.projectred.integration.GateType;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.LanguageProvider;
 
 import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
 public class IntegrationLanguageProvider extends LanguageProvider {
 
-    public IntegrationLanguageProvider(DataGenerator gen) {
-        super(gen, MOD_ID, "en_us");
+    public IntegrationLanguageProvider(PackOutput output) {
+        super(output, MOD_ID, "en_us");
     }
 
     @Override

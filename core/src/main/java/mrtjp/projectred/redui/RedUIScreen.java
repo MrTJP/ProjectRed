@@ -1,13 +1,12 @@
 package mrtjp.projectred.redui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.lib.Size;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.chat.Component;
 
 import java.util.LinkedList;
@@ -50,15 +49,15 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialFrame) {
-        super.render(matrixStack, mouseX, mouseY, partialFrame);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialFrame) {
+        super.render(graphics, mouseX, mouseY, partialFrame);
 
         RenderSystem.enableDepthTest(); // Nodes render out of order, so depth test is needed
 
         // Render semi-transparent grey background
         int x = getScreenFrame().x();
         int y = getScreenFrame().y();
-        fillGradient(matrixStack, x, y, x + getScreenFrame().width(), y + getScreenFrame().height(), -1072689136, -804253680);
+        graphics.fillGradient(x, y, x + getScreenFrame().width(), y + getScreenFrame().height(), -1072689136, -804253680);
 
         // Call frame update function on all nodes
         Point mousePoint = new Point(mouseX, mouseY);
@@ -68,13 +67,8 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
         }, false);
 
         // Draw the UI
-        drawBackForSubtree(matrixStack, mousePoint, partialFrame);
-        drawFrontForSubtree(matrixStack, mousePoint, partialFrame);
-    }
-
-    @Override
-    public void renderTooltipScreenSpace(PoseStack stack, Point screenSpacePoint, List<Component> tooltip) {
-        renderComponentTooltip(stack, tooltip, screenSpacePoint.x, screenSpacePoint.y);
+        drawBackForSubtree(graphics, mousePoint, partialFrame);
+        drawFrontForSubtree(graphics, mousePoint, partialFrame);
     }
 
     @Override
@@ -169,11 +163,6 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
     @Override
     public boolean isHidden() {
         return false;
-    }
-
-    @Override
-    public ItemRenderer getItemRenderer() {
-        return itemRenderer;
     }
 
     @Override

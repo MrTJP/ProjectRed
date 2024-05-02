@@ -1,18 +1,19 @@
 package mrtjp.projectred.expansion;
 
-import codechicken.lib.texture.SpriteRegistryHelper;
 import codechicken.multipart.api.MultipartType;
 import codechicken.multipart.api.SimpleMultipartType;
 import com.google.common.collect.ImmutableList;
 import mrtjp.projectred.expansion.item.TubePartItem;
 import mrtjp.projectred.expansion.part.BaseTubePart;
 import mrtjp.projectred.expansion.part.PneumaticTubePart;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -77,21 +78,19 @@ public enum TubeType {
     }
 
     @OnlyIn (Dist.CLIENT)
-    public void registerTextures(SpriteRegistryHelper spriteHelper) {
-        if (textureNames.isEmpty()) {
-            return;
-        }
+    public void onTextureStitchEvent(TextureStitchEvent.Post event) {
+        if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
+        if (textureNames.isEmpty()) return;
+
         textures = new ArrayList<>(textureNames.size());
         for (int i = 0; i < textureNames.size(); i++) {
             textures.add(null);
         }
-        spriteHelper.addIIconRegister(SpriteRegistryHelper.TEXTURES, registrar -> {
-            for (int i = 0; i < textureNames.size(); i++) {
-                int finalI = i;
-                ResourceLocation tex = new ResourceLocation(MOD_ID, "block/" + textureNames.get(i));
-                registrar.registerSprite(tex, sprite -> textures.set(finalI, sprite));
-            }
-        });
+
+        for (int i = 0; i < textureNames.size(); i++) {
+            ResourceLocation tex = new ResourceLocation(MOD_ID, "block/" + textureNames.get(i));
+            textures.set(i, event.getAtlas().getSprite(tex));
+        }
     }
 
     public void registerParts(DeferredRegister<MultipartType<?>> partRegistry, DeferredRegister<Item> itemRegistry) {

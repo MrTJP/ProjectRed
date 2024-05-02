@@ -86,7 +86,7 @@ public class GraphDebugManager {
                         .then(argument("enable", BoolArgumentType.bool())
                                 .executes(ctx -> {
                                     enableRendering = BoolArgumentType.getBool(ctx, "enable");
-                                    ctx.getSource().sendSuccess(Component.literal("Tube graph debugging " + (enableRendering ? "enabled" : "disabled")), false);
+                                    ctx.getSource().sendSuccess(() -> Component.literal("Tube graph debugging " + (enableRendering ? "enabled" : "disabled")), false);
                                     return 0;
                                 })
                         )

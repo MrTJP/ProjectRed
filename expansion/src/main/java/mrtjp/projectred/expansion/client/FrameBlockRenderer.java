@@ -13,9 +13,9 @@ import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
@@ -49,7 +49,7 @@ public class FrameBlockRenderer implements ICCBlockRenderer, IItemRenderer {
 
     //region IItemRenderer
     @Override
-    public void renderItem(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack mStack, MultiBufferSource source, int packedLight, int packedOverlay) {
+    public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack mStack, MultiBufferSource source, int packedLight, int packedOverlay) {
         CCRenderState ccrs = CCRenderState.instance();
         ccrs.reset();
         ccrs.brightness = packedLight;

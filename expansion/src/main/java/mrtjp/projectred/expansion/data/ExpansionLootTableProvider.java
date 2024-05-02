@@ -1,19 +1,15 @@
 package mrtjp.projectred.expansion.data;
 
 import codechicken.lib.datagen.LootTableProvider;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 
+import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
 
 public class ExpansionLootTableProvider extends LootTableProvider.BlockLootProvider {
 
-    public ExpansionLootTableProvider(DataGenerator dataGenerator) {
-        super(dataGenerator);
-    }
-
-    @Override
-    public String getName() {
-        return "ProjectRed-Expansion Block Loot Tables";
+    public ExpansionLootTableProvider(PackOutput output) {
+        super(output, MOD_ID);
     }
 
     @Override

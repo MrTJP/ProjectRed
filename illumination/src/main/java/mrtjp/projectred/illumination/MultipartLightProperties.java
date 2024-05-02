@@ -10,7 +10,6 @@ import codechicken.lib.render.item.IItemRenderer;
 import codechicken.lib.render.lighting.LightModel;
 import codechicken.lib.render.model.OBJParser;
 import codechicken.lib.render.pipeline.ColourMultiplier;
-import codechicken.lib.texture.AtlasRegistrar;
 import codechicken.lib.util.TransformUtils;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
@@ -23,20 +22,20 @@ import mrtjp.projectred.illumination.item.MultipartLightPartItem;
 import mrtjp.projectred.illumination.part.MultipartLightPart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.TextureStitchEvent;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
-import static net.minecraft.client.renderer.block.model.ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND;
 
 public abstract class MultipartLightProperties {
 
@@ -57,7 +56,7 @@ public abstract class MultipartLightProperties {
 
     //region Client Registration
     @OnlyIn(Dist.CLIENT)
-    public abstract void registerIcons(AtlasRegistrar registrar);
+    public abstract void onTextureStitchEvent(TextureStitchEvent.Post event);
     //endregion
 
     //region Rendering
@@ -105,7 +104,7 @@ public abstract class MultipartLightProperties {
     public IItemRenderer getItemRenderer() {
         return new IItemRenderer() {
             @Override
-            public void renderItem(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack mStack, MultiBufferSource getter, int packedLight, int packedOverlay) {
+            public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack mStack, MultiBufferSource getter, int packedLight, int packedOverlay) {
                 if (!(stack.getItem() instanceof MultipartLightPartItem lightItem)) return;
 
                 CCRenderState ccrs = CCRenderState.instance();

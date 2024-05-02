@@ -1,12 +1,15 @@
 package mrtjp.projectred.core.data;
 
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.data.tags.TagsProvider;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nullable;
+import java.util.concurrent.CompletableFuture;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 import static mrtjp.projectred.core.init.CoreItems.*;
@@ -14,17 +17,12 @@ import static mrtjp.projectred.core.init.CoreTags.*;
 
 public class CoreItemTagsProvider extends ItemTagsProvider {
 
-    public CoreItemTagsProvider(DataGenerator gen, @Nullable ExistingFileHelper helper) {
-        super(gen, new BlockTagsProvider(gen, MOD_ID, helper), MOD_ID, helper);
+    public CoreItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> blockTags, @Nullable ExistingFileHelper helper) {
+        super(output, lookupProvider, blockTags, MOD_ID, helper);
     }
 
     @Override
-    public String getName() {
-        return "ProjectRed-Core Item Tags";
-    }
-
-    @Override
-    protected void addTags() {
+    protected void addTags(HolderLookup.Provider pProvider) {
 
         tag(Tags.Items.INGOTS)
                 .addTag(RED_ALLOY_INGOT_TAG)

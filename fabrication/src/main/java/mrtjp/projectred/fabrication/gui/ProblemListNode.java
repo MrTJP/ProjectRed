@@ -1,7 +1,6 @@
 package mrtjp.projectred.fabrication.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
 import mrtjp.projectred.fabrication.engine.log.CompileProblem;
 import mrtjp.projectred.fabrication.gui.screen.ICWorkbenchCompileTab;
@@ -9,6 +8,7 @@ import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.redui.AbstractGuiNode;
 import mrtjp.projectred.redui.RedUISprite;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 import java.util.LinkedList;
@@ -96,22 +96,22 @@ public class ProblemListNode extends AbstractGuiNode {
         }
 
         @Override
-        public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-            blitSprite(stack, BACKGROUND_UNSELECTED);
+        public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
+            blitSprite(graphics, BACKGROUND_UNSELECTED);
 
             var fr = getRoot().getFontRenderer();
             Component c = issue.getName().copy().withStyle(ICWorkbenchEditor.UNIFORM);
-            fr.draw(stack, c, getFrame().x() + 2, getFrame().y() + getFrame().height() / 2f - fr.lineHeight / 2f, 0xFFFFFF);
+            graphics.drawString(fr, c, getFrame().x() + 2, getFrame().y() + getFrame().height() / 2 - fr.lineHeight / 2, 0xFFFFFF, false);
         }
 
         @Override
-        public void drawFront(PoseStack stack, Point mouse, float partialFrame) {
+        public void drawFront(GuiGraphics graphics, Point mouse, float partialFrame) {
             if (!isFirstHit(mouse)) return;
 
             List<Component> toolTip = new LinkedList<>();
             toolTip.add(issue.getName());
             issue.buildToolTip(toolTip);
-            renderTooltip(stack, mouse, toolTip);
+            renderTooltip(graphics, mouse, toolTip);
         }
 
         @Override

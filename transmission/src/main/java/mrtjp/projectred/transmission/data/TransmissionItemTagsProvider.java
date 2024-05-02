@@ -1,22 +1,23 @@
 package mrtjp.projectred.transmission.data;
 
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.data.tags.TagsProvider;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nullable;
+import java.util.concurrent.CompletableFuture;
 
 import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 import static mrtjp.projectred.transmission.init.TransmissionTags.*;
 
 public class TransmissionItemTagsProvider extends ItemTagsProvider {
 
-    public TransmissionItemTagsProvider(DataGenerator generator, @Nullable ExistingFileHelper existingFileHelper) {
-        super(generator, new BlockTagsProvider(generator, MOD_ID, existingFileHelper), MOD_ID, existingFileHelper);
+    public TransmissionItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> blockTags, @Nullable ExistingFileHelper helper) {
+        super(output, lookupProvider, blockTags, MOD_ID, helper);
     }
 
     @Override
@@ -25,9 +26,9 @@ public class TransmissionItemTagsProvider extends ItemTagsProvider {
     }
 
     @Override
-    protected void addTags() {
+    protected void addTags(HolderLookup.Provider pProvider) {
         // Insulated wires
-        TagsProvider.TagAppender<Item> b = tag(INSULATED_WIRE_ITEM_TAG);
+        var b = tag(INSULATED_WIRE_ITEM_TAG);
         for (WireType type : WireType.INSULATED_WIRES) {
             b.add(type.getItem());
         }

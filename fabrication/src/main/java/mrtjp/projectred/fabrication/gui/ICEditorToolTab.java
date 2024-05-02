@@ -1,13 +1,12 @@
 package mrtjp.projectred.fabrication.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.fabrication.editor.tools.IICEditorTool;
 import mrtjp.projectred.fabrication.gui.screen.ICWorkbenchScreen;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractGuiNode;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -95,10 +94,8 @@ public class ICEditorToolTab extends AbstractGuiNode implements TabControllerNod
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-        RenderSystem.setShaderTexture(0, ICWorkbenchScreen.BACKGROUND);
-
-        GuiComponent.blit(stack, getPosition().x, getPosition().y, 305, 0, 84, 222, 512, 512);
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
+        graphics.blit(ICWorkbenchScreen.BACKGROUND, getPosition().x, getPosition().y, 305, 0, 84, 222, 512, 512);
 
         //TODO: Render tool name on header
     }
@@ -129,7 +126,7 @@ public class ICEditorToolTab extends AbstractGuiNode implements TabControllerNod
         return new TabButtonNode(this, TabButtonNode.TabSide.LEFT) {
 
             @Override
-            public void renderIcon(PoseStack stack, Point mouse, float partialFrame) {
+            public void renderIcon(GuiGraphics graphics, Point mouse, float partialFrame) {
             }
 
             @Override
@@ -143,7 +140,7 @@ public class ICEditorToolTab extends AbstractGuiNode implements TabControllerNod
         void getTooltip(List<Component> tooltip);
         void onClick();
         boolean isSelected();
-        void renderIcon(PoseStack stack, Point absPos, float partialFrame);
+        void renderIcon(GuiGraphics graphics, Point absPos, float partialFrame);
     }
 
     private static class GroupHeaderNode extends AbstractGuiNode {
@@ -156,13 +153,12 @@ public class ICEditorToolTab extends AbstractGuiNode implements TabControllerNod
         }
 
         @Override
-        public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-            RenderSystem.setShaderTexture(0, ICWorkbenchScreen.BACKGROUND);
+        public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
 
-            GuiComponent.blit(stack, getPosition().x, getPosition().y, GROUP_U, GROUP_V, getFrame().width(), getFrame().height(), 512, 512);
+            graphics.blit(ICWorkbenchScreen.BACKGROUND, getPosition().x, getPosition().y, GROUP_U, GROUP_V, getFrame().width(), getFrame().height(), 512, 512);
 
             Font fontRenderer = getRoot().getFontRenderer();
-            fontRenderer.draw(stack, title, getPosition().x + 2, getPosition().y + GROUP_HEIGHT / 2f - fontRenderer.lineHeight / 2f, 0xFFFFFF);
+            graphics.drawString(fontRenderer, title, getPosition().x + 2, getPosition().y + GROUP_HEIGHT / 2 - fontRenderer.lineHeight / 2, 0xFFFFFF);
         }
     }
 
@@ -182,9 +178,8 @@ public class ICEditorToolTab extends AbstractGuiNode implements TabControllerNod
         }
 
         @Override
-        public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
+        public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
             RenderSystem.enableBlend();
-            RenderSystem.setShaderTexture(0, ICWorkbenchScreen.BACKGROUND);
 
             boolean mouseover = getFrame().contains(mouse) && isFirstHit(mouse);
             boolean selected = controller.isSelected();
@@ -197,30 +192,30 @@ public class ICEditorToolTab extends AbstractGuiNode implements TabControllerNod
             // Background
             int uBackground = uvBg.x + (selected ? uvBgSelectedShift.x : 0);
             int vBackground = uvBg.y + (selected ? uvBgSelectedShift.y : 0);
-            GuiComponent.blit(stack, x, y, uBackground, vBackground, w, h, 512, 512);
+            graphics.blit(ICWorkbenchScreen.BACKGROUND, x, y, uBackground, vBackground, w, h, 512, 512);
 
             // Mouseover layer
             if (selected || mouseover) {
                 int uMouseOver = uvBg.x + uvMouseOverShift.x;
                 int vMouseOver = uvBg.y + uvMouseOverShift.y;
-                GuiComponent.blit(stack, x, y, uMouseOver, vMouseOver, w, h, 512, 512);
+                graphics.blit(ICWorkbenchScreen.BACKGROUND, x, y, uMouseOver, vMouseOver, w, h, 512, 512);
             }
 
             RenderSystem.disableBlend();
 
             // Icon
-            controller.renderIcon(stack, getPosition(), partialFrame);
+            controller.renderIcon(graphics, getPosition(), partialFrame);
         }
 
         @Override
-        public void drawFront(PoseStack stack, Point mouse, float partialFrame) {
+        public void drawFront(GuiGraphics graphics, Point mouse, float partialFrame) {
 
             if (!isFirstHit(mouse)) return;
 
             List<Component> tooltip = new LinkedList<>();
             controller.getTooltip(tooltip);
 
-            renderTooltip(stack, mouse, tooltip);
+            renderTooltip(graphics, mouse, tooltip);
         }
 
         @Override

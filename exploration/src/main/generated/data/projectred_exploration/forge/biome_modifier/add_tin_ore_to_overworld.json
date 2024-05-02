@@ -2,55 +2,6 @@
   "type": "projectred_exploration:add_features",
   "biomes": "#minecraft:is_overworld",
   "configKey": "tin_ore",
-  "features": {
-    "feature": {
-      "type": "minecraft:ore",
-      "config": {
-        "discard_chance_on_air_exposure": 0.0,
-        "size": 8,
-        "targets": [
-          {
-            "state": {
-              "Name": "projectred_exploration:tin_ore"
-            },
-            "target": {
-              "predicate_type": "minecraft:tag_match",
-              "tag": "minecraft:stone_ore_replaceables"
-            }
-          },
-          {
-            "state": {
-              "Name": "projectred_exploration:deepslate_tin_ore"
-            },
-            "target": {
-              "predicate_type": "minecraft:tag_match",
-              "tag": "minecraft:deepslate_ore_replaceables"
-            }
-          }
-        ]
-      }
-    },
-    "placement": [
-      {
-        "type": "minecraft:count",
-        "count": 8
-      },
-      {
-        "type": "minecraft:in_square"
-      },
-      {
-        "type": "minecraft:height_range",
-        "height": {
-          "type": "minecraft:trapezoid",
-          "max_inclusive": {
-            "absolute": 56
-          },
-          "min_inclusive": {
-            "absolute": -24
-          }
-        }
-      }
-    ]
-  },
+  "features": "projectred_exploration:tin_ore",
   "step": "underground_ores"
 }

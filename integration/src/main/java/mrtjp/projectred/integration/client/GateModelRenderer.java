@@ -4,25 +4,26 @@ import codechicken.lib.colour.EnumColour;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.buffer.TransformingVertexConsumer;
-import codechicken.lib.texture.AtlasRegistrar;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.part.GatePart;
 import mrtjp.projectred.integration.part.IGateRenderData;
 import mrtjp.projectred.lib.VecLib;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -148,8 +149,9 @@ public class GateModelRenderer {
         }
     }
 
-    public static void registerIcons(AtlasRegistrar registrar) {
-        GateComponentModels.registerIcons(registrar);
+    public static void onTextureStitchEvent(TextureStitchEvent.Post event) {
+        if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
+        GateComponentModels.onTextureStitchEvent(event);
         // TODO find a way around calling into all renderers, having them call into all component models
         //      (it was only used for 2d wires)
     }
@@ -1960,7 +1962,7 @@ public class GateModelRenderer {
         public void renderCustomDynamic(CCRenderState ccrs, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
 
             // Render name
-            icHousing.renderName(name, mStack, t, runtimeError ? EnumColour.RED.argb() : EnumColour.WHITE.argb());
+            icHousing.renderName(name, t, mStack, buffers, runtimeError ? EnumColour.RED.argb() : EnumColour.WHITE.argb(), packedLight);
 
             // Render glass
             ccrs.reset();

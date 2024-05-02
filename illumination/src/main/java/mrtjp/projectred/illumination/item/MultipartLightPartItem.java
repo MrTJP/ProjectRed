@@ -4,7 +4,6 @@ import codechicken.multipart.api.ItemMultipart;
 import codechicken.multipart.api.part.MultiPart;
 import codechicken.multipart.util.MultipartPlaceContext;
 import mrtjp.projectred.illumination.MultipartLightProperties;
-import mrtjp.projectred.illumination.ProjectRedIllumination;
 import mrtjp.projectred.illumination.part.MultipartLightPart;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,7 +16,7 @@ public class MultipartLightPartItem extends ItemMultipart {
     private final boolean inverted;
 
     public MultipartLightPartItem(MultipartLightProperties lightProperties, int color, boolean inverted) {
-        super(new Item.Properties().tab(ProjectRedIllumination.ILLUMINATION_GROUP));
+        super(new Item.Properties());
         this.properties = lightProperties;
         this.color = color;
         this.inverted = inverted;

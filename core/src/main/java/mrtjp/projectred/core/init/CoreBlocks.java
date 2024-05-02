@@ -28,7 +28,7 @@ public class CoreBlocks {
         ELECTROTINE_GENERATOR_BLOCK = BLOCKS.register(ID_ELECTROTINE_GENERATOR, ElectrotineGeneratorBlock::new);
 
         // Block Items
-        ITEMS.register(ID_ELECTROTINE_GENERATOR, () -> new BlockItem(ELECTROTINE_GENERATOR_BLOCK.get(), new Item.Properties().tab(CORE_CREATIVE_TAB)));
+        ITEMS.register(ID_ELECTROTINE_GENERATOR, () -> new BlockItem(ELECTROTINE_GENERATOR_BLOCK.get(), new Item.Properties()));
 
         // Tiles
         ELECTROTINE_GENERATOR_TILE = BLOCK_ENTITY_TYPES.register(ID_ELECTROTINE_GENERATOR, () -> BlockEntityType.Builder.of(ElectrotineGeneratorTile::new, ELECTROTINE_GENERATOR_BLOCK.get()).build(null));

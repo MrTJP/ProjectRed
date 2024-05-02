@@ -1,14 +1,13 @@
 package mrtjp.projectred.integration.gui.screen;
 
 import codechicken.lib.packet.PacketCustom;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.integration.IntegrationNetwork;
 import mrtjp.projectred.integration.part.ComplexGatePart;
 import mrtjp.projectred.integration.part.GatePart;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.ButtonNode;
 import mrtjp.projectred.redui.RedUIScreen;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -56,23 +55,22 @@ public class CounterScreen extends RedUIScreen {
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-        super.drawBack(stack, mouse, partialFrame);
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
+        super.drawBack(graphics, mouse, partialFrame);
 
-        RenderSystem.setShaderTexture(0, BACKGROUND);
         int x = getFrame().x();
         int y = getFrame().y();
         int w = getFrame().width();
 
-        blit(stack, x, y, 0, 0, getFrame().width(), getFrame().height());
+        graphics.blit(BACKGROUND, x, y, 0, 0, getFrame().width(), getFrame().height());
         String s = "Maximum: " + counterGate.getCounterMax();
-        getFontRenderer().draw(stack, s, x + (w - getFontRenderer().width(s)) / 2f, y + 5, 0x404040);
+        graphics.drawString(getFontRenderer(), s, x + (w - getFontRenderer().width(s)) / 2f, y + 5, 0x404040, false);
         s = "Increment: " + counterGate.getCounterIncr();
-        getFontRenderer().draw(stack, s, x + (w - getFontRenderer().width(s)) / 2f, y + 45, 0x404040);
+        graphics.drawString(getFontRenderer(), s, x + (w - getFontRenderer().width(s)) / 2f, y + 45, 0x404040, false);
         s = "Decrement: " + counterGate.getCounterDecr();
-        getFontRenderer().draw(stack, s, x + (w - getFontRenderer().width(s)) / 2f, y + 85, 0x404040);
+        graphics.drawString(getFontRenderer(), s, x + (w - getFontRenderer().width(s)) / 2f, y + 85, 0x404040, false);
         s = "State: " + counterGate.getCounterValue();
-        getFontRenderer().draw(stack, s, x + (w - getFontRenderer().width(s)) / 2f, y + 125, 0x404040);
+        graphics.drawString(getFontRenderer(), s, x + (w - getFontRenderer().width(s)) / 2f, y + 125, 0x404040, false);
     }
 
     @Override

@@ -1,13 +1,12 @@
 package mrtjp.projectred.fabrication.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.redui.AbstractGuiNode;
 import mrtjp.projectred.redui.RedUINode;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 import java.util.function.Supplier;
@@ -37,9 +36,9 @@ public class VerticalListNode extends AbstractGuiNode {
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
         //Background
-        GuiComponent.fill(stack, getFrame().x(), getFrame().y(), getFrame().x() + getFrame().width(), getFrame().y() + getFrame().height(), 0x7F000000);
+        graphics.fill(getFrame().x(), getFrame().y(), getFrame().x() + getFrame().width(), getFrame().y() + getFrame().height(), 0x7F000000);
 
         //TODO render top/bottom gradients
     }
@@ -178,13 +177,13 @@ public class VerticalListNode extends AbstractGuiNode {
         }
 
         @Override
-        public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
+        public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
             Font fontRenderer = getRoot().getFontRenderer();
             Component text = textSupplier.get();
 
             int x = getXForAlignment(fontRenderer, text);
             int y = getYForAlignment(fontRenderer);
-            fontRenderer.drawShadow(stack, text, x, y, textColor);
+            graphics.drawString(fontRenderer, text, x, y, textColor);
         }
 
         private Rect getPaddedFrame() {
@@ -230,18 +229,18 @@ public class VerticalListNode extends AbstractGuiNode {
         }
 
         @Override
-        public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
+        public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
             //Line
-            GuiComponent.fill(stack, getFrame().x(), getFrame().y(), getFrame().x() + getFrame().width(), getFrame().y() + 1, 0xFF000000);
+            graphics.fill(getFrame().x(), getFrame().y(), getFrame().x() + getFrame().width(), getFrame().y() + 1, 0xFF000000);
 
             Font fontRenderer = getRoot().getFontRenderer();
 
             int x = getFrame().midX() - fontRenderer.width(title) / 2;
             int y = getFrame().midY() - fontRenderer.lineHeight / 2;
-            fontRenderer.drawShadow(stack, title, x, y, TITLE_COLOR);
+            graphics.drawString(fontRenderer, title, x, y, TITLE_COLOR);
 
             //Line
-            GuiComponent.fill(stack, getFrame().x(), getFrame().y() + getFrame().height() - 1, getFrame().x() + getFrame().width(), getFrame().y() + getFrame().height(), 0xFF000000);
+            graphics.fill(getFrame().x(), getFrame().y() + getFrame().height() - 1, getFrame().x() + getFrame().width(), getFrame().y() + getFrame().height(), 0xFF000000);
         }
     }
 }

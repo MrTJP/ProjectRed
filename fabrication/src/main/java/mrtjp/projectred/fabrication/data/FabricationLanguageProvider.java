@@ -1,6 +1,6 @@
 package mrtjp.projectred.fabrication.data;
 
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.LanguageProvider;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.MOD_ID;
@@ -11,8 +11,8 @@ import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class FabricationLanguageProvider extends LanguageProvider {
 
-    public FabricationLanguageProvider(DataGenerator gen) {
-        super(gen, MOD_ID, "en_us");
+    public FabricationLanguageProvider(PackOutput output) {
+        super(output, MOD_ID, "en_us");
     }
 
     @Override

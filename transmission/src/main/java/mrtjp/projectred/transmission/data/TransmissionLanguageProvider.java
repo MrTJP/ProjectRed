@@ -1,7 +1,7 @@
 package mrtjp.projectred.transmission.data;
 
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.LanguageProvider;
 
 import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
@@ -12,8 +12,8 @@ public class TransmissionLanguageProvider extends LanguageProvider {
             "White", "Orange", "Magenta", "Light Blue", "Yellow", "Lime", "Pink", "Gray", "Light Gray", "Cyan", "Purple", "Blue", "Brown", "Green", "Red", "Black"
     };
 
-    public TransmissionLanguageProvider(DataGenerator gen) {
-        super(gen, MOD_ID, "en_us");
+    public TransmissionLanguageProvider(PackOutput output) {
+        super(output, MOD_ID, "en_us");
     }
 
     @Override

@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 public class PlottingTableContainer extends FabricationMachineContainer {
 
     public static ICCLContainerFactory<PlottingTableContainer> FACTORY = (windowId, inventory, packet) -> {
-        BlockEntity tile = inventory.player.level.getBlockEntity(packet.readPos());
+        BlockEntity tile = inventory.player.level().getBlockEntity(packet.readPos());
         if (!(tile instanceof PlottingTableTile)) return null;
 
         return new PlottingTableContainer(inventory, (PlottingTableTile) tile, windowId);

@@ -4,7 +4,7 @@ import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
 import mrtjp.projectred.fabrication.block.FabricationMachineBlock;
 import mrtjp.projectred.fabrication.block.ICWorkbenchBlock;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
@@ -20,8 +20,8 @@ import static mrtjp.projectred.fabrication.init.FabricationBlocks.*;
 @SuppressWarnings("DataFlowIssue")
 public class FabricationBlockStateModelProvider extends BlockStateProvider {
 
-    public FabricationBlockStateModelProvider(DataGenerator gen, ExistingFileHelper exFileHelper) {
-        super(gen, ProjectRedFabrication.MOD_ID, exFileHelper);
+    public FabricationBlockStateModelProvider(PackOutput output, ExistingFileHelper exFileHelper) {
+        super(output, ProjectRedFabrication.MOD_ID, exFileHelper);
     }
 
     @Override

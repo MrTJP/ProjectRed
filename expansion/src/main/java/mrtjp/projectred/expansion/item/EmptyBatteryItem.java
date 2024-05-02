@@ -1,13 +1,12 @@
 package mrtjp.projectred.expansion.item;
 
-import mrtjp.projectred.expansion.ProjectRedExpansion;
 import mrtjp.projectred.expansion.init.ExpansionItems;
 import net.minecraft.world.item.Item;
 
 public class EmptyBatteryItem extends Item implements IRechargableBattery {
 
     public EmptyBatteryItem() {
-        super(new Item.Properties().tab(ProjectRedExpansion.EXPANSION_GROUP));
+        super(new Item.Properties());
     }
 
     @Override

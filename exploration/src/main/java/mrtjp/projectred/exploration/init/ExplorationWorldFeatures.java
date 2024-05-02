@@ -1,20 +1,17 @@
 package mrtjp.projectred.exploration.init;
 
 import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.exploration.world.gen.ConfigFileControlledAddCarversBiomeModifier;
 import mrtjp.projectred.exploration.world.gen.ConfigFileControlledAddFeaturesBiomeModifier;
 import mrtjp.projectred.exploration.world.gen.MarbleCaveWorldCarver;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.worldgen.features.OreFeatures;
-import net.minecraft.resources.RegistryOps;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.BlockTags;
@@ -33,14 +30,12 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.level.levelgen.heightproviders.UniformHeight;
 import net.minecraft.world.level.levelgen.placement.*;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.common.data.JsonCodecProvider;
+import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 import net.minecraftforge.common.world.BiomeModifier;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.*;
@@ -51,12 +46,33 @@ public class ExplorationWorldFeatures {
 
     public static final String ID_MARBLE_CAVE_CARVER = "marble_cave";
 
+    /* Static registry entries */
     // World carvers
     public static RegistryObject<WorldCarver<CaveCarverConfiguration>> MARBLE_CAVE_CARVER;
 
     // Biome Modifier Codecs
     public static RegistryObject<Codec<ConfigFileControlledAddCarversBiomeModifier>> ADD_CARVER_BIOME_MODIFIER_CODEC;
     public static RegistryObject<Codec<ConfigFileControlledAddFeaturesBiomeModifier>> ADD_FEATURES_BIOME_MODIFIER_CODEC;
+
+    /* Dynamic registry entries */
+    // Configured carvers
+    public static ResourceKey<ConfiguredWorldCarver<?>> MARBLE_CAVE_CONFIGURED_CARVER = createCarverKey(ID_MARBLE_CAVE_CARVER);
+
+    // Configured features
+    public static ResourceKey<ConfiguredFeature<?, ?>> RUBY_ORE_CONFIGURED_FEATURE = createFeatureKey("ruby_ore");
+    public static ResourceKey<ConfiguredFeature<?, ?>> SAPPHIRE_ORE_CONFIGURED_FEATURE = createFeatureKey("sapphire_ore");
+    public static ResourceKey<ConfiguredFeature<?, ?>> PERIDOT_ORE_CONFIGURED_FEATURE = createFeatureKey("peridot_ore");
+    public static ResourceKey<ConfiguredFeature<?, ?>> ELECTROTINE_ORE_CONFIGURED_FEATURE = createFeatureKey("electrotine_ore");
+    public static ResourceKey<ConfiguredFeature<?, ?>> TIN_ORE_CONFIGURED_FEATURE = createFeatureKey("tin_ore");
+    public static ResourceKey<ConfiguredFeature<?, ?>> SILVER_ORE_CONFIGURED_FEATURE = createFeatureKey("silver_ore");
+
+    // Placed features
+    public static ResourceKey<PlacedFeature> RUBY_ORE_PLACED_FEATURE = createPlacedFeatureKey("ruby_ore");
+    public static ResourceKey<PlacedFeature> SAPPHIRE_ORE_PLACED_FEATURE = createPlacedFeatureKey("sapphire_ore");
+    public static ResourceKey<PlacedFeature> PERIDOT_ORE_PLACED_FEATURE = createPlacedFeatureKey("peridot_ore");
+    public static ResourceKey<PlacedFeature> ELECTROTINE_ORE_PLACED_FEATURE = createPlacedFeatureKey("electrotine_ore");
+    public static ResourceKey<PlacedFeature> TIN_ORE_PLACED_FEATURE = createPlacedFeatureKey("tin_ore");
+    public static ResourceKey<PlacedFeature> SILVER_ORE_PLACED_FEATURE = createPlacedFeatureKey("silver_ore");
 
     public static void register() {
 
@@ -71,74 +87,94 @@ public class ExplorationWorldFeatures {
         ADD_FEATURES_BIOME_MODIFIER_CODEC = BIOME_MODIFIER_SERIALIZERS.register("add_features", ConfigFileControlledAddFeaturesBiomeModifier::createCodec);
     }
 
-    public static JsonCodecProvider<BiomeModifier> biomeModifiersProvider(DataGenerator dataGenerator, ExistingFileHelper existingFileHelper) {
+    public static ResourceKey<ConfiguredWorldCarver<?>> createCarverKey(String name) {
+        return ResourceKey.create(Registries.CONFIGURED_CARVER, new ResourceLocation(MOD_ID, name));
+    }
 
-        final RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, RegistryAccess.builtinCopy());
-        final HolderSet.Named<Biome> isOverworldBiomes = new HolderSet.Named<>(ops.registry(Registry.BIOME_REGISTRY).get(), BiomeTags.IS_OVERWORLD);
-        final HolderSet.Named<Block> overworldCarverReplaceables = new HolderSet.Named<>(ops.registry(Registry.BLOCK_REGISTRY).get(), BlockTags.OVERWORLD_CARVER_REPLACEABLES);
+    public static ResourceKey<ConfiguredFeature<?, ?>> createFeatureKey(String name) {
+        return ResourceKey.create(Registries.CONFIGURED_FEATURE, new ResourceLocation(MOD_ID, name));
+    }
 
-        // Configured carvers
-        ConfiguredWorldCarver<CaveCarverConfiguration> marbleCaveConfiguredCarver = MARBLE_CAVE_CARVER.get().configured(new CaveCarverConfiguration(
+    public static ResourceKey<PlacedFeature> createPlacedFeatureKey(String name) {
+        return ResourceKey.create(Registries.PLACED_FEATURE, new ResourceLocation(MOD_ID, name));
+    }
+
+    public static ResourceKey<BiomeModifier> createBiomeModifierKey(String name) {
+        return ResourceKey.create(ForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(MOD_ID, name));
+    }
+
+    public static void bootstrapCarvers(BootstapContext<ConfiguredWorldCarver<?>> context) {
+
+        HolderGetter<Block> blockGetter = context.lookup(Registries.BLOCK);
+
+        context.register(MARBLE_CAVE_CONFIGURED_CARVER, MARBLE_CAVE_CARVER.get().configured(new CaveCarverConfiguration(
                 0.01F, // probability
                 UniformHeight.of(VerticalAnchor.aboveBottom(8), VerticalAnchor.absolute(180)), // Max/min heights
                 UniformFloat.of(0.1F, 0.9F), // y scale
                 VerticalAnchor.aboveBottom(8), // lava level
                 CarverDebugSettings.of(false, Blocks.CRIMSON_BUTTON.defaultBlockState()), // debug settings (enable, air state)
-                overworldCarverReplaceables,
+                blockGetter.getOrThrow(BlockTags.OVERWORLD_CARVER_REPLACEABLES),
                 UniformFloat.of(0.7F, 1.4F), // horizontal radius
                 UniformFloat.of(0.8F, 1.3F), // vertical radius
-                UniformFloat.of(-1.0F, -0.4F))); // floor level
+                UniformFloat.of(-1.0F, -0.4F))));
+    }
 
-        // Configured ores
-        ConfiguredFeature<OreConfiguration, ?> rubyOreConfiguration          = createOreConfiguration(RUBY_ORE_BLOCK, DEEPSLATE_RUBY_ORE_BLOCK,         8);
-        ConfiguredFeature<OreConfiguration, ?> sapphireOreConfiguration      = createOreConfiguration(SAPPHIRE_ORE_BLOCK, DEEPSLATE_SAPPHIRE_ORE_BLOCK, 8);
-        ConfiguredFeature<OreConfiguration, ?> peridotOreConfiguration       = createOreConfiguration(PERIDOT_ORE_BLOCK, DEEPSLATE_PERIDOT_ORE_BLOCK,   10);
-        ConfiguredFeature<OreConfiguration, ?> electrotineOreConfiguration   = createOreConfiguration(ELECTROTINE_ORE_BLOCK, DEEPSLATE_ELECTROTINE_ORE_BLOCK, 8);
-        ConfiguredFeature<OreConfiguration, ?> tinOreConfiguration           = createOreConfiguration(TIN_ORE_BLOCK, DEEPSLATE_TIN_ORE_BLOCK,           8);
-        ConfiguredFeature<OreConfiguration, ?> silverOreConfiguration        = createOreConfiguration(SILVER_ORE_BLOCK, DEEPSLATE_SILVER_ORE_BLOCK,     9);
+    public static void bootstrapFeatures(BootstapContext<ConfiguredFeature<?, ?>> context) {
 
-        // Placements
-        PlacedFeature rubyOrePlacedFeature         = createOrePlacement(rubyOreConfiguration,        -80, 80, 1);
-        PlacedFeature sapphireOrePlacedFeature     = createOrePlacement(sapphireOreConfiguration,    -80, 80, 1);
-        PlacedFeature peridotOrePlacedFeature      = createOrePlacement(peridotOreConfiguration,     -80, 80, 1);
-        PlacedFeature electrotineOrePlacedFeature  = createOrePlacement(electrotineOreConfiguration, -32, 32, 4);
-        PlacedFeature tinOrePlacedFeature          = createOrePlacement(tinOreConfiguration,         -24, 56, 8);
-        PlacedFeature silverOrePlacedFeature       = createOrePlacement(silverOreConfiguration,      -64, 32, 6);
+        registerOreConfiguration(context, RUBY_ORE_CONFIGURED_FEATURE,        RUBY_ORE_BLOCK, DEEPSLATE_RUBY_ORE_BLOCK,         8);
+        registerOreConfiguration(context, SAPPHIRE_ORE_CONFIGURED_FEATURE,    SAPPHIRE_ORE_BLOCK, DEEPSLATE_SAPPHIRE_ORE_BLOCK, 8);
+        registerOreConfiguration(context, PERIDOT_ORE_CONFIGURED_FEATURE,     PERIDOT_ORE_BLOCK, DEEPSLATE_PERIDOT_ORE_BLOCK,   10);
+        registerOreConfiguration(context, ELECTROTINE_ORE_CONFIGURED_FEATURE, ELECTROTINE_ORE_BLOCK, DEEPSLATE_ELECTROTINE_ORE_BLOCK, 8);
+        registerOreConfiguration(context, TIN_ORE_CONFIGURED_FEATURE,         TIN_ORE_BLOCK, DEEPSLATE_TIN_ORE_BLOCK,           8);
+        registerOreConfiguration(context, SILVER_ORE_CONFIGURED_FEATURE,      SILVER_ORE_BLOCK, DEEPSLATE_SILVER_ORE_BLOCK,     9);
+    }
 
-        return JsonCodecProvider.forDatapackRegistry(
-                dataGenerator,
-                existingFileHelper,
-                MOD_ID,
-                ops,
-                ForgeRegistries.Keys.BIOME_MODIFIERS,
-                Map.of(
-                        // Overworld ores
-                        new ResourceLocation(MOD_ID, "add_ruby_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(isOverworldBiomes, HolderSet.direct(Holder.direct(rubyOrePlacedFeature)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.rubyOreKey),
-                        new ResourceLocation(MOD_ID, "add_sapphire_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(isOverworldBiomes, HolderSet.direct(Holder.direct(sapphireOrePlacedFeature)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.sapphireOreKey),
-                        new ResourceLocation(MOD_ID, "add_peridot_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(isOverworldBiomes, HolderSet.direct(Holder.direct(peridotOrePlacedFeature)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.peridotOreKey),
-                        new ResourceLocation(MOD_ID, "add_electrotine_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(isOverworldBiomes, HolderSet.direct(Holder.direct(electrotineOrePlacedFeature)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.electrotineOreKey),
-                        new ResourceLocation(MOD_ID, "add_tin_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(isOverworldBiomes, HolderSet.direct(Holder.direct(tinOrePlacedFeature)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.tinOreKey),
-                        new ResourceLocation(MOD_ID, "add_silver_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(isOverworldBiomes, HolderSet.direct(Holder.direct(silverOrePlacedFeature)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.silverOreKey),
+    public static void bootstrapPlacements(BootstapContext<PlacedFeature> context) {
 
-                        // Overworld carvers
-                        new ResourceLocation(MOD_ID, "add_marble_cave_to_overworld"), new ConfigFileControlledAddCarversBiomeModifier(isOverworldBiomes, HolderSet.direct(Holder.direct(marbleCaveConfiguredCarver)), GenerationStep.Carving.AIR, Configurator.marbleCaveKey)
-                ));
+        HolderGetter<ConfiguredFeature<?, ?>> features = context.lookup(Registries.CONFIGURED_FEATURE);
+
+        registerOrePlacement(context, RUBY_ORE_PLACED_FEATURE,        features.getOrThrow(RUBY_ORE_CONFIGURED_FEATURE),        -80, 80, 1);
+        registerOrePlacement(context, SAPPHIRE_ORE_PLACED_FEATURE,    features.getOrThrow(SAPPHIRE_ORE_CONFIGURED_FEATURE),    -80, 80, 1);
+        registerOrePlacement(context, PERIDOT_ORE_PLACED_FEATURE,     features.getOrThrow(PERIDOT_ORE_CONFIGURED_FEATURE),     -80, 80, 1);
+        registerOrePlacement(context, ELECTROTINE_ORE_PLACED_FEATURE, features.getOrThrow(ELECTROTINE_ORE_CONFIGURED_FEATURE), -32, 32, 4);
+        registerOrePlacement(context, TIN_ORE_PLACED_FEATURE,         features.getOrThrow(TIN_ORE_CONFIGURED_FEATURE),         -24, 56, 8);
+        registerOrePlacement(context, SILVER_ORE_PLACED_FEATURE,      features.getOrThrow(SILVER_ORE_CONFIGURED_FEATURE),      -64, 32, 6);
+    }
+
+    public static void bootstrapBiomeModifiers(BootstapContext<BiomeModifier> context) {
+
+        HolderGetter<Biome> biomes = context.lookup(Registries.BIOME);
+        HolderGetter<ConfiguredWorldCarver<?>> worldCarvers = context.lookup(Registries.CONFIGURED_CARVER);
+        HolderGetter<PlacedFeature> placedFeatures = context.lookup(Registries.PLACED_FEATURE);
+
+        HolderSet<Biome> overworldBiomes = biomes.getOrThrow(BiomeTags.IS_OVERWORLD);
+
+        // Add overworld ores
+        context.register(createBiomeModifierKey("add_ruby_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(RUBY_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.rubyOreKey));
+        context.register(createBiomeModifierKey("add_sapphire_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(SAPPHIRE_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.sapphireOreKey));
+        context.register(createBiomeModifierKey("add_peridot_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(PERIDOT_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.peridotOreKey));
+        context.register(createBiomeModifierKey("add_electrotine_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(ELECTROTINE_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.electrotineOreKey));
+        context.register(createBiomeModifierKey("add_tin_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(TIN_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.tinOreKey));
+        context.register(createBiomeModifierKey("add_silver_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(SILVER_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.silverOreKey));
+
+        // Add overworld carvers
+        context.register(createBiomeModifierKey("add_marble_cave_to_overworld"), new ConfigFileControlledAddCarversBiomeModifier(overworldBiomes, HolderSet.direct(worldCarvers.getOrThrow(MARBLE_CAVE_CONFIGURED_CARVER)), GenerationStep.Carving.AIR, Configurator.marbleCaveKey));
     }
 
     // Registers the actual ore feature. This describes a single cluster of this specific ore type
-    private static ConfiguredFeature<OreConfiguration, ?> createOreConfiguration(Supplier<Block> standard,  Supplier<Block> deepslate, int veinSize) {
-        return new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(ImmutableList.of(
-                OreConfiguration.target(OreFeatures.STONE_ORE_REPLACEABLES, standard.get().defaultBlockState()),
-                OreConfiguration.target(OreFeatures.DEEPSLATE_ORE_REPLACEABLES, deepslate.get().defaultBlockState())), veinSize));
+    private static void registerOreConfiguration(BootstapContext<ConfiguredFeature<?, ?>> context, ResourceKey<ConfiguredFeature<?, ?>> key, Supplier<Block> standard,  Supplier<Block> deepslate, int veinSize) {
+        context.register(key, new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(ImmutableList.of(
+                OreConfiguration.target(new TagMatchTest(BlockTags.STONE_ORE_REPLACEABLES), standard.get().defaultBlockState()),
+                OreConfiguration.target(new TagMatchTest(BlockTags.STONE_ORE_REPLACEABLES), deepslate.get().defaultBlockState())), veinSize)));
     }
 
     // Registers a placement for the given feature. This controls how many of said features spawn and where
-    private static PlacedFeature createOrePlacement(ConfiguredFeature<OreConfiguration, ?> configuredFeature, int minY, int maxY, int count) {
+    private static void registerOrePlacement(BootstapContext<PlacedFeature> context, ResourceKey<PlacedFeature> key, Holder<ConfiguredFeature<?, ?>> configuredFeature, int minY, int maxY, int count) {
         List<PlacementModifier> modifiers = ImmutableList.of(
                 CountPlacement.of(count),
                 InSquarePlacement.spread(),
                 HeightRangePlacement.triangle(VerticalAnchor.absolute(minY), VerticalAnchor.absolute(maxY)));
 
-        return new PlacedFeature(Holder.direct(configuredFeature), modifiers);
+        context.register(key, new PlacedFeature(configuredFeature, modifiers));
     }
 }

@@ -1,6 +1,6 @@
 package mrtjp.projectred.exploration.data;
 
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.LanguageProvider;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
@@ -9,8 +9,8 @@ import static mrtjp.projectred.exploration.init.ExplorationItems.*;
 
 public class ExplorationLanguageProvider extends LanguageProvider {
 
-    public ExplorationLanguageProvider(DataGenerator gen) {
-        super(gen, MOD_ID, "en_us");
+    public ExplorationLanguageProvider(PackOutput output) {
+        super(output, MOD_ID, "en_us");
     }
 
     @Override

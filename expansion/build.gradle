@@ -1,5 +1,5 @@
 plugins {
-    id 'net.minecraftforge.gradle'
+    id 'net.neoforged.gradle'
     id 'com.matthewprenger.cursegradle'
     id 'org.spongepowered.mixin'
 }
@@ -27,12 +27,12 @@ minecraft {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+    minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    implementation fg.deobf("codechicken:CodeChickenLib:${mc_version}-${ccl_version}:universal")
-    implementation fg.deobf("codechicken:CBMultipart:${mc_version}-${cbm_version}:universal")
+    implementation fg.deobf("io.codechicken:CodeChickenLib:${mc_version}-${ccl_version}:universal")
+    implementation fg.deobf("io.codechicken:CBMultipart:${mc_version}-${cbm_version}:universal")
 
     implementation project(":core")
 }

@@ -1,12 +1,11 @@
 package mrtjp.projectred.fabrication.gui.screen.inventory;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
 import mrtjp.projectred.fabrication.inventory.container.PlottingTableContainer;
 import mrtjp.projectred.lib.GuiLib;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.RedUIContainerScreen;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -23,26 +22,25 @@ public class PlottingTableScreen extends RedUIContainerScreen<PlottingTableConta
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-        super.drawBack(stack, mouse, partialFrame);
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
+        super.drawBack(graphics, mouse, partialFrame);
 
-        RenderSystem.setShaderTexture(0, BACKGROUND);
         int x = getFrame().x();
         int y = getFrame().y();
 
-        blit(stack, x, y, 0, 0, getFrame().width(), getFrame().height());
+        graphics.blit(BACKGROUND, x, y, 0, 0, getFrame().width(), getFrame().height());
 
         int s = getMenu().getProgressScaled(24);
-        blit(stack, x + 80, y + 40, 176, 0, s + 1, 16);
+        graphics.blit(BACKGROUND, x + 80, y + 40, 176, 0, s + 1, 16);
 
         if (getMenu().canConductorWork())
-            blit(stack, x + 16, y + 16, 177, 18, 7, 9);
+            graphics.blit(BACKGROUND, x + 16, y + 16, 177, 18, 7, 9);
 
-        GuiLib.drawVerticalTank(stack, this, x + 16, y + 26, 177, 27, 7, 48, getMenu().getChargeScaled(48));
+        GuiLib.drawVerticalTank(graphics, BACKGROUND, x + 16, y + 26, 177, 27, 7, 48, getMenu().getChargeScaled(48));
 
         if (getMenu().isFlowFull())
-            blit(stack, x + 27, y + 16, 185, 18, 7, 9);
+            graphics.blit(BACKGROUND, x + 27, y + 16, 185, 18, 7, 9);
 
-        GuiLib.drawVerticalTank(stack, this, x + 27, y + 26, 185, 27, 7, 48, getMenu().getFlowScaled(48));
+        GuiLib.drawVerticalTank(graphics, BACKGROUND, x + 27, y + 26, 185, 27, 7, 48, getMenu().getFlowScaled(48));
     }
 }

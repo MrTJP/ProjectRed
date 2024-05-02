@@ -60,7 +60,7 @@ public enum GateType
     private @Nullable RegistryObject<? extends Item> itemSupplier;
     private @Nullable RegistryObject<MultipartType<GatePart>> partSupplier;
 
-    private boolean isExternalGate;
+    private final boolean isExternalGate;
 
     GateType(@Nullable String unlocalName, @Nullable Function<GateType, GatePart> partFactory) {
         this.unlocalName = unlocalName;

@@ -1,5 +1,5 @@
 plugins {
-    id 'net.minecraftforge.gradle'
+    id 'net.neoforged.gradle'
 }
 
 minecraft {
@@ -8,6 +8,6 @@ minecraft {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+    minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
 }
 

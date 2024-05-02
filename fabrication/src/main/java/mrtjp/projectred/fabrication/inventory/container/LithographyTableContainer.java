@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 public class LithographyTableContainer extends FabricationMachineContainer {
 
     public static ICCLContainerFactory<LithographyTableContainer> FACTORY = (windowId, inventory, packet) -> {
-        BlockEntity tile = inventory.player.level.getBlockEntity(packet.readPos());
+        BlockEntity tile = inventory.player.level().getBlockEntity(packet.readPos());
         if (!(tile instanceof LithographyTableTile)) return null;
 
         return new LithographyTableContainer(inventory, (LithographyTableTile) tile, windowId);

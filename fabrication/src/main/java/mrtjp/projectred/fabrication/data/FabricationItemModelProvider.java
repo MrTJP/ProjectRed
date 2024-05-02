@@ -1,7 +1,7 @@
 package mrtjp.projectred.fabrication.data;
 
 import codechicken.lib.datagen.ItemModelProvider;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.MOD_ID;
@@ -11,13 +11,8 @@ import static mrtjp.projectred.fabrication.init.FabricationParts.FABRICATED_GATE
 
 public class FabricationItemModelProvider extends ItemModelProvider {
 
-    public FabricationItemModelProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-        super(generator, MOD_ID, existingFileHelper);
-    }
-
-    @Override
-    public String getName() {
-        return "ProjectRed-Fabrication Item Models";
+    public FabricationItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
+        super(output, MOD_ID, existingFileHelper);
     }
 
     @Override

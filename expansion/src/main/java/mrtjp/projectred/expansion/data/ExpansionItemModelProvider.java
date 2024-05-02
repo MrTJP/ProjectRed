@@ -1,7 +1,7 @@
 package mrtjp.projectred.expansion.data;
 
 import codechicken.lib.datagen.ItemModelProvider;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
@@ -16,13 +16,8 @@ import static mrtjp.projectred.expansion.init.ExpansionItems.*;
 
 public class ExpansionItemModelProvider extends ItemModelProvider {
 
-    public ExpansionItemModelProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-        super(generator, MOD_ID, existingFileHelper);
-    }
-
-    @Override
-    public String getName() {
-        return "ProjectRed-Expansion Item Models";
+    public ExpansionItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
+        super(output, MOD_ID, existingFileHelper);
     }
 
     @Override

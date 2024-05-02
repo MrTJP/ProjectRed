@@ -39,7 +39,7 @@ public class FabricatedGatePart extends BundledGatePart {
 
         if (!super.preparePlacement(context)) return false;
 
-        if (context.getPlayer() == null || context.getPlayer().getLevel().isClientSide()) return false;
+        if (context.getPlayer() == null || context.getPlayer().level().isClientSide()) return false;
 
         ItemStack stack = context.getItemInHand();
         if (stack.isEmpty() || !stack.hasTag()) {

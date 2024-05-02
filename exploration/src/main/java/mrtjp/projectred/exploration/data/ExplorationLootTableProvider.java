@@ -1,22 +1,18 @@
 package mrtjp.projectred.exploration.data;
 
 import codechicken.lib.datagen.LootTableProvider;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 
 import static mrtjp.projectred.core.init.CoreItems.*;
+import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 import static mrtjp.projectred.exploration.init.ExplorationBlocks.*;
 import static mrtjp.projectred.exploration.init.ExplorationItems.RAW_SILVER_ITEM;
 import static mrtjp.projectred.exploration.init.ExplorationItems.RAW_TIN_ITEM;
 
 public class ExplorationLootTableProvider extends LootTableProvider.BlockLootProvider {
 
-    public ExplorationLootTableProvider(DataGenerator dataGenerator) {
-        super(dataGenerator);
-    }
-
-    @Override
-    public String getName() {
-        return "ProjectRed-Exploration Loot Tables";
+    public ExplorationLootTableProvider(PackOutput output) {
+        super(output, MOD_ID);
     }
 
     @Override

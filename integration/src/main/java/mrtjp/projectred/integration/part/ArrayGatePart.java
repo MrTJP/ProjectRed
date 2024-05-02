@@ -201,7 +201,7 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
 
         if (canCross() && context.getPlayer() != null) {
             // Note: tile() is not available yet, must access from player.level
-            MultiPart tpart = BlockMultipart.getPart(context.getPlayer().getLevel(), context.getClickedPos(), getSide()^1);
+            MultiPart tpart = BlockMultipart.getPart(context.getPlayer().level(), context.getClickedPos(), getSide()^1);
             if (tpart instanceof ArrayGatePart part) {
                 if (part.getGateType() == getGateType() && (part.getRotation() & 1) == (getRotation() & 1)) {
                     setRotation((getRotation() + 1) % 4);

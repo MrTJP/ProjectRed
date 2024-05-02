@@ -1,12 +1,10 @@
 package mrtjp.projectred.core.client;
 
-import codechicken.lib.model.PerspectiveModelState;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.block.ICCBlockRenderer;
 import codechicken.lib.render.buffer.TransformingVertexConsumer;
 import codechicken.lib.render.item.IItemRenderer;
-import codechicken.lib.util.TransformUtils;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
@@ -17,9 +15,9 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
@@ -73,7 +71,7 @@ public abstract class FullyOrientableBlockRenderer implements ICCBlockRenderer, 
     }
 
     @Override
-    public void renderItem(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack mStack, MultiBufferSource source, int packedLight, int packedOverlay) {
+    public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack mStack, MultiBufferSource source, int packedLight, int packedOverlay) {
 
         CCRenderState ccrs = CCRenderState.instance();
         ccrs.reset();

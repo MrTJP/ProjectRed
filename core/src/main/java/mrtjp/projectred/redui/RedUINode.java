@@ -1,12 +1,10 @@
 package mrtjp.projectred.redui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.lib.Size;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
@@ -559,32 +557,32 @@ public interface RedUINode {
      * Recursive render call for this node and its subtree. This will render the background layer of this node
      * and entire subtree. The call order is as follows:
      * <ul>
-     *     <li>This node's {@link RedUINode#drawBack(PoseStack, Point, float)} method </li>
+     *     <li>This node's {@link RedUINode#drawBack(GuiGraphics, Point, float)} method </li>
      *     <li>This node's {@link RedUINode#onSubTreePreDrawBack()} method</li>
      *     <li>Each child's renderBackForSubtree method. Note that MatrixStack pose and
      *         mouse positions are translated to correct position and depth for each child. </li>
      *     <li>This node's {@link RedUINode#onSubTreePostDrawBack()} method</li>
      * </ul>
-     * @param stack The matrix stack that is translated to the parent
+     * @param graphics The graphics context, translated to the parent
      * @param mouse Current mouse position, relative to the parent
      * @param partialFrame Progress between frames ({@link Minecraft#getDeltaFrameTime()}).
      *                     This is *not* the same as {@link Minecraft#getPartialTick()}
      */
-    default void renderBackForSubtree(PoseStack stack, Point mouse, float partialFrame) {
-        drawBack(stack, mouse, partialFrame);
+    default void renderBackForSubtree(GuiGraphics graphics, Point mouse, float partialFrame) {
+        drawBack(graphics, mouse, partialFrame);
 
         onSubTreePreDrawBack();
         for (RedUINode child : getZOrderedChildren(n -> !n.isHidden(), true)) {
-            stack.pushPose();
+            graphics.pose().pushPose();
 
             Point relativeMouse = mouse.subtract(getPosition());
             Point relativePos = getPosition(); //Position is always relative
             double relativeZ = child.getRelativeZPosition();
 
-            stack.translate(relativePos.x, relativePos.y, relativeZ);
-            child.renderBackForSubtree(stack, relativeMouse, partialFrame);
+            graphics.pose().translate(relativePos.x, relativePos.y, relativeZ);
+            child.renderBackForSubtree(graphics, relativeMouse, partialFrame);
 
-            stack.popPose();
+            graphics.pose().popPose();
         }
         onSubTreePostDrawBack();
     }
@@ -592,23 +590,23 @@ public interface RedUINode {
     /**
      * Similar to background render call, but for foreground layer.
      *
-     * @see RedUINode#renderBackForSubtree(PoseStack, Point, float)
+     * @see RedUINode#renderBackForSubtree(GuiGraphics, Point, float)
      */
-    default void renderFrontForSubtree(PoseStack stack, Point mouse, float partialFrame) {
-        drawFront(stack, mouse, partialFrame);
+    default void renderFrontForSubtree(GuiGraphics graphics, Point mouse, float partialFrame) {
+        drawFront(graphics, mouse, partialFrame);
 
         onSubTreePreDrawFront();
         for (RedUINode child : getZOrderedChildren(n -> !n.isHidden(), true)) {
-            stack.pushPose();
+            graphics.pose().pushPose();
 
             Point relativeMouse = mouse.subtract(getPosition());
             Point relativePos = getPosition(); //Position is always relative
             double relativeZ = child.getRelativeZPosition();
 
-            stack.translate(relativePos.x, relativePos.y, relativeZ);
-            child.renderFrontForSubtree(stack, relativeMouse, partialFrame);
+            graphics.pose().translate(relativePos.x, relativePos.y, relativeZ);
+            child.renderFrontForSubtree(graphics, relativeMouse, partialFrame);
 
-            stack.popPose();
+            graphics.pose().popPose();
         }
         onSubTreePostDrawFront();
     }
@@ -629,7 +627,7 @@ public interface RedUINode {
     default void update() { }
 
     /**
-     * Called once per render call prior to rendering the background via {@link RedUINode#drawBack(PoseStack, Point, float)}
+     * Called once per render call prior to rendering the background via {@link RedUINode#drawBack(GuiGraphics, Point, float)}
      *
      * @param mouse        Mouse position in parent's coordinate space
      * @param partialFrame Progress between frames ({@link Minecraft#getDeltaFrameTime()}).
@@ -726,22 +724,22 @@ public interface RedUINode {
     default boolean onCharTyped(char ch, int glfwFlags, boolean consumed) { return false; }
 
     /**
-     * @see RedUINode#renderBackForSubtree(PoseStack, Point, float)
+     * @see RedUINode#renderBackForSubtree(GuiGraphics, Point, float)
      */
     default void onSubTreePreDrawBack() { }
 
     /**
-     * @see RedUINode#renderBackForSubtree(PoseStack, Point, float)
+     * @see RedUINode#renderBackForSubtree(GuiGraphics, Point, float)
      */
     default void onSubTreePostDrawBack() { }
 
     /**
-     * @see RedUINode#renderFrontForSubtree(PoseStack, Point, float)
+     * @see RedUINode#renderFrontForSubtree(GuiGraphics, Point, float)
      */
     default void onSubTreePreDrawFront() { }
 
     /**
-     * @see RedUINode#renderFrontForSubtree(PoseStack, Point, float)
+     * @see RedUINode#renderFrontForSubtree(GuiGraphics, Point, float)
      */
     default void onSubTreePostDrawFront() { }
 
@@ -749,22 +747,22 @@ public interface RedUINode {
      * Draw call for the background layer, typically used to render the background. Drawing is done
      * relative to the parent.
      *
-     * @param stack        The matrix stack that is translated to the parent
+     * @param graphics     The graphics context, translated to the parent
      * @param mouse        Current mouse position, relative to the parent
      * @param partialFrame Progress between frames ({@link Minecraft#getDeltaFrameTime()}).
      *                     This is *not* the same as {@link Minecraft#getPartialTick()}
      */
-    default void drawBack(PoseStack stack, Point mouse, float partialFrame) { }
+    default void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) { }
 
     /**
      * Draw call for the foreground layer, typically used to render items, tooltips, etc.
      *
-     * @param stack        The matrix stack that is translated to the parent
+     * @param graphics     The graphics context, translated to the parent
      * @param mouse        Current mouse position, relative to the parent
      * @param partialFrame Progress between frames ({@link Minecraft#getDeltaFrameTime()}).
      *                     This is *not* the same as {@link Minecraft#getPartialTick()}
      */
-    default void drawFront(PoseStack stack, Point mouse, float partialFrame) { }
+    default void drawFront(GuiGraphics graphics, Point mouse, float partialFrame) { }
 
     /**
      * Node operation function that can be run over an entire graph
@@ -787,7 +785,7 @@ public interface RedUINode {
     }
 
     //region Utility methods
-    default void renderTooltip(PoseStack stack, Point mouse, List<Component> tooltip) {
+    default void renderTooltip(GuiGraphics graphics, Point mouse, List<Component> tooltip) {
 
         if (tooltip.isEmpty()) return;
 
@@ -796,30 +794,30 @@ public interface RedUINode {
         Point screenOffset = getParent().getScreenOffset();
         Point mouseScreenSpace = screenOffset.add(mouse);
 
-        stack.pushPose();
-        stack.translate(-screenOffset.x, -screenOffset.y, 0);
+        graphics.pose().pushPose();
+        graphics.pose().translate(-screenOffset.x, -screenOffset.y, 0);
 
-        getRoot().renderTooltipScreenSpace(stack, mouseScreenSpace, tooltip);
+        graphics.renderComponentTooltip(getRoot().getFontRenderer(), tooltip, mouseScreenSpace.x, mouseScreenSpace.y);
 
-        stack.popPose();
+        graphics.pose().popPose();
     }
 
-    default void blitSprite(PoseStack stack, RedUISprite sprite) {
-        blitSpriteAt(stack, sprite, getPosition());
+    default void blitSprite(GuiGraphics graphics, RedUISprite sprite) {
+        blitSpriteAt(graphics, sprite, getPosition());
     }
 
-    default void blitSpriteCentered(PoseStack stack, RedUISprite sprite) {
-        blitSpriteCenteredAt(stack, sprite, getFrame().midPoint());
+    default void blitSpriteCentered(GuiGraphics graphics, RedUISprite sprite) {
+        blitSpriteCenteredAt(graphics, sprite, getFrame().midPoint());
     }
 
-    default void blitSpriteAt(PoseStack stack, RedUISprite sprite, Point pos) {
-        RenderSystem.setShaderTexture(0, sprite.texture());
-        GuiComponent.blit(stack, pos.x, pos.y, sprite.u(), sprite.v(), sprite.w(), sprite.h(), sprite.textureWidth(), sprite.textureHeight());
+    default void blitSpriteAt(GuiGraphics graphics, RedUISprite sprite, Point pos) {
+//        RenderSystem.setShaderTexture(0, sprite.texture());
+        graphics.blit(sprite.texture(), pos.x, pos.y, sprite.u(), sprite.v(), sprite.w(), sprite.h(), sprite.textureWidth(), sprite.textureHeight());
     }
 
-    default void blitSpriteCenteredAt(PoseStack stack, RedUISprite sprite, Point pos) {
+    default void blitSpriteCenteredAt(GuiGraphics graphics, RedUISprite sprite, Point pos) {
         Point blitPos = pos.subtract(new Point(sprite.w() / 2, sprite.h() / 2));
-        blitSpriteAt(stack, sprite, blitPos);
+        blitSpriteAt(graphics, sprite, blitPos);
     }
     //endregion
 }

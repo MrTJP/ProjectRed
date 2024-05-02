@@ -1,19 +1,20 @@
 package mrtjp.projectred.transmission;
 
-import codechicken.lib.gui.SimpleCreativeTab;
 import codechicken.multipart.api.MultipartType;
 import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.core.RedstonePropagator;
-import mrtjp.projectred.transmission.data.TransmissionItemModelProvider;
-import mrtjp.projectred.transmission.data.TransmissionItemTagsProvider;
-import mrtjp.projectred.transmission.data.TransmissionLanguageProvider;
-import mrtjp.projectred.transmission.data.TransmissionRecipeProvider;
+import mrtjp.projectred.transmission.data.*;
 import mrtjp.projectred.transmission.init.TransmissionClientInit;
+import mrtjp.projectred.transmission.init.TransmissionCreativeModeTabs;
 import mrtjp.projectred.transmission.init.TransmissionParts;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
@@ -34,13 +35,13 @@ public class ProjectRedTransmission {
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
     public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
-
-    public static final SimpleCreativeTab TRANSMISSION_GROUP = new SimpleCreativeTab(MOD_ID, WireType.RED_ALLOY::makeStack);
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
 
     static {
         ProjectRedAPI.transmissionAPI = TransmissionAPI.INSTANCE;
 
         TransmissionParts.register();
+        TransmissionCreativeModeTabs.register();
     }
 
     public ProjectRedTransmission() {
@@ -53,6 +54,7 @@ public class ProjectRedTransmission {
 
         ITEMS.register(modEventBus);
         PART_TYPES.register(modEventBus);
+        CREATIVE_TABS.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.addListener(this::onServerStartEvent);
     }
@@ -63,13 +65,16 @@ public class ProjectRedTransmission {
 
     private void onGatherDataEvent(final GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
+        PackOutput output = generator.getPackOutput();
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
 
-        generator.addProvider(event.includeClient(), new TransmissionItemModelProvider(generator, fileHelper));
-        generator.addProvider(event.includeClient(), new TransmissionLanguageProvider(generator));
+        generator.addProvider(event.includeClient(), new TransmissionItemModelProvider(output, fileHelper));
+        generator.addProvider(event.includeClient(), new TransmissionLanguageProvider(output));
 
-        generator.addProvider(event.includeServer(), new TransmissionItemTagsProvider(generator, fileHelper));
-        generator.addProvider(event.includeServer(), new TransmissionRecipeProvider(generator));
+        BlockTagsProvider blockTagsProvider = new TransmissionBlockTagsProvider(output, event.getLookupProvider(), fileHelper);
+        generator.addProvider(event.includeServer(), blockTagsProvider);
+        generator.addProvider(event.includeServer(), new TransmissionItemTagsProvider(output, event.getLookupProvider(), blockTagsProvider.contentsGetter(), fileHelper));
+        generator.addProvider(event.includeServer(), new TransmissionRecipeProvider(output));
     }
 
     private void onServerStartEvent(final ServerAboutToStartEvent event) {

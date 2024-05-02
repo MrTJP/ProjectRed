@@ -10,7 +10,7 @@ import mrtjp.projectred.transmission.WireType;
 import mrtjp.projectred.transmission.item.CenterWirePartItem;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class FramedWirePartItemRenderer implements IItemRenderer {
@@ -40,7 +40,7 @@ public class FramedWirePartItemRenderer implements IItemRenderer {
     }
 
     @Override
-    public void renderItem(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack mStack, MultiBufferSource getter, int packedLight, int packedOverlay) {
+    public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack mStack, MultiBufferSource getter, int packedLight, int packedOverlay) {
 
         if (!(stack.getItem() instanceof CenterWirePartItem)) return;
 

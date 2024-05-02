@@ -4,7 +4,7 @@ import codechicken.lib.colour.EnumColour;
 import codechicken.lib.datagen.recipe.RecipeProvider;
 import codechicken.lib.util.CCLTags;
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -20,13 +20,8 @@ import static mrtjp.projectred.transmission.init.TransmissionTags.*;
 
 public class TransmissionRecipeProvider extends RecipeProvider {
 
-    public TransmissionRecipeProvider(DataGenerator generatorIn) {
-        super(generatorIn);
-    }
-
-    @Override
-    public String getName() {
-        return "ProjectRed-Transmission: Recipes";
+    public TransmissionRecipeProvider(PackOutput output) {
+        super(output, MOD_ID);
     }
 
     @Override

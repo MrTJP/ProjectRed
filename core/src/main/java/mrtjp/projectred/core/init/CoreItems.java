@@ -8,7 +8,6 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
-import static mrtjp.projectred.core.ProjectRedCore.CORE_CREATIVE_TAB;
 import static mrtjp.projectred.core.ProjectRedCore.ITEMS;
 
 @SuppressWarnings("NotNullFieldNotInitialized")
@@ -192,7 +191,7 @@ public class CoreItems {
     }
 
     private static Supplier<Item> createSimpleItemSupplier() {
-        return () -> new Item(new Item.Properties().tab(CORE_CREATIVE_TAB));
+        return () -> new Item(new Item.Properties());
     }
 
     //region Utilities

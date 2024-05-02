@@ -12,12 +12,12 @@ import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
 
-import static mrtjp.projectred.exploration.ProjectRedExploration.*;
+import static mrtjp.projectred.exploration.ProjectRedExploration.BLOCKS;
+import static mrtjp.projectred.exploration.ProjectRedExploration.ITEMS;
 
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class ExplorationBlocks {
@@ -205,19 +205,19 @@ public class ExplorationBlocks {
     }
 
     private static Block createOreBlock(boolean isDeepslate, int minxp, int maxxp) {
-        return new DropExperienceBlock(BlockBehaviour.Properties.of(Material.STONE)
+        return new DropExperienceBlock(BlockBehaviour.Properties.of()
                 .strength(isDeepslate ? 4.5F : 3.0F, 3.0F)
                 .requiresCorrectToolForDrops()
-                .color(isDeepslate ? MaterialColor.DEEPSLATE : MaterialColor.STONE)
+                .mapColor(isDeepslate ? MapColor.DEEPSLATE : MapColor.STONE)
                 .sound(isDeepslate ? SoundType.DEEPSLATE : SoundType.STONE), UniformInt.of(minxp, maxxp));
     }
 
     private static Block createElectrotineOreBlock(boolean isDeepslate, int minxp, int maxxp) {
 
-        return new ElectrotineOreBlock(BlockBehaviour.Properties.of(Material.STONE)
+        return new ElectrotineOreBlock(BlockBehaviour.Properties.of()
                 .strength(isDeepslate ? 4.5F : 3.0F, 3.0F)
                 .requiresCorrectToolForDrops()
-                .color(isDeepslate ? MaterialColor.DEEPSLATE : MaterialColor.STONE)
+                .mapColor(isDeepslate ? MapColor.DEEPSLATE : MapColor.STONE)
                 .sound(isDeepslate ? SoundType.DEEPSLATE : SoundType.STONE), UniformInt.of(minxp, maxxp));
     }
 
@@ -226,31 +226,34 @@ public class ExplorationBlocks {
     }
 
     private static Block createDecorativeStoneBlock(float hardness, float resistance) {
-        return new Block(BlockBehaviour.Properties.of(Material.STONE)
+        return new Block(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.STONE)
                 .strength(hardness, resistance)
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.STONE));
     }
 
     private static Block createDecorativeGemBlock(float hardness, float resistance) {
-        return new Block(BlockBehaviour.Properties.of(Material.METAL)
+        return new Block(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
                 .strength(hardness, resistance)
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.METAL));
     }
 
     private static Block createDecorativeMetalBlock(float hardness, float resistance) {
-        return new Block(BlockBehaviour.Properties.of(Material.METAL)
+        return new Block(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
                 .strength(hardness, resistance)
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.METAL));
     }
 
     private static Item createBlockItem(RegistryObject<? extends Block> block) {
-        return new BlockItem(block.get(), new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
+        return new BlockItem(block.get(), new Item.Properties());
     }
 
     private static Item createBlockItem(Block block) {
-        return new BlockItem(block, new Item.Properties().tab(EXPLORATION_CREATIVE_TAB));
+        return new BlockItem(block, new Item.Properties());
     }
 }

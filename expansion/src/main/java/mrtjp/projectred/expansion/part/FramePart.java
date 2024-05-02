@@ -128,7 +128,7 @@ public class FramePart extends BaseMultipart implements NormalOcclusionPart, Ico
     @Override
     public float getStrength(Player player, PartRayTraceResult hit) {
         return FRAME_BLOCK.get().defaultBlockState()
-                .getDestroyProgress(player, player.level, new BlockPos(0, -1, 0));
+                .getDestroyProgress(player, player.level(), new BlockPos(0, -1, 0));
     }
 
     @Override

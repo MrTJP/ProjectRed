@@ -1,18 +1,20 @@
 package mrtjp.projectred.core;
 
-import codechicken.lib.gui.SimpleCreativeTab;
 import codechicken.multipart.api.MultipartType;
 import mrtjp.projectred.compatibility.ComputerCraftCompatibility;
 import mrtjp.projectred.core.data.*;
 import mrtjp.projectred.core.init.*;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -41,14 +43,14 @@ public class ProjectRedCore {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MOD_ID);
     public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
-
-    public static final SimpleCreativeTab CORE_CREATIVE_TAB = new SimpleCreativeTab(MOD_ID, () -> new ItemStack(CoreItems.RED_ALLOY_INGOT_ITEM.get()));
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
 
     static {
         CoreBlocks.register();
         CoreItems.register();
         CoreMenus.register();
         CoreParts.register();
+        CoreCreativeModeTabs.register();
     }
 
     public ProjectRedCore() {
@@ -64,6 +66,7 @@ public class ProjectRedCore {
         BLOCK_ENTITY_TYPES.register(modEventBus);
         MENU_TYPES.register(modEventBus);
         PART_TYPES.register(modEventBus);
+        CREATIVE_TABS.register(modEventBus);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -83,15 +86,18 @@ public class ProjectRedCore {
     private void onGatherDataEvent(final GatherDataEvent event) {
 
         DataGenerator generator = event.getGenerator();
+        PackOutput output = generator.getPackOutput();
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
 
-        generator.addProvider(event.includeClient(), new CoreBlockStateModelProvider(generator, fileHelper));
-        generator.addProvider(event.includeClient(), new CoreItemModelProvider(generator, fileHelper));
-        generator.addProvider(event.includeClient(), new CoreLanguageProvider(generator));
+        generator.addProvider(event.includeClient(), new CoreBlockStateModelProvider(output, fileHelper));
+        generator.addProvider(event.includeClient(), new CoreItemModelProvider(output, fileHelper));
+        generator.addProvider(event.includeClient(), new CoreLanguageProvider(output));
 
-        generator.addProvider(event.includeServer(), new CoreRecipeProvider(generator));
-        generator.addProvider(event.includeServer(), new CoreLootTableProvider(generator));
-        generator.addProvider(event.includeServer(), new CoreItemTagsProvider(generator, fileHelper));
-        generator.addProvider(event.includeServer(), new CoreBlockTagsProvider(generator, fileHelper));
+        generator.addProvider(event.includeServer(), new CoreRecipeProvider(output));
+        generator.addProvider(event.includeServer(), new CoreLootTableProvider(output));
+
+        BlockTagsProvider blockTagsProvider = new CoreBlockTagsProvider(output, event.getLookupProvider(), fileHelper);
+        generator.addProvider(event.includeServer(), blockTagsProvider);
+        generator.addProvider(event.includeServer(), new CoreItemTagsProvider(output, event.getLookupProvider(), blockTagsProvider.contentsGetter(), fileHelper));
     }
 }

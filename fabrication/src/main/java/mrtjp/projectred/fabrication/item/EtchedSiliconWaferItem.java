@@ -1,6 +1,5 @@
 package mrtjp.projectred.fabrication.item;
 
-import mrtjp.projectred.fabrication.ProjectRedFabrication;
 import mrtjp.projectred.fabrication.init.FabricationItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -17,7 +16,6 @@ public class EtchedSiliconWaferItem extends Item {
 
     public EtchedSiliconWaferItem() {
         super(new Item.Properties()
-                .tab(ProjectRedFabrication.FABRICATION_GROUP)
                 .stacksTo(1));
     }
 

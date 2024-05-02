@@ -1,11 +1,10 @@
 package mrtjp.projectred.fabrication.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.fabrication.gui.screen.ICWorkbenchScreen;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractGuiNode;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -73,14 +72,13 @@ public class SimpleUVTab implements TabControllerNode.IToolbarTab {
     public TabButtonNode createButtonNode() {
         return new TabButtonNode(this, tabSide) {
             @Override
-            public void renderIcon(PoseStack stack, Point mouse, float partialFrame) {
-                RenderSystem.setShaderTexture(0, texture);
-                GuiComponent.blit(stack, getFrame().x() + 3, getFrame().y() + 3, u, v, 14, 14, 512, 512);
+            public void renderIcon(GuiGraphics graphics, Point mouse, float partialFrame) {
+                graphics.blit(texture, getFrame().x() + 3, getFrame().y() + 3, u, v, 14, 14, 512, 512);
 
                 StatusDot statusDot = SimpleUVTab.this.getStatusDot();
                 if (statusDot != StatusDot.NONE) {
                     RenderSystem.setShaderTexture(0, ICWorkbenchScreen.BACKGROUND);
-                    GuiComponent.blit(stack, getFrame().x() + 3 + 7, getFrame().y() + 3, 7, 7, statusDot.u, statusDot.v, 14, 14, 512, 512);
+                    graphics.blit(texture, getFrame().x() + 3 + 7, getFrame().y() + 3, 7, 7, statusDot.u, statusDot.v, 14, 14, 512, 512);
                 }
             }
 

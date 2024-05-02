@@ -14,8 +14,8 @@ import mrtjp.projectred.illumination.block.IllumarLampBlock;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +41,7 @@ public class IllumarLampMicroMaterial extends BlockMicroMaterial {
 
             // Provide RenderDynamic implementation
             @Override
-            public void renderDynamic(MicroblockPart part, @Nullable ItemTransforms.TransformType transform, PoseStack pStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
+            public void renderDynamic(MicroblockPart part, @Nullable ItemDisplayContext transform, PoseStack pStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
                 CCRenderState ccrs = CCRenderState.instance();
                 Cuboid6 cuboid = part.getBounds().copy().expand(0.025D);
 

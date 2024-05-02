@@ -1,0 +1,25 @@
+// 1.20.1	2024-02-21T18:04:28.273756	Tags for minecraft:block mod id projectred_exploration
+ab48eb507afbf19940589bc7ac60ddf81b1d7b12 data/forge/tags/blocks/ores.json
+f5e1a14a6429e644ffc9f0661838ed3892dddcaa data/forge/tags/blocks/ores/electrotine.json
+ce719fb9caf3444b61fdd325c978241c1cfd22ec data/forge/tags/blocks/ores/peridot.json
+83b6c3ed16fbee9e8ad9f2aada155a9ffdec00da data/forge/tags/blocks/ores/ruby.json
+1673957f4d5a510930c2af86165ebe45dc064692 data/forge/tags/blocks/ores/sapphire.json
+f1020a7b72ab62876b3a6b9fcceec1495fe36fc6 data/forge/tags/blocks/ores/silver.json
+410b5c26be74f583811ed5efea4f1e08dd447afc data/forge/tags/blocks/ores/tin.json
+ff7aa181fbb6fae635f2c273ddc7d0a0add88d0a data/forge/tags/blocks/ores_in_ground/deepslate.json
+fca7b74af60e8272a4ba766d5592b772aeb2a893 data/forge/tags/blocks/ores_in_ground/stone.json
+d532a6644e5c0f77a0ad0631aa20df0fec705fb5 data/forge/tags/blocks/stone/basalt.json
+e6ece7e72e77102086896636d1a63e836fa464cc data/forge/tags/blocks/stone/marble.json
+d726d0c8bb2272a498dadd1ac331f9711bf63025 data/forge/tags/blocks/storage_blocks.json
+211e0bdd014616eed5b3aedf731e368ea1b16889 data/forge/tags/blocks/storage_blocks/electrotine.json
+e9550f12acc58379f0936f2a25d3e5c50f800be4 data/forge/tags/blocks/storage_blocks/peridot.json
+8e2a01c61961fb1d0e3d7cd7b919b918e4c918b7 data/forge/tags/blocks/storage_blocks/raw_silver.json
+f908c0769a842212de0330ab11547b8e0804d4e2 data/forge/tags/blocks/storage_blocks/raw_tin.json
+496e7ba6daa3730ba208ccfc2cf0c69bb6ac7a08 data/forge/tags/blocks/storage_blocks/ruby.json
+5f1a178933dd1967113fbf2a42289986387a2903 data/forge/tags/blocks/storage_blocks/sapphire.json
+ce08de69baac6242b45f391d2ad8fb4d932bde3b data/forge/tags/blocks/storage_blocks/silver.json
+f8d5ae9be802ca21197b50fa6cf22baee277549b data/forge/tags/blocks/storage_blocks/tin.json
+039af8f99eff1dfa84d4256f0b66fa3a5cee9c4a data/minecraft/tags/blocks/mineable/pickaxe.json
+67d20db35347bba2929397d96bca7989139dcebd data/minecraft/tags/blocks/needs_iron_tool.json
+f125d45bb1a8f191efcda2adc06f4c2448952cc1 data/minecraft/tags/blocks/needs_stone_tool.json
+f9a168a43159b12affd5e346d57d160e27f095c5 data/minecraft/tags/blocks/walls.json

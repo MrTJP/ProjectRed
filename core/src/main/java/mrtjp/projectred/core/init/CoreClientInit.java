@@ -38,14 +38,13 @@ public class CoreClientInit {
 
         // Register Halo renderer
         MinecraftForge.EVENT_BUS.addListener(HaloRenderer::onRenderLevelStageEvent);
-        MinecraftForge.EVENT_BUS.addListener(HaloRenderer::onRenderLevelLastEvent);
 
         // Register resource reload listener
         ResourceUtils.registerReloadListener(HaloRenderer::onResourceManagerReload);
     }
 
     private static void onRegisterShaders(RegisterShadersEvent event) {
-        event.registerShader(CCShaderInstance.create(event.getResourceManager(), new ResourceLocation(MOD_ID, "halo"), DefaultVertexFormat.POSITION_COLOR), e -> {
+        event.registerShader(CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(MOD_ID, "halo"), DefaultVertexFormat.POSITION_COLOR), e -> {
             HALO_SHADER = (CCShaderInstance) e;
         });
     }

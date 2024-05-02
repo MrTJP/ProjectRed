@@ -1,5 +1,5 @@
 plugins {
-    id 'net.minecraftforge.gradle'
+    id 'net.neoforged.gradle'
     id 'com.matthewprenger.cursegradle'
 }
 
@@ -28,10 +28,10 @@ minecraft {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+    minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
 
-    implementation fg.deobf("codechicken:CodeChickenLib:${mc_version}-${ccl_version}:universal")
-    implementation fg.deobf("codechicken:CBMultipart:${mc_version}-${cbm_version}:universal")
+    implementation fg.deobf("io.codechicken:CodeChickenLib:${mc_version}-${ccl_version}:universal")
+    implementation fg.deobf("io.codechicken:CBMultipart:${mc_version}-${cbm_version}:universal")
 
     // JEI
     compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
@@ -39,8 +39,9 @@ dependencies {
     runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}"))
 
     // CCTweaked
-    compileOnly fg.deobf("org.squiddev:cc-tweaked-${mc_version}:${cct_version}:api")
-    runtimeOnly fg.deobf("org.squiddev:cc-tweaked-${mc_version}:${cct_version}")
+    compileOnly("cc.tweaked:cc-tweaked-${mc_version}-core-api:${cct_version}")
+    compileOnly(fg.deobf("cc.tweaked:cc-tweaked-${mc_version}-forge-api:${cct_version}"))
+    runtimeOnly(fg.deobf("cc.tweaked:cc-tweaked-${mc_version}-forge:${cct_version}"))
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'

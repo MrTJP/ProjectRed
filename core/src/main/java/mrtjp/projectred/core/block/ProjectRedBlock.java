@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,8 +31,8 @@ public abstract class ProjectRedBlock extends Block implements EntityBlock {
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
 
-    public static final BlockBehaviour.Properties WOODEN_PROPERTIES = BlockBehaviour.Properties.of(Material.WOOD).strength(2.0F, 3.0F).sound(SoundType.WOOD);
-    public static final BlockBehaviour.Properties STONE_PROPERTIES = BlockBehaviour.Properties.of(Material.STONE).requiresCorrectToolForDrops().strength(3.0F, 3.0F).sound(SoundType.STONE);
+    public static final BlockBehaviour.Properties WOODEN_PROPERTIES = BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.0F, 3.0F).sound(SoundType.WOOD);
+    public static final BlockBehaviour.Properties STONE_PROPERTIES = BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(3.0F, 3.0F).sound(SoundType.STONE);
 
     public ProjectRedBlock(BlockBehaviour.Properties properties) {
         super(properties);

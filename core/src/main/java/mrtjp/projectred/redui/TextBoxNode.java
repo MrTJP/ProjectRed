@@ -1,12 +1,11 @@
 package mrtjp.projectred.redui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
-import static net.minecraft.client.gui.GuiComponent.fill;
 import static org.lwjgl.glfw.GLFW.*;
 
 public abstract class TextBoxNode extends AbstractGuiNode {
@@ -44,15 +43,15 @@ public abstract class TextBoxNode extends AbstractGuiNode {
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
         // Border
         int x = getPosition().x;
         int y = getPosition().y;
         int width = getFrame().width();
         int height = getFrame().height();
 
-        fill(stack, x, y, x + width, y + height, BORDER_COLOR);
-        fill(stack, x + 1, y + 1, x + width - 1, y + height - 1, BACKGROUND_COLOR);
+        graphics.fill(x, y, x + width, y + height, BORDER_COLOR);
+        graphics.fill(x + 1, y + 1, x + width - 1, y + height - 1, BACKGROUND_COLOR);
 
         Font fontRenderer = getRoot().getFontRenderer();
         String suggestion = getSuggestionString();
@@ -63,7 +62,7 @@ public abstract class TextBoxNode extends AbstractGuiNode {
         int textY = y + height/2 - lineHeight/2;
 
         if (currentText.isEmpty() && !suggestion.isEmpty()) {
-            fontRenderer.draw(stack, suggestion, textX, textY, SUGGESTION_COLOR);
+            graphics.drawString(fontRenderer, suggestion, textX, textY, SUGGESTION_COLOR, false);
         }
 
         if (!currentText.isEmpty()) {
@@ -72,7 +71,7 @@ public abstract class TextBoxNode extends AbstractGuiNode {
                 s += "_";
             }
 
-            fontRenderer.drawShadow(stack, s, textX, textY, enabled ? ENABLED_COLOR : DISABLED_COLOR);
+            graphics.drawString(fontRenderer, s, textX, textY, enabled ? ENABLED_COLOR : DISABLED_COLOR, true);
         }
     }
 

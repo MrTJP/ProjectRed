@@ -1,13 +1,12 @@
 package mrtjp.projectred.redui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.lib.Size;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -49,7 +48,7 @@ public class RedUIContainerScreen<T extends AbstractContainerMenu> extends Abstr
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialFrame) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialFrame) {
 
         // Call frame update function on all nodes
         Point mousePoint = new Point(mouseX, mouseY);
@@ -63,25 +62,20 @@ public class RedUIContainerScreen<T extends AbstractContainerMenu> extends Abstr
         // Render semi-transparent grey background
         int x = getScreenFrame().x();
         int y = getScreenFrame().y();
-        fillGradient(stack, x, y, x + getScreenFrame().width(), y + getScreenFrame().height(), -1072689136, -804253680);
+        graphics.fillGradient(x, y, x + getScreenFrame().width(), y + getScreenFrame().height(), -1072689136, -804253680);
 
         // Render background
-        drawBackForSubtree(stack, new Point(mouseX, mouseY), partialFrame);
+        drawBackForSubtree(graphics, new Point(mouseX, mouseY), partialFrame);
         // Sandwich ContainerScreen's default rendering between RedUI's foreground and background rendering
-        super.render(stack, mouseX, mouseY, partialFrame);
-        renderTooltip(stack, mouseX, mouseY);
+        super.render(graphics, mouseX, mouseY, partialFrame);
+        renderTooltip(graphics, mouseX, mouseY);
         // Render foreground
-        drawFrontForSubtree(stack, new Point(mouseX, mouseY), partialFrame);
+        drawFrontForSubtree(graphics, new Point(mouseX, mouseY), partialFrame);
     }
 
     @Override
-    protected void renderBg(PoseStack stack, float partialFrame, int mouseX, int mouseY) {
+    protected void renderBg(GuiGraphics graphics, float partialFrame, int mouseX, int mouseY) {
         // We render through RedUI's render methods
-    }
-
-    @Override
-    public void renderTooltipScreenSpace(PoseStack stack, Point screenSpacePoint, List<Component> tooltip) {
-        renderComponentTooltip(stack, tooltip, screenSpacePoint.x, screenSpacePoint.y);
     }
 
     @Override
@@ -177,11 +171,6 @@ public class RedUIContainerScreen<T extends AbstractContainerMenu> extends Abstr
     @Override
     public boolean isHidden() {
         return false;
-    }
-
-    @Override
-    public ItemRenderer getItemRenderer() {
-        return itemRenderer;
     }
 
     @Override

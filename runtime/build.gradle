@@ -2,7 +2,7 @@
  * Used only for generating run configs that include all ProjectRed modules in the classpath.
  */
 plugins {
-    id 'net.minecraftforge.gradle'
+    id 'net.neoforged.gradle'
     id 'org.spongepowered.mixin'
 }
 
@@ -36,7 +36,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+    minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
 
     runtimeOnly project(":core")
     runtimeOnly project(":expansion")

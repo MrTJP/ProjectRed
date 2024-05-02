@@ -1,10 +1,9 @@
 package mrtjp.projectred.exploration.gui.screen.inventory;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.exploration.inventory.container.BackpackContainer;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.RedUIContainerScreen;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -23,14 +22,13 @@ public class BackpackScreen extends RedUIContainerScreen<BackpackContainer> {
     }
 
     @Override
-    public void drawBack(PoseStack stack, Point mouse, float partialFrame) {
-        super.drawBack(stack, mouse, partialFrame);
+    public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
+        super.drawBack(graphics, mouse, partialFrame);
 
-        RenderSystem.setShaderTexture(0, BACKGROUND);
         int x = getFrame().x();
         int y = getFrame().y();
 
-        blit(stack, x, y, 0, 0, getFrame().width(), getFrame().height());
+        graphics.blit(BACKGROUND, x, y, 0, 0, getFrame().width(), getFrame().height());
     }
 
     @Override
