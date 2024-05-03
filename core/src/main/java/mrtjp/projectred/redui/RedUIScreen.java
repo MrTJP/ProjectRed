@@ -56,7 +56,9 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
         RenderSystem.enableDepthTest(); // Nodes render out of order, so depth test is needed
 
         // Render semi-transparent grey background
-        fillGradient(matrixStack, getScreenFrame().x(), getScreenFrame().y(), getScreenFrame().width(), getScreenFrame().height(), -1072689136, -804253680);
+        int x = getScreenFrame().x();
+        int y = getScreenFrame().y();
+        fillGradient(matrixStack, x, y, x + getScreenFrame().width(), y + getScreenFrame().height(), -1072689136, -804253680);
 
         // Call frame update function on all nodes
         Point mousePoint = new Point(mouseX, mouseY);
