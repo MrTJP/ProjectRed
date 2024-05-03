@@ -61,7 +61,9 @@ public class RedUIContainerScreen<T extends AbstractContainerMenu> extends Abstr
         RenderSystem.enableDepthTest(); // Nodes render out of order, so depth test is needed
 
         // Render semi-transparent grey background
-        fillGradient(stack, getScreenFrame().x(), getScreenFrame().y(), getScreenFrame().width(), getScreenFrame().height(), -1072689136, -804253680);
+        int x = getScreenFrame().x();
+        int y = getScreenFrame().y();
+        fillGradient(stack, x, y, x + getScreenFrame().width(), y + getScreenFrame().height(), -1072689136, -804253680);
 
         // Render background
         drawBackForSubtree(stack, new Point(mouseX, mouseY), partialFrame);
