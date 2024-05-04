@@ -77,6 +77,10 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
         return isActive;
     }
 
+    public boolean isClientSide() {
+        return network.isClientSide();
+    }
+
     //region ICWorkbenchTile utilities
     public void save(CompoundTag tag) {
         LOGGER.debug("ICWorkbenchEditor: saving to NBT");
@@ -296,7 +300,9 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
 
     public void markTileChange() {
         network.markSave();
-        stateMachine.onTileMapChanged();
+        if (!network.isClientSide()) {
+            stateMachine.onTileMapChanged();
+        }
     }
 
     public void markDirty() {

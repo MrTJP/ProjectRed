@@ -168,18 +168,22 @@ public class ICEditorStateMachine {
 
     //region State Machine events
     public void onTick(long time) {
+        assertServer();
         states[currentState].onTick(time);
     }
 
     public void onTileMapChanged() {
+        assertServer();
         states[currentState].onTileMapChanged();
     }
 
     public void onCompileTriggered() {
+        assertServer();
         states[currentState].onCompileTriggered();
     }
 
     public void onInputRegistersChanged(int rotation, Function<Short, Short> changeFunction) {
+        assertServer();
         states[currentState].onInputRegistersChanged(rotation, changeFunction);
     }
     //endregion
@@ -216,6 +220,12 @@ public class ICEditorStateMachine {
         if (time == lastSimStartTime) return;
         lastSimStartTime = time;
         getStateMachineStream(KEY_SIM_START_TIME_CHANGED).writeLong(time);
+    }
+
+    private void assertServer() {
+        if (editor.isClientSide()) {
+            throw new RuntimeException("Server-side operation performed on client! Report to ProjectRed developers");
+        }
     }
     //endregion
 
