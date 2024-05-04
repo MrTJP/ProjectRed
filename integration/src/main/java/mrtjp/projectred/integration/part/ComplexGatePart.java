@@ -1002,8 +1002,11 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
     public static class Comparator extends RedstoneGatePart implements NeighborTileChangePart {
 
-        public static final int KEY_STATE2 = 20;
-
+        // Analog IO mask: LLBB RRTT
+        //   TT analog top output
+        //   RR analog right input
+        //   BB analog bottom input
+        //   LL analog left input
         private short lState2 = 0;
 
         public Comparator(GateType type) {
@@ -1050,17 +1053,12 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         }
 
         @Override
-        protected boolean gateLogicCanConnect(int r) {
-            return true; //TODO why?
-        }
-
-        @Override
         protected int getOutput(int r) {
             return r == 0 ? state2() & 0xF : 0;
         }
         //endregion
 
-        private int calcInputA() {
+        private int calcBottomComparatorInput() {
 
             Direction absDir = Direction.values()[Rotation.rotateSide(getSide(), toAbsolute(2))];
             BlockPos pos1 = tile().getBlockPos().relative(absDir);
@@ -1115,8 +1113,9 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
             return list.size() == 1 ? list.get(0) : null;
         }
 
-        private int calcInput() {
-            return getRedstoneInput(1) << 4 | calcInputA() << 8 | getAnalogRedstoneInput(3) << 12;
+        private int calcAnalogInputMask() {
+            // LLBBRR00
+            return getAnalogRedstoneInput(1) << 4 | calcBottomComparatorInput() << 8 | getAnalogRedstoneInput(3) << 12;
         }
 
         private int digitize(int analog) {
@@ -1130,19 +1129,19 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         @Override
         protected void gateLogicOnChange() {
             int oldInput = state2() & 0xFFF0;
-            int newInput = calcInput();
+            int newInput = calcAnalogInputMask();
             if (oldInput != newInput) {
                 setState2(state2() & 0xF | newInput);
-                setState(digitize(newInput | calcOutput()) | state() & 0xF0);
+                setState(state() & 0xF0 | digitize(newInput));
                 onInputChange();
             }
             if ((state2() & 0xF) != calcOutput()) scheduleTick(2);
         }
 
         private int calcOutput() {
-            int inputA = state2() >> 8 & 0xF;
-            int inputB = Math.max(state2() >> 4 & 0xF, state2() >> 12 & 0xF);
-            return shape() == 0 ? inputA > inputB ? inputA : 0 : Math.max(inputA - inputB, 0);
+            int backInput = state2() >> 8 & 0xF;
+            int lrMaxInput = Math.max(state2() >> 4 & 0xF, state2() >> 12 & 0xF);
+            return shape() == 0 ? backInput > lrMaxInput ? backInput : 0 : Math.max(backInput - lrMaxInput, 0);
         }
 
         @Override
@@ -1151,7 +1150,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
             int newOutput = calcOutput();
             if (oldOutput != newOutput) {
                 setState2(state2() & 0xFFF0 | newOutput);
-                setState(state() & 0xF | digitize(newOutput) << 4);
+                setState(state() & 0xF | (newOutput != 0 ? 0x10 : 0));
                 onOutputChange(1);
             }
         }
