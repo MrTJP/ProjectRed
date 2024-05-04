@@ -24,5 +24,14 @@ public interface InteractionZone {
     @OnlyIn(Dist.CLIENT)
     void buildToolTip(List<Component> tooltip);
 
+    /**
+     * Client-side check to see if this zone can respond to a key press. If true, client sends packet
+     * to respond to key press via {@link #onKeyPressed(int, int)}.
+     */
+    boolean canRespondToKey(int glfwKeyCode, int glfwFlags);
+
+    /**
+     * Server-side key press event. Called if client-side {@link #canRespondToKey(int, int)} returns true.
+     */
     boolean onKeyPressed(int glfwKeyCode, int glfwFlags);
 }

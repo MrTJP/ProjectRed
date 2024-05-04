@@ -85,9 +85,15 @@ public class HotKeyInteractionZone implements InteractionZone {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public void buildToolTip(List<Component> tooltip) {
         String keyName = Objects.requireNonNullElse(GLFW.glfwGetKeyName(keyCode, 0), "???");
         tooltip.add(Component.literal("[" + keyName + "] ").append(text).withStyle(ICWorkbenchEditor.UNIFORM_GRAY));
+    }
+
+    @Override
+    public boolean canRespondToKey(int glfwKeyCode, int glfwFlags) {
+        return glfwKeyCode == keyCode;
     }
 
     @Override

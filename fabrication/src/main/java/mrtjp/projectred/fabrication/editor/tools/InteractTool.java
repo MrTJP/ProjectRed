@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.fengine.TileCoord;
 import mrtjp.projectred.fabrication.editor.ICEditorToolType;
 import mrtjp.projectred.fabrication.engine.BaseTile;
+import net.covers1624.quack.collection.FastStream;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
@@ -16,12 +17,15 @@ import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
 
+import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
 import static mrtjp.projectred.fabrication.editor.tools.IICEditorTool.internalToGlobalCuboid;
 import static mrtjp.projectred.fabrication.editor.tools.IICEditorTool.toNearestPosition;
 
 public class InteractTool extends BaseICEditorTool {
+
+    private static final int KEY_MOUSE_CLICK = 0;
+    private static final int KEY_KEY_PRESS = 1;
 
     private final Vector3 initialMouseDown = new Vector3();
     private boolean leftMouseDown;
@@ -34,27 +38,46 @@ public class InteractTool extends BaseICEditorTool {
 
     @Override
     public void readPacket(MCDataInput input) {
+        int key = input.readByte();
+        switch (key) {
+            case KEY_MOUSE_CLICK -> readClickPacket(input);
+            case KEY_KEY_PRESS -> readKeyPressPacket(input);
+            default -> LOGGER.error("Received invalid packet type for InteractTool: {}", key);
+        }
+    }
 
+    private void readClickPacket(MCDataInput input) {
         TileCoord pos = new TileCoord(input.readByte(), input.readByte(), input.readByte());
         byte b = input.readByte();
-
         int z = b & 0x7F;
         boolean leftClick = (b & 0x80) != 0;
 
-        Optional<BaseTile> tile = getEditor().getTileMap().getBaseTile(pos);
-        tile.ifPresent(t -> {
-            var zone =  t.getInteractionZones()[z];
+        BaseTile tile = getEditor().getTileMap().getBaseTile(pos).orElse(null);
+        if (tile == null) return;
 
-            if (leftClick) {
-                zone.onLeftClick();
-            }
-            else {
-                zone.onRightClick();
-            }
-        });
+        var zone =  tile.getInteractionZones()[z];
+
+        if (leftClick) {
+            zone.onLeftClick();
+        } else {
+            zone.onRightClick();
+        }
     }
 
-    private void executeTool(Vector3 startMouseDown, Vector3 endMouseDown) {
+    private void readKeyPressPacket(MCDataInput input) {
+        TileCoord pos = new TileCoord(input.readByte(), input.readByte(), input.readByte());
+        int glfwKeyCode = input.readInt();
+        int glfwFlags = input.readInt();
+
+        BaseTile tile = getEditor().getTileMap().getBaseTile(pos).orElse(null);
+        if (tile == null) return;
+
+        for (var z : tile.getInteractionZones()) {
+            z.onKeyPressed(glfwKeyCode, glfwFlags);
+        }
+    }
+
+    private void sendClick(Vector3 startMouseDown, Vector3 endMouseDown) {
         TileCoord start = toNearestPosition(startMouseDown);
         TileCoord end = toNearestPosition(endMouseDown);
         if (!start.equals(end)) return;
@@ -68,8 +91,16 @@ public class InteractTool extends BaseICEditorTool {
         byte b = (byte) ((endZone.index & 0x7F) | (leftMouseDown ? 0x80 : 0x00));
 
         getEditor().getToolStream(this)
+                .writeByte(KEY_MOUSE_CLICK)
                 .writeByte(start.x).writeByte(start.y).writeByte(start.z)
                 .writeByte(b);
+    }
+
+    private void sendKeyPress(TileCoord pos, int glfwKeyCode, int glfwFlags) {
+        getEditor().getToolStream(this)
+                .writeByte(KEY_KEY_PRESS)
+                .writeByte(pos.x).writeByte(pos.y).writeByte(pos.z)
+                .writeInt(glfwKeyCode).writeInt(glfwFlags);
     }
 
     @Override
@@ -92,7 +123,8 @@ public class InteractTool extends BaseICEditorTool {
     public boolean toolReleased(Vector3 mousePosition, int glfwMouseButton) {
         if ((glfwMouseButton == GLFW.GLFW_MOUSE_BUTTON_LEFT && leftMouseDown) ||
                 (glfwMouseButton == GLFW.GLFW_MOUSE_BUTTON_RIGHT && rightMouseDown)) {
-            executeTool(initialMouseDown, mousePosition);
+
+            sendClick(initialMouseDown, mousePosition);
             leftMouseDown = false;
             rightMouseDown = false;
             return true;
@@ -149,10 +181,9 @@ public class InteractTool extends BaseICEditorTool {
         BaseTile tile = getEditor().getTileMap().getBaseTile(coord).orElse(null);
         if (tile == null) return false;
 
-        for (var zone : tile.getInteractionZones()) {
-            if (zone.onKeyPressed(glfwKeyCode, glfwFlags)) {
-                return true;
-            }
+        if (FastStream.of(tile.getInteractionZones()).anyMatch(z -> z.canRespondToKey(glfwKeyCode, glfwFlags))) {
+            sendKeyPress(coord, glfwKeyCode, glfwFlags);
+            return true;
         }
 
         return false;

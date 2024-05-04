@@ -61,6 +61,11 @@ public class SimpleInteractionZone implements InteractionZone {
     }
 
     @Override
+    public boolean canRespondToKey(int glfwKeyCode, int glfwFlags) {
+        return false;
+    }
+
+    @Override
     public boolean onKeyPressed(int glfwKeyCode, int glfwFlags) {
         return false;
     }
