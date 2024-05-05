@@ -1,11 +1,18 @@
 # This workflow publishes commits to Maven
-name: Publish Releases
+name: Publish Release
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - publish/**
+    inputs:
+      channel:
+        description: 'Release channel'
+        required: true
+        type: string
+      type:
+        description: 'Release type'
+        required: true
+        default: 'beta'
+        type: string
 
 jobs:
   build:
@@ -22,10 +29,6 @@ jobs:
       - name: Resolve release type
         id: release_type
         run: |
-          # Extract release type from ref (refs/heads/publish/{channel}/{type})
-          release_channel="$(echo $GITHUB_REF | sed -E 's/refs\/heads\/publish\/([a-zA-Z0-9.-]+)\/([a-zA-Z0-9.-]+)/\1/')"
-          release_type="$(echo $GITHUB_REF | sed -E 's/refs\/heads\/publish\/([a-zA-Z0-9.-]+)\/([a-zA-Z0-9.-]+)/\2/')"
-
           case $release_type in
             "release")
               publish_maven=true
@@ -62,6 +65,9 @@ jobs:
           echo "publish_gh_release=$publish_gh_release" >> $GITHUB_OUTPUT
           echo "version_format=$version_format" >> $GITHUB_OUTPUT
           echo "tag_format=$tag_format" >> $GITHUB_OUTPUT
+        env:
+          release_channel: ${{ inputs.channel }}
+          release_type: ${{ inputs.type }}
 
       # Install python and deps
       - name: Set up Python 3.12.1
