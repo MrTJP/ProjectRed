@@ -200,7 +200,6 @@ public interface IConnectableTile extends IBlockEventTile, IConnectable {
         if (p instanceof IConnectable connectable) {
             return canConnectPart(connectable, s, edgeRot) &&
                     outsideCornerEdgeOpen(s, edgeRot) &&
-                    connectable.canConnectCorner(rotFromCorner(s, edgeRot)) && //TODO shouldnt this be handled by next line?
                     connectable.connectCorner(this, rotFromCorner(s, edgeRot), -1);
 
         }

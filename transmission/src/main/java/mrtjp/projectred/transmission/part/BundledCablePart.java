@@ -14,7 +14,6 @@ import mrtjp.projectred.transmission.WireType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntity;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -131,18 +130,18 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
 
     @Override
     public boolean discoverStraightOverride(int absDir) {
-        BlockPos pos = pos().relative(Direction.values()[absDir]);
-        BlockEntity tile = level().getBlockEntity(pos);
-        if (tile instanceof IMaskedBundledTile b) {
+        FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), Rotation.rotationTo(getSide(), absDir));
+
+        if (lookup.tile instanceof IMaskedBundledTile b) {
             int r = Rotation.rotationTo(absDir, getSide());
             return b.canConnectBundled(absDir^1) && (b.getConnectionMask(absDir^1) & 1<< r) != 0;
         }
 
-        if (tile instanceof IBundledTile) {
-            return ((IBundledTile) tile).canConnectBundled(absDir^1);
+        if (lookup.tile instanceof IBundledTile b) {
+            return b.canConnectBundled(absDir^1);
         }
 
-        return BundledSignalsLib.canConnectBundledViaInteraction(level(), pos, Direction.values()[absDir^1]);
+        return BundledSignalsLib.canConnectBundledViaInteraction(level(), lookup.otherPos, Direction.values()[absDir^1]); // TODO add otherDir to lookup
     }
     //endregion
 
