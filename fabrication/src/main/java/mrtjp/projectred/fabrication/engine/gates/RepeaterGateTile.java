@@ -135,7 +135,7 @@ public class RepeaterGateTile extends TimedStateGateTile {
                     }
                 }
                 case 3 -> { // Waiting for timer to go low
-                    if (readSchedTime(ic, inputs) >= readSchedTime(ic, inputs)) { // if timer expired
+                    if (readSysTime(ic, inputs) >= readSchedTime(ic, inputs)) { // if timer expired
                         writeState(ic, outputs, (byte) 0); // go to state 0
                         writeOutput(ic, outputs, (byte) 0); // set output low
                         writeSchedTime(ic, outputs, -1); // disable timer
