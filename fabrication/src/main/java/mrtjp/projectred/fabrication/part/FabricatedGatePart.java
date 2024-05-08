@@ -66,6 +66,7 @@ public class FabricatedGatePart extends BundledGatePart {
     @Override
     public void save(CompoundTag tag) {
         super.save(tag);
+        tag.put("item_stack", itemStackTag);
         tag.putString("ic_name", icName);
         tag.putLong("sim_time", level().getGameTime() - simulationTimeStart);
         tag.putInt("compile_format", compileFormat);
@@ -76,6 +77,7 @@ public class FabricatedGatePart extends BundledGatePart {
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
+        itemStackTag = tag.getCompound("item_stack");
         icName = tag.getString("ic_name");
         simulationTimeStart = tag.getLong("sim_time");
         compileFormat = tag.getInt("compile_format");
