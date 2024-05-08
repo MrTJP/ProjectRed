@@ -184,9 +184,9 @@ public class BundledSignalsLib {
         return signal;
     }
 
-    public static int mostSignificantBit(int mask) {
+    public static int mostSignificantBit(short mask) {
         int idx = 0;
-        int m2 = mask >>> 1;
+        int m2 = (mask & 0xFFFF) >>> 1;
         while (m2 != 0) {
             m2 >>>= 1;
             idx++;
