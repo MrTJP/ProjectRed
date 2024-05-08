@@ -11,6 +11,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 
+import static mrtjp.projectred.core.FaceLookup.getBlockEntityForState;
+
 public class CenterLookup {
 
     //Starting conditions
@@ -45,11 +47,8 @@ public class CenterLookup {
         int otherDir = direction ^ 1;
 
         BlockState state = world.getBlockState(pos);
-        BlockEntity tile = world.getBlockEntity(pos);
-        MultiPart part = null;
-        if (tile instanceof TileMultipart) {
-            part = ((TileMultipart) tile).getSlottedPart(direction);
-        }
+        BlockEntity tile = getBlockEntityForState(world, pos, state);
+        MultiPart part = tile instanceof TileMultipart tmp ? tmp.getSlottedPart(direction) : null;
 
         return new CenterLookup(world, pos, direction, state, tile, part, pos, otherDir);
     }
@@ -60,11 +59,8 @@ public class CenterLookup {
         int otherDir = direction ^ 1;
 
         BlockState state = world.getBlockState(otherPos);
-        BlockEntity tile = world.getBlockEntity(otherPos);
-        MultiPart part = null;
-        if (tile instanceof TileMultipart) {
-            part = ((TileMultipart) tile).getSlottedPart(6);
-        }
+        BlockEntity tile = getBlockEntityForState(world, otherPos, state);
+        MultiPart part = tile instanceof TileMultipart tmp ? tmp.getSlottedPart(6) : null;
 
         return new CenterLookup(world, pos, direction, state, tile, part, otherPos, otherDir);
     }

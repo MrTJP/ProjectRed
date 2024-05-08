@@ -55,11 +55,8 @@ public class FaceLookup {
                 .relative(Direction.values()[side]);
 
         BlockState state = world.getBlockState(pos2);
-        BlockEntity tile = world.getBlockEntity(pos2);
-        MultiPart part = null;
-        if (tile instanceof TileMultipart) {
-            part = ((TileMultipart) tile).getSlottedPart(otherSide);
-        }
+        BlockEntity tile = getBlockEntityForState(world, pos2, state);
+        MultiPart part = tile instanceof TileMultipart tmp ? tmp.getSlottedPart(otherSide) : null;
 
         return new FaceLookup(world, pos, side, r, state, tile, part, pos2, otherSide, otherRotation);
     }
@@ -71,11 +68,8 @@ public class FaceLookup {
         BlockPos pos2 = pos.relative(Direction.values()[Rotation.rotateSide(side, r)]);
 
         BlockState state = world.getBlockState(pos2);
-        BlockEntity tile = world.getBlockEntity(pos2);
-        MultiPart part = null;
-        if (tile instanceof TileMultipart) {
-            part = ((TileMultipart) tile).getSlottedPart(otherSide);
-        }
+        BlockEntity tile = getBlockEntityForState(world, pos2, state);
+        MultiPart part = tile instanceof TileMultipart tmp ? tmp.getSlottedPart(otherSide) : null;
 
         return new FaceLookup(world, pos, side, r, state, tile, part, pos2, otherSide, otherRotation);
     }
@@ -86,27 +80,39 @@ public class FaceLookup {
         int otherRotation = Rotation.rotationTo(absDir, side);
 
         BlockState state = world.getBlockState(pos);
-        BlockEntity tile = world.getBlockEntity(pos);
-        MultiPart part = null;
-        if (tile instanceof TileMultipart) {
-            part = ((TileMultipart) tile).getSlottedPart(otherSide);
-        }
+        BlockEntity tile = getBlockEntityForState(world, pos, state);
+        MultiPart part = tile instanceof TileMultipart tmp ? tmp.getSlottedPart(otherSide) : null;
 
         return new FaceLookup(world, pos, side, r, state, tile, part, pos, otherSide, otherRotation);
     }
 
     public static FaceLookup lookupInsideCenter(Level world, BlockPos pos, int side) {
-
         int otherSide = side;
         int otherRotation = -1; // Part is not on face
 
         BlockState state = world.getBlockState(pos);
-        BlockEntity tile = world.getBlockEntity(pos);
-        MultiPart part = null;
-        if (tile instanceof TileMultipart) {
-            part = ((TileMultipart) tile).getSlottedPart(6);
-        }
+        BlockEntity tile = getBlockEntityForState(world, pos, state);
+        MultiPart part = tile instanceof TileMultipart tmp ? tmp.getSlottedPart(6) : null;
 
         return new FaceLookup(world, pos, side, -1, state, tile, part, pos, otherRotation, otherSide);
+    }
+
+    /**
+     * Conditionally retrieves a tile if block state allows it and if existing tile is still valid
+     */
+    static @Nullable BlockEntity getBlockEntityForState(Level level, BlockPos pos, BlockState state) {
+
+        if (!state.hasBlockEntity()) return null;
+
+        BlockEntity tile = level.getBlockEntity(pos);
+        if (tile == null || tile.isRemoved()) return null;
+
+        // Special handling for recently emptied multipart tiles, as done in BlockMultipart.getTile().
+        // This case would be hit if this lookup is a result of a neighbor update caused by a part removal.
+        if (tile instanceof TileMultipart tmp && tmp.getPartList().isEmpty()) {
+            return null;
+        }
+
+        return tile;
     }
 }
