@@ -62,9 +62,13 @@ public interface IOrientableBlockEntity extends IBlockEventTile {
 
     default void rotateBlock() {
         setRotation((getRotation() + 1) % 4);
+        onOrientationChange();
     }
 
     default void orientBlock() {
         setSide((getSide() + 1) % 6);
+        onOrientationChange();
     }
+
+    void onOrientationChange();
 }

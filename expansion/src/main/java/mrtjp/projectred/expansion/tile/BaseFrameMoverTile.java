@@ -3,6 +3,7 @@ package mrtjp.projectred.expansion.tile;
 import codechicken.multipart.api.RedstoneInteractions;
 import codechicken.multipart.api.tile.RedstoneConnector;
 import mrtjp.projectred.api.Frame;
+import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.api.MovementDescriptor;
 import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.core.block.ProjectRedBlock;
@@ -107,6 +108,19 @@ public abstract class BaseFrameMoverTile extends LowLoadPoweredTile implements R
         if (!oldPowered && powered && !isWorking && canConductorWork()) {
             beginMove();
         }
+    }
+
+    @Override
+    public void onOrientationChange() {
+        if (!getLevel().isClientSide) {
+            updateExternals();
+        }
+    }
+
+    @Override
+    public boolean canConnectPart(IConnectable part, int s, int edgeRot) {
+        // Dont allow power wires on front side. Redstone is handled by getConnectionMask
+        return s != getFrontSide() && super.canConnectPart(part, s, edgeRot);
     }
 
     @Override
