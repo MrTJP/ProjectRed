@@ -106,7 +106,6 @@ public abstract class BaseTile implements FETile {
     public void buildInteractionZoneList(List<InteractionZone> zones) {
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void buildToolTip(List<Component> toolTip) {
         toolTip.add(Component.translatable(tileType.getUnlocalizedName()));
     }

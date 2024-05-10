@@ -9,8 +9,6 @@ import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
 import mrtjp.projectred.fabrication.editor.tools.InteractionZone;
 import mrtjp.projectred.fabrication.editor.tools.SimpleInteractionZone;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +51,6 @@ public abstract class SimpleGateTile extends SidedRedstoneGateTile {
         addDeadSidesInteractions(zones, interactMask(), this::getBoundsForIOToggleZone, this::toggleDeadSide, this::getDeadSideToolTip);
     }
 
-    @OnlyIn(Dist.CLIENT)
     protected Component getDeadSideToolTip(int r) {
         boolean isEnabled = (getShape() & rotationToDeadSideBit(r)) == 0;
         return Component.translatable(isEnabled ? UL_SIDE_ENABLED : UL_SIDE_DISABLED).withStyle(ICWorkbenchEditor.UNIFORM_GRAY);
