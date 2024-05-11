@@ -4,6 +4,8 @@ import codechicken.lib.datagen.LootTableProvider;
 import mrtjp.projectred.illumination.BlockLightType;
 import net.minecraft.data.DataGenerator;
 
+import static mrtjp.projectred.illumination.init.IlluminationBlocks.ILLUMAR_SMART_LAMP;
+
 public class IlluminationBlockLootProvider extends LootTableProvider.BlockLootProvider {
 
     public IlluminationBlockLootProvider(DataGenerator dataGenerator) {
@@ -23,5 +25,7 @@ public class IlluminationBlockLootProvider extends LootTableProvider.BlockLootPr
                 register(lampType.getBlock(color, true), singleItem(lampType.getBlock(color, true)));
             }
         }
+
+        register(ILLUMAR_SMART_LAMP.get(), singleItem(ILLUMAR_SMART_LAMP.get()));
     }
 }

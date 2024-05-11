@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "B": {
+      "item": "projectred_core:blue_illumar"
+    },
+    "C": {
+      "item": "projectred_core:bundled_plate"
+    },
+    "G": {
+      "item": "projectred_core:green_illumar"
+    },
+    "P": {
+      "tag": "forge:glass_panes/colorless"
+    },
+    "R": {
+      "item": "projectred_core:red_illumar"
+    }
+  },
+  "pattern": [
+    "PRP",
+    "PGP",
+    "CBC"
+  ],
+  "result": {
+    "item": "projectred_illumination:illumar_smart_lamp"
+  }
+}

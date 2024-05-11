@@ -8,10 +8,11 @@ import codechicken.lib.render.item.IItemRenderer;
 import codechicken.lib.util.TransformUtils;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Vector3;
-import codechicken.lib.vec.uv.IconTransformation;
+import codechicken.lib.vec.uv.MultiIconTransformation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.core.client.HaloRenderer;
-import mrtjp.projectred.illumination.block.IllumarLampBlock;
+import mrtjp.projectred.illumination.block.IllumarSmartLampBlock;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -22,15 +23,19 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class IllumarLampItemRenderer extends WrappedItemModel implements IItemRenderer {
+public class IllumarSmartLampItemRenderer extends WrappedItemModel implements IItemRenderer {
 
     private static final Cuboid6 BLOCK_BOUNDS = Cuboid6.full.copy().expand(-0.02D);
     private static final Cuboid6 GLOW_BOUNDS = Cuboid6.full.copy().expand(0.02D);
     private static final RandomSource random = RandomSource.create();
 
-    public IllumarLampItemRenderer(BakedModel wrapped) {
+    private final byte[] signal = new byte[16];
+    private long lastSignalAnimateTime = -1L;
+
+    public IllumarSmartLampItemRenderer(BakedModel wrapped) {
         super(wrapped);
     }
 
@@ -39,20 +44,18 @@ public class IllumarLampItemRenderer extends WrappedItemModel implements IItemRe
         Item item = stack.getItem();
         if (!(item instanceof BlockItem blockItem)) return;
 
-        if (!(blockItem.getBlock() instanceof IllumarLampBlock block)) return;
-
-        if (!block.isInverted()) {
-            // Non-inverted blocks can use default Minecraft BlockItem model. Shouldn't happen
-            // because this renderer should only be registered to inverted variants.
-            renderWrapped(stack, mStack, getter, packedLight, packedOverlay, false);
-            return;
-        }
+        if (!(blockItem.getBlock() instanceof IllumarSmartLampBlock block)) return;
 
         // Render actual block. Required because renderWrapped does not play nice with
         // halo rendering. Halo completely obscures wrapped render.
 
         // Obtain texture from original block model
-        TextureAtlasSprite icon = wrapped.getQuads(null, Direction.UP, random).get(0).getSprite();
+        TextureAtlasSprite[] icons = new TextureAtlasSprite[6];
+        for (Direction dir : Direction.values()) {
+            icons[dir.get3DDataValue()] = wrapped.getQuads(null, dir, random).get(0).getSprite();
+        }
+        MultiIconTransformation iconT = new MultiIconTransformation(icons);
+
 
         // Render block
         CCRenderState ccrs = CCRenderState.instance();
@@ -61,12 +64,35 @@ public class IllumarLampItemRenderer extends WrappedItemModel implements IItemRe
         ccrs.overlay = packedOverlay;
         ccrs.bind(RenderType.cutout(), getter, mStack);
 
-        ccrs.setPipeline(new IconTransformation(icon));
+        ccrs.setPipeline(iconT);
         BlockRenderer.renderCuboid(ccrs, BLOCK_BOUNDS, 0);
 
+        // Animate signals
+        animateSignal();
+
         // Render halo
-        HaloRenderer.renderInventoryHalo(ccrs, mStack, getter, GLOW_BOUNDS, Vector3.ZERO, block.getColor());
-        HaloRenderer.addItemRendererBloom(transformType, mStack, Vector3.ZERO, GLOW_BOUNDS, block.getColor());
+        HaloRenderer.renderInventoryMultiHalo(ccrs, mStack, getter, GLOW_BOUNDS, Vector3.ZERO, signal);
+        HaloRenderer.addItemRendererMultiBloom(transformType, mStack, Vector3.ZERO, GLOW_BOUNDS, signal);
+    }
+
+    private void animateSignal() {
+
+        Level level = Minecraft.getInstance().level;
+        long time = level != null ? level.getGameTime() : System.currentTimeMillis() / 50L; // approximate time progression if no level
+
+        // Only do this once per tick
+        if (time == lastSignalAnimateTime) return;
+        lastSignalAnimateTime = time;
+
+        // Sine-wave animation
+        double t = (Math.sin(time / 200.0) + 1.0) / 2.0 * 15.0; // Sine wave with bounds [0, 15]
+        double d = 1.5; // Max distance (max active colours / 2)
+
+        for (int i = 0; i < 16; i++) {
+            double diff = Math.min(Math.abs(t - i), d);
+            double brightness = 1.0 - diff / d;
+            signal[i] = (byte) (255 * brightness);
+        }
     }
 
     @Override
@@ -88,4 +114,5 @@ public class IllumarLampItemRenderer extends WrappedItemModel implements IItemRe
     public boolean usesBlockLight() {
         return true;
     }
+
 }

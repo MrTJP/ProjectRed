@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.phys.Vec3;
@@ -29,6 +30,7 @@ import java.util.List;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 import static net.minecraft.client.renderer.RenderStateShard.*;
+import static net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES;
 
 public class HaloRenderer {
 
@@ -78,11 +80,14 @@ public class HaloRenderer {
 
     private static boolean postChainFlushPending = false;
 
-    private static final LinkedList<LevelLight> levelLights = new LinkedList<>();
-
+    // In-level halos in block-space. These will render both glow and bloom
+    private static final LinkedList<HaloRenderData> levelHalos = new LinkedList<>();
+    // Entity halos for held and item entity rendering. Bloom only, as the glow is rendered immediately
+    private static final LinkedList<HaloRenderData> entityHalos = new LinkedList<>();
+    // Global offset for moving block entities
     private static final Vector3 offset = Vector3.ZERO.copy();
 
-    //region Init
+    //region Init and event handlers
     public static void init() {
         // Register callback for moving block entities
         if (ProjectRedAPI.expansionAPI != null) {
@@ -99,40 +104,56 @@ public class HaloRenderer {
             });
         }
     }
+
+    public static void onRenderLevelStageEvent(final RenderLevelStageEvent event) {
+        if (event.getStage().equals(AFTER_PARTICLES)) {
+            onRenderStageAfterParticles(event);
+        }
+    }
+
+    public static void onRenderLevelLastEvent(final RenderLevelLastEvent event) {
+        onRenderStageAfterLevel(event);
+    }
+
+    public static void onResourceManagerReload(ResourceManager manager) {
+        loadPostChain();
+    }
     //endregion
 
-    //region World renderer
-    public static void addLight(BlockPos pos, int colour, Cuboid6 box) {
-        addLight(new Translation(pos), colour, box);
+    //region Level rendering
+    public static void addLight(BlockPos pos, Cuboid6 box, int colourIndex) {
+        addLight(new Translation(pos), box, colourIndex);
     }
 
-    public static void addLight(Transformation t, int colour, Cuboid6 box) {
+    public static void addLight(Transformation t, Cuboid6 box, int colourIndex) {
         Transformation t2 = new TransformationList(t, new Translation(offset));
-        levelLights.add(new LevelLight(t2, colour, box));
-        if (Configurator.lightHaloMax > -1 && levelLights.size() > Configurator.lightHaloMax) {
-            levelLights.poll();
+        addHalo(levelHalos, new HaloRenderData(box, t2).setColourIndex(colourIndex));
+    }
+
+    public static void addMultiLight(BlockPos pos, Cuboid6 box, byte[] alphas) {
+        addMultiLight(new Translation(pos), box, alphas);
+    }
+
+    public static void addMultiLight(Transformation t, Cuboid6 box, byte[] alphas) {
+        Transformation t2 = new TransformationList(t, new Translation(offset));
+        addHalo(levelHalos, new HaloRenderData(box, t2).setMultiColourAlphas(alphas));
+    }
+
+    private static void addHalo(LinkedList<HaloRenderData> list, HaloRenderData data) {
+        list.add(data);
+        if (Configurator.lightHaloMax > -1 && list.size() > Configurator.lightHaloMax) {
+            list.poll();
         }
     }
 
-    public static void onRenderWorldStageEvent(final RenderLevelStageEvent event) {
+    public static void onRenderStageAfterParticles(final RenderLevelStageEvent event) {
 
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            return;
-        }
-
-        if (levelLights.isEmpty()) {
+        if (levelHalos.isEmpty() && entityHalos.isEmpty()) {
             return;
         }
 
         if (!isFabulous()) {
             return;
-        }
-
-        // Build light list
-        List<LevelLight> lightList = new LinkedList<>();
-        LevelLight l;
-        while ((l = levelLights.poll()) != null) {
-            lightList.add(l);
         }
 
         // Setup post-chain
@@ -141,51 +162,63 @@ public class HaloRenderer {
         HALO_POST_CHAIN.getInputTarget().clear(Minecraft.ON_OSX);
         HALO_POST_CHAIN.getInputTarget().copyDepthFrom(Minecraft.getInstance().getMainRenderTarget());
 
+        // Prepare render state
+        CCRenderState ccrs = CCRenderState.instance();
+        ccrs.reset();
+        MultiBufferSource.BufferSource buffers = Minecraft.getInstance().renderBuffers().bufferSource();
+
+        // Translate pose to camera position
         Vec3 cam = event.getCamera().getPosition();
         PoseStack stack = event.getPoseStack();
         stack.pushPose();
         stack.translate(-cam.x, -cam.y, -cam.z);
 
-        CCRenderState ccrs = CCRenderState.instance();
-        ccrs.reset();
-        MultiBufferSource.BufferSource buffers = Minecraft.getInstance().renderBuffers().bufferSource();
+        // Poll all pending level halos
+        List<HaloRenderData> lightList = pollHalos(levelHalos);
 
         // Render to normal render target for primary visuals
         ccrs.bind(HALO_GLOW_RENDER_TYPE, buffers, stack);
-        for (LevelLight light : lightList) {
-            renderToCCRS(ccrs, light.box, light.colour, light.t, HaloContext.LEVEL_RENDERER);
+        for (var light : lightList) {
+            renderToCCRS(ccrs, light.box, light.t, light.levelGlowRgba);
         }
 
         // Update depth buffer
         ccrs.bind(HALO_FABULOUS_DEPTH_RENDER_TYPE, buffers, stack);
-        for (LevelLight light : lightList) {
-            renderToCCRS(ccrs, light.box, light.colour, light.t, HaloContext.LEVEL_RENDERER);
+        for (var light : lightList) {
+            renderToCCRS(ccrs, light.box, light.t, 0xFFFFFFFF);
         }
 
         // Render to post chain for post-processing effects
         ccrs.bind(HALO_FABULOUS_BLOOM_RENDER_TYPE, buffers, stack);
-        for (LevelLight light : lightList) {
-            renderToCCRS(ccrs, light.box, light.colour, light.t, HaloContext.BLOOM_RENDERER);
+        for (var light : lightList) {
+            renderToCCRS(ccrs, light.box, light.t, light.bloomRgba);
         }
-        postChainFlushPending = true;
 
-        buffers.endBatch();
         stack.popPose();
+
+        // Render entity halos for held blocks and item entities
+        List<HaloRenderData> entityLightList = pollHalos(entityHalos);
+        ccrs.bind(HALO_FABULOUS_BLOOM_RENDER_TYPE, buffers); // No pose, should have their own complete transforms
+        for (var light : entityLightList) {
+            renderToCCRS(ccrs, light.box, light.t, light.bloomRgba);
+        }
+
+        // Force-end batch
+        buffers.endBatch();
+
+        // Flag to flush post-chain at end of level render
+        postChainFlushPending = true;
     }
 
-    public static void onRenderWorldLastEvent(final RenderLevelLastEvent event) {
+    public static void onRenderStageAfterLevel(final RenderLevelLastEvent event) {
 
         // Unfabulous rendering. Batched rendering doesn't seem to work from stage events when not
         // on fabulous for some reason, so we have to do it here instead.
         if (!isFabulous()) {
-            if (levelLights.isEmpty()) return;
+            if (levelHalos.isEmpty()) return;
 
             // Poll all pending lights from queue
-            List<LevelLight> lightList = new LinkedList<>();
-            LevelLight l;
-            while ((l = levelLights.poll()) != null) {
-                lightList.add(l);
-            }
+            List<HaloRenderData> lightList = pollHalos(levelHalos);
 
             // Prepare render
             Vec3 cam = Minecraft.getInstance().getEntityRenderDispatcher().camera.getPosition();
@@ -199,8 +232,8 @@ public class HaloRenderer {
 
             // Render to normal render target for primary visuals
             ccrs.bind(HALO_GLOW_RENDER_TYPE, buffers, stack);
-            for (LevelLight light : lightList) {
-                renderToCCRS(ccrs, light.box, light.colour, light.t, HaloContext.LEVEL_RENDERER);
+            for (var light : lightList) {
+                renderToCCRS(ccrs, light.box, light.t, light.levelGlowRgba);
             }
 
             // Finish render
@@ -217,8 +250,13 @@ public class HaloRenderer {
         }
     }
 
-    public static void onResourceManagerReload(ResourceManager manager) {
-        loadPostChain();
+    private static List<HaloRenderData> pollHalos(LinkedList<HaloRenderData> src) {
+        List<HaloRenderData> dest = new LinkedList<>();
+        HaloRenderData l;
+        while ((l = src.poll()) != null) {
+            dest.add(l);
+        }
+        return dest;
     }
     //endregion
 
@@ -255,28 +293,114 @@ public class HaloRenderer {
     //endregion
 
     //region Render functions
-    private static void renderToCCRS(CCRenderState ccrs, Cuboid6 cuboid, int colour, Transformation t, HaloContext context) {
+    private static void renderToCCRS(CCRenderState ccrs, Cuboid6 cuboid, Transformation t, int rgba) {
         ccrs.setPipeline(t);
-        ccrs.baseColour = getBaseColour(colour, context);
+        ccrs.baseColour = rgba;
         BlockRenderer.renderCuboid(ccrs, cuboid, 0);
     }
 
-    public static void renderInventoryHalo(CCRenderState ccrs, PoseStack mStack, MultiBufferSource buffers, Cuboid6 cuboid, int colour, Vector3 pos) {
+    public static void renderInventoryHalo(CCRenderState ccrs, PoseStack mStack, MultiBufferSource buffers, Cuboid6 cuboid, Vector3 pos, int colourIndex) {
+        int rgba = getBaseColour(colourIndex, HaloContext.ITEM_GLOW);
+        renderInventoryHaloRgba(ccrs, mStack, buffers, cuboid, pos, rgba);
+    }
+
+    public static void renderInventoryMultiHalo(CCRenderState ccrs, PoseStack mStack, MultiBufferSource buffers, Cuboid6 cuboid, Vector3 pos, byte[] alphas) {
+        int rgba = getBlendedColour(alphas, HaloContext.ITEM_GLOW);
+        renderInventoryHaloRgba(ccrs, mStack, buffers, cuboid, pos, rgba);
+    }
+
+    private static void renderInventoryHaloRgba(CCRenderState ccrs, PoseStack mStack, MultiBufferSource buffers, Cuboid6 cuboid, Vector3 pos, int rgba) {
         RenderType type = isFabulous() ? HALO_FABULOUS_ITEM_ENTITY_RENDER_TYPE : HALO_GLOW_RENDER_TYPE;
         ccrs.reset();
         ccrs.bind(type, buffers, mStack);
-        renderToCCRS(ccrs, cuboid, colour, pos.translation(), HaloContext.ITEM_RENDERER);
+        renderToCCRS(ccrs, cuboid, pos.translation(), rgba);
+    }
+
+    public static void addItemRendererBloom(ItemTransforms.TransformType transformType, PoseStack stack, Vector3 pos, Cuboid6 box, int colourIndex) {
+        if (isEntityItemRenderType(transformType)) {
+            addItemRendererBloom(stack, pos, box, colourIndex);
+        }
+    }
+
+    public static void addItemRendererBloom(PoseStack stack, Vector3 pos, Cuboid6 box, int colourIndex) {
+        Transformation t = new Matrix4(stack.last().pose()).with(pos.translation());
+        addHalo(entityHalos, new HaloRenderData(box, t).setColourIndex(colourIndex));
+    }
+
+    public static void addItemRendererMultiBloom(ItemTransforms.TransformType transformType, PoseStack stack, Vector3 pos, Cuboid6 box, byte[] alphas) {
+        if (isEntityItemRenderType(transformType)) {
+            addItemRendererMultiBloom(stack, pos, box, alphas);
+        }
+    }
+
+    public static void addItemRendererMultiBloom(PoseStack stack, Vector3 pos, Cuboid6 box, byte[] alphas) {
+        Transformation t = new Matrix4(stack.last().pose()).with(pos.translation());
+        addHalo(entityHalos, new HaloRenderData(box, t).setMultiColourAlphas(alphas));
+    }
+
+    private static boolean isEntityItemRenderType(ItemTransforms.TransformType transformType) {
+        return switch (transformType) {
+            case GROUND, THIRD_PERSON_LEFT_HAND, THIRD_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND, FIRST_PERSON_RIGHT_HAND -> true;
+            default -> false;
+        };
     }
     //endregion
 
+    //region Colour calculations
     private static int getBaseColour(int colorIndex, HaloContext context) {
         return LightColours.byIndex(colorIndex).rgbaByContext(context);
     }
 
+    /**
+     * Mix all 16 colours given input array of alpha values. Colours are additively blended
+     * using same calculations as GL_SRC_ALPHA/GL_ONE_MINUS_SRC_ALPHA blending.
+     *
+     * @param alphas 16-element array of alpha values
+     * @return Blended colour (rgba)
+     */
+    private static int getBlendedColour(byte[] alphas, HaloContext context) {
+        // Find the total alpha
+        int aTotal = 0;
+        int aMax = 0;
+        for (int i = 0; i < 16; i++) {
+            aTotal += alphas[i] & 0xFF;
+            aMax = Math.max(aMax, alphas[i] & 0xFF);
+        }
+
+        if (aTotal == 0) {
+            return 0;
+        }
+
+        // Normalize alpha values
+        float[] aNorm = new float[16];
+        for (int i = 0; i < 16; i++) {
+            aNorm[i] = (alphas[i] & 0xFF) / (float) aTotal * aMax / 255f;
+        }
+
+        float r = 0, g = 0, b = 0, a = 0;
+        for (int i = 0; i < 16; i++) {
+            if (alphas[i] == 0) continue;
+
+            int colour = getBaseColour(i, context);
+            float rsrc = ((colour >> 24) & 0xFF) / 255f;
+            float gsrc = ((colour >> 16) & 0xFF) / 255f;
+            float bsrc = ((colour >> 8) & 0xFF) / 255f;
+            float asrc = aNorm[i];
+
+            r = rsrc * asrc + r * (1 - asrc);
+            g = gsrc * asrc + g * (1 - asrc);
+            b = bsrc * asrc + b * (1 - asrc);
+            a = asrc * asrc + a * (1 - asrc);
+        }
+
+        // Note: Below alpha controls how halo renderer blends it into the render target, not alpha used to blend colours together
+        return (int) (r * 255) << 24 | (int) (g * 255) << 16 | (int) (b * 255) << 8 | 0xA0;
+    }
+
     private enum HaloContext {
-        ITEM_RENDERER,
-        LEVEL_RENDERER,
-        BLOOM_RENDERER
+        ITEM_GLOW,
+        LEVEL_GLOW,
+        BLOOM
     }
 
     /**
@@ -328,21 +452,11 @@ public class HaloRenderer {
         //@formatter:on
 
         //noinspection FieldCanBeLocal
-        private final int rgba;
-        private final float glowBrightness;
-        private final float itemGlowBrightness;
-        private final float bloomBrightness;
-
         public final int blockGlowRgba;
         public final int itemGlowRgba;
         public final int bloomRgba;
 
         LightColours(int rgba, float glowBrightness, float itemGlowBrightness, float bloomBrightness) {
-            this.rgba = rgba;
-            this.glowBrightness = glowBrightness;
-            this.itemGlowBrightness = itemGlowBrightness;
-            this.bloomBrightness = bloomBrightness;
-
             this.blockGlowRgba = scaleBrightness(rgba, glowBrightness);
             this.itemGlowRgba = scaleBrightness(rgba, itemGlowBrightness);
             this.bloomRgba = scaleBrightness(rgba, bloomBrightness);
@@ -350,9 +464,9 @@ public class HaloRenderer {
 
         public int rgbaByContext(HaloContext context) {
             return switch (context) {
-                case ITEM_RENDERER -> itemGlowRgba;
-                case LEVEL_RENDERER -> blockGlowRgba;
-                case BLOOM_RENDERER -> bloomRgba;
+                case ITEM_GLOW -> itemGlowRgba;
+                case LEVEL_GLOW -> blockGlowRgba;
+                case BLOOM -> bloomRgba;
             };
         }
 
@@ -372,8 +486,32 @@ public class HaloRenderer {
             return values()[index];
         }
     }
+    //endregion
 
-    private record LevelLight(Transformation t, int colour, Cuboid6 box) {
+    private static class HaloRenderData {
+        public final Cuboid6 box;
+        public final Transformation t;
+        public int levelGlowRgba;
+        public int inventoryGlowRgba;
+        public int bloomRgba;
 
+        public HaloRenderData(Cuboid6 box, Transformation t) {
+            this.box = box;
+            this.t = t;
+        }
+
+        public HaloRenderData setColourIndex(int colourIndex) {
+            levelGlowRgba = getBaseColour(colourIndex, HaloContext.LEVEL_GLOW);
+            inventoryGlowRgba = getBaseColour(colourIndex, HaloContext.ITEM_GLOW);
+            bloomRgba = getBaseColour(colourIndex, HaloContext.BLOOM);
+            return this;
+        }
+
+        public HaloRenderData setMultiColourAlphas(byte[] alphas) {
+            levelGlowRgba = getBlendedColour(alphas, HaloContext.LEVEL_GLOW);
+            inventoryGlowRgba = getBlendedColour(alphas, HaloContext.ITEM_GLOW);
+            bloomRgba = getBlendedColour(alphas, HaloContext.BLOOM);
+            return this;
+        }
     }
 }

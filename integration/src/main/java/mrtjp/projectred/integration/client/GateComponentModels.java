@@ -1080,7 +1080,7 @@ public class GateComponentModels {
             Transformation t2 = t.with(new Translation(lightPos));
             for (int i = 0; i < 16; i++) {
                 if ((pressMask & 1 << i) != 0) {
-                    HaloRenderer.addLight(t2, i, LIGHT_BOXES[i]);
+                    HaloRenderer.addLight(t2, LIGHT_BOXES[i], i);
                 }
             }
         }

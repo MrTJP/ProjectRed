@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
+import static net.minecraft.client.renderer.block.model.ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND;
 
 public abstract class MultipartLightProperties {
 
@@ -115,7 +116,8 @@ public abstract class MultipartLightProperties {
                 renderInventory(lightItem.getColor(), lightItem.isInverted(), Vector3.ZERO, ccrs);
 
                 if (lightItem.isInverted()) {
-                    HaloRenderer.renderInventoryHalo(ccrs, mStack, getter, getInventoryGlowBounds(), lightItem.getColor(), Vector3.ZERO);
+                    HaloRenderer.renderInventoryHalo(ccrs, mStack, getter, getInventoryGlowBounds(), Vector3.ZERO, lightItem.getColor());
+                    HaloRenderer.addItemRendererBloom(transformType, mStack, Vector3.ZERO, getInventoryGlowBounds(), lightItem.getColor());
                 }
             }
 

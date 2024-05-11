@@ -1,4 +1,4 @@
-// 1.19.2	2024-03-05T10:08:22.240051	ProjectRed-Illumination Recipes
+// 1.19.2	2024-05-08T21:36:25.799111	ProjectRed-Illumination Recipes
 bab0e0ace8eafa4f132dd7aa9ea77ce3743620f1 data/projectred_illumination/recipes/black_cage_light.json
 7346715a74ba4257b555898569b21950b6c69747 data/projectred_illumination/recipes/black_fallout_light.json
 408cec0af00793db8e5895042fe84e4120c17b33 data/projectred_illumination/recipes/black_fixture_light.json
@@ -59,6 +59,7 @@ bd0ba40afb2e62423d4e81e30adba54004eb2483 data/projectred_illumination/recipes/gr
 6afac6792ea3525e6a20140fec5038fcf60066ce data/projectred_illumination/recipes/green_inverted_illumar_lamp.json
 3cbcf89e8fca3b497f11a8b47f3e169b5559e1f9 data/projectred_illumination/recipes/green_inverted_lantern.json
 c849335acf420adbd919fd18bf0828690eabba30 data/projectred_illumination/recipes/green_lantern.json
+4186608e2b704efdf4cb473b603a5cca3623617a data/projectred_illumination/recipes/illumar_smart_lamp.json
 343c00444ba713d21c9d7800377363b528676b1f data/projectred_illumination/recipes/light_blue_cage_light.json
 250e310dadd501be6ab7a84d0f3204fb5200eda2 data/projectred_illumination/recipes/light_blue_fallout_light.json
 c1be8144957ba247e87114e8473c6e4f34557d04 data/projectred_illumination/recipes/light_blue_fixture_light.json

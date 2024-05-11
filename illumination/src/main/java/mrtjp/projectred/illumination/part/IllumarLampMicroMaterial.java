@@ -46,9 +46,10 @@ public class IllumarLampMicroMaterial extends BlockMicroMaterial {
                 Cuboid6 cuboid = part.getBounds().copy().expand(0.025D);
 
                 if (transform != null) { // Inventory rendering
-                    HaloRenderer.renderInventoryHalo(ccrs, pStack, buffers, cuboid, getLightColor(), Vector3.ZERO);
+                    HaloRenderer.renderInventoryHalo(ccrs, pStack, buffers, cuboid, Vector3.ZERO, getLightColor());
+                    HaloRenderer.addItemRendererBloom(transform, pStack, Vector3.ZERO, cuboid, getLightColor());
                 } else {
-                    HaloRenderer.addLight(part.pos(), getLightColor(), cuboid);
+                    HaloRenderer.addLight(part.pos(), cuboid, getLightColor());
                 }
             }
 

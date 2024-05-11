@@ -37,8 +37,8 @@ public class CoreClientInit {
         HaloRenderer.init();
 
         // Register Halo renderer
-        MinecraftForge.EVENT_BUS.addListener(HaloRenderer::onRenderWorldStageEvent);
-        MinecraftForge.EVENT_BUS.addListener(HaloRenderer::onRenderWorldLastEvent);
+        MinecraftForge.EVENT_BUS.addListener(HaloRenderer::onRenderLevelStageEvent);
+        MinecraftForge.EVENT_BUS.addListener(HaloRenderer::onRenderLevelLastEvent);
 
         // Register resource reload listener
         ResourceUtils.registerReloadListener(HaloRenderer::onResourceManagerReload);

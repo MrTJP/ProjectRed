@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "projectred_illumination:block/illumar_smart_lamp_bottom",
+    "side": "projectred_illumination:block/illumar_smart_lamp_side_on",
+    "top": "projectred_illumination:block/illumar_smart_lamp_top_on"
+  }
+}
