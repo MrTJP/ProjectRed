@@ -613,7 +613,7 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
 
         private static final int KEY_SIGNAL = 20;
 
-        protected byte signal = 0;
+        private byte signal = 0;
 
         public TopWireArrayGate(GateType type) {
             super(type);
@@ -743,25 +743,27 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
         @Override
         protected void gateLogicOnChange() {
             int iMask = inputMask(shape());
+            int rMask = redwireMask(shape());
             int oMask = outputMask(shape());
             int fMask = feedbackMask(shape());
             int oldInput = getState() & 0xF;
-            int newInput = getInput(iMask | fMask);
+            int newInput = getInput(iMask | fMask) | getRedwireInput(rMask);
             if (oldInput != newInput) {
                 setState(getState() & 0xF0 | newInput);
                 onInputChange();
             }
 
-            int newOutput = calcOutput(state() & iMask) & oMask;
+            int newOutput = calcOutput(state() & (iMask | rMask)) & oMask;
             if (newOutput != (state() >> 4)) scheduleTick(getDelay(shape()));
         }
 
         @Override
         protected void gateLogicOnScheduledTick() {
             int iMask = inputMask(shape());
+            int rMask = redwireMask(shape());
             int oMask = outputMask(shape());
             int oldOutput = state() >> 4;
-            int newOutput = calcOutput(state() & iMask) & oMask;
+            int newOutput = calcOutput(state() & (iMask | rMask)) & oMask;
             if (oldOutput != newOutput) {
                 setState(state() & 0xF | newOutput << 4);
                 onOutputChange(oMask);
@@ -772,23 +774,29 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
         @Override
         protected void gateLogicSetup() {
             int iMask = inputMask(shape());
+            int rMask = redwireMask(shape());
             int oMask = outputMask(shape());
-            int output = calcOutput(getInput(iMask)) & oMask;
+            int input = getInput(iMask) | getRedwireInput(rMask);
+            int output = calcOutput(input) & oMask;
             if (output != 0) {
                 setState(output << 4);
                 onOutputChange(output); //use output for change mask because nothing is going low
             }
         }
 
-        int getDelay(int shape) {
+        protected int getDelay(int shape) {
             return 2;
         }
 
-        int feedbackMask(int shape) {
+        protected int feedbackMask(int shape) {
             return 0;
         }
 
-        int calcOutput(int input) {
+        protected int getRedwireInput(int mask) {
+            return getSignal(mask) != 0 ? mask : 0;
+        }
+
+        protected int calcOutput(int input) {
             return 0;
         }
         //endregion
@@ -812,8 +820,8 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
         }
 
         @Override
-        int calcOutput(int input) {
-            return input == 4 && signal != 0 ? 1 : 0;
+        protected int calcOutput(int input) {
+            return (input & 4) != 0 && (input & 0xA) != 0 ? 1 : 0;
         }
     }
 
@@ -834,8 +842,8 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
         }
 
         @Override
-        int calcOutput(int input) {
-            return signal == 0 ? state() >> 4 : (input & 4) == 0 ? 0 : 1;
+        protected int calcOutput(int input) {
+            return (input & 0xA) == 0 ? state() >> 4 : (input & 4) == 0 ? 0 : 1;
         }
     }
 }
