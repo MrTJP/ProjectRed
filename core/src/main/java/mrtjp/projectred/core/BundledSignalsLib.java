@@ -139,6 +139,18 @@ public class BundledSignalsLib {
         }
     }
 
+    public static int applyAndGetChangeMask(@Nullable byte[] source, byte[] dest) {
+        int mask = 0;
+        for (int i = 0; i < 16; i++) {
+            byte newVal = source == null ? 0 : source[i];
+            if (dest[i] != newVal) {
+                dest[i] = newVal;
+                mask |= 1 << i;
+            }
+        }
+        return mask;
+    }
+
     public static byte[] raiseSignal(@Nullable byte[] signal, @Nullable byte[] source) {
         if (signal == null) signal = new byte[16];
         if (source == null) return signal;

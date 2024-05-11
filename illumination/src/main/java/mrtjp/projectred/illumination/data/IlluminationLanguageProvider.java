@@ -6,6 +6,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
 
 import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
+import static mrtjp.projectred.illumination.init.IlluminationBlocks.ILLUMAR_SMART_LAMP;
 
 public class IlluminationLanguageProvider extends LanguageProvider {
 
@@ -30,6 +31,9 @@ public class IlluminationLanguageProvider extends LanguageProvider {
                 add(type.getBlock(color, true), createLocalizedLightName(color, true, type.getLocalBaseName()));
             }
         }
+
+        // Illumar smart lamp
+        addBlock(ILLUMAR_SMART_LAMP, "Illumar Smart Lamp");
 
         // Multipart lights
         for (MultipartLightType type : MultipartLightType.values()) {

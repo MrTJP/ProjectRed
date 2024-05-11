@@ -5,9 +5,7 @@ import codechicken.lib.texture.SpriteRegistryHelper;
 import codechicken.multipart.api.MultipartClientRegistry;
 import mrtjp.projectred.illumination.BlockLightType;
 import mrtjp.projectred.illumination.MultipartLightType;
-import mrtjp.projectred.illumination.client.IllumarLampItemRenderer;
-import mrtjp.projectred.illumination.client.IllumarLampTileRenderer;
-import mrtjp.projectred.illumination.client.MultipartLightPartRenderer;
+import mrtjp.projectred.illumination.client.*;
 import net.covers1624.quack.util.SneakyUtils;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.resources.model.BakedModel;
@@ -47,6 +45,13 @@ public class IlluminationClientInit {
                         new ModelResourceLocation(blockRL, "inventory"),
                         new IllumarLampItemRenderer(litModel));
             }
+
+            // Illumar smart lamp renderer
+            ResourceLocation smartLampRl = Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(IlluminationBlocks.ILLUMAR_SMART_LAMP.get()));
+            BakedModel smartLampModel = e.getModels().get(new ModelResourceLocation(smartLampRl, "level=15,side=0"));
+            e.getModels().put(
+                    new ModelResourceLocation(smartLampRl, "inventory"),
+                    new IllumarSmartLampItemRenderer(smartLampModel));
         });
     }
 
@@ -59,6 +64,8 @@ public class IlluminationClientInit {
                 BlockEntityRenderers.register(SneakyUtils.unsafeCast(lampType.getTileEntityType(color, true)), c -> IllumarLampTileRenderer.INSTANCE);
             }
         }
+
+        BlockEntityRenderers.register(SneakyUtils.unsafeCast(IlluminationBlocks.ILLUMAR_SMART_LAMP_BLOCK_ENTITY.get()), c -> IllumarSmartLampBlockEntityRenderer.INSTANCE);
 
         // Register light part renderers
         for (MultipartLightType type : MultipartLightType.values()) {

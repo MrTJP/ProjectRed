@@ -1,0 +1,436 @@
+{
+  "variants": {
+    "level=0,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp"
+    },
+    "level=0,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp",
+      "x": 180,
+      "y": 180
+    },
+    "level=0,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp",
+      "x": 90,
+      "y": 180
+    },
+    "level=0,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp",
+      "x": 90
+    },
+    "level=0,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp",
+      "x": 90,
+      "y": 90
+    },
+    "level=0,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp",
+      "x": 90,
+      "y": 270
+    },
+    "level=1,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on"
+    },
+    "level=1,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 180,
+      "y": 180
+    },
+    "level=1,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 180
+    },
+    "level=1,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90
+    },
+    "level=1,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 90
+    },
+    "level=1,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 270
+    },
+    "level=10,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on"
+    },
+    "level=10,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 180,
+      "y": 180
+    },
+    "level=10,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 180
+    },
+    "level=10,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90
+    },
+    "level=10,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 90
+    },
+    "level=10,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 270
+    },
+    "level=11,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on"
+    },
+    "level=11,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 180,
+      "y": 180
+    },
+    "level=11,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 180
+    },
+    "level=11,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90
+    },
+    "level=11,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 90
+    },
+    "level=11,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 270
+    },
+    "level=12,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on"
+    },
+    "level=12,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 180,
+      "y": 180
+    },
+    "level=12,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 180
+    },
+    "level=12,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90
+    },
+    "level=12,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 90
+    },
+    "level=12,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 270
+    },
+    "level=13,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on"
+    },
+    "level=13,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 180,
+      "y": 180
+    },
+    "level=13,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 180
+    },
+    "level=13,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90
+    },
+    "level=13,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 90
+    },
+    "level=13,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 270
+    },
+    "level=14,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on"
+    },
+    "level=14,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 180,
+      "y": 180
+    },
+    "level=14,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 180
+    },
+    "level=14,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90
+    },
+    "level=14,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 90
+    },
+    "level=14,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 270
+    },
+    "level=15,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on"
+    },
+    "level=15,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 180,
+      "y": 180
+    },
+    "level=15,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 180
+    },
+    "level=15,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90
+    },
+    "level=15,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 90
+    },
+    "level=15,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 270
+    },
+    "level=2,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on"
+    },
+    "level=2,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 180,
+      "y": 180
+    },
+    "level=2,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 180
+    },
+    "level=2,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90
+    },
+    "level=2,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 90
+    },
+    "level=2,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 270
+    },
+    "level=3,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on"
+    },
+    "level=3,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 180,
+      "y": 180
+    },
+    "level=3,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 180
+    },
+    "level=3,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90
+    },
+    "level=3,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 90
+    },
+    "level=3,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 270
+    },
+    "level=4,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on"
+    },
+    "level=4,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 180,
+      "y": 180
+    },
+    "level=4,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 180
+    },
+    "level=4,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90
+    },
+    "level=4,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 90
+    },
+    "level=4,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 270
+    },
+    "level=5,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on"
+    },
+    "level=5,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 180,
+      "y": 180
+    },
+    "level=5,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 180
+    },
+    "level=5,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90
+    },
+    "level=5,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 90
+    },
+    "level=5,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 270
+    },
+    "level=6,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on"
+    },
+    "level=6,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 180,
+      "y": 180
+    },
+    "level=6,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 180
+    },
+    "level=6,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90
+    },
+    "level=6,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 90
+    },
+    "level=6,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 270
+    },
+    "level=7,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on"
+    },
+    "level=7,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 180,
+      "y": 180
+    },
+    "level=7,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 180
+    },
+    "level=7,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90
+    },
+    "level=7,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 90
+    },
+    "level=7,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 270
+    },
+    "level=8,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on"
+    },
+    "level=8,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 180,
+      "y": 180
+    },
+    "level=8,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 180
+    },
+    "level=8,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90
+    },
+    "level=8,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 90
+    },
+    "level=8,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 270
+    },
+    "level=9,side=0": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on"
+    },
+    "level=9,side=1": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 180,
+      "y": 180
+    },
+    "level=9,side=2": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 180
+    },
+    "level=9,side=3": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90
+    },
+    "level=9,side=4": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 90
+    },
+    "level=9,side=5": {
+      "model": "projectred_illumination:block/illumar_smart_lamp_on",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

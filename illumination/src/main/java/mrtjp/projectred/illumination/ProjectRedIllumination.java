@@ -23,6 +23,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
 
@@ -30,6 +32,8 @@ import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
 public class ProjectRedIllumination {
 
     public static final String MOD_ID = "projectred_illumination";
+
+    public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);

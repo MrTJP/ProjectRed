@@ -1,4 +1,4 @@
-// 1.19.2	2024-03-05T10:08:22.223009	ProjectRed-Illumination Item Models
+// 1.19.2	2024-05-06T17:00:08.454488	ProjectRed-Illumination Item Models
 a163c9ce1e63e428f3fa804b66e491b455f18540 assets/projectred_illumination/models/item/black_cage_light.json
 a163c9ce1e63e428f3fa804b66e491b455f18540 assets/projectred_illumination/models/item/black_fallout_light.json
 a163c9ce1e63e428f3fa804b66e491b455f18540 assets/projectred_illumination/models/item/black_fixture_light.json
@@ -59,6 +59,7 @@ a163c9ce1e63e428f3fa804b66e491b455f18540 assets/projectred_illumination/models/i
 3b57b1bd43ea0d8e0b5691177b1431a5c5b8e6fa assets/projectred_illumination/models/item/green_inverted_illumar_lamp.json
 a163c9ce1e63e428f3fa804b66e491b455f18540 assets/projectred_illumination/models/item/green_inverted_lantern.json
 a163c9ce1e63e428f3fa804b66e491b455f18540 assets/projectred_illumination/models/item/green_lantern.json
+f08f45f7fd93ac70ed2e01d17acf536a88abe652 assets/projectred_illumination/models/item/illumar_smart_lamp.json
 a163c9ce1e63e428f3fa804b66e491b455f18540 assets/projectred_illumination/models/item/light_blue_cage_light.json
 a163c9ce1e63e428f3fa804b66e491b455f18540 assets/projectred_illumination/models/item/light_blue_fallout_light.json
 a163c9ce1e63e428f3fa804b66e491b455f18540 assets/projectred_illumination/models/item/light_blue_fixture_light.json

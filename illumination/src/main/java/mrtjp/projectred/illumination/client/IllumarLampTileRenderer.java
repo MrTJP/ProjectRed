@@ -24,7 +24,7 @@ public class IllumarLampTileRenderer implements BlockEntityRenderer<IllumarLampT
         if (tile.getLevel() != null) {
             BlockState state = tile.getLevel().getBlockState(tile.getBlockPos());
             if (state.getBlock() instanceof IllumarLampBlock && tile.isLit()) {
-                HaloRenderer.addLight(tile.getBlockPos(), tile.color, GLOW_BOUNDS);
+                HaloRenderer.addLight(tile.getBlockPos(), GLOW_BOUNDS, tile.color);
             }
         }
     }

@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
 
 import static mrtjp.projectred.core.init.CoreItems.*;
+import static mrtjp.projectred.illumination.init.IlluminationBlocks.ILLUMAR_SMART_LAMP;
 
 public class IlluminationRecipeProvider extends RecipeProvider {
 
@@ -42,6 +43,17 @@ public class IlluminationRecipeProvider extends RecipeProvider {
                     .patternLine("GIG")
                     .patternLine("GRG");
         }
+
+        //Smart lamp
+        shapedRecipe(ILLUMAR_SMART_LAMP.get(), 1)
+                .key('P', Tags.Items.GLASS_PANES_COLORLESS)
+                .key('C', BUNDLED_PLATE_ITEM.get())
+                .key('R', RED_ILLUMAR_ITEM.get())
+                .key('G', GREEN_ILLUMAR_ITEM.get())
+                .key('B', BLUE_ILLUMAR_ITEM.get())
+                .patternLine("PRP")
+                .patternLine("PGP")
+                .patternLine("CBC");
 
         //Lanterns
         for (int c = 0; c < 16; c++) {
