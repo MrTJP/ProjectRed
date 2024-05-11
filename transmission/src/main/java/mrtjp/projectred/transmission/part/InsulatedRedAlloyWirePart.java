@@ -51,13 +51,15 @@ public class InsulatedRedAlloyWirePart extends RedwirePart implements IInsulated
 
     @Override
     public int weakPowerLevel(int side) {
+        // Can't power above or below
+        if (side == getSide() || side == (getSide() ^ 1))
+            return 0;
 
-        // If side is towards a rotation
-        if ((side & 6) != (getSide() & 6)) {
-            int r = absoluteRot(side);
-            if (!maskConnects(r))
-                return 0;
-        }
+        // Can't power unconnected sides (unlike uninsulated)
+        int r = absoluteRot(side);
+        if (!maskConnects(r))
+            return 0;
+
         return super.weakPowerLevel(side);
     }
     //endregion
