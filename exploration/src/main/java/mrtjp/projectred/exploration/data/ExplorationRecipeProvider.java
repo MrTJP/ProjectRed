@@ -159,7 +159,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
         bootsRecipe(PERIDOT_BOOTS.get(), PERIDOT_GEM_TAG);
 
         // Backpacks
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 16; i++) {
             backpackRecipe(getBackpackByColor(i));
         }
 
@@ -305,7 +305,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
         ShapedRecipeBuilder builder = shapedRecipe(backpack)
                 .key('C', WOVEN_CLOTH_ITEM.get());
 
-        if (color != DyeColor.WHITE) { // White is default and doesn't need a dye
+        if (color == DyeColor.WHITE) { // White is default and doesn't need a dye
             builder.patternLine("CCC")
                     .patternLine("C C")
                     .patternLine("CCC");
