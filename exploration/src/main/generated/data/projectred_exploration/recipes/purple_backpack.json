@@ -3,11 +3,14 @@
   "key": {
     "C": {
       "item": "projectred_core:woven_cloth"
+    },
+    "D": {
+      "tag": "forge:dyes/purple"
     }
   },
   "pattern": [
     "CCC",
-    "C C",
+    "CDC",
     "CCC"
   ],
   "result": {
