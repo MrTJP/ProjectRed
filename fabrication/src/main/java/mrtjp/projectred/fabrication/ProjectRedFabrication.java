@@ -2,10 +2,7 @@ package mrtjp.projectred.fabrication;
 
 import codechicken.lib.gui.SimpleCreativeTab;
 import codechicken.multipart.api.MultipartType;
-import mrtjp.projectred.fabrication.data.FabricationBlockStateModelProvider;
-import mrtjp.projectred.fabrication.data.FabricationItemModelProvider;
-import mrtjp.projectred.fabrication.data.FabricationLanguageProvider;
-import mrtjp.projectred.fabrication.data.FabricationRecipeProvider;
+import mrtjp.projectred.fabrication.data.*;
 import mrtjp.projectred.fabrication.init.*;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.inventory.MenuType;
@@ -77,6 +74,8 @@ public class ProjectRedFabrication {
         generator.addProvider(event.includeClient(), new FabricationItemModelProvider(generator, fileHelper));
         generator.addProvider(event.includeClient(), new FabricationLanguageProvider(generator));
 
+        generator.addProvider(event.includeServer(), new FabricationBlockTagsProvider(generator, fileHelper));
         generator.addProvider(event.includeServer(), new FabricationRecipeProvider(generator));
+        generator.addProvider(event.includeServer(), new FabricationLootTableProvider(generator));
     }
 }
