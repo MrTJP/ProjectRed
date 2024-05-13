@@ -1,0 +1,5 @@
+// 1.19.2	2024-05-13T08:21:16.055865	ProjectRed-Fabrication Block Loot Tables
+170a77041b752756521029fe2d36dc0952fa584e data/projectred_fabrication/loot_tables/blocks/ic_workbench.json
+22bcef3df841e4276c942f4cdfdbe2147bb0a0b7 data/projectred_fabrication/loot_tables/blocks/lithography_table.json
+473b02f14e0d6f9558ac074a2a85bccc87f39902 data/projectred_fabrication/loot_tables/blocks/packaging_table.json
+8a9d97721b3b18c0ff75aa203c9c033290e1f3dd data/projectred_fabrication/loot_tables/blocks/plotting_table.json
