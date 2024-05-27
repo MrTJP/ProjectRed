@@ -12,10 +12,7 @@ import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.FaceLookup;
 import mrtjp.projectred.core.RedstonePropagator;
-import mrtjp.projectred.core.part.IPropagationFacePart;
-import mrtjp.projectred.core.part.IRedstonePropagationPart;
-import mrtjp.projectred.core.part.IRedwireEmitter;
-import mrtjp.projectred.core.part.IRedwirePart;
+import mrtjp.projectred.core.part.*;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -124,7 +121,7 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
     public int weakPowerLevel(int side) {
         // If side is towards a rotation
         if ((side & 6) != (getSide() & 6)) {
-            int r = absoluteRot(side);
+            int r = Rotation.rotationTo(getSide(), side);
             if (maskConnectsInside(r))
                 return 0;
         }
@@ -145,7 +142,7 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
     //region IConnectable overrides
     @Override
     public boolean discoverOpen(int r) {
-        int absDir = absoluteDir(r);
+        int absDir = IConnectableFacePart.absoluteDir(this, r);
         RedstoneTile tile = (RedstoneTile) this.tile(); // IRedstoneTile is mixed in
         return (tile.openConnections(absDir) & 1 << Rotation.rotationTo(absDir & 6, getSide())) != 0;
     }
@@ -162,7 +159,7 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
 
     @Override
     public boolean discoverInternalOverride(int r) {
-        MultiPart part = tile().getSlottedPart(absoluteDir(r));
+        MultiPart part = tile().getSlottedPart(IConnectableFacePart.absoluteDir(this, r));
         if (part instanceof FaceRedstonePart) {
             return ((FaceRedstonePart) part).canConnectRedstone(getSide());
         }
@@ -298,7 +295,7 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
         }
 
         // Strong signal
-        int dir = absoluteDir(r);
+        int dir = IConnectableFacePart.absoluteDir(this, r);
         signal = RedstoneInteractions.getPowerTo(this, dir) * 17;
         if (signal > 0 || strong) {
             return signal;

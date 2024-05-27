@@ -3,6 +3,7 @@ package mrtjp.projectred.transmission.part;
 import codechicken.lib.vec.Rotation;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.FaceLookup;
+import mrtjp.projectred.core.part.IConnectableFacePart;
 import mrtjp.projectred.core.power.IPowerConductorSource;
 import mrtjp.projectred.core.power.IPowerConnectable;
 import mrtjp.projectred.core.power.PowerConductor;
@@ -90,7 +91,7 @@ public abstract class FacePowerWire extends BaseFaceWirePart implements IPowerCo
     //region Connections
     @Override
     public boolean discoverCornerOverride(int absDir) {
-        int r = absoluteRot(absDir);
+        int r = IConnectableFacePart.absoluteRot(this, absDir);
         FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
         if (lookup.tile instanceof IConnectable) {
             return ((IConnectable) lookup.tile).connectCorner(this, getSide() ^ 1, Rotation.rotationTo(getSide(), absDir ^ 1));
@@ -100,7 +101,7 @@ public abstract class FacePowerWire extends BaseFaceWirePart implements IPowerCo
 
     @Override
     public boolean discoverStraightOverride(int absDir) {
-        int r = absoluteRot(absDir);
+        int r = IConnectableFacePart.absoluteRot(this, absDir);
         FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
         if (lookup.tile instanceof IConnectable) {
             return ((IConnectable) lookup.tile).connectStraight(this, absDir ^ 1, Rotation.rotationTo(absDir, getSide()));

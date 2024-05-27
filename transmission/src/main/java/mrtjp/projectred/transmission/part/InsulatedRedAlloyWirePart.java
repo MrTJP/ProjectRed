@@ -1,7 +1,9 @@
 package mrtjp.projectred.transmission.part;
 
+import codechicken.lib.vec.Rotation;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.FaceLookup;
+import mrtjp.projectred.core.part.IConnectableFacePart;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
@@ -56,7 +58,7 @@ public class InsulatedRedAlloyWirePart extends RedwirePart implements IInsulated
             return 0;
 
         // Can't power unconnected sides (unlike uninsulated)
-        int r = absoluteRot(side);
+        int r = IConnectableFacePart.absoluteRot(this, side);
         if (!maskConnects(r))
             return 0;
 

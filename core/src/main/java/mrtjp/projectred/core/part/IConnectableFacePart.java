@@ -31,21 +31,31 @@ import javax.annotation.Nullable;
  * <p>
  * F = Render corner connections. Like corner connections but set to low if the other wire part is smaller than this (they render to us not us to them)
  */
-public interface IConnectableFacePart extends MultiPart, IConnectablePart, IOrientableFacePart {
+public interface IConnectableFacePart extends MultiPart, IConnectablePart {
+
+    int getSide();
+
+    static int absoluteDir(IConnectableFacePart fp, int absRot) {
+        return Rotation.rotateSide(fp.getSide(), absRot);
+    }
+
+    static int absoluteRot(IConnectableFacePart fp, int absDir) {
+        return Rotation.rotationTo(fp.getSide(), absDir);
+    }
 
     //region Neighbor Positions
     default BlockPos posOfCorner(int r) {
         return pos()
-                .relative(Direction.values()[absoluteDir(r)])
+                .relative(Direction.values()[absoluteDir(this, r)])
                 .relative(Direction.values()[getSide()]);
     }
 
     default BlockPos posOfStraight(int r) {
-        return pos().relative(Direction.values()[absoluteDir(r)]);
+        return pos().relative(Direction.values()[absoluteDir(this, r)]);
     }
 
     default int rotFromCorner(int r) {
-        return Rotation.rotationTo(absoluteDir(r) ^ 1, getSide() ^ 1);
+        return Rotation.rotationTo(absoluteDir(this, r) ^ 1, getSide() ^ 1);
     }
 
     default int rotFromStraight(int r) {
@@ -53,13 +63,13 @@ public interface IConnectableFacePart extends MultiPart, IConnectablePart, IOrie
     }
 
     default int rotFromInternal(int r) {
-        return Rotation.rotationTo(absoluteDir(r), getSide());
+        return Rotation.rotationTo(absoluteDir(this, r), getSide());
     }
     //endregion
 
     //region Connectable Neighbor Acquisitions
     default @Nullable IConnectable getCorner(int r) {
-        int absDir = absoluteDir(r);
+        int absDir = absoluteDir(this, r);
         BlockPos pos = pos()
                 .relative(Direction.values()[absDir])
                 .relative(Direction.values()[getSide()]);
@@ -69,13 +79,13 @@ public interface IConnectableFacePart extends MultiPart, IConnectablePart, IOrie
     }
 
     default @Nullable IConnectable getStraight(int r) {
-        BlockPos pos = pos().relative(Direction.values()[absoluteDir(r)]);
+        BlockPos pos = pos().relative(Direction.values()[absoluteDir(this, r)]);
         MultiPart part = BlockMultipart.getPart(level(), pos, getSide());
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
 
     default @Nullable IConnectable getInternal(int r) {
-        MultiPart part = tile().getSlottedPart(absoluteDir(r));
+        MultiPart part = tile().getSlottedPart(absoluteDir(this, r));
         return part instanceof IConnectable ? (IConnectable) part : null;
     }
 
@@ -177,7 +187,7 @@ public interface IConnectableFacePart extends MultiPart, IConnectablePart, IOrie
     boolean setRenderFlag(IConnectable part);
 
     default boolean outsideCornerEdgeOpen(int r) {
-        int absDir = absoluteDir(r);
+        int absDir = absoluteDir(this, r);
         BlockPos pos = pos().relative(Direction.values()[absDir]);
         if (level().isEmptyBlock(pos)) return true;
 
@@ -193,7 +203,7 @@ public interface IConnectableFacePart extends MultiPart, IConnectablePart, IOrie
     }
 
     default boolean insideCornerEdgeOpen(int r) {
-        return tile().getSlottedPart(PartMap.edgeBetween(absoluteDir(r), getSide())) == null;
+        return tile().getSlottedPart(PartMap.edgeBetween(absoluteDir(this, r), getSide())) == null;
     }
 
     /**
@@ -223,7 +233,7 @@ public interface IConnectableFacePart extends MultiPart, IConnectablePart, IOrie
             }
             return 0;
         }
-        return discoverCornerOverride(absoluteDir(r)) ? 2 : 0;
+        return discoverCornerOverride(absoluteDir(this, r)) ? 2 : 0;
     }
 
     default boolean discoverStraight(int r) {
@@ -231,7 +241,7 @@ public interface IConnectableFacePart extends MultiPart, IConnectablePart, IOrie
         if (c != null) {
             return canConnectPart(c, r) && c.connectStraight(this, rotFromStraight(r), -1);
         }
-        return discoverStraightOverride(absoluteDir(r));
+        return discoverStraightOverride(absoluteDir(this, r));
     }
 
     default boolean discoverInternal(int r) {
