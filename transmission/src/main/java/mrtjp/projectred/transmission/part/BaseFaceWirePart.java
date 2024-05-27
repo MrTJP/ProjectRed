@@ -73,21 +73,6 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     public int getSide() {
         return side & 0xFF;
     }
-
-    @Override
-    public void setSide(int s) {
-        throw new RuntimeException("Attempted to orient a wire!");
-    }
-
-    @Override
-    public int getRotation() {
-        return 0; // Wires don't rotate
-    }
-
-    @Override
-    public void setRotation(int r) {
-        throw new RuntimeException("Attempted to rotate a wire!");
-    }
     //endregion
 
     @Override
@@ -260,11 +245,11 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     @Override
     public boolean discoverOpen(int r) {
         // Condition 1: Edge must be empty (this is where strips go)
-        MultiPart edgePart = tile().getSlottedPart(PartMap.edgeBetween(getSide(), absoluteDir(r)));
+        MultiPart edgePart = tile().getSlottedPart(PartMap.edgeBetween(getSide(), IConnectableFacePart.absoluteDir(this, r)));
         if (edgePart != null) return false;
 
         // Condition 2: Part on inside face must not consume the connection
-        MultiPart insidePart = tile().getSlottedPart(absoluteDir(r));
+        MultiPart insidePart = tile().getSlottedPart(IConnectableFacePart.absoluteDir(this, r));
         if (insidePart instanceof IConnectable) {
             //TODO this seems sus. Why let part connect inside AND outside?
             return canConnectPart((IConnectable) insidePart, r);

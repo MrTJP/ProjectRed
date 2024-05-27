@@ -19,6 +19,7 @@ import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.PlacementLib;
 import mrtjp.projectred.core.part.IConnectableFacePart;
+import mrtjp.projectred.core.part.IOrientableFacePart;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.client.GateComponentModels;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -43,7 +44,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public abstract class GatePart extends BaseMultipart implements IConnectableFacePart, TickablePart, FacePart, NormalOcclusionPart, IconHitEffectsPart, IGateRenderData {
+public abstract class GatePart extends BaseMultipart implements IConnectableFacePart, IOrientableFacePart, TickablePart, FacePart, NormalOcclusionPart, IconHitEffectsPart, IGateRenderData {
 
     private static final int KEY_UPDATE = 0;
     private static final int KEY_ORIENTATION = 1;
