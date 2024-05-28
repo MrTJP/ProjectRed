@@ -7,23 +7,20 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
-import codechicken.multipart.api.RedstoneInteractions;
 import codechicken.multipart.api.part.MultiPart;
-import codechicken.multipart.api.part.redstone.FaceRedstonePart;
 import codechicken.multipart.block.BlockMultipart;
 import codechicken.multipart.util.MultipartPlaceContext;
 import com.google.common.collect.ImmutableSet;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.FaceLookup;
+import mrtjp.projectred.core.RedstoneFaceLookup;
 import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.core.part.*;
 import mrtjp.projectred.integration.GateType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -124,62 +121,34 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
         int signal = 0;
         for (int r = 0; r < 4; r++) {
             if ((propagationMask & 1 << r) == 0) { continue; }
+            int s;
 
             if (maskConnectsCorner(r)) {
-                signal = Math.max(calcCornerSignal(r), signal);
+                FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
+                s = RedstoneFaceLookup.resolveSignal(lookup, true);
+
             } else if (maskConnectsStraight(r)) {
-                signal = Math.max(calcStraightSignal(r), signal);
+                FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
+                s = RedstoneFaceLookup.resolveSignal(lookup, true);
+                if (s == 0) {
+                    s = RedstoneFaceLookup.resolveVanillaSignal(lookup, this, true, true);
+                }
+
             } else if (maskConnectsInside(r)) {
-                signal = Math.max(calcInsideSignal(r), signal);
-            } else {
-                signal = Math.max(getVanillaSignal(r, true, true), signal);
+                FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
+                s = RedstoneFaceLookup.resolveSignal(lookup, true);
+
+            } else { // For non-connected sides, just do a vanilla signal lookup
+                FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
+                s = RedstoneFaceLookup.resolveVanillaSignal(lookup, this, true, true);
             }
+
+            signal = Math.max(s, signal);
         }
 
         RedstonePropagator.setDustProvidesPower(true);
         RedstonePropagator.setRedwiresProvidePower(true);
         return signal;
-    }
-
-    protected int calcCornerSignal(int r) {
-        FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
-        return resolveSignal(lookup);
-    }
-
-    protected int calcStraightSignal(int r) {
-        FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
-        int signal = resolveSignal(lookup);
-        if (signal > 0) {
-            return signal;
-        }
-        return getVanillaSignal(r, true, true);
-    }
-
-    protected int calcInsideSignal(int r) {
-        FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
-        return resolveSignal(lookup);
-    }
-
-    protected int resolveSignal(FaceLookup lookup) {
-
-        // Part signal resolution
-        if (lookup.part instanceof IRedwirePart redwirePart) {
-            if (redwirePart.diminishOnSide(lookup.otherRotation)) {
-                return redwirePart.getRedwireSignal(lookup.otherRotation) - 1;
-            }
-        }
-
-        if (lookup.part instanceof IRedwireEmitter) {
-            return ((IRedwireEmitter) lookup.part).getRedwireSignal(lookup.otherRotation);
-        }
-
-        // Shouldn't matter, no space for a face part inside
-        if (lookup.part instanceof FaceRedstonePart faceRsPart) {
-            int s = Rotation.rotateSide(lookup.otherSide, lookup.otherRotation);
-            return Math.max(faceRsPart.strongPowerLevel(s), faceRsPart.weakPowerLevel(s)) * 17;
-        }
-
-        return super.resolveSignal(lookup);
     }
 
     @Override

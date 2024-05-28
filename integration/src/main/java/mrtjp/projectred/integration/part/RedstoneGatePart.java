@@ -2,13 +2,13 @@ package mrtjp.projectred.integration.part;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.multipart.api.RedstoneInteractions;
 import codechicken.multipart.api.part.AnimateTickPart;
 import codechicken.multipart.api.part.redstone.FaceRedstonePart;
 import codechicken.multipart.init.CBMultipartModContent;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.FaceLookup;
+import mrtjp.projectred.core.RedstoneFaceLookup;
 import mrtjp.projectred.core.part.IRedwireEmitter;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.client.GateModelRenderer;
@@ -18,10 +18,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.RedStoneWireBlock;
-
-import java.util.Random;
 
 public abstract class RedstoneGatePart extends GatePart implements FaceRedstonePart, AnimateTickPart {
 
@@ -158,45 +154,17 @@ public abstract class RedstoneGatePart extends GatePart implements FaceRedstoneP
             lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), ar);
         }
 
-        return lookup == null ? getVanillaSignal(ar, true, false) : resolveSignal(lookup);
+        if (lookup != null) {
+            return RedstoneFaceLookup.resolveSignal(lookup, false);
+        }
+
+        // Vanilla signal resolution
+        lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), ar);
+        return RedstoneFaceLookup.resolveVanillaSignal(lookup, this, true, false);
     }
 
     protected int getAnalogRedstoneInput(int r) {
         return (getRedstoneInput(r) + 16) / 17;
-    }
-
-    protected int resolveSignal(FaceLookup lookup) {
-        if (lookup.part instanceof IRedwireEmitter) {
-            return ((IRedwireEmitter) lookup.part).getRedwireSignal(lookup.otherRotation);
-        }
-        return 0;
-    }
-
-    protected int getVanillaSignal(int r, boolean strong, boolean limitDust) {
-        FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
-        int signal = 0;
-
-        // Dust signal
-        if (lookup.block == Blocks.REDSTONE_WIRE) {
-            signal = Math.max(lookup.state.getValue(RedStoneWireBlock.POWER) - 1, 0);
-            if (limitDust) {
-                return signal;
-            }
-        }
-
-        // Strong signal
-        int dir = absoluteDir(r);
-        signal = RedstoneInteractions.getPowerTo(this, dir) * 17;
-        if (signal > 0 || strong) {
-            return signal;
-        }
-
-        // Weak signal
-        if (lookup.state.isRedstoneConductor(level(), lookup.otherPos)) {
-            signal = level().getBestNeighborSignal(lookup.otherPos) * 17;
-        }
-
-        return signal;
     }
     //endregion
 

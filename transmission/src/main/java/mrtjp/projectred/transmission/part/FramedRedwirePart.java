@@ -9,10 +9,10 @@ import codechicken.multipart.api.part.redstone.RedstonePart;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.CenterLookup;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.RedstoneCenterLookup;
 import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.core.part.IPropagationCenterPart;
 import mrtjp.projectred.core.part.IRedstonePropagationPart;
-import mrtjp.projectred.core.part.IRedwireEmitter;
 import mrtjp.projectred.core.part.IRedwirePart;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.core.BlockPos;
@@ -182,11 +182,20 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
 
         int signal = 0;
         for (int s = 0; s < 6; s++) {
+            int sig = 0;
             if (maskConnectsIn(s)) {
-                signal = Math.max(signal, calculateInternalSignal(s));
+                CenterLookup lookup = CenterLookup.lookupInsideFace(level(), pos(), s);
+                sig = resolveSignal(lookup);
+
             } else if (maskConnectsOut(s)) {
-                signal = Math.max(signal, calculateStraightSignal(s));
+                CenterLookup lookup = CenterLookup.lookupStraightCenter(level(), pos(), s);
+                sig = resolveSignal(lookup);
+                if (sig == 0) {
+                    sig = RedstoneCenterLookup.resolveVanillaSignal(lookup, this);
+                }
             }
+
+            signal = Math.max(sig, signal);
         }
 
         RedstonePropagator.setDustProvidesPower(true);
@@ -216,44 +225,7 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
     }
     //endregion
 
-    protected int calculateStraightSignal(int s) {
-        CenterLookup lookup = CenterLookup.lookupStraightCenter(level(), pos(), s);
-        if (lookup.part != null) {
-            return resolveSignal(lookup);
-        }
-
-        // If no part, get generic strong signal
-        return RedstoneInteractions.getPowerTo(this, s) * 17;
-    }
-
-    protected int calculateInternalSignal(int s) {
-        CenterLookup lookup = CenterLookup.lookupInsideFace(level(), pos(), s);
-        int signal = resolveSignal(lookup);
-        if (signal > 0) {
-            return signal;
-        }
-
-        if (lookup.part instanceof RedstonePart rw) {
-            return Math.max(rw.strongPowerLevel(lookup.otherDirection), rw.weakPowerLevel(lookup.otherDirection));
-        }
-
-        return 0;
-    }
-
     protected int resolveSignal(CenterLookup lookup) {
-        if (lookup.part instanceof IRedwirePart rw) {
-
-            int signal = rw.getRedwireSignal(lookup.otherDirection);
-            if (rw.diminishOnSide(lookup.otherDirection)) {
-                signal--;
-            }
-            return signal;
-        }
-
-        if (lookup.part instanceof IRedwireEmitter) {
-            return ((IRedwireEmitter) lookup.part).getRedwireSignal(lookup.otherDirection);
-        }
-
-        return 0;
+        return RedstoneCenterLookup.resolveSignal(lookup, true);
     }
 }

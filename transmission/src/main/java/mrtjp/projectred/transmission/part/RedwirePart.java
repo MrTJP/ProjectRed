@@ -11,14 +11,13 @@ import codechicken.multipart.trait.extern.RedstoneTile;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.FaceLookup;
+import mrtjp.projectred.core.RedstoneFaceLookup;
 import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.core.part.*;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.RedStoneWireBlock;
 
 import javax.annotation.Nullable;
 
@@ -196,21 +195,36 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
         int signal = 0;
 
         for (int r = 0; r < 4; r++) {
+            int s = 0;
             if (maskConnectsCorner(r)) {
-                signal = Math.max(calcCornerSignal(r), signal);
+                FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
+                s = resolveSignal(lookup);
+
             } else if (maskConnectsStraight(r)) {
-                signal = Math.max(calcStraightSignal(r), signal);
+                FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
+                s = resolveSignal(lookup);
+                if (s <= 0) {
+                    s = RedstoneFaceLookup.resolveVanillaSignal(lookup, this, true, true);
+                }
+
             } else if (maskConnectsInside(r)) {
-                signal = Math.max(calcInsideSignal(r), signal);
+                FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
+                s = resolveSignal(lookup);
             }
+
+            signal = Math.max(s, signal);
         }
 
         if (powerUnderside()) {
-            signal = Math.max(calcUndersideSignal(), signal);
+            Direction face = Direction.values()[getSide()];
+            int s = level().getSignal(pos().relative(face), face) * 17;
+            signal = Math.max(s, signal);
         }
 
         if (maskConnectsCenter()) {
-            signal = Math.max(calcCenterSignal(), signal);
+            FaceLookup lookup = FaceLookup.lookupInsideCenter(level(), pos(), getSide());
+            int s = resolveSignal(lookup);
+            signal = Math.max(s, signal);
         }
 
         RedstonePropagator.setDustProvidesPower(true);
@@ -232,81 +246,8 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
     }
     //endregion
 
-    protected int calcCornerSignal(int r) {
-        FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
-        return resolveSignal(lookup);
-    }
-
-    protected int calcStraightSignal(int r) {
-        FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
-        int signal = resolveSignal(lookup);
-        if (signal > 0) {
-            return signal;
-        }
-        return getVanillaSignal(r, true, true);
-    }
-
-    protected int calcInsideSignal(int r) {
-        FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
-        return resolveSignal(lookup);
-    }
-
-    protected int calcUndersideSignal() {
-        Direction face = Direction.values()[getSide()];
-        return level().getSignal(pos().relative(face), face) * 17;
-    }
-
-    protected int calcCenterSignal() {
-        FaceLookup lookup = FaceLookup.lookupInsideCenter(level(), pos(), getSide());
-        return resolveSignal(lookup);
-    }
-
     protected int resolveSignal(FaceLookup lookup) {
-
-        // Part signal resolution
-        if (lookup.part instanceof IRedwirePart redwirePart) {
-            if (redwirePart.diminishOnSide(lookup.otherRotation)) {
-                return redwirePart.getRedwireSignal(lookup.otherRotation) - 1;
-            }
-        }
-
-        if (lookup.part instanceof IRedwireEmitter) {
-            return ((IRedwireEmitter) lookup.part).getRedwireSignal(lookup.otherRotation);
-        }
-
-        if (lookup.part instanceof FaceRedstonePart faceRsPart) {
-            int s = Rotation.rotateSide(lookup.otherSide, lookup.otherRotation);
-            return Math.max(faceRsPart.strongPowerLevel(s), faceRsPart.weakPowerLevel(s)) * 17;
-        }
-
-        return 0;
-    }
-
-    protected int getVanillaSignal(int r, boolean strong, boolean limitDust) {
-        FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
-        int signal = 0;
-
-        // Dust signal
-        if (lookup.block == Blocks.REDSTONE_WIRE) {
-            signal = Math.max(lookup.state.getValue(RedStoneWireBlock.POWER) - 1, 0);
-            if (limitDust) {
-                return signal;
-            }
-        }
-
-        // Strong signal
-        int dir = IConnectableFacePart.absoluteDir(this, r);
-        signal = RedstoneInteractions.getPowerTo(this, dir) * 17;
-        if (signal > 0 || strong) {
-            return signal;
-        }
-
-        // Weak signal
-        if (lookup.state.isRedstoneConductor(level(), lookup.otherPos)) {
-            signal = level().getBestNeighborSignal(lookup.otherPos) * 17;
-        }
-
-        return signal;
+        return RedstoneFaceLookup.resolveSignal(lookup, true);
     }
 
     protected abstract boolean powerUnderside();
