@@ -19,6 +19,7 @@ public class FaceLookup {
     public final BlockPos pos;
     public final int side;
     public final int r;
+    public final int dir;
 
     //Located objects
     public final BlockState state;
@@ -30,12 +31,14 @@ public class FaceLookup {
     public final BlockPos otherPos;
     public final int otherSide;
     public final int otherRotation;
+    public final int otherDir;
 
     public FaceLookup(Level world, BlockPos pos, int side, int r, BlockState state, @Nullable BlockEntity tile, @Nullable MultiPart part, BlockPos otherPos, int otherSide, int otherRotation) {
         this.world = world;
         this.pos = pos;
         this.side = side;
         this.r = r;
+        this.dir = r == -1 ? side ^ 1 : Rotation.rotateSide(side, r);
         this.state = state;
         this.block = state.getBlock();
         this.tile = tile;
@@ -43,6 +46,8 @@ public class FaceLookup {
         this.otherPos = otherPos;
         this.otherSide = otherSide;
         this.otherRotation = otherRotation;
+        // When otherSide == -1, otherRotation is already otherDir
+        this.otherDir = otherSide == -1 ? otherRotation : Rotation.rotateSide(otherSide, otherRotation);
     }
 
     public static FaceLookup lookupCorner(Level world, BlockPos pos, int side, int r) {
@@ -87,14 +92,14 @@ public class FaceLookup {
     }
 
     public static FaceLookup lookupInsideCenter(Level world, BlockPos pos, int side) {
-        int otherSide = side;
-        int otherRotation = -1; // Part is not on face
+        int otherSide = -1; // Center part not on side
+        int otherRotation = side; // For this case, rotation is used as direction
 
         BlockState state = world.getBlockState(pos);
         BlockEntity tile = getBlockEntityForState(world, pos, state);
         MultiPart part = tile instanceof TileMultipart tmp ? tmp.getSlottedPart(6) : null;
 
-        return new FaceLookup(world, pos, side, -1, state, tile, part, pos, otherRotation, otherSide);
+        return new FaceLookup(world, pos, side, -1, state, tile, part, pos, otherSide, otherRotation);
     }
 
     /**
