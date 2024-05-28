@@ -182,33 +182,6 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
         return super.resolveSignal(lookup);
     }
 
-    protected int getVanillaSignal(int r, boolean strong, boolean limitDust) {
-        FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
-        int signal = 0;
-
-        // Dust signal
-        if (lookup.block == Blocks.REDSTONE_WIRE) {
-            signal = Math.max(lookup.state.getValue(RedStoneWireBlock.POWER) - 1, 0);
-            if (limitDust) {
-                return signal;
-            }
-        }
-
-        // Strong signal
-        int dir = absoluteDir(r);
-        signal = RedstoneInteractions.getPowerTo(this, dir) * 17;
-        if (signal > 0 && strong) {
-            return signal;
-        }
-
-        // Weak signal
-        if (lookup.state.isRedstoneConductor(level(), lookup.otherPos)) {
-            signal = level().getBestNeighborSignal(lookup.otherPos) * 17;
-        }
-
-        return signal;
-    }
-
     @Override
     public void onSignalUpdate() {
         tile().setChanged();
