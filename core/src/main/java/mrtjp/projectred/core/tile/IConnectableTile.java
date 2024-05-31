@@ -6,9 +6,9 @@ import codechicken.multipart.block.BlockMultipart;
 import codechicken.multipart.block.TileMultipart;
 import codechicken.multipart.util.PartMap;
 import mrtjp.projectred.api.IConnectable;
+import mrtjp.projectred.core.CenterLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
@@ -208,9 +208,9 @@ public interface IConnectableTile extends IBlockEventTile, IConnectable {
     }
 
     default boolean discoverStraightCenterOverride(int s) {
-        BlockPos pos = posOfStraight(s);
-        BlockEntity tile = getBlockLevel().getBlockEntity(pos);
-        if (tile instanceof IConnectable connectable) {
+        CenterLookup lookup = CenterLookup.lookupStraightCenter(getBlockLevel(), getBlockPosition(), s);
+
+        if (lookup.tile instanceof IConnectable connectable) {
             return canConnectPart(connectable, s, -1) && connectable.connectStraight(this, s, -1);
         }
 
