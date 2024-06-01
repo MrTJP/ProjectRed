@@ -13,21 +13,30 @@ public interface MovementDescriptor {
 
     enum MovementStatus {
         /**
-         * Failed to begin movement (collision, unmovable block in structure, etc)
+         * Movement pending start. Default state when first created
          */
-        FAILED,
+        PENDING_START,
         /**
-         * Movement in progress
+         * Movement animation in progress while block remains in initial position
          */
         MOVING,
         /**
-         * Movement finished successfully
+         * Movement animation has completed but still awaiting execution of movement.
+         * Block is still in initial position.
+         */
+        PENDING_FINALIZATION,
+        /**
+         * Movement finished successfully and block is in final position
          */
         FINISHED,
         /**
          * Movement cancelled before completion (chunk was unloaded, etc)
          */
         CANCELLED,
+        /**
+         * Failed to begin movement (collision, unmovable block in structure, etc)
+         */
+        FAILED,
         /**
          * Unknown status
          */
