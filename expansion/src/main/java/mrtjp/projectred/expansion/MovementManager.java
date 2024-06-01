@@ -40,6 +40,7 @@ import net.minecraftforge.event.level.LevelEvent;
 import java.util.*;
 import java.util.function.Consumer;
 
+import static mrtjp.projectred.api.MovementDescriptor.MovementStatus.*;
 import static mrtjp.projectred.expansion.ProjectRedExpansion.LOGGER;
 
 public class MovementManager {
@@ -85,16 +86,20 @@ public class MovementManager {
     }
 
     public static void onChunkUnloadEvent(ChunkEvent.Unload event) {
+//        LOGGER.debug("Chunk {} unloaded", event.getLevel());
         if (event.getLevel() instanceof Level level) {
             getInstance(level).cancelMovementsInChunk(level, event.getChunk().getPos());
         }
     }
 
     public static void onLevelUnload(LevelEvent.Unload event) {
-        // Note: Client unloads levels as player changes dimensions, but
+        // Note: Client unloads levels as player changes dimensions or leaves server, but
         //       server appears to always have all dims loaded and unloads only
         //       on shutdown
         LOGGER.debug("Level {} unloaded", event.getLevel());
+        if (event.getLevel() instanceof Level level) {
+            getInstance(level).cancelMovementsOnUnload(level);
+        }
     }
 
     public static void onLevelLoad(LevelEvent.Load event) {
@@ -186,6 +191,16 @@ public class MovementManager {
         if (watchingPlayersSet != null) watchingPlayersSet.remove(pos);
     }
 
+    private void cancelMovementsOnUnload(Level level) {
+        // Note: Call this on both sides
+        LOGGER.debug("Cancelling {} movements on level {} unload", structures.size(), level);
+        for (var structure : structures.values()) {
+            structure.cancelMove(level); // prob doesn't matter at this point
+        }
+        structures.clear();
+        nextStructureId = 0;
+    }
+
     private void cancelMovementsInChunk(Level level, ChunkPos pos) {
         if (level.isClientSide) {
             return;
@@ -220,7 +235,7 @@ public class MovementManager {
         for (var e : newWatchers.entrySet()) {
             ServerPlayer player = e.getKey();
             Set<ChunkPos> posSet = e.getValue();
-            LOGGER.debug("Sending descriptions to player {} for {} chunks", player.getName().getString(), posSet.size());
+//            LOGGER.debug("Sending descriptions to player {} for {} chunks", player.getName().getString(), posSet.size());
             sendDescriptionsOnWatch(player, posSet);
             // Promote player to a watcher
             watchingPlayers.computeIfAbsent(player, p -> new HashSet<>()).addAll(posSet);
@@ -231,12 +246,18 @@ public class MovementManager {
         List<Integer> removed = new LinkedList<>();
         for (var e : structures.entrySet()) {
             MovingStructure structure = e.getValue();
-            if (structure.isFinished()) {
+            if (structure.getStatus() == PENDING_FINALIZATION) {
                 LOGGER.debug("Executing move {}", structure.toString());
-                // Execute move
-                structure.executeMove(level);
-                // Tell client
+
+                // Execute pre-move, which does silent block modifications
+                structure.executePreMove(level);
+
+                // Tell client to execute both pre-move and post-move
                 sendExecuteMove(structure);
+
+                // Execute post-move. Block updates can be done here since client has moved blocks already
+                structure.executePostMove(level);
+
                 // Remove
                 removed.add(e.getKey());
             }
@@ -264,12 +285,12 @@ public class MovementManager {
         MovingStructure structure = new MovingStructure(getNextStructureId(), speed, dir, movingRows);
         if (!structure.canMove(level)) return structure;
 
-        // Add structure and begin move
+        // Add structure and send to client
         structures.put(structure.id, structure);
-        structure.beginMove(level);
-
-        // Send to client
         sendNewStructureDescription(structure);
+
+        // Begin move (client does this when structure received from above call)
+        structure.beginMove(level);
 
         return structure;
     }
@@ -322,16 +343,22 @@ public class MovementManager {
     }
 
     private void readStructureExecution(MCDataInput input, Level level) {
-        // Generate a new structure in case it was stale on client
-        MovingStructure structure = MovingStructure.fromDesc(input);
+        int id = input.readUShort();
+        var structure = structures.get(id);
 
-        // Execute move
-        structure.executeMove(level);
-
-        // Delete struct that *should* have been on the client
-        if (structures.remove(structure.id) == null) {
-            LOGGER.warn("Move executed for unknown structure id {}", structure.id);
+        // Client would have received this structure already
+        if (structure == null) {
+            LOGGER.error("Pre-move executed for unknown structure id {}. Adding it for post-move.", id);
+            return;
         }
+
+        // Execute pre-move and post-move operations. Server has only done pre-move so far.
+        // It will do post-move after the client.
+        structure.executePreMove(level);
+        structure.executePostMove(level);
+
+        // Full movement complete on client-side. Remove structure
+        structures.remove(id);
     }
 
     private void readStructureCancellation(MCDataInput input, Level level) {
@@ -374,7 +401,7 @@ public class MovementManager {
 
     private void sendExecuteMove(MovingStructure structure) {
         PacketCustom packet = createPacket(KEY_EXECUTE_MOVE);
-        structure.writeDesc(packet);
+        packet.writeShort(structure.id);
 
         for (ServerPlayer player : playersWatchingStructure(structure)) {
             packet.sendToPlayer(player);
@@ -429,21 +456,21 @@ public class MovementManager {
         private final LazyValue<HashSet<ChunkPos>> intersectingChunks = new LazyValue<>(this::computeIntersectingChunks);
         private final LazyValue<HashSet<SectionPos>> renderChunks = new LazyValue<>(this::computeRenderChunks);
 
-        private boolean started = false;
-        private boolean cancelled = false;
+        private MovementStatus status;
         private double progress;
 
-        public MovingStructure(int id, double speed, int dir, List<MovingRow> rows, double progress) {
+        public MovingStructure(int id, double speed, int dir, List<MovingRow> rows, MovementStatus status, double progress) {
             this.id = id;
             this.speed = speed;
             this.dir = dir;
             this.rows = Collections.unmodifiableList(rows);
+            this.status = status;
             this.progress = progress;
             this.totalSize = FastStream.of(rows).intSum(r -> r.size);
         }
 
         public MovingStructure(int id, double speed, int dir, List<MovingRow> rows) {
-            this(id, speed, dir, rows, 0D);
+            this(id, speed, dir, rows, PENDING_START, 0D);
         }
 
         //region Network
@@ -456,6 +483,7 @@ public class MovementManager {
                 output.writePos(row.pos);
                 output.writeShort(row.size);
             }
+            output.writeByte(status.ordinal());
             output.writeDouble(progress); //TODO use integers instead
         }
 
@@ -468,24 +496,22 @@ public class MovementManager {
             for (int i = 0; i < size; i++) {
                 rows.add(new MovingRow(input.readPos(), dir, input.readUShort()));
             }
+            MovementStatus status = MovementStatus.values()[input.readUByte()];
             double progress = input.readDouble();
 
-            return new MovingStructure(id, speed, dir, rows, progress);
+            return new MovingStructure(id, speed, dir, rows, status, progress);
         }
         //endregion
 
         //region Movement description
         @Override
         public MovementStatus getStatus() {
-            if (!started) return MovementStatus.FAILED;
-            if (cancelled) return MovementStatus.CANCELLED;
-            if (progress >= 1D) return MovementStatus.FINISHED;
-            return MovementStatus.MOVING;
+            return status;
         }
 
         @Override
         public boolean isMoving() {
-            return getStatus() == MovementStatus.MOVING;
+            return getStatus() == MOVING || getStatus() == PENDING_FINALIZATION;
         }
 
         @Override
@@ -500,7 +526,8 @@ public class MovementManager {
 
         @Override
         public Vector3 getRenderOffset(float partialTicks) {
-            return Vector3.fromBlockPos(BlockPos.ZERO.relative(Direction.values()[dir])).multiply(progress + speed * partialTicks);
+            double p = Math.min(progress + speed * partialTicks, 1D);
+            return Vector3.fromBlockPos(BlockPos.ZERO.relative(Direction.values()[dir])).multiply(p);
         }
         //endregion
 
@@ -520,12 +547,18 @@ public class MovementManager {
         }
 
         public void tickProgress(Level level) {
-            progress = Math.min(progress + speed, 1D);
-            FastStream.of(rows).forEach(r -> r.pushEntities(level, progress));
-        }
 
-        public boolean isFinished() {
-            return progress >= 1D;
+            // Should not be ticking progress otherwise
+            assert status == MOVING || status == PENDING_FINALIZATION;
+
+            if (status == MOVING) {
+                progress = Math.min(progress + speed, 1D);
+                FastStream.of(rows).forEach(r -> r.pushEntities(level, progress));
+
+                if (progress >= 1D) {
+                    status = PENDING_FINALIZATION;
+                }
+            }
         }
 
         public boolean canMove(Level level) {
@@ -536,7 +569,9 @@ public class MovementManager {
         }
 
         public void beginMove(Level level) {
-            started = true;
+            assert status == MovementStatus.PENDING_START;
+            status = MOVING;
+
             FastStream.of(rows).forEach(r -> r.beginMove(level));
 
             if (level.isClientSide) {
@@ -545,10 +580,13 @@ public class MovementManager {
             }
         }
 
-        public void executeMove(Level level) {
-
-            // Run movement phases
+        public void executePreMove(Level level) {
+            // Silently moves blocks to new position
             FastStream.of(rows).forEach(r -> r.moveBlocks(level));
+        }
+
+        public void executePostMove(Level level) {
+            // Completes the movement by alerting the tile itself, etc
             FastStream.of(rows).forEach(r -> r.postMove(level));
             FastStream.of(rows).forEach(r -> r.endMove(level));
 
@@ -572,11 +610,14 @@ public class MovementManager {
             }
 
             //TODO Tick rescheduling
+            status = FINISHED;
         }
 
         public void cancelMove(Level level) {
             // Shouldn't need to do anything. Nothing happens until the animation is finished
-            cancelled = true;
+            // TODO MovementController notification for this?
+            assert status == MOVING || status == PENDING_FINALIZATION;
+            status = CANCELLED;
         }
 
         @OnlyIn(Dist.CLIENT)
@@ -662,6 +703,10 @@ public class MovementManager {
             Iterator<BlockPos> it = iteratePreMove();
             while (it.hasNext()) {
                 BlockPos pos = it.next();
+
+                BlockMover mover = MovementRegistry.getMover(level, pos);
+                if (!mover.canMove(level, pos)) return false;
+
                 MovementController controller = MovementRegistry.getMovementController(level, pos);
                 // Allow hooks to conditionally block movement
                 if (controller != null && !controller.isMovable(level, pos, Direction.values()[dir])) return false;
