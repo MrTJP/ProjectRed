@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "B": {
+      "tag": "forge:ingots/copper"
+    },
+    "G": {
+      "tag": "forge:glass_panes"
+    }
+  },
+  "pattern": [
+    "BGB",
+    "BGB",
+    "BGB"
+  ],
+  "result": {
+    "count": 8,
+    "item": "projectred_expansion:pneumatic_tube"
+  }
+}

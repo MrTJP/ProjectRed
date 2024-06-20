@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "P": {
+      "item": "minecraft:piston"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "S": {
+      "tag": "forge:cobblestone"
+    }
+  },
+  "pattern": [
+    "SCS",
+    "SPS",
+    "SRS"
+  ],
+  "result": {
+    "item": "projectred_expansion:deployer"
+  }
+}

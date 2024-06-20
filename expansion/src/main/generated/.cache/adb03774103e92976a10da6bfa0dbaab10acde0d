@@ -1,9 +1,12 @@
-// 1.19.2	2024-03-05T10:04:59.926763	ProjectRed-Expansion Block Loot Tables
+// 1.19.2	2024-06-19T14:15:42.467822	ProjectRed-Expansion Block Loot Tables
 411e319a86714481cefff3111427cc18b9b2bfa1 data/projectred_expansion/loot_tables/blocks/auto_crafter.json
 ecc97100e22b21390a50009a20f67e2bffd693c3 data/projectred_expansion/loot_tables/blocks/battery_box.json
+393d359b1203076e7a24f85ba5cd300d40def9b2 data/projectred_expansion/loot_tables/blocks/block_breaker.json
 937adf7ed2cd79a1ac65f77a0b22219c1d9631ea data/projectred_expansion/loot_tables/blocks/charging_bench.json
+f264c9e4ae53755c1ce54deaabafb4195b3ec616 data/projectred_expansion/loot_tables/blocks/deployer.json
 d084408f60ef161ea16b326c5a63e3d23713745e data/projectred_expansion/loot_tables/blocks/fire_starter.json
 dffb6a70909e6c64dd0afa60966dc987ae5d6754 data/projectred_expansion/loot_tables/blocks/frame.json
 1ea1d24f7f8f2944871de260fe87ea6e37cf2cfa data/projectred_expansion/loot_tables/blocks/frame_actuator.json
 07e5557543ebcba7088f33bd3dfc2e971536b6f0 data/projectred_expansion/loot_tables/blocks/frame_motor.json
 089c17353de9a38e79e8e5e14e99df5cd4bc317a data/projectred_expansion/loot_tables/blocks/project_bench.json
+596c0aec0f93d4753e3827f9222cd37d24391d66 data/projectred_expansion/loot_tables/blocks/transposer.json

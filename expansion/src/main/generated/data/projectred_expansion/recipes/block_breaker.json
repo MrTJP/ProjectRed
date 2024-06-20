@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "A": {
+      "item": "minecraft:iron_pickaxe"
+    },
+    "P": {
+      "item": "minecraft:piston"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "S": {
+      "tag": "forge:cobblestone"
+    }
+  },
+  "pattern": [
+    "SAS",
+    "SPS",
+    "SRS"
+  ],
+  "result": {
+    "item": "projectred_expansion:block_breaker"
+  }
+}

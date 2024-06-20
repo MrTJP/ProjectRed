@@ -34,6 +34,9 @@ public class ExpansionItemModelProvider extends ItemModelProvider {
         simpleItemBlock(CHARGING_BENCH_BLOCK.get());
         simpleItemBlock(FIRE_STARTER_BLOCK.get());
         simpleItemBlock(FRAME_ACTUATOR_BLOCK.get());
+        simpleItemBlock(TRANSPOSER_BLOCK.get());
+        simpleItemBlock(BLOCK_BREAKER_BLOCK.get());
+        simpleItemBlock(DEPLOYER_BLOCK.get());
 
         generated(FRAME_BLOCK.get()).noTexture();
         generated(FRAME_MOTOR_BLOCK.get()).noTexture();

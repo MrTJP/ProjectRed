@@ -1,10 +1,13 @@
 package mrtjp.projectred.lib;
 
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
 
 import java.util.function.Consumer;
 
@@ -66,6 +69,60 @@ public class InventoryLib {
             if (stack.isEmpty()) break;
         }
     }
+
+    //region Worldly Container utilities
+    public static boolean injectWorldly(WorldlyContainer container, ItemStack stack, int side, boolean simulate) {
+
+        var insertDir = Direction.values()[side];
+        var slots = container.getSlotsForFace(insertDir);
+
+        for (int s : slots) {
+            if (!container.canPlaceItemThroughFace(s, stack, insertDir)) continue;
+
+            ItemStack stackInSlot = container.getItem(s).copy();
+
+            if (stackInSlot.isEmpty()) {
+                if (!simulate) {
+                    container.setItem(s, stack.copy());
+                }
+                stack.setCount(0);
+                return true;
+            }
+
+            if (!areStackable(stack, stackInSlot)) continue;
+
+            int remainingSpace = Math.max(0, stackInSlot.getMaxStackSize() - stackInSlot.getCount());
+            int amountToInsert = Math.min(remainingSpace, stack.getCount());
+            stack.shrink(amountToInsert);
+            stackInSlot.grow(amountToInsert);
+            if (!simulate) {
+                container.setItem(s, stackInSlot);
+            }
+            if (stack.isEmpty()) return true;
+        }
+
+        return false; // Entire stack was not inserted
+    }
+
+    public static boolean injectItemHandler(IItemHandler handler, ItemStack stack, boolean simulate) {
+        for (int s = 0; s < handler.getSlots(); s++) {
+            if (!handler.isItemValid(s, stack)) continue;
+
+            //Note: Bug in InvWrapper.insertItem, L136. It keeps the input stack instead of copying it
+            //      So we copy it here instead.
+            var remainingStack = handler.insertItem(s, stack.copy(), simulate);
+            if (remainingStack.isEmpty()) {
+                stack.setCount(0);
+                return true;
+            } else {
+                stack.setCount(remainingStack.getCount());
+            }
+        }
+
+        return false; // Entire stack was not inserted
+    }
+
+    //endregion
 
     public static boolean areStackable(ItemStack a, ItemStack b) {
         return ItemStack.isSame(a, b) && ItemStack.tagMatches(a, b) && a.getMaxStackSize() > 1 && b.getMaxStackSize() > 1;

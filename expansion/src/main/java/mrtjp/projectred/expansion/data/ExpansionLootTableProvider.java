@@ -27,5 +27,8 @@ public class ExpansionLootTableProvider extends LootTableProvider.BlockLootProvi
         register(FRAME_BLOCK.get(), singleItem(FRAME_BLOCK.get()));
         register(FRAME_MOTOR_BLOCK.get(), singleItem(FRAME_MOTOR_BLOCK.get()));
         register(FRAME_ACTUATOR_BLOCK.get(), singleItem(FRAME_ACTUATOR_BLOCK.get()));
+        register(TRANSPOSER_BLOCK.get(), singleItem(TRANSPOSER_BLOCK.get()));
+        register(BLOCK_BREAKER_BLOCK.get(), singleItem(BLOCK_BREAKER_BLOCK.get()));
+        register(DEPLOYER_BLOCK.get(), singleItem(DEPLOYER_BLOCK.get()));
     }
 }

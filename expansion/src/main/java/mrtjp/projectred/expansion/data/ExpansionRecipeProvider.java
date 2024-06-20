@@ -1,6 +1,7 @@
 package mrtjp.projectred.expansion.data;
 
 import codechicken.lib.datagen.recipe.RecipeProvider;
+import mrtjp.projectred.expansion.TubeType;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
@@ -105,6 +106,41 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .patternLine("WIW")
                 .patternLine("CIC")
                 .patternLine("SES");
+
+        shapedRecipe(TRANSPOSER_BLOCK.get(), 1)
+                .key('W', ItemTags.PLANKS)
+                .key('S', Tags.Items.COBBLESTONE)
+                .key('P', Blocks.PISTON)
+                .key('R', Tags.Items.DUSTS_REDSTONE)
+                .patternLine("WWW")
+                .patternLine("SPS")
+                .patternLine("SRS");
+
+        shapedRecipe(BLOCK_BREAKER_BLOCK.get(), 1)
+                .key('S', Tags.Items.COBBLESTONE)
+                .key('A', Items.IRON_PICKAXE)
+                .key('P', Blocks.PISTON)
+                .key('R', Tags.Items.DUSTS_REDSTONE)
+                .patternLine("SAS")
+                .patternLine("SPS")
+                .patternLine("SRS");
+
+        shapedRecipe(DEPLOYER_BLOCK.get(), 1)
+                .key('C', Blocks.CHEST)
+                .key('S', Tags.Items.COBBLESTONE)
+                .key('P', Blocks.PISTON)
+                .key('R', Tags.Items.DUSTS_REDSTONE)
+                .patternLine("SCS")
+                .patternLine("SPS")
+                .patternLine("SRS");
+
+        // Parts
+        shapedRecipe(TubeType.PNEUMATIC_TUBE.getItem(), 8)
+                .key('B', INGOTS_COPPER) //TODO replace with brass
+                .key('G', Tags.Items.GLASS_PANES)
+                .patternLine("BGB")
+                .patternLine("BGB")
+                .patternLine("BGB");
 
         // Items
         shapedRecipe(BATTERY_ITEM.get(), 1)

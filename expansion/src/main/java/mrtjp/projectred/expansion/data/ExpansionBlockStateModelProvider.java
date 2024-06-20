@@ -39,6 +39,9 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
         addBiStateSideAndTopMachineBlock(CHARGING_BENCH_BLOCK.get());
         addSidedOppositeMatchingFacesDeviceBlock(FIRE_STARTER_BLOCK.get());
         addTriStateSidedPoweredDeviceBlock(FRAME_ACTUATOR_BLOCK.get());
+        addSideAndTopActiveModel(TRANSPOSER_BLOCK.get());
+        addSideAndTopActiveModel(BLOCK_BREAKER_BLOCK.get());
+        addSidedOppositeMatchingFacesDeviceBlock(DEPLOYER_BLOCK.get());
 
         // Advanced models rendered programmatically. Tied to dummy model to suppress warnings.
         ModelFile dummy = models().withExistingParent("programmatically_rendered_block", "block");
@@ -90,6 +93,13 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
         ModelFile m2 = createSideStateModel(block, 2);
 
         addSidedPoweredDeviceVariants(block, m0, m1, m1, m2);
+    }
+
+    private void addSideAndTopActiveModel(Block block) {
+        ModelFile inactive = createSideAndTopActiveModel(block, false);
+        ModelFile active = createSideAndTopActiveModel(block, true);
+
+        addSidedDeviceVariants(block, inactive, active);
     }
 
     private void addRotatableVariants(Block block, ModelFile model) {
@@ -207,6 +217,16 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
                 modLoc("block/" + texture + "_side_" + state),
                 modLoc("block/" + texture + "_bottom"),
                 modLoc("block/" + texture + "_top"));
+    }
+
+    private BlockModelBuilder createSideAndTopActiveModel(Block block, boolean active) {
+        String texture = ForgeRegistries.BLOCKS.getKey(block).getPath();
+        String activeKey = active ? "_active" : "";
+        String modelName = texture + activeKey;
+        return models().cubeBottomTop(modelName,
+                modLoc("block/" + texture + "_side" + activeKey),
+                modLoc("block/" + texture + "_bottom"),
+                modLoc("block/" + texture + "_top" + activeKey));
     }
 
     private BlockModelBuilder createOppositeMatchingFaceDeviceModel(Block block, boolean active) {

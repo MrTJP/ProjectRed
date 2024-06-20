@@ -1,4 +1,4 @@
-// 1.19.2	2024-03-05T10:04:59.935178	ProjectRed-Expansion Item Models
+// 1.19.2	2024-06-19T14:15:42.461673	ProjectRed-Expansion Item Models
 599e9047cbf1215359e3106b1a6a0757a569ffc9 assets/projectred_expansion/models/item/auto_crafter.json
 736ab07c8745c163e8a3cb90abc9308466032009 assets/projectred_expansion/models/item/battery.json
 d887cd7b776f1227da04cf267bf0a48dbc706027 assets/projectred_expansion/models/item/battery_box.json
@@ -10,7 +10,9 @@ cd372379a7a30c8e2ba9359104d1130f0ec92c42 assets/projectred_expansion/models/item
 8c82c3c7e69b290d8e5a84d68faa1f8846327cc5 assets/projectred_expansion/models/item/battery_box_charge6.json
 442107511d3d5ba1f4ffd447eb3a8d6a5fcb09f8 assets/projectred_expansion/models/item/battery_box_charge7.json
 6e13274e83027301f1bb077b343fcd8341c532fd assets/projectred_expansion/models/item/battery_box_charge8.json
+7e7e40a8aef0067d40a9008415d79a72fdc69982 assets/projectred_expansion/models/item/block_breaker.json
 8b01ab68b782da021d65fd8f76924dddf5fc0de6 assets/projectred_expansion/models/item/charging_bench.json
+ca8ee7426c8d4b145e75bc0bebca77c90e05779e assets/projectred_expansion/models/item/deployer.json
 f8ad62a7aa4f5ae87d36e422722c4ffbf46d22e1 assets/projectred_expansion/models/item/electric_screwdriver.json
 c04ad8c2f44fd4f5a6ea7c5bb9ddf98629332a84 assets/projectred_expansion/models/item/empty_battery.json
 8adfe244bf33706f67d587942e9179b74cf38fd0 assets/projectred_expansion/models/item/fire_starter.json
@@ -20,3 +22,4 @@ a163c9ce1e63e428f3fa804b66e491b455f18540 assets/projectred_expansion/models/item
 9457da7d0b200c883ca98241d9bf155043221c53 assets/projectred_expansion/models/item/project_bench.json
 5d8ae0bcb189be1eb7ce726fc4d28637dcdfaac8 assets/projectred_expansion/models/item/recipe_plan.json
 000ee856d11f86a527eb92dd81e20dee640de756 assets/projectred_expansion/models/item/recipe_plan_written.json
+c21f6fada00156e07a10e72c323e9d9d58db39d0 assets/projectred_expansion/models/item/transposer.json

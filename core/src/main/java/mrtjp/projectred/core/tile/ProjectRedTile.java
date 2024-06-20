@@ -84,4 +84,24 @@ public abstract class ProjectRedTile extends BlockEntity implements IBlockEventT
             }
         }
     }
+
+    public static void ejectItem(ItemStack stack, Level world, BlockPos pos, int dir, double velocity) {
+        Vector3 dirVec = switch (dir) {
+            case 0 -> new Vector3(0, -1, 0);
+            case 1 -> new Vector3(0, 1, 0);
+            case 2 -> new Vector3(0, 0, -1);
+            case 3 -> new Vector3(0, 0, 1);
+            case 4 -> new Vector3(-1, 0, 0);
+            case 5 -> new Vector3(1, 0, 0);
+            default -> throw new IllegalStateException("Unexpected value: " + dir);
+        };
+
+        Vector3 itemPos = Vector3.fromBlockPosCenter(pos).add(dirVec.copy().multiply(0.6));
+        Vector3 itemMotion = dirVec.copy().multiply(velocity);
+
+        ItemEntity item = new ItemEntity(world, itemPos.x, itemPos.y, itemPos.z, stack);
+        item.setDeltaMovement(itemMotion.x, itemMotion.y, itemMotion.z);
+        item.setPickUpDelay(10);
+        world.addFreshEntity(item);
+    }
 }

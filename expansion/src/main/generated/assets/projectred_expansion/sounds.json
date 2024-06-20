@@ -1,0 +1,36 @@
+{
+  "depressurize": {
+    "sounds": [
+      {
+        "name": "projectred_expansion:depressurize_1",
+        "volume": 0.8
+      },
+      {
+        "name": "projectred_expansion:depressurize_2",
+        "volume": 0.8
+      },
+      {
+        "name": "projectred_expansion:depressurize_3",
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "projectred-expansion.subtitle.depressurize"
+  },
+  "pressurize": {
+    "sounds": [
+      {
+        "name": "projectred_expansion:pressurize_1",
+        "volume": 0.8
+      },
+      {
+        "name": "projectred_expansion:pressurize_2",
+        "volume": 0.8
+      },
+      {
+        "name": "projectred_expansion:pressurize_3",
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "projectred-expansion.subtitle.pressurize"
+  }
+}

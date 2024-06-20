@@ -21,9 +21,9 @@ public class ExpansionBlocks {
     public static final String ID_FRAME = "frame";
     public static final String ID_FRAME_MOTOR = "frame_motor";
     public static final String ID_FRAME_ACTUATOR = "frame_actuator";
-
-//    public static final String ID_INDUCTION_FURNACE = "induction_furnace";
-//    public static final String ID_TELEPOSER = "teleposer";
+    public static final String ID_TRANSPOSER = "transposer";
+    public static final String ID_BLOCK_BREAKER = "block_breaker";
+    public static final String ID_DEPLOYER = "deployer";
 
     // Blocks
     public static RegistryObject<Block> FRAME_BLOCK;
@@ -35,8 +35,9 @@ public class ExpansionBlocks {
     public static RegistryObject<Block> FIRE_STARTER_BLOCK;
     public static RegistryObject<Block> FRAME_MOTOR_BLOCK;
     public static RegistryObject<Block> FRAME_ACTUATOR_BLOCK;
-//    //    public static Block INDUCTION_FURNACE_BLOCK;
-//    //    public static Block TELEPOSER_BLOCK;
+    public static RegistryObject<Block> TRANSPOSER_BLOCK;
+    public static RegistryObject<Block> BLOCK_BREAKER_BLOCK;
+    public static RegistryObject<Block> DEPLOYER_BLOCK;
 
     // Tiles
     public static RegistryObject<BlockEntityType<?>> PROJECT_BENCH_TILE;
@@ -46,6 +47,9 @@ public class ExpansionBlocks {
     public static RegistryObject<BlockEntityType<?>> FIRE_STARTER_TILE;
     public static RegistryObject<BlockEntityType<?>> FRAME_MOTOR_TILE;
     public static RegistryObject<BlockEntityType<?>> FRAME_ACTUATOR_TILE;
+    public static RegistryObject<BlockEntityType<?>> TRANSPOSER_BLOCK_TILE;
+    public static RegistryObject<BlockEntityType<?>> BLOCK_BREAKER_TILE;
+    public static RegistryObject<BlockEntityType<?>> DEPLOYER_TILE;
 
 
     public static void register() {
@@ -60,8 +64,9 @@ public class ExpansionBlocks {
         FIRE_STARTER_BLOCK = BLOCKS.register(ID_FIRE_STARTER, FireStarterBlock::new);
         FRAME_MOTOR_BLOCK = BLOCKS.register(ID_FRAME_MOTOR, FrameMotorBlock::new);
         FRAME_ACTUATOR_BLOCK = BLOCKS.register(ID_FRAME_ACTUATOR, FrameActuatorBlock::new);
-//        BLOCKS.register(ID_INDUCTION_FURNACE, InductionFurnaceBlock::new);
-//        BLOCKS.register(ID_TELEPOSER, TeleposerBlock::new);
+        TRANSPOSER_BLOCK = BLOCKS.register(ID_TRANSPOSER, TransposerBlock::new);
+        BLOCK_BREAKER_BLOCK = BLOCKS.register(ID_BLOCK_BREAKER, BlockBreakerBlock::new);
+        DEPLOYER_BLOCK = BLOCKS.register(ID_DEPLOYER, DeployerBlock::new);
 
         // Block Items
         ITEMS.register(ID_PROJECT_BENCH, () -> new BlockItem(PROJECT_BENCH_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
@@ -71,8 +76,9 @@ public class ExpansionBlocks {
         ITEMS.register(ID_FIRE_STARTER, () -> new BlockItem(FIRE_STARTER_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
         ITEMS.register(ID_FRAME_MOTOR, () -> new BlockItem(FRAME_MOTOR_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
         ITEMS.register(ID_FRAME_ACTUATOR, () -> new BlockItem(FRAME_ACTUATOR_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
-//        ITEMS.register(ID_INDUCTION_FURNACE, () -> new BlockItem(INDUCTION_FURNACE_BLOCK, new Item.Properties().tab(EXPANSION_GROUP)));
-//        ITEMS.register(ID_TELEPOSER, () -> new BlockItem(TELEPOSER_BLOCK, new Item.Properties().tab(EXPANSION_GROUP)));
+        ITEMS.register(ID_TRANSPOSER, () -> new BlockItem(TRANSPOSER_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
+        ITEMS.register(ID_BLOCK_BREAKER, () -> new BlockItem(BLOCK_BREAKER_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
+        ITEMS.register(ID_DEPLOYER, () -> new BlockItem(DEPLOYER_BLOCK.get(), new Item.Properties().tab(EXPANSION_GROUP)));
 
         // Tiles
         PROJECT_BENCH_TILE = BLOCK_ENTITY_TYPES.register(ID_PROJECT_BENCH, () -> BlockEntityType.Builder.of(ProjectBenchTile::new, PROJECT_BENCH_BLOCK.get()).build(null));
@@ -82,8 +88,9 @@ public class ExpansionBlocks {
         FIRE_STARTER_TILE = BLOCK_ENTITY_TYPES.register(ID_FIRE_STARTER, () -> BlockEntityType.Builder.of(FireStarterTile::new, FIRE_STARTER_BLOCK.get()).build(null));
         FRAME_MOTOR_TILE = BLOCK_ENTITY_TYPES.register(ID_FRAME_MOTOR, () -> BlockEntityType.Builder.of(FrameMotorTile::new, FRAME_MOTOR_BLOCK.get()).build(null));
         FRAME_ACTUATOR_TILE = BLOCK_ENTITY_TYPES.register(ID_FRAME_ACTUATOR, () -> BlockEntityType.Builder.of(FrameActuatorTile::new, FRAME_ACTUATOR_BLOCK.get()).build(null));
-//        TILE_ENTITIES.register(ID_INDUCTION_FURNACE, () -> TileEntityType.Builder.of(InductionFurnaceTile::new, INDUCTION_FURNACE_BLOCK).build(null));
-//        TILE_ENTITIES.register(ID_TELEPOSER, () -> TileEntityType.Builder.of(TeleposerTile::new, TELEPOSER_BLOCK).build(null));
+        TRANSPOSER_BLOCK_TILE = BLOCK_ENTITY_TYPES.register(ID_TRANSPOSER, () -> BlockEntityType.Builder.of(TransposerBlockEntity::new, TRANSPOSER_BLOCK.get()).build(null));
+        BLOCK_BREAKER_TILE = BLOCK_ENTITY_TYPES.register(ID_BLOCK_BREAKER, () -> BlockEntityType.Builder.of(BlockBreakerBlockEntity::new, BLOCK_BREAKER_BLOCK.get()).build(null));
+        DEPLOYER_TILE = BLOCK_ENTITY_TYPES.register(ID_DEPLOYER, () -> BlockEntityType.Builder.of(DeployerBlockEntity::new, DEPLOYER_BLOCK.get()).build(null));
 
         /* Blocks */
         FRAME_BLOCK = BLOCKS.register(ID_FRAME, FrameBlock::new);

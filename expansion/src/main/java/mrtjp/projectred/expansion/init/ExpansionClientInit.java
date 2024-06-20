@@ -4,14 +4,14 @@ import codechicken.lib.model.ModelRegistryHelper;
 import codechicken.lib.render.block.BlockRenderingRegistry;
 import codechicken.lib.texture.SpriteRegistryHelper;
 import codechicken.multipart.api.MultipartClientRegistry;
+import mrtjp.projectred.expansion.GraphDebugManager;
 import mrtjp.projectred.expansion.MovementManager;
+import mrtjp.projectred.expansion.TubeType;
 import mrtjp.projectred.expansion.client.*;
-import mrtjp.projectred.expansion.gui.screen.inventory.AutoCrafterScreen;
-import mrtjp.projectred.expansion.gui.screen.inventory.BatteryBoxScreen;
-import mrtjp.projectred.expansion.gui.screen.inventory.ChargingBenchScreen;
-import mrtjp.projectred.expansion.gui.screen.inventory.ProjectBenchScreen;
+import mrtjp.projectred.expansion.gui.screen.inventory.*;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.expansion.tile.BatteryBoxTile;
+import net.covers1624.quack.util.SneakyUtils;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -24,11 +24,14 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Objects;
+
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
 import static mrtjp.projectred.expansion.init.ExpansionItems.RECIPE_PLAN_ITEM;
 import static mrtjp.projectred.expansion.init.ExpansionMenus.*;
 import static mrtjp.projectred.expansion.init.ExpansionParts.FRAME_PART;
+import static net.minecraft.client.renderer.texture.TextureAtlas.LOCATION_PARTICLES;
 
 @SuppressWarnings("DataFlowIssue")
 public class ExpansionClientInit {
@@ -43,12 +46,20 @@ public class ExpansionClientInit {
 
         modEventBus.addListener(ExpansionClientInit::clientSetup);
 
+        // MovementManager hooks
         MinecraftForge.EVENT_BUS.addListener(MovementManager::onRenderLevelStage);
+
+        // GraphDebugManager hooks
+        MinecraftForge.EVENT_BUS.addListener(GraphDebugManager::onRenderLevelStage);
 
         // Register sprites
         SpriteRegistryHelper spriteHelper = new SpriteRegistryHelper(modEventBus);
         spriteHelper.addIIconRegister(FrameModelRenderer::registerIcons);
         spriteHelper.addIIconRegister(FrameMotorBlockRenderer::registerIcons);
+        for (TubeType type : TubeType.values()) {
+            type.registerTextures(spriteHelper);
+        }
+        spriteHelper.addIIconRegister(LOCATION_PARTICLES, PneumaticSmokeParticle::registerIcons);
     }
 
     private static void clientSetup(final FMLClientSetupEvent event) {
@@ -58,6 +69,7 @@ public class ExpansionClientInit {
         MenuScreens.register(BATTERY_BOX_CONTAINER.get(), BatteryBoxScreen::new);
         MenuScreens.register(AUTO_CRAFTER_CONTAINER.get(), AutoCrafterScreen::new);
         MenuScreens.register(CHARGING_BENCH_CONTAINER.get(), ChargingBenchScreen::new);
+        MenuScreens.register(DEPLOYER_CONTAINER.get(), DeployerScreen::new);
 
         // Register item model properties
         addItemModelProperties();
@@ -75,6 +87,15 @@ public class ExpansionClientInit {
 
         // Register part renderers
         MultipartClientRegistry.register(FRAME_PART.get(), FramePartRenderer.INSTANCE);
+
+        // Register pipe renderers
+        for (TubeType type : TubeType.values()) {
+            // Block renderer
+            MultipartClientRegistry.register(type.getPartType(), SneakyUtils.unsafeCast(TubePartRenderer.INSTANCE));
+
+            // Item renderer
+            MODEL_HELPER.register(new ModelResourceLocation(Objects.requireNonNull(type.getItemRegistryObject().getId()), "inventory"), TubePartItemRenderer.INSTANCE);
+        }
     }
 
     private static void addItemModelProperties() {
