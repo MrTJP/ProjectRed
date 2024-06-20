@@ -138,7 +138,7 @@ public interface IConnectableFacePart extends MultiPart, IConnectablePart {
             if (setRenderFlag(part)) connMap |= 0x100000 << r;
             if (connMap != getConnMap()) {
                 setConnMap(connMap);
-                onMaskChanged();
+                maskChangeEvent(false, true);
             }
             return true;
         }
@@ -152,7 +152,7 @@ public interface IConnectableFacePart extends MultiPart, IConnectablePart {
             connMap |= 0x10 << r;
             if (connMap != getConnMap()) {
                 setConnMap(connMap);
-                onMaskChanged();
+                maskChangeEvent(false, true);
             }
             return true;
         }
@@ -166,7 +166,7 @@ public interface IConnectableFacePart extends MultiPart, IConnectablePart {
             connMap |= 0x100 << r;
             if (connMap != getConnMap()) {
                 setConnMap(connMap);
-                onMaskChanged();
+                maskChangeEvent(true, false);
             }
             return true;
         }

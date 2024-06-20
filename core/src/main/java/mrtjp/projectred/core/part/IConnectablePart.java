@@ -44,35 +44,42 @@ public interface IConnectablePart extends IConnectable {
     boolean updateInternalConns();
 
     /**
-     * Start update chain starting from an internal change outward
+     * Updates internal connections first, then updates open conns.
+     * If open conns change, then external conns are updated.
      * <p>
-     * When using this method be sure to call TConnectableCommons#onMaskChanged()
-     * as needed as it is not called for you.
-     *
-     * @return true if a new connection was added or one was removed
+     * Use this when an internal part change occurs.
      */
-    default boolean updateOutward() {
-        boolean changed = updateInternalConns();
-        if (updateOpenConns()) changed |= updateExternalConns();
-        return changed;
+    default void updateOutward() {
+        // Update internal conns first
+        boolean internal = updateInternalConns();
+        // If open conns changed, update external conns as well
+        boolean external = updateOpenConns() && updateExternalConns();
+        maskChangeEvent(internal, external);
     }
 
     /**
-     * Start update chain starting from an external change inward
+     * Full update for internal and external connections.
      * <p>
-     * When using this method be sure to call TConnectableCommons#onMaskChanged()
-     * as needed as it is not called for you.
-     *
-     * @return true if a new connection was added or one was removed
+     * Use when part is added, etc.
      */
-    default boolean updateInward() {
+    default void updateInsideAndOutside() {
         updateOpenConns();
-        boolean changed = updateInternalConns();
-        changed |= updateExternalConns();
-        return changed;
+        boolean internal = updateInternalConns();
+        boolean external = updateExternalConns();
+        maskChangeEvent(internal, external);
     }
 
-    void notifyAllExternals();
+    /**
+     * Update external connections only.
+     * <p>
+     * Use when only neighbors have changed and not any other part
+     */
+    default void updateOutside() {
+        boolean external = updateExternalConns();
+        maskChangeEvent(false, external);
+    }
 
-    void onMaskChanged();
+    void maskChangeEvent(boolean internalChange, boolean externalChange);
+
+    void notifyAllExternals();
 }

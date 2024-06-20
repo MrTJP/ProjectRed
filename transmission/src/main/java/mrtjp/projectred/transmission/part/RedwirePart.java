@@ -15,11 +15,8 @@ import mrtjp.projectred.core.RedstoneFaceLookup;
 import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.core.part.*;
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-
-import javax.annotation.Nullable;
 
 import static mrtjp.projectred.core.RedstonePropagator.FORCE;
 import static mrtjp.projectred.core.RedstonePropagator.RISING;
@@ -34,6 +31,7 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
         super(wireType);
     }
 
+    //region Save/Load
     @Override
     public void save(CompoundTag tag) {
         super.save(tag);
@@ -57,7 +55,9 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
         super.readDesc(packet);
         signal = packet.readByte();
     }
+    //endregion
 
+    //region Network
     @Override
     protected void read(MCDataInput packet, int key) {
         switch (key) {
@@ -73,43 +73,7 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
     protected void sendSignalUpdate() {
         sendUpdate(KEY_SIGNAL, p -> p.writeByte(signal));
     }
-
-    @Override
-    public void onPartChanged(@Nullable MultiPart part) {
-        if (!level().isClientSide) {
-            RedstonePropagator.logCalculation();
-            if (updateOutward()) {
-                onMaskChanged();
-                RedstonePropagator.propagateTo(this, FORCE);
-            } else {
-                RedstonePropagator.propagateTo(this, RISING);
-            }
-        }
-    }
-
-    @Override
-    public void onNeighborBlockChanged(BlockPos from) {
-        if (!level().isClientSide) {
-            if (dropIfCantStay()) {
-                return;
-            }
-            RedstonePropagator.logCalculation();
-            if (updateExternalConns()) {
-                onMaskChanged();
-                RedstonePropagator.propagateTo(this, FORCE);
-            } else {
-                RedstonePropagator.propagateTo(this, RISING);
-            }
-        }
-    }
-
-    @Override
-    public void onAdded() {
-        super.onAdded();
-        if (!level().isClientSide) {
-            RedstonePropagator.propagateTo(this, RISING);
-        }
-    }
+    //endregion
 
     protected int redstoneSignalLevel() {
         return RedstonePropagator.canRedwiresProvidePower() ? ((signal & 0xFF) + 16) / 17 : 0;
@@ -135,6 +99,15 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
     @Override
     public int getFace() {
         return getSide();
+    }
+    //endregion
+
+    //region IConnectableFacePart overrides
+    @Override
+    public void maskChangeEvent(boolean internalChange, boolean externalChange) {
+        super.maskChangeEvent(internalChange, externalChange);
+        RedstonePropagator.logCalculation();
+        RedstonePropagator.propagateTo(this, internalChange || externalChange ? FORCE : RISING);
     }
     //endregion
 

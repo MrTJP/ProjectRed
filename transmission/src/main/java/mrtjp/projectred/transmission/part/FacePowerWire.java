@@ -8,7 +8,6 @@ import mrtjp.projectred.core.power.IPowerConductorSource;
 import mrtjp.projectred.core.power.IPowerConnectable;
 import mrtjp.projectred.core.power.PowerConductor;
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.core.BlockPos;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -35,18 +34,6 @@ public abstract class FacePowerWire extends BaseFaceWirePart implements IPowerCo
             cacheInvalid = false;
         }
         return connectedConductors;
-    }
-
-    @Override
-    public void onMaskChanged() {
-        super.onMaskChanged();
-        cacheInvalid = true;
-    }
-
-    @Override
-    public void onNeighborBlockChanged(BlockPos from) {
-        super.onNeighborBlockChanged(from);
-        cacheInvalid = true;
     }
 
     private void recacheConductors() {
@@ -89,6 +76,12 @@ public abstract class FacePowerWire extends BaseFaceWirePart implements IPowerCo
     }
 
     //region Connections
+    @Override
+    public void maskChangeEvent(boolean internalChange, boolean externalChange) {
+        // Invalidate even if conns have not changed (adjacent conductors may have moved, etc)
+        cacheInvalid = true;
+    }
+
     @Override
     public boolean discoverCornerOverride(int absDir) {
         int r = IConnectableFacePart.absoluteRot(this, absDir);
