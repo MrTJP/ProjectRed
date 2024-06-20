@@ -33,7 +33,10 @@ public class ExpansionBlockTagsProvider extends BlockTagsProvider {
                 .add(AUTO_CRAFTER_BLOCK.get())
                 .add(FIRE_STARTER_BLOCK.get())
                 .add(FRAME_MOTOR_BLOCK.get())
-                .add(FRAME_ACTUATOR_BLOCK.get());
+                .add(FRAME_ACTUATOR_BLOCK.get())
+                .add(TRANSPOSER_BLOCK.get())
+                .add(BLOCK_BREAKER_BLOCK.get())
+                .add(DEPLOYER_BLOCK.get());
 
         tag(BlockTags.NEEDS_STONE_TOOL)
                 .add(PROJECT_BENCH_BLOCK.get())
@@ -41,6 +44,9 @@ public class ExpansionBlockTagsProvider extends BlockTagsProvider {
                 .add(AUTO_CRAFTER_BLOCK.get())
                 .add(FIRE_STARTER_BLOCK.get())
                 .add(FRAME_MOTOR_BLOCK.get())
-                .add(FRAME_ACTUATOR_BLOCK.get());
+                .add(FRAME_ACTUATOR_BLOCK.get())
+                .add(TRANSPOSER_BLOCK.get())
+                .add(BLOCK_BREAKER_BLOCK.get())
+                .add(DEPLOYER_BLOCK.get());
     }
 }

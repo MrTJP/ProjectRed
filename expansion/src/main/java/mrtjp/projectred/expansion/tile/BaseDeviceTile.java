@@ -69,7 +69,7 @@ public abstract class BaseDeviceTile extends ProjectRedTile {
 
         if (getLevel().isClientSide) return;
 
-        if (!powered) {
+        if (!powered && !shouldStayActive()) {
             active = false;
             pushBlockState();
             onDeactivated();
@@ -146,5 +146,9 @@ public abstract class BaseDeviceTile extends ProjectRedTile {
     protected abstract void onActivated();
 
     protected abstract void onDeactivated();
+
+    protected boolean shouldStayActive() {
+        return false;
+    }
     //endregion
 }

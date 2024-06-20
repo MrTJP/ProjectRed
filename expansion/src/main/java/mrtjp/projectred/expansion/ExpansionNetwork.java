@@ -19,6 +19,7 @@ public class ExpansionNetwork {
 
     // Server to client messages
     public static final int MM_FROM_SERVER = 1;
+    public static final int LINK_DEBUG_RENDERER_FROM_SERVER = 2;
 
     public static void init() {
         PacketCustomChannelBuilder.named(NET_CHANNEL)
@@ -32,12 +33,9 @@ public class ExpansionNetwork {
         @Override
         public void handlePacket(PacketCustom packet, Minecraft mc, ClientPacketListener handler) {
             switch (packet.getType()) {
-                case MM_FROM_SERVER:
-                    MovementManager.getInstance(Objects.requireNonNull(mc.level)).read(packet, mc.level);
-                    break;
-
-                default:
-                    throw new RuntimeException("Invalid key received from server: " + packet.getType());
+                case MM_FROM_SERVER -> MovementManager.getInstance(Objects.requireNonNull(mc.level)).read(packet, mc.level);
+                case LINK_DEBUG_RENDERER_FROM_SERVER -> GraphDebugManager.getInstance(Objects.requireNonNull(mc.level)).read(packet, mc.level);
+                default -> throw new RuntimeException("Invalid key received from server: " + packet.getType());
             }
         }
     }

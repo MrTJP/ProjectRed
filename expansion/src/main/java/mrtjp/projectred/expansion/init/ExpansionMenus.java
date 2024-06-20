@@ -1,10 +1,7 @@
 package mrtjp.projectred.expansion.init;
 
 import codechicken.lib.inventory.container.ICCLContainerType;
-import mrtjp.projectred.expansion.inventory.container.AutoCrafterContainer;
-import mrtjp.projectred.expansion.inventory.container.BatteryBoxContainer;
-import mrtjp.projectred.expansion.inventory.container.ChargingBenchContainer;
-import mrtjp.projectred.expansion.inventory.container.ProjectBenchContainer;
+import mrtjp.projectred.expansion.inventory.container.*;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -18,6 +15,7 @@ public class ExpansionMenus {
     public static RegistryObject<MenuType<BatteryBoxContainer>> BATTERY_BOX_CONTAINER;
     public static RegistryObject<MenuType<AutoCrafterContainer>> AUTO_CRAFTER_CONTAINER;
     public static RegistryObject<MenuType<ChargingBenchContainer>> CHARGING_BENCH_CONTAINER;
+    public static RegistryObject<MenuType<DeployerContainerMenu>> DEPLOYER_CONTAINER;
 
     public static void register() {
 
@@ -25,5 +23,6 @@ public class ExpansionMenus {
         BATTERY_BOX_CONTAINER = MENU_TYPES.register(ID_BATTERY_BOX, () -> ICCLContainerType.create(BatteryBoxContainer.FACTORY));
         AUTO_CRAFTER_CONTAINER = MENU_TYPES.register(ID_AUTO_CRAFTER, () -> ICCLContainerType.create(AutoCrafterContainer.FACTORY));
         CHARGING_BENCH_CONTAINER = MENU_TYPES.register(ID_CHARGING_BENCH, () -> ICCLContainerType.create(ChargingBenchContainer.FACTORY));
+        DEPLOYER_CONTAINER = MENU_TYPES.register(ID_DEPLOYER, () -> ICCLContainerType.create(DeployerContainerMenu.FACTORY));
     }
 }

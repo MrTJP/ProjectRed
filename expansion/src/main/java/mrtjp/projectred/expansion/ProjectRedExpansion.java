@@ -8,6 +8,7 @@ import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.expansion.data.*;
 import mrtjp.projectred.expansion.init.*;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -38,6 +39,7 @@ public class ProjectRedExpansion {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
+    public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, MOD_ID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MOD_ID);
     public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MOD_ID);
     public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
@@ -51,6 +53,7 @@ public class ProjectRedExpansion {
         ExpansionBlocks.register();
         ExpansionMenus.register();
         ExpansionItems.register();
+        ExpansionSounds.register();
         ExpansionParts.register();
     }
 
@@ -64,17 +67,24 @@ public class ProjectRedExpansion {
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
+        SOUNDS.register(modEventBus);
         BLOCK_ENTITY_TYPES.register(modEventBus);
         MENU_TYPES.register(modEventBus);
         PART_TYPES.register(modEventBus);
         PART_CONVERTERS.register(modEventBus);
 
+        // MovementManager hooks
         MinecraftForge.EVENT_BUS.addListener(MovementManager::onChunkWatchEvent);
         MinecraftForge.EVENT_BUS.addListener(MovementManager::onChunkUnwatchEvent);
         MinecraftForge.EVENT_BUS.addListener(MovementManager::onChunkUnloadEvent);
         MinecraftForge.EVENT_BUS.addListener(MovementManager::onLevelTick);
         MinecraftForge.EVENT_BUS.addListener(MovementManager::onLevelLoad);
         MinecraftForge.EVENT_BUS.addListener(MovementManager::onLevelUnload);
+
+        // GraphDebugManager hooks
+        MinecraftForge.EVENT_BUS.addListener(GraphDebugManager::onLevelUnload);
+        MinecraftForge.EVENT_BUS.addListener(GraphDebugManager::onLevelTick);
+        MinecraftForge.EVENT_BUS.addListener(GraphDebugManager::registerClientCommands);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -95,6 +105,7 @@ public class ProjectRedExpansion {
         generator.addProvider(event.includeClient(), new ExpansionBlockStateModelProvider(generator, fileHelper));
         generator.addProvider(event.includeClient(), new ExpansionItemModelProvider(generator, fileHelper));
         generator.addProvider(event.includeClient(), new ExpansionLanguageProvider(generator));
+        generator.addProvider(event.includeClient(), new ExpansionSoundProvider(generator, fileHelper));
 
         generator.addProvider(event.includeServer(), new ExpansionBlockTagsProvider(generator, fileHelper));
         generator.addProvider(event.includeServer(), new ExpansionRecipeProvider(generator));

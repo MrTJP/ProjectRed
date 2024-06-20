@@ -340,7 +340,7 @@ public class HaloRenderer {
 
     private static boolean isEntityItemRenderType(ItemTransforms.TransformType transformType) {
         return switch (transformType) {
-            case GROUND, THIRD_PERSON_LEFT_HAND, THIRD_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND, FIRST_PERSON_RIGHT_HAND -> true;
+            case FIXED, GROUND, THIRD_PERSON_LEFT_HAND, THIRD_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND, FIRST_PERSON_RIGHT_HAND -> true;
             default -> false;
         };
     }

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "projectred_expansion:block/deployer_bottom",
+    "east": "projectred_expansion:block/deployer_left_right",
+    "north": "projectred_expansion:block/deployer_front_back",
+    "particle": "projectred_expansion:block/deployer_front_back",
+    "south": "projectred_expansion:block/deployer_front_back",
+    "up": "projectred_expansion:block/deployer_top",
+    "west": "projectred_expansion:block/deployer_left_right"
+  }
+}
