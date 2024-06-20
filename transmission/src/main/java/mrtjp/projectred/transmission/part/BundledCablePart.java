@@ -1,7 +1,6 @@
 package mrtjp.projectred.transmission.part;
 
 import codechicken.lib.vec.Rotation;
-import codechicken.multipart.api.part.MultiPart;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IBundledTile;
 import mrtjp.projectred.api.IConnectable;
@@ -11,7 +10,6 @@ import mrtjp.projectred.core.FaceLookup;
 import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.core.part.IPropagationFacePart;
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 
@@ -72,42 +70,14 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
         super.load(tag);
         setSignal(tag.getByteArray("signal"));
     }
+    //endregion
 
+    //region IConnectableFacePart overrides
     @Override
-    public void onPartChanged(@Nullable MultiPart part) {
-        if (!level().isClientSide) {
-            RedstonePropagator.logCalculation();
-            if (updateOutward()) {
-                onMaskChanged();
-                RedstonePropagator.propagateTo(this, FORCE);
-            } else {
-                RedstonePropagator.propagateTo(this, RISING);
-            }
-        }
-    }
-
-    @Override
-    public void onNeighborBlockChanged(BlockPos from) {
-        if (!level().isClientSide) {
-            if (dropIfCantStay()) {
-                return;
-            }
-            RedstonePropagator.logCalculation();
-            if (updateExternalConns()) {
-                onMaskChanged();
-                RedstonePropagator.propagateTo(this, FORCE);
-            } else {
-                RedstonePropagator.propagateTo(this, RISING);
-            }
-        }
-    }
-
-    @Override
-    public void onAdded() {
-        super.onAdded();
-        if (!level().isClientSide) {
-            RedstonePropagator.propagateTo(this, RISING);
-        }
+    public void maskChangeEvent(boolean internalChange, boolean externalChange) {
+        super.maskChangeEvent(internalChange, externalChange);
+        RedstonePropagator.logCalculation();
+        RedstonePropagator.propagateTo(this, internalChange || externalChange ? FORCE : RISING);
     }
     //endregion
 

@@ -244,7 +244,7 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
             if (dropIfCantStay()) {
                 return;
             }
-            updateExternalConns();
+            updateOutside();
             onChange();
         }
     }
@@ -254,7 +254,7 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
         super.onAdded();
         if (!level().isClientSide) {
             gateLogicSetup();
-            updateInward();
+            updateInsideAndOutside();
             onChange();
         }
     }
@@ -290,7 +290,7 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
     }
 
     @Override
-    public void onMaskChanged() {
+    public void maskChangeEvent(boolean internalChange, boolean externalChange) {
         // Client doesn't need connmap, wont send
     }
     //endregion
@@ -440,7 +440,7 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
 
     protected void configure() {
         if (gateLogicCycleShape()) {
-            updateInward();
+            updateInsideAndOutside();
             tile().setChanged();
             tile().notifyPartChange(this);
             sendShapeUpdate();
@@ -451,7 +451,7 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
 
     protected void rotate() {
         setRotation((getRotation() + 1) % 4);
-        updateInward();
+        updateInsideAndOutside();
         tile().setChanged();
         tile().notifyPartChange(this);
         sendOrientationUpdate();

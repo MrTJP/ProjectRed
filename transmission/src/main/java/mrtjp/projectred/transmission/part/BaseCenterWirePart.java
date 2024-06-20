@@ -180,9 +180,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     public void onPartChanged(@Nullable MultiPart part) {
         super.onPartChanged(part);
         if (!level().isClientSide) {
-            if (updateOutward()) {
-                onMaskChanged();
-            }
+            updateOutward();
         }
     }
 
@@ -190,9 +188,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     public void onNeighborBlockChanged(BlockPos from) {
         super.onNeighborBlockChanged(from);
         if (!level().isClientSide) {
-            if (updateExternalConns()) {
-                onMaskChanged();
-            }
+            updateOutside();
         }
     }
 
@@ -200,7 +196,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     public void onAdded() {
         super.onAdded();
         if (!level().isClientSide) {
-            if (updateInward()) onMaskChanged();
+            updateInsideAndOutside();
         }
     }
 
@@ -342,8 +338,10 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     }
 
     @Override
-    public void onMaskChanged() {
-        sendConnUpdate();
+    public void maskChangeEvent(boolean internalChange, boolean externalChange) {
+        if (internalChange || externalChange) {
+            sendConnUpdate();
+        }
     }
     //endregion
 }

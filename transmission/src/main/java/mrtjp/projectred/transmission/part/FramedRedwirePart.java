@@ -15,10 +15,7 @@ import mrtjp.projectred.core.part.IPropagationCenterPart;
 import mrtjp.projectred.core.part.IRedstonePropagationPart;
 import mrtjp.projectred.core.part.IRedwirePart;
 import mrtjp.projectred.transmission.WireType;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-
-import javax.annotation.Nullable;
 
 import static mrtjp.projectred.core.RedstonePropagator.FORCE;
 import static mrtjp.projectred.core.RedstonePropagator.RISING;
@@ -74,37 +71,10 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
     }
 
     @Override
-    public void onPartChanged(@Nullable MultiPart part) {
-        if (!level().isClientSide) {
-            RedstonePropagator.logCalculation();
-            if (updateOutward()) {
-                onMaskChanged();
-                RedstonePropagator.propagateTo(this, FORCE);
-            } else {
-                RedstonePropagator.propagateTo(this, RISING);
-            }
-        }
-    }
-
-    @Override
-    public void onNeighborBlockChanged(BlockPos from) {
-        if (!level().isClientSide) {
-            RedstonePropagator.logCalculation();
-            if (updateExternalConns()) {
-                onMaskChanged();
-                RedstonePropagator.propagateTo(this, FORCE);
-            } else {
-                RedstonePropagator.propagateTo(this, RISING);
-            }
-        }
-    }
-
-    @Override
-    public void onAdded() {
-        super.onAdded();
-        if (!level().isClientSide) {
-            RedstonePropagator.propagateTo(this, RISING);
-        }
+    public void maskChangeEvent(boolean internalChange, boolean externalChange) {
+        super.maskChangeEvent(internalChange, externalChange);
+        RedstonePropagator.logCalculation();
+        RedstonePropagator.propagateTo(this, internalChange || externalChange ? FORCE : RISING);
     }
 
     protected int redstoneSignalLevel() {

@@ -58,7 +58,7 @@ public interface IConnectableCenterPart extends MultiPart, IConnectablePart {
             connMap |= 0x01 << s;
             if (connMap != getConnMap()) {
                 setConnMap(connMap);
-                onMaskChanged();
+                maskChangeEvent(false, true);
             }
             return true;
         }
@@ -72,7 +72,7 @@ public interface IConnectableCenterPart extends MultiPart, IConnectablePart {
             connMap |= 0x40 << s;
             if (connMap != getConnMap()) {
                 setConnMap(connMap);
-                onMaskChanged();
+                maskChangeEvent(true, false);
             }
             return true;
         }
