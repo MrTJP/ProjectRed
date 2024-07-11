@@ -4,6 +4,7 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.vec.Cuboid6;
 import mrtjp.projectred.illumination.MultipartLightProperties;
 import mrtjp.projectred.illumination.MultipartLightType;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -44,6 +45,7 @@ public class FalloutLightProperties extends MultipartLightProperties {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void onTextureStitchEvent(TextureStitchEvent.Post event) {
+        if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
         icon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/fallout"));
     }
 
