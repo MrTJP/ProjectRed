@@ -60,6 +60,11 @@ public class FixtureLightProperties extends MultipartLightProperties {
     }
 
     @Override
+    public Cuboid6 getBounds(int side) {
+        return BOUNDS[side];
+    }
+
+    @Override
     public CCModel getBulbModel(int side) {
         return FixtureLightModels.BULB_MODELS[side];
     }
