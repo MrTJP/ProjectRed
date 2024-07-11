@@ -33,6 +33,11 @@ public class CageLightProperties extends MultipartLightProperties {
     }
 
     @Override
+    public Cuboid6 getBounds(int side) {
+        return BOUNDS[side];
+    }
+
+    @Override
     public ItemStack makeStack(int color, boolean inverted) {
         return MultipartLightType.CAGE.makeStack(color, inverted);
     }
