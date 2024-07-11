@@ -47,6 +47,7 @@ public abstract class MultipartLightProperties {
     public abstract ItemStack makeStack(int color, boolean inverted);
 
     public abstract VoxelShape getShape(int side);
+    public abstract Cuboid6 getBounds(int side);
     public abstract Cuboid6 getGlowBounds(int side);
     //endregion
 

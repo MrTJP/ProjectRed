@@ -2,20 +2,19 @@ package mrtjp.projectred.illumination.part;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Vector3;
 import codechicken.microblock.part.hollow.HollowMicroblockPart;
 import codechicken.multipart.api.MultipartType;
 import codechicken.multipart.api.RedstoneInteractions;
-import codechicken.multipart.api.part.BaseMultipart;
-import codechicken.multipart.api.part.MultiPart;
-import codechicken.multipart.api.part.NormalOcclusionPart;
-import codechicken.multipart.api.part.SlottedPart;
+import codechicken.multipart.api.part.*;
 import codechicken.multipart.api.part.redstone.RedstonePart;
 import codechicken.multipart.block.BlockMultipart;
 import codechicken.multipart.block.TileMultipart;
 import codechicken.multipart.util.PartRayTraceResult;
 import mrtjp.projectred.core.PlacementLib;
 import mrtjp.projectred.illumination.MultipartLightProperties;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -30,7 +29,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 import java.util.Collections;
 
-public class MultipartLightPart extends BaseMultipart implements SlottedPart, NormalOcclusionPart, RedstonePart {
+public class MultipartLightPart extends BaseMultipart implements SlottedPart, NormalOcclusionPart, RedstonePart, IconHitEffectsPart {
 
     private final MultipartType<?> type;
     private final MultipartLightProperties properties;
@@ -121,6 +120,21 @@ public class MultipartLightPart extends BaseMultipart implements SlottedPart, No
     @Override
     public int getLightEmission() {
         return (isInverted() != powered) ? 15 : 0;
+    }
+
+    @Override
+    public Cuboid6 getBounds() {
+        return properties.getBounds(side);
+    }
+
+    @Override
+    public TextureAtlasSprite getBreakingIcon(PartRayTraceResult hit) {
+        return getBrokenIcon(side);
+    }
+
+    @Override
+    public TextureAtlasSprite getBrokenIcon(int side) {
+        return properties.getIcon(color);
     }
 
     private ItemStack getItem() {

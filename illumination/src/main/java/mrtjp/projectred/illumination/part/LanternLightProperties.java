@@ -36,6 +36,11 @@ public class LanternLightProperties extends MultipartLightProperties {
     }
 
     @Override
+    public Cuboid6 getBounds(int side) {
+        return BOUNDS;
+    }
+
+    @Override
     public ItemStack makeStack(int color, boolean inverted) {
         return MultipartLightType.LANTERN.makeStack(color, inverted);
     }
