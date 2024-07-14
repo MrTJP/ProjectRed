@@ -20,27 +20,30 @@ import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
 import static mrtjp.projectred.fabrication.editor.EditorDataUtils.*;
 
 public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallback {
-
-    public static final Style UNIFORM = Style.EMPTY.withFont(new ResourceLocation("minecraft", "uniform"));
+    public static final Style UNIFORM           = Style.EMPTY.withFont(new ResourceLocation("minecraft", "uniform"));
     public static final Style UNIFORM_DARK_GRAY = UNIFORM.withColor(ChatFormatting.DARK_GRAY);
-    public static final Style UNIFORM_GRAY = UNIFORM.withColor(ChatFormatting.GRAY);
-    public static final Style UNIFORM_RED = UNIFORM.withColor(ChatFormatting.RED);
-    public static final Style UNIFORM_YELLOW = UNIFORM.withColor(ChatFormatting.YELLOW);
+    public static final Style UNIFORM_GRAY      = UNIFORM.withColor(ChatFormatting.GRAY);
+    public static final Style UNIFORM_RED       = UNIFORM.withColor(ChatFormatting.RED);
+    public static final Style UNIFORM_YELLOW    = UNIFORM.withColor(ChatFormatting.YELLOW);
 
     public static final int EDITOR_FORMAT = 1;
 
-    private static final int STREAM_ID_GENERAL = 0;
+    private static final int STREAM_ID_GENERAL      = 0;
     private static final int STREAM_ID_TILE_UPDATES = 1;
-    private static final int STREAM_ID_FSM = 2;
+    private static final int STREAM_ID_FSM          = 2;
 
     // Server to client keys
-    private static final int KEY_ADD_TILE = 1;
-    private static final int KEY_REMOVE_TILE = 2;
-    private static final int KEY_SET_IC_NAME = 3;
+    private static final int KEY_ADD_TILE          = 1;
+    private static final int KEY_REMOVE_TILE       = 2;
+    private static final int KEY_SET_IC_NAME       = 3;
+    private static final int KEY_SET_IC_AUTHOR     = 4;
+    private static final int KEY_SET_IC_DIMENSIONS = 5;
 
     // Client to server keys
-    private static final int KEY_TOOL = 10;
-    private static final int KEY_CLIENT_SEND_IC_NAME = 11;
+    private static final int KEY_TOOL                      = 10;
+    private static final int KEY_CLIENT_SEND_IC_NAME       = 11;
+    private static final int KEY_CLIENT_SEND_IC_AUTHOR     = 12;
+    private static final int KEY_CLIENT_SEND_IC_DIMENSIONS = 13;
 
     private final IICWorkbenchEditorNetwork network;
     private final BaseTileMap tileMap = new BaseTileMap(this);
@@ -51,6 +54,7 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
 
     private boolean isActive = false;
     private String icName = "untitled";
+    private String icAuthor = "";
 
     public ICWorkbenchEditor(IICWorkbenchEditorNetwork network) {
         this.network = network;
@@ -59,6 +63,10 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
 
     public String getIcName() {
         return icName;
+    }
+
+    public String getIcAuthor() {
+        return icAuthor;
     }
 
     public ArrayList<IICEditorTool> getToolList() {
@@ -87,6 +95,7 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
         tag.putInt(KEY_FORMAT, EDITOR_FORMAT);
         tag.putBoolean(KEY_ACTIVE, isActive);
         tag.putString(KEY_IC_NAME, icName);
+        tag.putString(KEY_IC_AUTHOR, icAuthor);
 
         CompoundTag tileMapTag = new CompoundTag();
         tileMap.save(tileMapTag);
@@ -98,6 +107,7 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
     public void load(CompoundTag tag) {
         isActive = tag.getBoolean(KEY_ACTIVE);
         icName = tag.getString(KEY_IC_NAME);
+        icAuthor = tag.getString(KEY_IC_AUTHOR);
         tileMap.load(tag.getCompound(KEY_TILE_MAP));
         stateMachine.load(tag);
     }
@@ -105,6 +115,7 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
     public void writeDesc(MCDataOutput out) {
         out.writeBoolean(isActive);
         out.writeString(icName);
+        out.writeString(icAuthor);
         tileMap.writeDesc(out);
         stateMachine.writeDesc(out);
     }
@@ -112,6 +123,7 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
     public void readDesc(MCDataInput in) {
         isActive = in.readBoolean();
         icName = in.readString();
+        icAuthor = in.readString();
         tileMap.readDesc(in);
         stateMachine.readDesc(in);
     }
@@ -124,6 +136,7 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
         tileMap.removeAll();
         stateMachine.reset();
         icName = "untitled";
+        icAuthor = "";
     }
 
     public void readBlueprintTagAndActivate(@Nullable CompoundTag tag) {
@@ -144,6 +157,7 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
         // Save additional metadata for blueprints
         tileMap.getInterfaceSpec().saveTo(tag, KEY_IO_SPEC);
         tag.putInt(KEY_TILE_COUNT, tileMap.getTileCount());
+        tag.putString(KEY_DIMENSIONS, tileMap.getDimensionsString());
         tag.putBoolean(KEY_IS_BUILT, stateMachine.isSimulating());
 
         // Deactivate editor
@@ -199,6 +213,15 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
             case KEY_SET_IC_NAME:
                 icName = in.readString();
                 break;
+            case KEY_SET_IC_AUTHOR:
+                icAuthor = in.readString();
+                break;
+            case KEY_SET_IC_DIMENSIONS:
+                tileMap.setBounds(
+                        new TileCoord(in.readInt(), in.readInt(), in.readInt()),
+                        new TileCoord(in.readInt(), in.readInt(), in.readInt())
+                );
+                break;
             case KEY_TOOL:
                 toolList.get(in.readUByte()).readPacket(in);
                 break;
@@ -206,6 +229,23 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
                 //TODO validate name
                 icName = in.readString();
                 network.getBufferedStream(STREAM_ID_GENERAL, KEY_SET_IC_NAME).writeString(icName);
+                break;
+            case KEY_CLIENT_SEND_IC_AUTHOR:
+                icAuthor = in.readString();
+                network.getBufferedStream(STREAM_ID_GENERAL, KEY_SET_IC_AUTHOR).writeString(icAuthor);
+                break;
+            case KEY_CLIENT_SEND_IC_DIMENSIONS:
+                tileMap.setBounds(
+                        new TileCoord(in.readInt(), in.readInt(), in.readInt()),
+                        new TileCoord(in.readInt(), in.readInt(), in.readInt())
+                );
+
+                TileCoord minBounds = tileMap.getMinBounds();
+                TileCoord maxBounds = tileMap.getMaxBounds();
+
+                network.getBufferedStream(STREAM_ID_GENERAL, KEY_SET_IC_DIMENSIONS)
+                        .writeInt(minBounds.x).writeInt(minBounds.y).writeInt(minBounds.z)
+                        .writeInt(maxBounds.x).writeInt(maxBounds.y).writeInt(maxBounds.z);
                 break;
             default:
                 LOGGER.error("Unknown key " + frameKey + " in general stream");
@@ -314,6 +354,18 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
     public void sendNewICName(String name) {
         // Notifies server to set a new IC name
         network.getBufferedStream(STREAM_ID_GENERAL, KEY_CLIENT_SEND_IC_NAME).writeString(name);
+    }
+
+    public void sendNewICAuthor(String author) {
+        // Notifies server to set a new IC author
+        network.getBufferedStream(STREAM_ID_GENERAL, KEY_CLIENT_SEND_IC_AUTHOR).writeString(author);
+    }
+
+    public void sendNewICDimensions(TileCoord minBounds, TileCoord maxBounds) {
+        // Notifies server to set new IC dimensions
+        MCDataOutput out = network.getBufferedStream(STREAM_ID_GENERAL, KEY_CLIENT_SEND_IC_DIMENSIONS);
+        out.writeInt(minBounds.x).writeInt(minBounds.y).writeInt(minBounds.z);
+        out.writeInt(maxBounds.x).writeInt(maxBounds.y).writeInt(maxBounds.z);
     }
     //endregion
 

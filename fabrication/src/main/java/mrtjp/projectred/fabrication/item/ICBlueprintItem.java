@@ -66,7 +66,9 @@ public class ICBlueprintItem extends Item {
         }
 
         tooltipList.add(Component.translatable(UL_NAME).append(": " + blueprintTag.getString(KEY_IC_NAME)).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(Component.translatable(UL_AUTHOR, blueprintTag.getString(KEY_IC_AUTHOR)).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         tooltipList.add(Component.translatable(UL_TILE_COUNT).append(": " + blueprintTag.getInt(KEY_TILE_COUNT)).withStyle(ChatFormatting.GRAY));
+        tooltipList.add(Component.translatable(UL_BLUEPRINT_DIM).append(": " + blueprintTag.getString(KEY_DIMENSIONS)).withStyle(ChatFormatting.GRAY));
         tooltipList.add(Component.translatable(UL_IO_TYPES).append(": ").withStyle(ChatFormatting.GRAY));
 
         InterfaceSpec spec = getInterfaceSpec(blueprintTag);
