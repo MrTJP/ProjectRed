@@ -182,7 +182,7 @@ public class ICWorkbenchInfoTab extends AbstractGuiNode {
         ButtonArrayNode.Listener listener = new ButtonArrayNode.Listener() {
             @Override
             public String getButtonText(int index) {
-                return WaferType.values()[index].getUnlocalizedName();
+                return Component.translatable(WaferType.values()[index].getLocalizedNameKey()).getString();
             }
 
             @Override

@@ -109,15 +109,18 @@ public class FabricationUnlocal {
     public static final String UL_AUTO_COMPILE_DISABLED     = PREFIX + "ui.auto_compile_disabled";
     public static final String UL_SIM_RUNNING               = PREFIX + "ui.sim_running";
 
-    public static final String UL_YIELD_CALCULATOR      = PREFIX + "ui.yield_calculator";
-    public static final String UL_LITHOGRAPHY_PIPELINE  = PREFIX + "ui.lithography_pipeline";
-    public static final String UL_PROCESS_NODE          = PREFIX + "ui.process_node";
-    public static final String UL_WAFER_TYPE            = PREFIX + "ui.wafer_type";
-    public static final String UL_DIE_SIZE              = PREFIX + "ui.die_size";
-    public static final String UL_WAFER_SIZE            = PREFIX + "ui.wafer_size";
-    public static final String UL_DIES_PER_WAFER        = PREFIX + "ui.dies_per_wafer";
-    public static final String UL_SINGLE_LAYER_YIELD    = PREFIX + "ui.single_layer_yield";
-    public static final String UL_YIELD                 = PREFIX + "ui.yield";
+    public static final String UL_YIELD_CALCULATOR     = PREFIX + "ui.yield_calculator";
+    public static final String UL_LITHOGRAPHY_PIPELINE = PREFIX + "ui.lithography_pipeline";
+    public static final String UL_PROCESS_NODE         = PREFIX + "ui.process_node";
+    public static final String UL_WAFER_TYPE           = PREFIX + "ui.wafer_type";
+    public static final String UL_WAFER_TYPE_ROUGH     = PREFIX + "ui.wafer_type.rough";
+    public static final String UL_WAFER_TYPE_PURIFIED  = PREFIX + "ui.wafer_type.purified";
+    public static final String UL_WAFER_TYPE_POLISHED  = PREFIX + "ui.wafer_type.polished";
+    public static final String UL_DIE_SIZE             = PREFIX + "ui.die_size";
+    public static final String UL_WAFER_SIZE           = PREFIX + "ui.wafer_size";
+    public static final String UL_DIES_PER_WAFER       = PREFIX + "ui.dies_per_wafer";
+    public static final String UL_SINGLE_LAYER_YIELD   = PREFIX + "ui.single_layer_yield";
+    public static final String UL_YIELD                = PREFIX + "ui.yield";
 
     // IC Tiles
     public static final String UL_IO_GATE_TILE       = PREFIX + "tiles.io_gate";

@@ -28,6 +28,8 @@ public class FabricationItemModelProvider extends ItemModelProvider {
         generated(BLANK_PHOTOMASK_ITEM);
         generated(PHOTOMASK_SET_ITEM);
         generated(ROUGH_SILICON_WAFER_ITEM);
+        generated(PURIFIED_SILICON_WAFER_ITEM);
+        generated(POLISHED_SILICON_WAFER_ITEM);
         generated(ETCHED_SILICON_WAFER_ITEM);
         generated(VALID_DIE_ITEM);
         generated(INVALID_DIE_ITEM);
