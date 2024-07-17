@@ -78,6 +78,7 @@ public abstract class FacePowerWire extends BaseFaceWirePart implements IPowerCo
     //region Connections
     @Override
     public void maskChangeEvent(boolean internalChange, boolean externalChange) {
+        super.maskChangeEvent(internalChange, externalChange);
         // Invalidate even if conns have not changed (adjacent conductors may have moved, etc)
         cacheInvalid = true;
     }
