@@ -1,6 +1,7 @@
 package mrtjp.projectred.expansion.data;
 
 import codechicken.lib.datagen.ItemModelProvider;
+import mrtjp.projectred.expansion.TubeType;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -40,6 +41,10 @@ public class ExpansionItemModelProvider extends ItemModelProvider {
 
         generated(FRAME_BLOCK.get()).noTexture();
         generated(FRAME_MOTOR_BLOCK.get()).noTexture();
+
+        for (TubeType type : TubeType.values()) {
+            generated(type.getItem()).noTexture();
+        }
 
         generated(EMPTY_BATTERY_ITEM);
         generated(BATTERY_ITEM);
