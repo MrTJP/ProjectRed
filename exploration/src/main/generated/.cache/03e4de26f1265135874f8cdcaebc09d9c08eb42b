@@ -1,4 +1,4 @@
-// 1.19.2	2024-03-04T11:32:53.755579	Tags for minecraft:item
+// 1.19.2	2025-01-21T09:25:36.520601	Tags for minecraft:item
 d179a2e8b33551c32e1fde1f934d3c452080f4c7 data/cb_microblock/tags/items/tools/saw.json
 e71523a9e962242fb027bd7af5b4f6a7b7a958a4 data/forge/tags/items/ingots.json
 aa652ed8416a65e56e8df506616390236f05d840 data/forge/tags/items/ingots/silver.json
@@ -15,14 +15,15 @@ f1020a7b72ab62876b3a6b9fcceec1495fe36fc6 data/forge/tags/items/ores/silver.json
 919de6ad9093dce50ceccb510811370217de5d53 data/forge/tags/items/raw_materials/tin.json
 d532a6644e5c0f77a0ad0631aa20df0fec705fb5 data/forge/tags/items/stone/basalt.json
 e6ece7e72e77102086896636d1a63e836fa464cc data/forge/tags/items/stone/marble.json
-0fa6279fa9dce5516359848b7142cd8b355f597e data/forge/tags/items/storage_blocks.json
+31ecf6ae0cbc97eb683fde8f7fb8f19eb9afde3a data/forge/tags/items/storage_blocks.json
 211e0bdd014616eed5b3aedf731e368ea1b16889 data/forge/tags/items/storage_blocks/electrotine.json
 e9550f12acc58379f0936f2a25d3e5c50f800be4 data/forge/tags/items/storage_blocks/peridot.json
 f8d5ae9be802ca21197b50fa6cf22baee277549b data/forge/tags/items/storage_blocks/raw_silver.json
+f908c0769a842212de0330ab11547b8e0804d4e2 data/forge/tags/items/storage_blocks/raw_tin.json
 496e7ba6daa3730ba208ccfc2cf0c69bb6ac7a08 data/forge/tags/items/storage_blocks/ruby.json
 5f1a178933dd1967113fbf2a42289986387a2903 data/forge/tags/items/storage_blocks/sapphire.json
 ce08de69baac6242b45f391d2ad8fb4d932bde3b data/forge/tags/items/storage_blocks/silver.json
-8d26ef0ef776eb1c0f3ada7d00a77dcd20a75237 data/forge/tags/items/storage_blocks/tin.json
+8e2a01c61961fb1d0e3d7cd7b919b918e4c918b7 data/forge/tags/items/storage_blocks/tin.json
 22b884249651a68132691bc71a59dadfd94aabde data/projectred_exploration/tags/items/backpacks.json
 709694396ed2eb7ef83e6e1382d1d65d2532738e data/projectred_exploration/tags/items/backpacks/black.json
 8ea77089df41bf87eaa3b54b12af2ea1a745ba73 data/projectred_exploration/tags/items/backpacks/blue.json
