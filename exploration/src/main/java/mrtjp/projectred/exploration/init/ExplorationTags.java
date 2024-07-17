@@ -53,7 +53,7 @@ public class ExplorationTags {
     public static final TagKey<Item> SAPPHIRE_STORAGE_BLOCK_ITEM_TAG    = ItemTags.create(new ResourceLocation("forge:storage_blocks/sapphire"));
     public static final TagKey<Item> PERIDOT_STORAGE_BLOCK_ITEM_TAG     = ItemTags.create(new ResourceLocation("forge:storage_blocks/peridot"));
     public static final TagKey<Item> ELECTROTINE_STORAGE_BLOCK_ITEM_TAG = ItemTags.create(new ResourceLocation("forge:storage_blocks/electrotine"));
-    public static final TagKey<Item> RAW_TIN_STORAGE_BLOCK_ITEM_TAG     = ItemTags.create(new ResourceLocation("forge:storage_blocks/tin"));
+    public static final TagKey<Item> RAW_TIN_STORAGE_BLOCK_ITEM_TAG     = ItemTags.create(new ResourceLocation("forge:storage_blocks/raw_tin"));
     public static final TagKey<Item> RAW_SILVER_STORAGE_BLOCK_ITEM_TAG  = ItemTags.create(new ResourceLocation("forge:storage_blocks/raw_silver"));
     public static final TagKey<Item> TIN_STORAGE_BLOCK_ITEM_TAG         = ItemTags.create(new ResourceLocation("forge:storage_blocks/tin"));
     public static final TagKey<Item> SILVER_STORAGE_BLOCK_ITEM_TAG      = ItemTags.create(new ResourceLocation("forge:storage_blocks/silver"));
