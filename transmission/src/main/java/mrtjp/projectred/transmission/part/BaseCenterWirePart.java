@@ -2,7 +2,6 @@ package mrtjp.projectred.transmission.part;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.raytracer.IndexedVoxelShape;
 import codechicken.lib.raytracer.VoxelShapeCache;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
@@ -32,6 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
@@ -231,11 +231,6 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
 
     @Override
     public VoxelShape getShape(CollisionContext context) {
-        return new IndexedVoxelShape(getCollisionShape(context), 0);
-    }
-
-    @Override
-    public VoxelShape getCollisionShape(CollisionContext context) {
         int m = 0;
         for (int s = 0; s < 6; s++) {
             if (maskConnects(s)) {
@@ -243,6 +238,11 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
             }
         }
         return fOShapeStates[m];
+    }
+
+    @Override
+    public VoxelShape getBlockSupportShape() {
+        return Shapes.empty();
     }
 
     //region Occlusion

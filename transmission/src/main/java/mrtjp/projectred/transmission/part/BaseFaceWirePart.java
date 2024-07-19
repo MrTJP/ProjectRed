@@ -180,6 +180,11 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
         return Shapes.empty();
     }
 
+    @Override
+    public VoxelShape getBlockSupportShape() {
+        return Shapes.empty();
+    }
+
     //region Occlusion
     @Override
     public VoxelShape getOcclusionShape() {
