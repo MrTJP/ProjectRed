@@ -34,6 +34,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -380,18 +381,18 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
 
     //region Gate shapes and bounds
     @Override
-    public VoxelShape getCollisionShape(CollisionContext context) {
-        return FaceMicroblockPart.aShapes[0x10 | getSide()]; //TODO bring this in-house. No need to use cover's shape
-    }
-
-    @Override
     public VoxelShape getShape(CollisionContext context) {
-        return getCollisionShape(context);
+        return FaceMicroblockPart.aShapes[0x10 | getSide()]; //TODO bring this in-house. No need to use cover's shape
     }
 
     @Override
     public VoxelShape getOcclusionShape() {
         return oShapes[getSide()];
+    }
+
+    @Override
+    public VoxelShape getBlockSupportShape() {
+        return Shapes.empty();
     }
     //endregion
 
