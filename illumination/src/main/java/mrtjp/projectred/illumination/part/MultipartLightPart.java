@@ -24,6 +24,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
@@ -192,6 +193,11 @@ public class MultipartLightPart extends BaseMultipart implements SlottedPart, No
     @Override
     public VoxelShape getOcclusionShape() {
         return getShape(CollisionContext.empty());
+    }
+
+    @Override
+    public VoxelShape getBlockSupportShape() {
+        return Shapes.empty();
     }
 
     @Override

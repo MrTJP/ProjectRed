@@ -157,6 +157,11 @@ public class FramePart extends BaseMultipart implements NormalOcclusionPart, Ico
     public VoxelShape getCollisionShape(CollisionContext context) {
         return Shapes.block();
     }
+
+    @Override
+    public VoxelShape getBlockSupportShape() {
+        return Shapes.empty();
+    }
     //endregion
 
     //region Occlusion

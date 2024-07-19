@@ -385,13 +385,8 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
 
         //region Multipart properties
         @Override
-        public VoxelShape getCollisionShape(CollisionContext context) {
-            return cShapes[getSide()];
-        }
-
-        @Override
         public VoxelShape getShape(CollisionContext context) {
-            return getCollisionShape(context);
+            return cShapes[getSide()];
         }
 
         @Override
