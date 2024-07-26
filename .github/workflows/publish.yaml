@@ -147,7 +147,8 @@ jobs:
             CHANGELOG.txt
 
       - name: Update badge
-        uses: schneegans/dynamic-badges-action@v1.6.0
+        continue-on-error: true
+        uses: schneegans/dynamic-badges-action@v1.7.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
           gistID: 3ef501bc64c896a86fd706dfea8ba367
