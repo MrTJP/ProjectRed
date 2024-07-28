@@ -29,13 +29,13 @@ public class MultiplexerGateTile extends SimpleGateTile {
         @Override
         public void compute(ICSimulation ic, int[] inputs, int[] outputs) {
 
-            boolean in0 = ic.getRegByteVal(inputs[0]) != 0;
-            boolean in1 = ic.getRegByteVal(inputs[1]) != 0;
-            boolean in2 = ic.getRegByteVal(inputs[2]) != 0;
+            boolean in0 = ic.getRegByteVal(inputs[0]) != 0; // Right
+            boolean in1 = ic.getRegByteVal(inputs[1]) != 0; // Bottom
+            boolean in2 = ic.getRegByteVal(inputs[2]) != 0; // Left
 
-            ic.queueRegByteVal(outputs[0], in0 ?
-                    (byte) (in1 ? 1 : 0) :
-                    (byte) (in2 ? 1 : 0));
+            ic.queueRegByteVal(outputs[0], in1 ?
+                    (byte) (in2 ? 1 : 0) :
+                    (byte) (in0 ? 1 : 0));
         }
     }
 }
