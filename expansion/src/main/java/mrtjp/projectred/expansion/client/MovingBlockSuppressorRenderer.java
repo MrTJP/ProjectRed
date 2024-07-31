@@ -35,8 +35,13 @@ public class MovingBlockSuppressorRenderer implements ICCBlockRenderer {
         // Infinite recursion prevention. #renderBlock is attempting a no-cull render.
         if (isRendering) return false;
 
+        MovementManager manager = MovementManager.getClientInstanceNullable();
+
+        // Do nothing if manager doesn't exist
+        if (manager == null || manager.hasNoMovingStructures()) return false;
+
         // Take over both moving and adjacent to moving blocks
-        boolean isMoving = isMoving(pos);
+        boolean isMoving = isMoving(manager, pos);
 
         if (isMoving) {
             // If we're on render thread and force flag is set, it means we're rendering the moving block with an offset.
@@ -49,14 +54,15 @@ public class MovingBlockSuppressorRenderer implements ICCBlockRenderer {
         }
 
         // If adjacent to a moving block, take over to render without culling
-        return isAdjacentToMoving(pos);
+        return isAdjacentToMoving(manager, pos);
     }
 
     @Override
     public void renderBlock(BlockState state, BlockPos pos, BlockAndTintGetter world, PoseStack mStack, VertexConsumer builder, RandomSource random, ModelData data, @Nullable RenderType renderType) {
+        MovementManager manager = MovementManager.getClientInstanceNullable();
 
         // Moving blocks don't render here
-        if (isMoving(pos)) return;
+        if (manager != null && isMoving(manager, pos)) return;
 
         // Render adjacent blocks without culling
         isRendering = true; // Prevents ourselves from re-handling this event
@@ -66,14 +72,13 @@ public class MovingBlockSuppressorRenderer implements ICCBlockRenderer {
         isRendering = false;
     }
 
-    private static boolean isMoving(BlockPos pos) {
-        if (Minecraft.getInstance().level == null) return false;
-        return MovementManager.getInstance(Minecraft.getInstance().level).getMovementInfo(pos).isMoving();
+    private static boolean isMoving(MovementManager manager, BlockPos pos) {
+        return manager.getMovementInfo(pos).isMoving();
     }
 
-    private static boolean isAdjacentToMoving(BlockPos pos) {
+    private static boolean isAdjacentToMoving(MovementManager manager, BlockPos pos) {
         for (int s = 0; s < 6; s++) {
-            if (isMoving(pos.relative(Direction.values()[s]))) return true;
+            if (isMoving(manager, pos.relative(Direction.values()[s]))) return true;
         }
         return false;
     }
