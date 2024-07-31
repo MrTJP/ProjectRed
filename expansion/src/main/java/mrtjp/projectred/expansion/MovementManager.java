@@ -45,8 +45,8 @@ import static mrtjp.projectred.expansion.ProjectRedExpansion.LOGGER;
 
 public class MovementManager {
 
-    private static final HashMap<ResourceKey<Level>, MovementManager> SERVER_INSTANCE = new HashMap<>();
-    private static final HashMap<ResourceKey<Level>, MovementManager> CLIENT_INSTANCE = new HashMap<>();
+    private static final IdentityHashMap<ResourceKey<Level>, MovementManager> SERVER_INSTANCE = new IdentityHashMap<>();
+    private static final IdentityHashMap<ResourceKey<Level>, MovementManager> CLIENT_INSTANCE = new IdentityHashMap<>();
 
     private static final int KEY_BULK_DESC = 0x0;
     private static final int KEY_NEW_STRUCT = 0x1;
@@ -63,6 +63,14 @@ public class MovementManager {
     public static MovementManager getInstance(Level level) {
         var map = level.isClientSide() ? CLIENT_INSTANCE : SERVER_INSTANCE;
         return map.computeIfAbsent(level.dimension(), MovementManager::new);
+    }
+
+    public static MovementManager getClientInstanceNullable() {
+        var clientLevel = Minecraft.getInstance().level;
+        if (clientLevel == null) {
+           return null;
+        }
+        return CLIENT_INSTANCE.get(clientLevel.dimension());
     }
 
     public MovementManager(ResourceKey<Level> dimension) {
@@ -293,6 +301,10 @@ public class MovementManager {
         structure.beginMove(level);
 
         return structure;
+    }
+
+    public boolean hasNoMovingStructures() {
+        return structures.isEmpty();
     }
 
     public InternalMovementInfo getMovementInfo(BlockPos pos) {
