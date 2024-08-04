@@ -114,6 +114,8 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_DEAD_GATE_DESC, "No signals drive this gate");
         add(UL_IO_DIR_MISMATCH_TITLE, "IO direction mismatch");
         add(UL_IO_DIR_MISMATCH_DESC, "Side has IO gates with conflicting directions");
+        add(UL_IO_TYPE_MISMATCH_TITLE, "IO type mismatch");
+        add(UL_IO_TYPE_MISMATCH_DESC, "Side has IO gates with conflicting types");
         add(UL_NO_INPUTS_TITLE, "No inputs");
         add(UL_NO_INPUTS_DESC, "Design has no inputs");
         add(UL_NO_OUTPUTS_TITLE, "No outputs");
@@ -166,7 +168,8 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_FAB_ERR_COMPILE_FORMAT, "Cannot fabricate: Re-compile required");
         add(UL_FAB_ERR_GENERIC, "Cannot fabricate");
 
-        add(UL_IO_GATE_TILE, "IO Gate");
+        add(UL_REDSTONE_IO_GATE_TILE, "Redstone IO Gate");
+        add(UL_BUNDLED_COLOR_IO_GATE_TILE, "Bundled Color IO Gate");
         add(UL_TIMER_INTERVAL, "Interval");
         add(UL_COUNTER_VALUE, "Value");
         add(UL_COUNTER_MAX, "Max");
