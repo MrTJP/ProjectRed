@@ -7,6 +7,7 @@ public enum CompileProblemType {
     DEAD_WIRE(DeadWireWarning::new),
     DEAD_GATE(DeadGateWarning::new),
     IO_DIR_MISMATCH(IODirectionMismatchError::new),
+    IO_TYPE_MISMATCH(IOTypeMismatchError::new),
     NO_INPUTS(NoInputsError::new),
     NO_OUTPUTS(NoOutputsError::new),
     ;

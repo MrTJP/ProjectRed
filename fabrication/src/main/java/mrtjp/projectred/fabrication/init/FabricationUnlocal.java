@@ -85,6 +85,8 @@ public class FabricationUnlocal {
     public static final String UL_DEAD_GATE_DESC         =  PREFIX + "problems.dead_gate.desc";
     public static final String UL_IO_DIR_MISMATCH_TITLE  =  PREFIX + "problems.io_dir_mismatch.title";
     public static final String UL_IO_DIR_MISMATCH_DESC   =  PREFIX + "problems.io_dir_mismatch.desc";
+    public static final String UL_IO_TYPE_MISMATCH_TITLE  =  PREFIX + "problems.io_type_mismatch.title";
+    public static final String UL_IO_TYPE_MISMATCH_DESC   =  PREFIX + "problems.io_type_mismatch.desc";
     public static final String UL_NO_INPUTS_TITLE        =  PREFIX + "problems.no_inputs.title";
     public static final String UL_NO_INPUTS_DESC         =  PREFIX + "problems.no_inputs.desc";
     public static final String UL_NO_OUTPUTS_TITLE       =  PREFIX + "problems.no_outputs.title";
@@ -120,7 +122,8 @@ public class FabricationUnlocal {
     public static final String UL_YIELD                 = PREFIX + "ui.yield";
 
     // IC Tiles
-    public static final String UL_IO_GATE_TILE       = PREFIX + "tiles.io_gate";
+    public static final String UL_REDSTONE_IO_GATE_TILE = PREFIX + "tiles.redstone_io_gate";
+    public static final String UL_BUNDLED_COLOR_IO_GATE_TILE = PREFIX + "tiles.bundled_color_io_gate";
     public static final String UL_TIMER_INTERVAL     = PREFIX + "tiles.timer.interval";
     public static final String UL_COUNTER_VALUE      = PREFIX + "tiles.counter.value";
     public static final String UL_COUNTER_MAX        = PREFIX + "tiles.counter.max";
