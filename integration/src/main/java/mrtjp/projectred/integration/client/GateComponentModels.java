@@ -63,8 +63,10 @@ public class GateComponentModels {
     public static final CCModel segbus = loadModel("array/segbus");
 
     public static final Map<String, CCModel> fabIC = loadModels("fab_ic", (k, v) -> v.apply(new Translation(0.5, 0, 0.5)));
-    public static final Map<String, CCModel> ioCrimp = loadModels("io_crimp");
-    public static final Map<String, CCModel> ioColourBox = loadModels("io_colour_box");
+    public static final Map<String, CCModel> ioRedstoneConnector = loadModels("io_redstone_connector");
+    public static final Map<String, CCModel> ioBundledConnector = loadModels("io_bundled_connector");
+    public static final Map<String, CCModel> ioBuffer = loadModels("io_buffer");
+    public static final Map<String, CCModel> ioBundledBuffer = loadModels("io_bundled_buffer");
 
     public static IconTransformation baseIcon;
     public static IconTransformation wireBorderIcon;
@@ -99,8 +101,10 @@ public class GateComponentModels {
     public static IconTransformation icChipIcon;
     public static IconTransformation icChipIconOff;
     public static IconTransformation icHousingIcon;
-    public static IconTransformation ioCrimpConnectorIcon;
-    public static IconTransformation ioColourBoxIcon;
+    public static IconTransformation ioRedstoneConnectorIcon;
+    public static IconTransformation ioBundledConnectorIcon;
+    public static IconTransformation ioBufferIcon;
+    public static IconTransformation ioBundledBufferIcon;
 
     public static void registerIcons(AtlasRegistrar registrar) {
         //@formatter:off
@@ -141,8 +145,10 @@ public class GateComponentModels {
         registrar.registerSprite(new ResourceLocation(MOD_ID, "block/ic_active"),               i -> icChipIcon = new IconTransformation(i));
         registrar.registerSprite(new ResourceLocation(MOD_ID, "block/ic_inert"),                i -> icChipIconOff = new IconTransformation(i));
         registrar.registerSprite(new ResourceLocation(MOD_ID, "block/ic_housing"),              i -> icHousingIcon = new IconTransformation(i));
-        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/io_crimp"),                i -> ioCrimpConnectorIcon = new IconTransformation(i));
-        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/io_colour_box"),           i -> ioColourBoxIcon = new IconTransformation(i));
+        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/io_redstone_connector"),   i -> ioRedstoneConnectorIcon = new IconTransformation(i));
+        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/io_bundled_connector"),    i -> ioBundledConnectorIcon = new IconTransformation(i));
+        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/io_buffer"),               i -> ioBufferIcon = new IconTransformation(i));
+        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/io_bundled_buffer"),       i -> ioBundledBufferIcon = new IconTransformation(i));
         //@formatter:on
     }
 
@@ -1495,7 +1501,7 @@ public class GateComponentModels {
             icChipModel[orient].render(ccrs, t, icChipIcon);
         }
 
-        public void renderName(String name, PoseStack mStack, Transformation t1, int argb) {
+        public void renderName(String name, Transformation t1, PoseStack mStack, MultiBufferSource bufferSource, int argb, int packedLight) {
 
             Component nameComponent = Component.literal(name).withStyle(UNIFORM);
             Font fr = Minecraft.getInstance().font;
@@ -1519,7 +1525,7 @@ public class GateComponentModels {
             // Draw text
             mStack.pushPose();
             mStack.mulPoseMatrix(m.toMatrix4f());
-            fr.draw(mStack, nameComponent, 0, 0, argb);
+            fr.drawInBatch(nameComponent, 0, 0, argb, false, mStack.last().pose(), bufferSource, false, 0, packedLight);
             mStack.popPose();
         }
 
@@ -1528,28 +1534,28 @@ public class GateComponentModels {
         }
     }
 
-    public static class IOCrimpConnectorModel extends StaticComponentModel {
+    public static class IORedstoneConnectorModel extends StaticComponentModel {
 
-        public static final IOCrimpConnectorModel INSTANCE = new IOCrimpConnectorModel();
+        public static final IORedstoneConnectorModel INSTANCE = new IORedstoneConnectorModel();
 
-        private IOCrimpConnectorModel() {
-            super(ioCrimp.get("crimp")
+        private IORedstoneConnectorModel() {
+            super(ioRedstoneConnector.get("connector")
                     .copy()
                     .apply(new Translation(0.5, 2/16D, 0.5)));
         }
 
         @Override
         protected UVTransformation getUVT() {
-            return ioCrimpConnectorIcon;
+            return ioRedstoneConnectorIcon;
         }
     }
 
-    public static class IOCrimpWireModel extends CellWireModel {
+    public static class IORedstoneConnectorWireModel extends CellWireModel {
 
-        private static final CCModel[] models = bakeOrients(ioCrimp.get("redalloy").copy().apply(new Translation(0.5, 2/16D, 0.5)));
+        private static final CCModel[] models = bakeOrients(ioRedstoneConnector.get("redalloy").copy().apply(new Translation(0.5, 2/16D, 0.5)));
 
         private IconTransformation getUVT() {
-            return ioCrimpConnectorIcon;
+            return ioRedstoneConnectorIcon;
         }
 
         @Override
@@ -1558,7 +1564,7 @@ public class GateComponentModels {
         }
     }
 
-    public static class IOCrimpColourBoxModel extends ComponentModel {
+    public static class IOBufferModel extends ComponentModel {
 
         public int colour = EnumColour.WHITE.ordinal();
         public boolean isInput = true;
@@ -1567,32 +1573,110 @@ public class GateComponentModels {
         private final CCModel[] inputArrowModels;
         private final CCModel[] outputArrowModels;
 
-        public IOCrimpColourBoxModel(double x, double z) {
+        public IOBufferModel(double x, double z) {
+            Transformation t = new Translation(x/16D, 2/16D, z/16D);
 
-            CCModel m = ioColourBox.get("box").copy().apply(new Translation(x/16D, 2/16D, z/16D));
+            CCModel m = ioBuffer.get("box").copy().apply(t);
             boxModels = bakeOrients(m);
 
-            m = ioColourBox.get("arrow").copy().apply(new Translation(x/16D, 2/16D, z/16D));
+            m = ioBuffer.get("arrow").copy().apply(t);
             inputArrowModels = bakeOrients(m);
 
-            m = ioColourBox.get("arrow").copy()
+            m = ioBuffer.get("arrow").copy()
                     .apply(new Rotation(180 * MathHelper.torad, 0, 1, 0))
-                    .apply(new Translation(x/16D, 2/16D, z/16D));
+                    .apply(t);
             outputArrowModels = bakeOrients(m);
         }
 
         private UVTransformation getColourUVT() {
-            return new UVTranslation((colour%2) * 4 / 32D, (colour/2) * 4 / 32D).with(ioColourBoxIcon);
+            return new UVTranslation((colour%2) * 4 / 32D, (colour/2) * 4 / 32D).with(ioBufferIcon);
         }
 
         private UVTransformation getBoxUVT() {
-            return ioColourBoxIcon;
+            return ioBufferIcon;
         }
 
         @Override
         public void renderModel(Transformation t, int orient, CCRenderState ccrs) {
             boxModels[orient].render(ccrs, t, getBoxUVT());
             (isInput ? inputArrowModels : outputArrowModels)[orient].render(ccrs, t, getColourUVT());
+        }
+    }
+
+    public static class IOBundledConnectorModel extends StaticComponentModel {
+
+        public static final IOBundledConnectorModel INSTANCE = new IOBundledConnectorModel();
+
+        private IOBundledConnectorModel() {
+            super(Objects.requireNonNull(CCModel.combine(ioBundledConnector.values()))
+                    .copy()
+                    .apply(new Translation(0.5, 2/16D, 0.5)));
+        }
+
+        @Override
+        protected UVTransformation getUVT() {
+            return ioBundledConnectorIcon;
+        }
+    }
+
+    public static class IOBundledBufferModel extends ComponentModel {
+
+        public int colour = EnumColour.WHITE.ordinal();
+        public boolean isInput = true;
+        public boolean showInsulated = true;
+
+        private final CCModel[] boxModels;
+        private final CCModel[] insulatedWireModels;
+        private final CCModel[] inputArrowModels;
+        private final CCModel[] outputArrowModels;
+        private final CCModel[][] selectorModels;
+
+        public IOBundledBufferModel(double x, double z) {
+            Transformation t = new Translation(x/16D, 2/16D, z/16D);
+
+            CCModel m = ioBundledBuffer.get("box").copy().apply(t);
+            boxModels = bakeOrients(m);
+
+            m = ioBundledBuffer.get("insulated_wire").copy().apply(t);
+            insulatedWireModels = bakeOrients(m);
+
+            m = ioBundledBuffer.get("arrow").copy().apply(t);
+            inputArrowModels = bakeOrients(m);
+
+            m = ioBundledBuffer.get("arrow").copy()
+                    .apply(new Rotation(180 * MathHelper.torad, 0, 1, 0))
+                    .apply(t);
+            outputArrowModels = bakeOrients(m);
+
+            // Create 15 selector models
+            selectorModels = new CCModel[16][];
+            for (int i = 0; i < 16; i++) {
+                // Each color is 0.5 wide, and starts at x = -4.
+                double xPos = -4.0 + 0.25 + i * 0.5;
+
+                m = ioBundledBuffer.get("selector").copy()
+                        .apply(new Translation(xPos/16D, 0, 0))
+                        .apply(t);
+                selectorModels[i] = bakeOrients(m);
+            }
+        }
+
+        private UVTransformation getColourUVT() {
+            return new UVTranslation((colour%2) * 4 / 32D, (colour/2) * 4 / 32D).with(ioBundledBufferIcon);
+        }
+
+        private UVTransformation getBoxUVT() {
+            return ioBundledBufferIcon;
+        }
+
+        @Override
+        public void renderModel(Transformation t, int orient, CCRenderState ccrs) {
+            boxModels[orient].render(ccrs, t, getBoxUVT());
+            selectorModels[colour][orient].render(ccrs, t, getBoxUVT());
+            (isInput ? inputArrowModels : outputArrowModels)[orient].render(ccrs, t, getColourUVT());
+            if (showInsulated) {
+                insulatedWireModels[orient].render(ccrs, t, getColourUVT());
+            }
         }
     }
 

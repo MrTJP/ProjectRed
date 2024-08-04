@@ -10,15 +10,18 @@ import mrtjp.projectred.transmission.WireType;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
+import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
 import static mrtjp.projectred.fabrication.engine.ICTileTypeOffsets.*;
-import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_IO_GATE_TILE;
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_BUNDLED_COLOR_IO_GATE_TILE;
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_REDSTONE_IO_GATE_TILE;
 import static mrtjp.projectred.integration.GateType.*;
 import static mrtjp.projectred.transmission.WireType.*;
 
 public enum ICTileType {
 
     //@formatter:off
-    IO_GATE(ID_OFFSET_IOGATE, UL_IO_GATE_TILE, IOGateTile::new),
+    REDSTONE_IO_GATE      (ID_OFFSET_IOGATE,     UL_REDSTONE_IO_GATE_TILE,      RedstoneIOGateTile::new),
+    BUNDLED_COLOR_IO_GATE (ID_OFFSET_IOGATE + 1, UL_BUNDLED_COLOR_IO_GATE_TILE, BundledColorIOGateTile::new),
 
     OR_GATE               (ID_OFFSET_GATE,      OR,                ORGateTile::new),
     NOR_GATE              (ID_OFFSET_GATE + 1,  NOR,               NORGateTile::new),
@@ -87,6 +90,14 @@ public enum ICTileType {
         }
     }
 
+    /*
+     * If any breaking ID changes are made, this number should be incremented.
+     * Changelog:
+     * - 0: Initial format
+     * - 1: Bundled color IO gate moved from ID 0 to 1
+     */
+    public static final int ID_MAP_FORMAT = 1;
+
     private final int id;
     private final String unlocalizedName;
     private final Supplier<BaseTile> factory;
@@ -120,5 +131,26 @@ public enum ICTileType {
     public static @Nullable BaseTile createFromId(int id) {
         if (id < 0 || id >= VALUES_BY_ID.length) return null;
         return VALUES_BY_ID[id].create();
+    }
+
+    /**
+     * Create a tile from a previously saved ID value, taking into account any ID mapping changes
+     * since it was saved.
+     *
+     * @param id     The ID of the tile to create
+     * @param format Value of {@link ICTileType#ID_MAP_FORMAT} when the id value was saved
+     */
+    public static @Nullable BaseTile createFromIdAndFormat(int id, int format) {
+        // Convert formats if necessary
+        // Since format 0:
+        // - Bundled color IO gates moved from ID 0 to ID 1
+        if (format == 0) {
+            if (id == 0) {
+                LOGGER.warn("Loading format {}: Remapping bundled color IO tile from 0 to 1", format);
+                id = 1;
+            }
+        }
+
+        return createFromId(id);
     }
 }
