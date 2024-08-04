@@ -35,6 +35,8 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(BLANK_PHOTOMASK_ITEM.get(), "Blank Photomask");
         add(PHOTOMASK_SET_ITEM.get(), "Photomask Set");
         add(ROUGH_SILICON_WAFER_ITEM.get(), "Rough Silicon Wafer");
+        add(PURIFIED_SILICON_WAFER_ITEM.get(), "Purified Silicon Wafer");
+        add(POLISHED_SILICON_WAFER_ITEM.get(), "Polished Silicon Wafer");
         add(ETCHED_SILICON_WAFER_ITEM.get(), "Etched Silicon Wafer");
         add(VALID_DIE_ITEM.get(), "Valid Die");
         add(INVALID_DIE_ITEM.get(), "Invalid Die");

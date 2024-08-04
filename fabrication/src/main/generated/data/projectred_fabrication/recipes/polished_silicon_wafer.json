@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "c": {
+      "item": "projectred_core:woven_cloth"
+    },
+    "p": {
+      "item": "projectred_fabrication:purified_silicon_wafer"
+    }
+  },
+  "pattern": [
+    " c ",
+    "cpc",
+    " c "
+  ],
+  "result": {
+    "item": "projectred_fabrication:polished_silicon_wafer"
+  }
+}

@@ -93,9 +93,11 @@ public class PipelineDiagramNode extends AbstractGuiNode {
                 case ROUGH_WAFER:
                     node.setItemStack(new ItemStack(ROUGH_SILICON_WAFER_ITEM.get()));
                     break;
-                case POLISHED_WAFER:
                 case PURIFIED_WAFER:
-                    node.setItemStack(ItemStack.EMPTY); //TODO
+                    node.setItemStack(new ItemStack(PURIFIED_SILICON_WAFER_ITEM.get()));
+                    break;
+                case POLISHED_WAFER:
+                    node.setItemStack(new ItemStack(POLISHED_SILICON_WAFER_ITEM.get()));
                     break;
             }
         }
