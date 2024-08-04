@@ -6,14 +6,8 @@ import mrtjp.fengine.TileCoord;
 import mrtjp.fengine.api.ICFlatMap;
 import mrtjp.fengine.api.ICStepThroughAssembler;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.fabrication.engine.BaseTile;
-import mrtjp.projectred.fabrication.engine.ICSimulationContainer;
-import mrtjp.projectred.fabrication.engine.IIOConnectionTile;
-import mrtjp.projectred.fabrication.engine.PRFabricationEngine;
-import mrtjp.projectred.fabrication.engine.log.ICCompilerLog;
-import mrtjp.projectred.fabrication.engine.log.IODirectionMismatchError;
-import mrtjp.projectred.fabrication.engine.log.NoInputsError;
-import mrtjp.projectred.fabrication.engine.log.NoOutputsError;
+import mrtjp.projectred.fabrication.engine.*;
+import mrtjp.projectred.fabrication.engine.log.*;
 import net.covers1624.quack.collection.FastStream;
 import net.minecraft.nbt.CompoundTag;
 
@@ -482,6 +476,24 @@ public class ICEditorStateMachine {
                             .toList();
 
                     compilerLog.addProblem(new IODirectionMismatchError(coordList));
+                }
+            }
+
+            // Check for IO type conflicts
+            for (int r = 0; r < 4; r++) {
+                int finalR = r;
+                var rIO = FastStream.of(ioTiles).filter(io -> io.getIOSide() == finalR).toList();
+                var typeSet = FastStream.of(rIO)
+                        .map(IIOConnectionTile::getInterfaceType)
+                        .filter(t -> t != ICInterfaceType.NC)
+                        .toSet();
+
+                if (typeSet.size() > 1) {
+                    var coordList = FastStream.of(rIO)
+                            .map(io -> ((BaseTile)io).getPos())
+                            .toList();
+
+                    compilerLog.addProblem(new IOTypeMismatchError(coordList));
                 }
             }
 
