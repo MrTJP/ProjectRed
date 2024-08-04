@@ -80,7 +80,8 @@ public class GateModelRenderer {
     };
 
     private final GateRenderer[] nonPartRenderers = new GateRenderer[] {
-            new RenderIOGate(),
+            new RenderRedstoneIOGate(),
+            new RenderBundledColorIOGate(),
     };
 
     //region Static rendering
@@ -1973,20 +1974,20 @@ public class GateModelRenderer {
         }
     }
 
-    public static class RenderIOGate extends GateRenderer {
+    public static class RenderRedstoneIOGate extends GateRenderer {
 
         private final List<ComponentModel> models = new LinkedList<>();
 
-        private final WireModel[] wires = generateWireModels("fabio", 1);
-        private final IOCrimpWireModel crimpWire = new IOCrimpWireModel();
-        private final IOCrimpColourBoxModel colourBox = new IOCrimpColourBoxModel(3, 10.5);
+        private final WireModel[] wires = generateWireModels("io_redstone", 1);
+        private final IORedstoneConnectorWireModel connWire = new IORedstoneConnectorWireModel();
+        private final IOBufferModel buffer = new IOBufferModel(8, 10);
 
-        public RenderIOGate() {
+        public RenderRedstoneIOGate() {
             models.add(BaseComponentModel.INSTANCE);
             models.addAll(Arrays.asList(wires));
-            models.add(IOCrimpConnectorModel.INSTANCE);
-            models.add(crimpWire);
-            models.add(colourBox);
+            models.add(IORedstoneConnectorModel.INSTANCE);
+            models.add(connWire);
+            models.add(buffer);
         }
 
         @Override
@@ -1996,16 +1997,50 @@ public class GateModelRenderer {
 
         @Override
         protected void prepareInventory(@Nullable ItemStack stack) {
-            crimpWire.signal = 0;
-            colourBox.colour = 0;
+            wires[0].on = false;
+            connWire.signal = 0;
+            buffer.isInput = true;
         }
 
         @Override
         protected void prepare(IGateRenderData gate) {
             wires[0].on = (gate.state() & 0x44) != 0;
-            crimpWire.signal = (byte) (wires[0].on ? 255 : 0);
-            colourBox.colour = gate.state2() & 0xF;
-            colourBox.isInput = gate.shape() == 0;
+            connWire.signal = (byte) (wires[0].on ? 255 : 0);
+            buffer.isInput = gate.shape() == 0;
+        }
+    }
+
+    public static class RenderBundledColorIOGate extends GateRenderer {
+
+        private final List<ComponentModel> models = new LinkedList<>();
+
+        private final WireModel[] wires = generateWireModels("io_redstone", 1);
+        private final IOBundledBufferModel buffer = new IOBundledBufferModel(8, 8);
+
+        public RenderBundledColorIOGate() {
+            models.add(BaseComponentModel.INSTANCE);
+            models.addAll(Arrays.asList(wires));
+            models.add(IOBundledConnectorModel.INSTANCE);
+            models.add(buffer);
+        }
+
+        @Override
+        protected List<ComponentModel> getModels() {
+            return models;
+        }
+
+        @Override
+        protected void prepareInventory(@Nullable ItemStack stack) {
+            wires[0].on = false;
+            buffer.colour = 0;
+            buffer.isInput = true;
+        }
+
+        @Override
+        protected void prepare(IGateRenderData gate) {
+            wires[0].on = (gate.state() & 0x44) != 0;
+            buffer.colour = gate.state2() & 0xF;
+            buffer.isInput = gate.shape() == 0;
         }
     }
 }
