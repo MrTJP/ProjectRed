@@ -27,6 +27,7 @@ public class FabricatedGatePart extends BundledGatePart {
 
     private CompoundTag itemStackTag = new CompoundTag();
     private String icName = "untitled";
+    private String icAuthor = "";
     private long simulationTimeStart = -1L;
     private int compileFormat = 0;
 
@@ -55,6 +56,7 @@ public class FabricatedGatePart extends BundledGatePart {
 
         itemStackTag = EditorDataUtils.createFabricationCopy(tag);
         icName = tag.getString(KEY_IC_NAME);
+        icAuthor = tag.getString(KEY_IC_AUTHOR);
         ICFlatMap flatMap = PRFabricationEngine.instance.deserializeFlatMap(tag.getString(KEY_FLAT_MAP));
         simulationContainer.setFlatMap(flatMap);
         ifSpec.loadFrom(tag, KEY_IO_SPEC);
@@ -67,9 +69,10 @@ public class FabricatedGatePart extends BundledGatePart {
     public void save(CompoundTag tag) {
         super.save(tag);
         tag.put("item_stack", itemStackTag);
-        tag.putString("ic_name", icName);
+        tag.putString(KEY_IC_NAME, icName);
+        tag.putString(KEY_IC_AUTHOR, icAuthor);
         tag.putLong("sim_time", level().getGameTime() - simulationTimeStart);
-        tag.putInt("compile_format", compileFormat);
+        tag.putInt(KEY_COMPILE_FORMAT, compileFormat);
         simulationContainer.save(tag);
         ifSpec.saveTo(tag, "io_spec");
     }
@@ -78,9 +81,10 @@ public class FabricatedGatePart extends BundledGatePart {
     public void load(CompoundTag tag) {
         super.load(tag);
         itemStackTag = tag.getCompound("item_stack");
-        icName = tag.getString("ic_name");
+        icName = tag.getString(KEY_IC_NAME);
+        icAuthor = tag.getString(KEY_IC_AUTHOR);
         simulationTimeStart = tag.getLong("sim_time");
-        compileFormat = tag.getInt("compile_format");
+        compileFormat = tag.getInt(KEY_COMPILE_FORMAT);
         if (compileFormat == PRFabricationEngine.COMPILE_FORMAT) {
             simulationContainer.load(tag);
         } else {
@@ -94,6 +98,7 @@ public class FabricatedGatePart extends BundledGatePart {
         super.writeDesc(packet);
         packet.writeCompoundNBT(itemStackTag); // Client needs tag for pick-blcok
         packet.writeString(icName);
+        packet.writeString(icAuthor);
         ifSpec.writeDesc(packet);
         packet.writeInt(compileFormat);
     }
@@ -103,6 +108,7 @@ public class FabricatedGatePart extends BundledGatePart {
         super.readDesc(packet);
         itemStackTag = Objects.requireNonNullElse(packet.readCompoundNBT(), new CompoundTag());
         icName = packet.readString();
+        icAuthor = packet.readString();
         ifSpec.readDesc(packet);
         compileFormat = packet.readInt();
     }

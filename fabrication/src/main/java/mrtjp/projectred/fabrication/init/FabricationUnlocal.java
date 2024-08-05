@@ -98,6 +98,7 @@ public class FabricationUnlocal {
     public static final String UL_BLUEPRINT_NAME            = PREFIX + "ui.blueprint_name";
     public static final String UL_BLUEPRINT_OWNER           = PREFIX + "ui.blueprint_owner";
     public static final String UL_BLUEPRINT_DIM             = PREFIX + "ui.blueprint_dim";
+    public static final String UL_BLUEPRINT_TITLE           = PREFIX + "ui.blueprint_title";
     public static final String UL_BLUEPRINT_LAYERS          = PREFIX + "ui.blueprint_layers";
     public static final String UL_COMPILE                   = PREFIX + "ui.compile";
     public static final String UL_COMPILE_PROGRESS          = PREFIX + "ui.compile_progress";
@@ -136,24 +137,25 @@ public class FabricationUnlocal {
     public static final String UL_TILEGROUP_MEMORY  = PREFIX + "tilegroup.memory";
 
     // Item tooltips
-    public static final String UL_SIZE               = PREFIX + "tooltip.size";
-    public static final String UL_DEFECT_CHANCE      = PREFIX + "tooltip.defect_chance";
-    public static final String UL_CORRUPTED_DISCARD  = PREFIX + "tooltip.corrupted_discard"; //"Corrupted NBT data, please discard"
-    public static final String UL_NAME               = PREFIX + "tooltip.name";
-    public static final String UL_TILE_COUNT         = PREFIX + "tooltip.tile_count";
-    public static final String UL_IO_TYPES           = PREFIX + "tooltip.io_types";
-    public static final String UL_INPUT_MASK         = PREFIX + "tooltip.input_mask";
-    public static final String UL_OUTPUT_MASK        = PREFIX + "tooltip.output_mask";
-    public static final String UL_TOP                = PREFIX + "tooltip.top";
-    public static final String UL_RIGHT              = PREFIX + "tooltip.right";
-    public static final String UL_BOTTOM             = PREFIX + "tooltip.bottom";
-    public static final String UL_LEFT               = PREFIX + "tooltip.left";
-    public static final String UL_BUNDLED_INPUT      = PREFIX + "tooltip.bundled_input";
-    public static final String UL_BUNDLED_OUTPUT     = PREFIX + "tooltip.bundled_output";
-    public static final String UL_IO_NONE            = PREFIX + "tooltip.io_none";
-    public static final String UL_FAB_ERR_NOT_COMPILED      = PREFIX + "tooltip.fab_err.not_compiled";
-    public static final String UL_FAB_ERR_COMPILE_FORMAT    = PREFIX + "tooltip.fab_err.compile_format";
-    public static final String UL_FAB_ERR_GENERIC           = PREFIX + "tooltip.fab_err.generic";
+    public static final String UL_SIZE                   = PREFIX + "tooltip.size";
+    public static final String UL_DEFECT_CHANCE          = PREFIX + "tooltip.defect_chance";
+    public static final String UL_CORRUPTED_DISCARD      = PREFIX + "tooltip.corrupted_discard"; //"Corrupted NBT data, please discard"
+    public static final String UL_NAME                   = PREFIX + "tooltip.name";
+    public static final String UL_AUTHOR                 = PREFIX + "tooltip.author";
+    public static final String UL_TILE_COUNT             = PREFIX + "tooltip.tile_count";
+    public static final String UL_IO_TYPES               = PREFIX + "tooltip.io_types";
+    public static final String UL_INPUT_MASK             = PREFIX + "tooltip.input_mask";
+    public static final String UL_OUTPUT_MASK            = PREFIX + "tooltip.output_mask";
+    public static final String UL_TOP                    = PREFIX + "tooltip.top";
+    public static final String UL_RIGHT                  = PREFIX + "tooltip.right";
+    public static final String UL_BOTTOM                 = PREFIX + "tooltip.bottom";
+    public static final String UL_LEFT                   = PREFIX + "tooltip.left";
+    public static final String UL_BUNDLED_INPUT          = PREFIX + "tooltip.bundled_input";
+    public static final String UL_BUNDLED_OUTPUT         = PREFIX + "tooltip.bundled_output";
+    public static final String UL_IO_NONE                = PREFIX + "tooltip.io_none";
+    public static final String UL_FAB_ERR_NOT_COMPILED   = PREFIX + "tooltip.fab_err.not_compiled";
+    public static final String UL_FAB_ERR_COMPILE_FORMAT = PREFIX + "tooltip.fab_err.compile_format";
+    public static final String UL_FAB_ERR_GENERIC        = PREFIX + "tooltip.fab_err.generic";
 
     // Interfaces
     public static final String UL_INTERFACE_NC       = PREFIX + "interface.nc";
