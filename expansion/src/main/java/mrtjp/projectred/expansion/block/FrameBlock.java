@@ -1,14 +1,12 @@
 package mrtjp.projectred.expansion.block;
 
 import codechicken.lib.raytracer.VoxelShapeCache;
-import codechicken.lib.render.particle.CustomParticleHandler;
 import codechicken.lib.vec.*;
 import com.google.common.collect.ImmutableSet;
 import mrtjp.projectred.api.Frame;
 import mrtjp.projectred.expansion.client.FrameModelRenderer;
 import mrtjp.projectred.expansion.client.FrameModelVerts;
 import mrtjp.projectred.lib.ModelVoxelShape;
-import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -18,18 +16,13 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.client.extensions.common.IClientBlockExtensions;
 import net.minecraftforge.fml.DistExecutor;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class FrameBlock extends Block implements Frame {
 
@@ -40,36 +33,6 @@ public class FrameBlock extends Block implements Frame {
                 .strength(2.0F)
                 .sound(SoundType.WOOD)
                 .dynamicShape()); // To prevent early caching before modelVerts can be loaded
-    }
-
-    @Override
-    public void initializeClient(Consumer<IClientBlockExtensions> consumer) {
-        consumer.accept(new IClientBlockExtensions() {
-            @Override
-            public boolean addHitEffects(BlockState state, Level level, HitResult hit, ParticleEngine engine) {
-                if (!(hit instanceof BlockHitResult blockHit)) {
-                    return false;
-                }
-                CustomParticleHandler.addBlockHitEffects(
-                        level,
-                        Cuboid6.full.copy().add(blockHit.getBlockPos()),
-                        blockHit.getDirection(),
-                        FrameModelRenderer.getFrameIcon(),
-                        engine
-                );
-                return true;
-            }
-
-            @Override
-            public boolean addDestroyEffects(BlockState state, Level level, BlockPos pos, ParticleEngine engine) {
-                CustomParticleHandler.addBlockDestroyEffects(
-                        level,
-                        Cuboid6.full.copy().add(pos),
-                        Collections.singletonList(FrameModelRenderer.getFrameIcon()),
-                        engine);
-                return true;
-            }
-        });
     }
 
     //region Frame
