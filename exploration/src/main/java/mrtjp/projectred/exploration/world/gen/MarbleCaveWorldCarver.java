@@ -27,8 +27,12 @@ public class MarbleCaveWorldCarver extends CaveWorldCarver {
 
     @Override
     protected boolean canReplaceBlock(CaveCarverConfiguration pConfig, BlockState pState) {
-        // We must be able to carve the target wall type since we fill around every carved block
-        return super.canReplaceBlock(pConfig, pState) || pState.is(MARBLE_BLOCK.get());
+        // We must be able to carve the target wall type since we fill around every carved block.
+        //
+        // Air check is workaround for mods improperly adding air block tags to minecraft:overworld_carver_replaceables
+        // which causes marble caves to generate in the sky.
+        // https://github.com/MrTJP/ProjectRed/issues/1874
+        return !pState.isAir() && (super.canReplaceBlock(pConfig, pState) || pState.is(MARBLE_BLOCK.get()));
     }
 
     @Override
