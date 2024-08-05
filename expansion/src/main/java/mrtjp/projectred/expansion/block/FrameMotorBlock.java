@@ -1,61 +1,22 @@
 package mrtjp.projectred.expansion.block;
 
-import codechicken.lib.render.particle.CustomParticleHandler;
-import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import mrtjp.projectred.core.block.ProjectRedBlock;
-import mrtjp.projectred.expansion.client.FrameMotorBlockRenderer;
 import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import mrtjp.projectred.expansion.tile.FrameMotorTile;
-import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.client.extensions.common.IClientBlockExtensions;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Collections;
-import java.util.function.Consumer;
 
 public class FrameMotorBlock extends ProjectRedBlock {
 
     public FrameMotorBlock() {
         super(STONE_PROPERTIES);
-    }
-
-    @Override
-    public void initializeClient(Consumer<IClientBlockExtensions> consumer) {
-        consumer.accept(new IClientBlockExtensions() {
-            @Override
-            public boolean addHitEffects(BlockState state, Level level, HitResult hit, ParticleEngine engine) {
-                if (!(hit instanceof BlockHitResult blockHit)) return false;
-                CustomParticleHandler.addBlockHitEffects(
-                        level,
-                        Cuboid6.full.copy().add(blockHit.getBlockPos()),
-                        blockHit.getDirection(),
-                        FrameMotorBlockRenderer.getParticleIcon(state, blockHit.getDirection().ordinal()),
-                        engine
-                );
-                return true;
-            }
-
-            @Override
-            public boolean addDestroyEffects(BlockState state, Level level, BlockPos pos, ParticleEngine engine) {
-                CustomParticleHandler.addBlockDestroyEffects(
-                        level,
-                        Cuboid6.full.copy().add(pos),
-                        Collections.singletonList(FrameMotorBlockRenderer.getParticleIcon(state, 0)),
-                        engine);
-                return true;
-            }
-        });
     }
 
     @Nullable
