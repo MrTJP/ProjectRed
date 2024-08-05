@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "projectred_expansion:block/programmatically_rendered_block"
+      "model": "projectred_expansion:block/frame_motor_programmatically_rendered"
     }
   }
 }

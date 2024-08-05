@@ -36,10 +36,18 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
         addSideAndTopActiveModel(BLOCK_BREAKER_BLOCK.get());
         addSidedOppositeMatchingFacesDeviceBlock(DEPLOYER_BLOCK.get());
 
-        // Advanced models rendered programmatically. Tied to dummy model to suppress warnings.
-        ModelFile dummy = models().withExistingParent("programmatically_rendered_block", "block");
-        simpleBlock(FRAME_BLOCK.get(), dummy);
-        simpleBlock(FRAME_MOTOR_BLOCK.get(), dummy);
+        // Advanced models rendered programmatically. Only Particle info provided by model file
+        addProgrammaticWithParticleTexture(FRAME_BLOCK.get(), "");
+        addProgrammaticWithParticleTexture(FRAME_MOTOR_BLOCK.get(), "_top");
+    }
+
+    private void addProgrammaticWithParticleTexture(Block block, String texSuffix) {
+        String blockName = ForgeRegistries.BLOCKS.getKey(block).getPath();
+        String texName = blockName + texSuffix;
+        ModelFile dummy = models()
+                .withExistingParent(blockName + "_programmatically_rendered", "block")
+                .texture("particle", "block/" + texName);
+        simpleBlock(block, dummy);
     }
 
     private void addRotatableOppositeMatchingFacesBlock(Block block) {
