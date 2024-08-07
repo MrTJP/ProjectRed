@@ -135,7 +135,7 @@ public class BaseTileMap implements FETileMap {
     }
 
     public void save(CompoundTag tag) {
-
+        tag.putByte("format", (byte) ICTileType.ID_MAP_FORMAT);
         ListTag tileList = new ListTag();
         for (Map.Entry<TileCoord, BaseTile> entry : tileMap.entrySet()) {
             CompoundTag tileTag = new CompoundTag();
@@ -154,7 +154,7 @@ public class BaseTileMap implements FETileMap {
 
     public void load(CompoundTag tag) {
         removeAll();
-
+        int format = tag.getByte("format") & 0xFF;
         ListTag tileList = tag.getList("tiles", 10);
         for (int i = 0; i < tileList.size(); i++) {
             CompoundTag tileTag = tileList.getCompound(i);
@@ -162,7 +162,7 @@ public class BaseTileMap implements FETileMap {
             int x = tileTag.getByte("_x");
             int y = tileTag.getByte("_y");
             int z = tileTag.getByte("_z");
-            BaseTile tile = Objects.requireNonNull(ICTileType.createFromId(id));
+            BaseTile tile = Objects.requireNonNull(ICTileType.createFromIdAndFormat(id, format));
             addTile(new TileCoord(x, y, z), tile);
             tile.load(tileTag);
         }
