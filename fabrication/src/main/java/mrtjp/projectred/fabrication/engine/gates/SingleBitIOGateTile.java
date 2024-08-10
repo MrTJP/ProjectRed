@@ -142,6 +142,7 @@ public abstract class SingleBitIOGateTile extends RedstoneGateTile implements II
     //region RedstoneGateTile overrides
     @Override
     protected int redstoneOutputMask() {
+        //TODO these are wrong i think?
         return isInputIOMode() ? 0x0 : 0x4;
     }
 

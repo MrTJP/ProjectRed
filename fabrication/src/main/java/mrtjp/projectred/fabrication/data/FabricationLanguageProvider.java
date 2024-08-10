@@ -57,6 +57,9 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_REFLECT, "Reflect");
         add(UL_SIM_INPUT, "Simulation input");
         add(UL_SIM_OUTPUT, "Simulation output");
+        add(UL_SIM_INPUT_MASK, "Simulation input mask");
+        add(UL_SIM_OUTPUT_MASK, "Simulation output mask");
+        add(UL_IO_BUS_TOGGLE, "Use Bundled Color IO gates to toggle bits");
         add(UL_IO_DIRECTION, "IO direction");
         add(UL_IO_DIR_INPUT, "Input");
         add(UL_IO_DIR_OUTPUT, "Output");
@@ -170,6 +173,7 @@ public class FabricationLanguageProvider extends LanguageProvider {
 
         add(UL_REDSTONE_IO_GATE_TILE, "Redstone IO Gate");
         add(UL_BUNDLED_COLOR_IO_GATE_TILE, "Bundled Color IO Gate");
+        add(UL_BUNDLED_BUS_IO_GATE_TILE, "Bundled Bus IO Gate");
         add(UL_TIMER_INTERVAL, "Interval");
         add(UL_COUNTER_VALUE, "Value");
         add(UL_COUNTER_MAX, "Max");
