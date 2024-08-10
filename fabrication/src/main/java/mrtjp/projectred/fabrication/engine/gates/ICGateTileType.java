@@ -12,6 +12,7 @@ public enum ICGateTileType {
 
     REDSTONE_IO         (ICTileType.REDSTONE_IO_GATE,           GateModelRenderer.getNonPartRenderIndex(0), IO_EDGE),
     BUNDLED_COLOR_IO    (ICTileType.BUNDLED_COLOR_IO_GATE,      GateModelRenderer.getNonPartRenderIndex(1), IO_EDGE),
+    BUNDLED_BUS_IO      (ICTileType.BUNDLED_BUS_IO_GATE,        GateModelRenderer.getNonPartRenderIndex(2), IO_EDGE),
 
     OR                   (ICTileType.OR_GATE,                   GateModelRenderer.getRenderIndex(GateType.OR)),
     NOR                  (ICTileType.NOR_GATE,                  GateModelRenderer.getRenderIndex(GateType.NOR)),

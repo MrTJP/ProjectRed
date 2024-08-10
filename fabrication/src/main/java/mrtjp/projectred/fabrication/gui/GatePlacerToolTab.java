@@ -71,6 +71,7 @@ public class GatePlacerToolTab extends ICEditorToolTab {
         addGroup(UL_TILEGROUP_IO);
         addGateButton(ICGateTileType.REDSTONE_IO);
         addGateButton(ICGateTileType.BUNDLED_COLOR_IO);
+        addGateButton(ICGateTileType.BUNDLED_BUS_IO);
 
         addGroup(UL_TILEGROUP_BASIC);
         addGateButton(ICGateTileType.OR);
