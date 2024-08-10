@@ -67,6 +67,7 @@ public class GateComponentModels {
     public static final Map<String, CCModel> ioBundledConnector = loadModels("io_bundled_connector");
     public static final Map<String, CCModel> ioBuffer = loadModels("io_buffer");
     public static final Map<String, CCModel> ioBundledBuffer = loadModels("io_bundled_buffer");
+    public static final Map<String, CCModel> ioBundledBus = loadModels("io_bundled_bus");
 
     public static IconTransformation baseIcon;
     public static IconTransformation wireBorderIcon;
@@ -105,6 +106,7 @@ public class GateComponentModels {
     public static IconTransformation ioBundledConnectorIcon;
     public static IconTransformation ioBufferIcon;
     public static IconTransformation ioBundledBufferIcon;
+    public static IconTransformation ioBundledBusIcon;
 
     public static void registerIcons(AtlasRegistrar registrar) {
         //@formatter:off
@@ -149,6 +151,7 @@ public class GateComponentModels {
         registrar.registerSprite(new ResourceLocation(MOD_ID, "block/io_bundled_connector"),    i -> ioBundledConnectorIcon = new IconTransformation(i));
         registrar.registerSprite(new ResourceLocation(MOD_ID, "block/io_buffer"),               i -> ioBufferIcon = new IconTransformation(i));
         registrar.registerSprite(new ResourceLocation(MOD_ID, "block/io_bundled_buffer"),       i -> ioBundledBufferIcon = new IconTransformation(i));
+        registrar.registerSprite(new ResourceLocation(MOD_ID, "block/io_bundled_bus"),          i -> ioBundledBusIcon = new IconTransformation(i));
         //@formatter:on
     }
 
@@ -1680,6 +1683,31 @@ public class GateComponentModels {
         }
     }
 
+    public static class IOBundledBusCableModel extends BundledCableModel {
+
+        public static final IOBundledBusCableModel INSTANCE = new IOBundledBusCableModel();
+
+        private final CCModel[] boxModels;
+
+        private IOBundledBusCableModel() {
+            super(ioBundledBus.get("cable"), new Vector3(8, 0, 8), 7 / 32D, 12 / 32D);
+
+            Transformation t = new Translation(8/16D, 0, 8/16D);
+            CCModel m = ioBundledBus.get("box").copy().apply(t);
+            boxModels = bakeOrients(m);
+        }
+
+        @Override
+        protected UVTransformation getUVT() {
+            return ioBundledBusIcon;
+        }
+
+        @Override
+        public void renderModel(Transformation t, int orient, CCRenderState ccrs) {
+            super.renderModel(t, orient, ccrs);
+            boxModels[orient].render(ccrs, t, getUVT());
+        }
+    }
 
     private static class RedundantUVTransformation extends UVTransformation {
 

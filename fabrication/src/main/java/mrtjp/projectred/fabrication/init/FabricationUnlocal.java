@@ -25,6 +25,9 @@ public class FabricationUnlocal {
     public static final String UL_REFLECT           = PREFIX + "interact.reflect";
     public static final String UL_SIM_INPUT         = PREFIX + "interact.sim_input";
     public static final String UL_SIM_OUTPUT        = PREFIX + "interact.sim_output";
+    public static final String UL_SIM_INPUT_MASK    = PREFIX + "interact.sim_input_mask";
+    public static final String UL_SIM_OUTPUT_MASK   = PREFIX + "interact.sim_output_mask";
+    public static final String UL_IO_BUS_TOGGLE     = PREFIX + "interact.io_bus_toggle";
     public static final String UL_IO_DIRECTION      = PREFIX + "interact.io_direction";
     public static final String UL_IO_DIR_INPUT      = PREFIX + "interact.io_direction.input";
     public static final String UL_IO_DIR_OUTPUT     = PREFIX + "interact.io_direction.output";
@@ -124,6 +127,7 @@ public class FabricationUnlocal {
     // IC Tiles
     public static final String UL_REDSTONE_IO_GATE_TILE = PREFIX + "tiles.redstone_io_gate";
     public static final String UL_BUNDLED_COLOR_IO_GATE_TILE = PREFIX + "tiles.bundled_color_io_gate";
+    public static final String UL_BUNDLED_BUS_IO_GATE_TILE = PREFIX + "tiles.bundled_bus_io_gate";
     public static final String UL_TIMER_INTERVAL     = PREFIX + "tiles.timer.interval";
     public static final String UL_COUNTER_VALUE      = PREFIX + "tiles.counter.value";
     public static final String UL_COUNTER_MAX        = PREFIX + "tiles.counter.max";
