@@ -7,7 +7,7 @@
       "model": "projectred_expansion:block/auto_crafter_state1"
     },
     "charged=false,rotation=1,working=false": {
-      "model": "projectred_expansion:block/auto_crafter",ch
+      "model": "projectred_expansion:block/auto_crafter",
       "y": 90
     },
     "charged=false,rotation=1,working=true": {
