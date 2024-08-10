@@ -82,6 +82,7 @@ public class GateModelRenderer {
     private final GateRenderer[] nonPartRenderers = new GateRenderer[] {
             new RenderRedstoneIOGate(),
             new RenderBundledColorIOGate(),
+            new RenderBundledBusIOGate(),
     };
 
     //region Static rendering
@@ -2041,6 +2042,47 @@ public class GateModelRenderer {
             wires[0].on = (gate.state() & 0x44) != 0;
             buffer.colour = gate.state2() & 0xF;
             buffer.isInput = gate.shape() == 0;
+        }
+    }
+
+    public static class RenderBundledBusIOGate extends GateRenderer {
+
+        private final List<ComponentModel> inputModels = new LinkedList<>();
+        private final List<ComponentModel> outputModels = new LinkedList<>();
+        private final SignalPanelModel inputPanel = new SignalPanelModel(8, 10, 0);
+        private final SignalPanelModel outputPanel = new SignalPanelModel(8, 10, 2);
+
+        boolean ioInputMode = true;
+
+        public RenderBundledBusIOGate() {
+            inputModels.add(BaseComponentModel.INSTANCE);
+            inputModels.add(IOBundledConnectorModel.INSTANCE);
+            inputModels.add(IOBundledBusCableModel.INSTANCE);
+            inputModels.add(inputPanel);
+
+            outputModels.add(BaseComponentModel.INSTANCE);
+            outputModels.add(IOBundledConnectorModel.INSTANCE);
+            outputModels.add(IOBundledBusCableModel.INSTANCE);
+            outputModels.add(outputPanel);
+        }
+
+        @Override
+        protected List<ComponentModel> getModels() {
+            return ioInputMode ? inputModels : outputModels;
+        }
+
+        @Override
+        protected void prepareInventory(@Nullable ItemStack stack) {
+            ioInputMode = true;
+            inputPanel.signal = 0;
+            outputPanel.signal = 0;
+        }
+
+        @Override
+        protected void prepare(IGateRenderData gate) {
+            ioInputMode = gate.shape() == 0;
+            inputPanel.signal = gate.bOutput2(); // Input mode panel outputs into simulation
+            outputPanel.signal = gate.bInput2(); // Output mode panel inputs from simulation
         }
     }
 }

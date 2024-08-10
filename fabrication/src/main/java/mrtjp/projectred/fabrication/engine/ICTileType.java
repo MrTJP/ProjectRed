@@ -12,8 +12,7 @@ import java.util.function.Supplier;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
 import static mrtjp.projectred.fabrication.engine.ICTileTypeOffsets.*;
-import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_BUNDLED_COLOR_IO_GATE_TILE;
-import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_REDSTONE_IO_GATE_TILE;
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 import static mrtjp.projectred.integration.GateType.*;
 import static mrtjp.projectred.transmission.WireType.*;
 
@@ -22,6 +21,7 @@ public enum ICTileType {
     //@formatter:off
     REDSTONE_IO_GATE      (ID_OFFSET_IOGATE,     UL_REDSTONE_IO_GATE_TILE,      RedstoneIOGateTile::new),
     BUNDLED_COLOR_IO_GATE (ID_OFFSET_IOGATE + 1, UL_BUNDLED_COLOR_IO_GATE_TILE, BundledColorIOGateTile::new),
+    BUNDLED_BUS_IO_GATE   (ID_OFFSET_IOGATE + 2, UL_BUNDLED_BUS_IO_GATE_TILE,   BundledBusIOGateTile::new),
 
     OR_GATE               (ID_OFFSET_GATE,      OR,                ORGateTile::new),
     NOR_GATE              (ID_OFFSET_GATE + 1,  NOR,               NORGateTile::new),
