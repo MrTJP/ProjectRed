@@ -145,12 +145,12 @@ public class BundledBusIOGateTile extends BundledGateTile implements IIOConnecti
         zones.add(new SimpleInteractionZone.Builder()
                 .bounds(() -> INPUT_TOGGLE_ZONE_BOUNDS[getRotation()])
                 .tooltip(toolTip -> {
-                    toolTip.add(Component.translatable(isInputIOMode() ? UL_SIM_INPUT_MASK : UL_SIM_OUTPUT_MASK)
+                    toolTip.add(Component.translatable(isInputIOMode() ? UL_IO_BUNDLED_INPUT : UL_IO_BUNDLED_OUTPUT)
                             .append(Component.literal(": " + "0x%04X".formatted(bundledSignal)))
                             .withStyle(ICWorkbenchEditor.UNIFORM_GRAY));
 
                     if (isInputIOMode()) {
-                        toolTip.add(Component.translatable(UL_IO_BUS_TOGGLE).withStyle(ICWorkbenchEditor.UNIFORM_GRAY));
+                        toolTip.add(Component.translatable(UL_IO_BUS_TOGGLE).withStyle(ICWorkbenchEditor.UNIFORM_GRAY.withItalic(true)));
                     }
                 })
                 .build());

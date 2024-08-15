@@ -138,7 +138,7 @@ public class PackagingTableTile extends FabricationMachineTile implements IPacke
             // Each type of IO corresponds to a particular ingredient
             boolean match = inventory.getItem(slotMap[r]).is(switch (type) {
                 case NC       -> CoreItems.PLATE_ITEM.get();
-                case REDSTONE -> CoreItems.CONDUCTIVE_PLATE_ITEM.get();
+                case REDSTONE, ANALOG -> CoreItems.CONDUCTIVE_PLATE_ITEM.get();
                 case BUNDLED  -> CoreItems.BUNDLED_PLATE_ITEM.get();
             });
 

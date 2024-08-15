@@ -69,6 +69,7 @@ public class GateComponentModels {
     public static final Map<String, CCModel> ioBuffer = loadModels("io_buffer");
     public static final Map<String, CCModel> ioBundledBuffer = loadModels("io_bundled_buffer");
     public static final Map<String, CCModel> ioBundledBus = loadModels("io_bundled_bus");
+    public static final Map<String, CCModel> ioPotentiometer = loadModels("io_potentiometer");
 
     public static IconTransformation baseIcon;
     public static IconTransformation wireBorderIcon;
@@ -108,6 +109,7 @@ public class GateComponentModels {
     public static IconTransformation ioBufferIcon;
     public static IconTransformation ioBundledBufferIcon;
     public static IconTransformation ioBundledBusIcon;
+    public static IconTransformation ioPotentiometerIcon;
 
     public static void onTextureStitchEvent(TextureStitchEvent.Post event) {
         //@formatter:off
@@ -153,6 +155,7 @@ public class GateComponentModels {
         ioBufferIcon                = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/io_buffer")));
         ioBundledBufferIcon         = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/io_bundled_buffer")));
         ioBundledBusIcon            = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/io_bundled_bus")));
+        ioPotentiometerIcon         = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/io_potentiometer")));
         //@formatter:on
     }
 
@@ -1707,6 +1710,42 @@ public class GateComponentModels {
         public void renderModel(Transformation t, int orient, CCRenderState ccrs) {
             super.renderModel(t, orient, ccrs);
             boxModels[orient].render(ccrs, t, getUVT());
+        }
+    }
+
+    public static class IOPotentiometerModel extends ComponentModel {
+
+        public int signal = 0; // 0-15 signal strength
+
+        private final CCModel[] boxModels;
+        private final CCModel[][] arrowModels;
+
+        public IOPotentiometerModel(double x, double z) {
+            // Bake boxes
+            CCModel m = ioPotentiometer.get("box").copy().apply(new Translation(x / 16D, 2 / 16D, z / 16D));
+            boxModels = bakeOrients(m);
+
+            arrowModels = new CCModel[16][]; // Arrow for each signal level
+            for (int i = 0; i < 16; i++) {
+
+                // Arrow should move between 120 deg (signal 0) to -120 deg (signal 15)
+                double angleDeg = 120.0 - i * (240.0 / 15.0);
+
+                m = ioPotentiometer.get("pot").copy()
+                        .apply(new Rotation(angleDeg * MathHelper.torad, 0, 1, 0))
+                        .apply(new Translation(x / 16D, 2 / 16D, z / 16D));
+                arrowModels[i] = bakeOrients(m);
+            }
+        }
+
+        protected UVTransformation getUVT() {
+            return ioBundledBusIcon;
+        }
+
+        @Override
+        public void renderModel(Transformation t, int orient, CCRenderState ccrs) {
+            boxModels[orient].render(ccrs, t, ioPotentiometerIcon);
+            arrowModels[signal][orient].render(ccrs, t, ioPotentiometerIcon);
         }
     }
 

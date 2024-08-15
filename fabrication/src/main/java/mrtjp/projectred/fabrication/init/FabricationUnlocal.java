@@ -23,15 +23,22 @@ public class FabricationUnlocal {
     // Tile interactions
     public static final String UL_ROTATE            = PREFIX + "interact.rotate";
     public static final String UL_REFLECT           = PREFIX + "interact.reflect";
-    public static final String UL_SIM_INPUT         = PREFIX + "interact.sim_input";
-    public static final String UL_SIM_OUTPUT        = PREFIX + "interact.sim_output";
-    public static final String UL_SIM_INPUT_MASK    = PREFIX + "interact.sim_input_mask";
-    public static final String UL_SIM_OUTPUT_MASK   = PREFIX + "interact.sim_output_mask";
+    public static final String UL_IO_RS_INPUT       = PREFIX + "interact.io_rs_input";
+    public static final String UL_IO_RS_OUTPUT      = PREFIX + "interact.io_rs_output";
+    public static final String UL_IO_COLORED_INPUT  = PREFIX + "interact.io_colored_input";
+    public static final String UL_IO_COLORED_OUTPUT = PREFIX + "interact.io_colored_output";
+    public static final String UL_IO_BUNDLED_INPUT  = PREFIX + "interact.io_bundled_input";
+    public static final String UL_IO_BUNDLED_OUTPUT = PREFIX + "interact.io_bundled_output";
+    public static final String UL_IO_ANALOG_INPUT   = PREFIX + "interact.io_analog_input";
+    public static final String UL_IO_ANALOG_OUTPUT  = PREFIX + "interact.io_analog_output";
+    public static final String UL_IO_LEVEL_HIGH     = PREFIX + "interact.io_level_high";
+    public static final String UL_IO_LEVEL_LOW      = PREFIX + "interact.io_level_low";
     public static final String UL_IO_BUS_TOGGLE     = PREFIX + "interact.io_bus_toggle";
     public static final String UL_IO_DIRECTION      = PREFIX + "interact.io_direction";
     public static final String UL_IO_DIR_INPUT      = PREFIX + "interact.io_direction.input";
     public static final String UL_IO_DIR_OUTPUT     = PREFIX + "interact.io_direction.output";
-    public static final String UL_SIGNAL_COLOUR     = PREFIX + "interact.io_signal_colour";
+    public static final String UL_IO_BUNDLED_COLOUR = PREFIX + "interact.io_bundled_color";
+    public static final String UL_IO_ANALOG_LEVEL   = PREFIX + "interact.io_analog_level";
     public static final String UL_SIDE_ENABLED      = PREFIX + "interact.side_enabled";
     public static final String UL_SIDE_DISABLED     = PREFIX + "interact.side_disabled";
     public static final String UL_TIME_DELAY        = PREFIX + "interact.delay";
@@ -128,6 +135,7 @@ public class FabricationUnlocal {
     public static final String UL_REDSTONE_IO_GATE_TILE = PREFIX + "tiles.redstone_io_gate";
     public static final String UL_BUNDLED_COLOR_IO_GATE_TILE = PREFIX + "tiles.bundled_color_io_gate";
     public static final String UL_BUNDLED_BUS_IO_GATE_TILE = PREFIX + "tiles.bundled_bus_io_gate";
+    public static final String UL_ANALOG_IO_GATE_TILE = PREFIX + "tiles.analog_io_gate";
     public static final String UL_TIMER_INTERVAL     = PREFIX + "tiles.timer.interval";
     public static final String UL_COUNTER_VALUE      = PREFIX + "tiles.counter.value";
     public static final String UL_COUNTER_MAX        = PREFIX + "tiles.counter.max";
@@ -166,6 +174,7 @@ public class FabricationUnlocal {
     public static final String UL_INTERFACE_NC       = PREFIX + "interface.nc";
     public static final String UL_INTERFACE_REDSTONE = PREFIX + "interface.redstone";
     public static final String UL_INTERFACE_BUNDLED  = PREFIX + "interface.bundled";
+    public static final String UL_INTERFACE_ANALOG   = PREFIX + "interface.analog";
 
     // Numbers and measurements //TODO drop this formattable ones and just do it in code
     public static final String UL_UNIT_WARNINGS          = PREFIX + "f.unit.warnings";
