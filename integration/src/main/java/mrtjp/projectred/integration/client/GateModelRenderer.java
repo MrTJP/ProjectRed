@@ -82,6 +82,7 @@ public class GateModelRenderer {
             new RenderRedstoneIOGate(),
             new RenderBundledColorIOGate(),
             new RenderBundledBusIOGate(),
+            new RenderAnalogIOGate(),
     };
 
     //region Static rendering
@@ -2081,6 +2082,46 @@ public class GateModelRenderer {
             ioInputMode = gate.shape() == 0;
             inputPanel.signal = gate.bOutput2(); // Input mode panel outputs into simulation
             outputPanel.signal = gate.bInput2(); // Output mode panel inputs from simulation
+        }
+    }
+
+    public static class RenderAnalogIOGate extends GateRenderer {
+
+        private final List<ComponentModel> models = new LinkedList<>();
+
+        private final WireModel[] wires = generateWireModels("io_analog", 1);
+        private final IORedstoneConnectorWireModel connWire = new IORedstoneConnectorWireModel();
+        private final IOBufferModel buffer = new IOBufferModel(8, 10);
+        private final IOPotentiometerModel pot = new IOPotentiometerModel(4, 10);
+
+        public RenderAnalogIOGate() {
+            models.add(BaseComponentModel.INSTANCE);
+            models.addAll(Arrays.asList(wires));
+            models.add(IORedstoneConnectorModel.INSTANCE);
+            models.add(connWire);
+            models.add(buffer);
+            models.add(pot);
+        }
+
+        @Override
+        protected List<ComponentModel> getModels() {
+            return models;
+        }
+
+        @Override
+        protected void prepareInventory(@Nullable ItemStack stack) {
+            wires[0].on = false;
+            connWire.signal = 0;
+            pot.signal = 0;
+            buffer.isInput = true;
+        }
+
+        @Override
+        protected void prepare(IGateRenderData gate) {
+            wires[0].on = (gate.state() & 0x44) != 0;
+            connWire.signal = (byte) (gate.rsIO() * 17);
+            pot.signal = gate.state2();
+            buffer.isInput = gate.shape() == 0;
         }
     }
 }

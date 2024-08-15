@@ -15,7 +15,6 @@ import mrtjp.projectred.fabrication.item.ValidDieItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
@@ -138,7 +137,7 @@ public class PackagingTableTile extends FabricationMachineTile implements IPacke
             // Each type of IO corresponds to a particular ingredient
             boolean match = inventory.getItem(slotMap[r]).is(switch (type) {
                 case NC       -> CoreItems.PLATE_ITEM.get();
-                case REDSTONE -> CoreItems.CONDUCTIVE_PLATE_ITEM.get();
+                case REDSTONE, ANALOG -> CoreItems.CONDUCTIVE_PLATE_ITEM.get();
                 case BUNDLED  -> CoreItems.BUNDLED_PLATE_ITEM.get();
             });
 

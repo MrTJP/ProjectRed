@@ -22,6 +22,7 @@ public enum ICTileType {
     REDSTONE_IO_GATE      (ID_OFFSET_IOGATE,     UL_REDSTONE_IO_GATE_TILE,      RedstoneIOGateTile::new),
     BUNDLED_COLOR_IO_GATE (ID_OFFSET_IOGATE + 1, UL_BUNDLED_COLOR_IO_GATE_TILE, BundledColorIOGateTile::new),
     BUNDLED_BUS_IO_GATE   (ID_OFFSET_IOGATE + 2, UL_BUNDLED_BUS_IO_GATE_TILE,   BundledBusIOGateTile::new),
+    ANALOG_IO_GATE        (ID_OFFSET_IOGATE + 3, UL_ANALOG_IO_GATE_TILE,        AnalogIOGateTile::new),
 
     OR_GATE               (ID_OFFSET_GATE,      OR,                ORGateTile::new),
     NOR_GATE              (ID_OFFSET_GATE + 1,  NOR,               NORGateTile::new),
