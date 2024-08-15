@@ -16,7 +16,7 @@ import static mrtjp.projectred.fabrication.engine.PRFabricationEngine.*;
 
 public abstract class SingleBitIOGateTile extends RedstoneGateTile implements IIOConnectionTile {
 
-    public static final int IO_BIT_PACKET = 6;
+    public static final int IO_BIT_PACKET = 7;
 
     protected byte ioBit = 0;
     private int regId = REG_ZERO;
@@ -72,7 +72,12 @@ public abstract class SingleBitIOGateTile extends RedstoneGateTile implements II
     //endregion
 
     protected void toggleWorldInput() {
-        getEditor().getStateMachine().onInputRegistersChanged(getIOSide(), i -> (short) (i ^ (1<< ioBit)));
+        getEditor().getStateMachine().onInputRegistersChanged(getIOSide(), this::toggleWorldInputMask);
+    }
+
+    protected short toggleWorldInputMask(short currentMask) {
+        // Default implementation just toggles the corresponding bit
+        return (short) (currentMask ^ (1 << ioBit));
     }
 
     protected void shiftIOBit(boolean up) {

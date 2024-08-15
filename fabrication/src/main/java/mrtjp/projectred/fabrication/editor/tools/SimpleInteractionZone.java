@@ -12,7 +12,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -26,7 +25,7 @@ public class SimpleInteractionZone implements InteractionZone {
     private final int highlightColor;
     private final int boundingBoxColor;
     private final double boundingBoxLineWidth;
-    @Nullable private final Component text;
+    private final Supplier<Component> textSupplier;
 
     private SimpleInteractionZone(Builder builder) {
         this.boundsSupplier = builder.boundsSupplier;
@@ -36,7 +35,7 @@ public class SimpleInteractionZone implements InteractionZone {
         this.highlightColor = builder.highlightColor;
         this.boundingBoxColor = builder.boundingBoxColor;
         this.boundingBoxLineWidth = builder.boundingBoxLineWidth;
-        this.text = builder.text;
+        this.textSupplier = builder.textSupplier;
     }
 
     @Override
@@ -86,6 +85,7 @@ public class SimpleInteractionZone implements InteractionZone {
         ccrs.baseColour = boundingBoxColor;
         RenderUtils.bufferCuboidOutline(ccrs.getConsumer(), bounds, 1, 1, 1, 1);
 
+        var text = textSupplier.get();
         if (text != null) {
             ICRenderTypes.renderCenteredTextTopOfCuboid(text, bounds, poseStack, getter);
         }
@@ -100,7 +100,7 @@ public class SimpleInteractionZone implements InteractionZone {
         private int highlightColor = EnumColour.LIGHT_BLUE.rgba();
         private int boundingBoxColor = EnumColour.WHITE.rgba();
         private double boundingBoxLineWidth = 4.0;
-        @Nullable private Component text;
+        private Supplier<Component> textSupplier = () -> null;
 
         public Builder bounds(Supplier<Cuboid6> boundsSupplier) {
             this.boundsSupplier = boundsSupplier;
@@ -152,8 +152,13 @@ public class SimpleInteractionZone implements InteractionZone {
             return this;
         }
 
+        public Builder text(Supplier<Component> textSupplier) {
+            this.textSupplier = textSupplier;
+            return this;
+        }
+
         public Builder text(Component text) {
-            this.text = text;
+            this.textSupplier = () -> text;
             return this;
         }
 

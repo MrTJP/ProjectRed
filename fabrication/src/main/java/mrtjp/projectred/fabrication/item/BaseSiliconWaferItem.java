@@ -28,7 +28,7 @@ public class BaseSiliconWaferItem extends Item {
         super.appendHoverText(stack, world, tooltipList, tooltipFlag);
 
         tooltipList.add(Component.translatable(UL_SIZE).append(": " + waferType.getWaferWidth() + "nm x " + waferType.getWaferHeight() + "nm").withStyle(ChatFormatting.GRAY));
-        tooltipList.add(Component.translatable(UL_DEFECT_CHANCE).append(": " + waferType.getDefectRatePerUnitArea()*100 + "% / nm^2").withStyle(ChatFormatting.GRAY));
+        tooltipList.add(Component.translatable(UL_DEFECT_CHANCE).append(": %.2e%% / nm^2".formatted(waferType.getDefectRatePerUnitArea()*100)).withStyle(ChatFormatting.GRAY));
     }
 
     public WaferType getWaferType() {

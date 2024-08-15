@@ -43,8 +43,9 @@ public class RedstoneIOGateTile extends SingleBitIOGateTile {
                 .bounds(() -> INPUT_TOGGLE_ZONE_BOUNDS[getRotation()])
                 .leftClickAction(this::toggleWorldInput)
                 .tooltip(toolTip -> {
-                    toolTip.add(Component.translatable(isInputIOMode() ? UL_SIM_INPUT : UL_SIM_OUTPUT)
-                            .append(Component.literal(": " + ((getState() & 0x44) != 0 ? "0x1" : "0x0")))
+                    toolTip.add(Component.translatable(isInputIOMode() ? UL_IO_RS_INPUT : UL_IO_RS_OUTPUT)
+                            .append(Component.literal(": ")
+                            .append(Component.translatable(((getState() & 0x44) != 0 ? UL_IO_LEVEL_HIGH : UL_IO_LEVEL_LOW))))
                             .withStyle(ICWorkbenchEditor.UNIFORM_GRAY));
                 })
                 .build());
