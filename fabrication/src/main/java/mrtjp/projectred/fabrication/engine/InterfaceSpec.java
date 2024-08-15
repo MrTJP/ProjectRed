@@ -12,6 +12,7 @@ public class InterfaceSpec {
     private final ICInterfaceType[] sideInterfaces = new ICInterfaceType[4];
     private int redstoneMask = 0; // OOOO IIII
     private int bundledMask = 0; // OOOO IIII
+    private int analogMask = 0; // OOOO IIII
 
     {
         Arrays.fill(sideInterfaces, ICInterfaceType.NC);
@@ -24,6 +25,7 @@ public class InterfaceSpec {
         }
         tag.putByte("rmask", (byte) redstoneMask);
         tag.putByte("bmask", (byte) bundledMask);
+        tag.putByte("amask", (byte) analogMask);
     }
 
     public void load(CompoundTag tag) {
@@ -32,6 +34,7 @@ public class InterfaceSpec {
         }
         redstoneMask = tag.getByte("rmask") & 0xFF;
         bundledMask = tag.getByte("bmask") & 0xFF;
+        analogMask = tag.getByte("amask") & 0xFF;
     }
 
     public void writeDesc(MCDataOutput packet) {
@@ -40,6 +43,7 @@ public class InterfaceSpec {
         }
         packet.writeByte(bundledMask);
         packet.writeByte(redstoneMask);
+        packet.writeByte(analogMask);
     }
 
     public void readDesc(MCDataInput packet) {
@@ -48,6 +52,7 @@ public class InterfaceSpec {
         }
         bundledMask = packet.readByte();
         redstoneMask = packet.readByte();
+        analogMask = packet.readByte();
     }
     //endregion
 
@@ -56,6 +61,7 @@ public class InterfaceSpec {
         Arrays.fill(sideInterfaces, ICInterfaceType.NC);
         bundledMask = 0;
         redstoneMask = 0;
+        analogMask = 0;
 
         for (IIOConnectionTile t : ioTiles) {
             int side = t.getIOSide();
@@ -67,6 +73,7 @@ public class InterfaceSpec {
             switch (type) {
                 case REDSTONE -> redstoneMask |= dir << side;
                 case BUNDLED -> bundledMask |= dir << side;
+                case ANALOG -> analogMask |= dir << side;
             }
         }
     }
@@ -76,19 +83,19 @@ public class InterfaceSpec {
     }
 
     public int getInputMask() {
-        return (redstoneMask | bundledMask) & 0xF;
+        return (redstoneMask | bundledMask | analogMask) & 0xF;
     }
 
     public int getOutputMask() {
-        return (redstoneMask | bundledMask) >> 4 & 0xF;
+        return (redstoneMask | bundledMask | analogMask) >> 4 & 0xF;
     }
 
     public boolean isInput(int side) {
-        return ((redstoneMask | bundledMask) & 1 << side) != 0;
+        return ((redstoneMask | bundledMask | analogMask) & 1 << side) != 0;
     }
 
     public boolean isOutput(int side) {
-        return ((redstoneMask | bundledMask) & 0x10 << side) != 0;
+        return ((redstoneMask | bundledMask | analogMask) & 0x10 << side) != 0;
     }
 
     public int getRedstoneInputMask() {
@@ -105,6 +112,14 @@ public class InterfaceSpec {
 
     public int getBundledOutputMask() {
         return bundledMask >> 4 & 0xF;
+    }
+
+    public int getAnalogInputMask() {
+        return analogMask & 0xF;
+    }
+
+    public int getAnalogOutputMask() {
+        return analogMask >> 4 & 0xF;
     }
 
     //region Utilities

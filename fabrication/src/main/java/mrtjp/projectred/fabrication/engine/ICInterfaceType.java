@@ -6,6 +6,7 @@ public enum ICInterfaceType {
     NC(UL_INTERFACE_NC),
     REDSTONE(UL_INTERFACE_REDSTONE),
     BUNDLED(UL_INTERFACE_BUNDLED),
+    ANALOG(UL_INTERFACE_ANALOG),
     ;
 
     private final String unlocalName;

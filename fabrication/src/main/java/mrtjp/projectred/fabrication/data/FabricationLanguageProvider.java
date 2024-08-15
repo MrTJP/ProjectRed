@@ -55,15 +55,22 @@ public class FabricationLanguageProvider extends LanguageProvider {
 
         add(UL_ROTATE, "Rotate");
         add(UL_REFLECT, "Reflect");
-        add(UL_SIM_INPUT, "Simulation input");
-        add(UL_SIM_OUTPUT, "Simulation output");
-        add(UL_SIM_INPUT_MASK, "Simulation input mask");
-        add(UL_SIM_OUTPUT_MASK, "Simulation output mask");
+        add(UL_IO_RS_INPUT, "Redstone input");
+        add(UL_IO_RS_OUTPUT, "Redstone output");
+        add(UL_IO_COLORED_INPUT, "%s bundled input");
+        add(UL_IO_COLORED_OUTPUT, "%s bundled output");
+        add(UL_IO_BUNDLED_INPUT, "Bundled input mask");
+        add(UL_IO_BUNDLED_OUTPUT, "Bundled output mask");
+        add(UL_IO_ANALOG_INPUT, "Analog input");
+        add(UL_IO_ANALOG_OUTPUT, "Analog output");
+        add(UL_IO_LEVEL_HIGH, "High");
+        add(UL_IO_LEVEL_LOW, "Low");
         add(UL_IO_BUS_TOGGLE, "Use Bundled Color IO gates to toggle bits");
         add(UL_IO_DIRECTION, "IO direction");
         add(UL_IO_DIR_INPUT, "Input");
         add(UL_IO_DIR_OUTPUT, "Output");
-        add(UL_SIGNAL_COLOUR, "Signal colour");
+        add(UL_IO_BUNDLED_COLOUR, "Bundled colour");
+        add(UL_IO_ANALOG_LEVEL, "Analog level");
         add(UL_SIDE_ENABLED, "Side enabled");
         add(UL_SIDE_DISABLED, "Side disabled");
         add(UL_TIME_DELAY, "Delay");
@@ -174,6 +181,7 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_REDSTONE_IO_GATE_TILE, "Redstone IO Gate");
         add(UL_BUNDLED_COLOR_IO_GATE_TILE, "Bundled Color IO Gate");
         add(UL_BUNDLED_BUS_IO_GATE_TILE, "Bundled Bus IO Gate");
+        add(UL_ANALOG_IO_GATE_TILE, "Analog Redstone IO Gate");
         add(UL_TIMER_INTERVAL, "Interval");
         add(UL_COUNTER_VALUE, "Value");
         add(UL_COUNTER_MAX, "Max");
@@ -190,6 +198,7 @@ public class FabricationLanguageProvider extends LanguageProvider {
         add(UL_INTERFACE_NC, "Not connected");
         add(UL_INTERFACE_REDSTONE, "Redstone");
         add(UL_INTERFACE_BUNDLED, "Bundled");
+        add(UL_INTERFACE_ANALOG, "Analog");
 
         add(UL_UNIT_WARNINGS, "%d warnings");
         add(UL_UNIT_ERRORS, "%d errors");

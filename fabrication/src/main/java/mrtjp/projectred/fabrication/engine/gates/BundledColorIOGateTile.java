@@ -48,8 +48,10 @@ public class BundledColorIOGateTile extends SingleBitIOGateTile {
                 .bounds(() -> INPUT_TOGGLE_ZONE_BOUNDS[getRotation()])
                 .leftClickAction(this::toggleWorldInput)
                 .tooltip(toolTip -> {
-                    toolTip.add(Component.translatable(isInputIOMode() ? UL_SIM_INPUT : UL_SIM_OUTPUT)
-                            .append(Component.literal(": " + ((getState() & 0x44) != 0 ? "0x1" : "0x0")))
+                    toolTip.add(Component.translatable(isInputIOMode() ? UL_IO_COLORED_INPUT : UL_IO_COLORED_OUTPUT,
+                                    Component.translatable(EnumColour.values()[ioBit & 0xFF].getUnlocalizedName()))
+                            .append(Component.literal(": "))
+                            .append(Component.translatable(((getState() & 0x44) != 0 ? UL_IO_LEVEL_HIGH : UL_IO_LEVEL_LOW)))
                             .withStyle(ICWorkbenchEditor.UNIFORM_GRAY));
                 })
                 .build());
@@ -72,7 +74,7 @@ public class BundledColorIOGateTile extends SingleBitIOGateTile {
                 .leftClickAction(() -> shiftIOBit(true))
                 .rightClickAction(() -> shiftIOBit(false))
                 .tooltip(toolTip -> {
-                    toolTip.add(Component.translatable(UL_SIGNAL_COLOUR)
+                    toolTip.add(Component.translatable(UL_IO_BUNDLED_COLOUR)
                             .append(Component.literal(": "))
                             .append(Component.translatable(EnumColour.values()[ioBit & 0xFF].getUnlocalizedName()))
                             .withStyle(ICWorkbenchEditor.UNIFORM_GRAY));
