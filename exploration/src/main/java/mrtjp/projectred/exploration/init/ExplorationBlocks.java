@@ -127,8 +127,8 @@ public class ExplorationBlocks {
         PERIDOT_BLOCK       = BLOCKS.register(ID_PERIDOT_BLOCK,     () -> createDecorativeGemBlock(5F, 10F));
         ELECTROTINE_BLOCK   = BLOCKS.register(ID_ELECTROTINE_BLOCK, () -> createDecorativeMetalBlock(5F, 10F));
         RAW_TIN_BLOCK       = BLOCKS.register(ID_RAW_TIN_BLOCK,     () -> createDecorativeMetalBlock(2F, 6F));
-        RAW_SILVER_BLOCK    = BLOCKS.register(ID_TIN_BLOCK,         () -> createDecorativeMetalBlock(2F, 6F));
-        TIN_BLOCK           = BLOCKS.register(ID_RAW_SILVER_BLOCK,  () -> createDecorativeMetalBlock(3F, 6F));
+        RAW_SILVER_BLOCK    = BLOCKS.register(ID_RAW_SILVER_BLOCK,  () -> createDecorativeMetalBlock(2F, 6F));
+        TIN_BLOCK           = BLOCKS.register(ID_TIN_BLOCK,         () -> createDecorativeMetalBlock(3F, 6F));
         SILVER_BLOCK        = BLOCKS.register(ID_SILVER_BLOCK,      () -> createDecorativeMetalBlock(3F, 6F));
 
         // Walls
@@ -169,8 +169,8 @@ public class ExplorationBlocks {
         ITEMS.register(ID_PERIDOT_BLOCK,    () -> createBlockItem(PERIDOT_BLOCK));
         ITEMS.register(ID_ELECTROTINE_BLOCK,() -> createBlockItem(ELECTROTINE_BLOCK));
         ITEMS.register(ID_RAW_TIN_BLOCK,    () -> createBlockItem(RAW_TIN_BLOCK));
-        ITEMS.register(ID_TIN_BLOCK,        () -> createBlockItem(TIN_BLOCK));
         ITEMS.register(ID_RAW_SILVER_BLOCK, () -> createBlockItem(RAW_SILVER_BLOCK));
+        ITEMS.register(ID_TIN_BLOCK,        () -> createBlockItem(TIN_BLOCK));
         ITEMS.register(ID_SILVER_BLOCK,     () -> createBlockItem(SILVER_BLOCK));
 
         // Walls
