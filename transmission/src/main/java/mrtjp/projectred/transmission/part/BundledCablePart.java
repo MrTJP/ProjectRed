@@ -8,6 +8,7 @@ import mrtjp.projectred.api.IMaskedBundledTile;
 import mrtjp.projectred.core.BundledSignalsLib;
 import mrtjp.projectred.core.FaceLookup;
 import mrtjp.projectred.core.RedstonePropagator;
+import mrtjp.projectred.core.part.IConnectableFacePart;
 import mrtjp.projectred.core.part.IPropagationFacePart;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.core.Direction;
@@ -112,6 +113,23 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
         }
 
         return BundledSignalsLib.canConnectBundledViaInteraction(level(), lookup.otherPos, Direction.values()[absDir^1]); // TODO add otherDir to lookup
+    }
+
+    @Override
+    public boolean discoverCornerOverride(int absDir) {
+        int r = IConnectableFacePart.absoluteRot(this, absDir);
+        FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
+
+        if (lookup.tile instanceof IMaskedBundledTile b) {
+            int edgeRot = Rotation.rotationTo(getSide(), absDir ^ 1);
+            return b.canConnectBundled(lookup.otherDir) && (b.getConnectionMask(lookup.otherDir) & 1 << edgeRot) != 0;
+        }
+
+        if (lookup.tile instanceof IBundledTile b) {
+            return b.canConnectBundled(lookup.otherDir);
+        }
+
+        return false;
     }
     //endregion
 
