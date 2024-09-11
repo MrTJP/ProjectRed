@@ -114,6 +114,7 @@ public abstract class BaseFrameMoverTile extends LowLoadPoweredTile implements R
     public void onOrientationChange() {
         if (!getLevel().isClientSide) {
             updateExternals();
+            notifyExternals(0xF);
         }
     }
 

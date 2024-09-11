@@ -125,7 +125,7 @@ public class IllumarSmartLampBlockEntity extends BaseConnectableTile implements 
         } if (side == (getSide() ^ 1)) {
             return 0; // No connections on top
         } else {
-            return 1 << Rotation.rotationTo(side, getSide()); // Bottom edge
+            return 1 << Rotation.rotationTo(side ^ 1, getSide()); // Bottom edge
         }
     }
     //endregion
@@ -143,7 +143,7 @@ public class IllumarSmartLampBlockEntity extends BaseConnectableTile implements 
             return false;
         }
 
-        return edgeRot == Rotation.rotationTo(s, side); // Other sides input on edge touching bottom side
+        return edgeRot == Rotation.rotationTo(s ^ 1, side); // Other sides input on edge touching bottom side
     }
 
     @Override
@@ -168,6 +168,7 @@ public class IllumarSmartLampBlockEntity extends BaseConnectableTile implements 
     public void onOrientationChange() {
         if (!getLevel().isClientSide) {
             updateExternals();
+            notifyExternals(0xF);
             checkSignal();
         }
     }
@@ -210,7 +211,7 @@ public class IllumarSmartLampBlockEntity extends BaseConnectableTile implements 
             }
 
             // Perpendicular faces can connect only on bottom edge
-            int r = Rotation.rotationTo(s, getSide());
+            int r = Rotation.rotationTo(s ^ 1, getSide());
             if (maskConnectsStraight(s, r)) {
                 BundledSignalsLib.raiseSignal(newSignal, calcStraightSignal(s, r));
             } else if (maskConnectsCorner(s, r)) {
@@ -222,14 +223,14 @@ public class IllumarSmartLampBlockEntity extends BaseConnectableTile implements 
     }
 
     private @Nullable byte[] calcCornerSignal(int s, int r) {
-        int vs = Rotation.rotateSide(s, r); // virtual internal face
+        int vs = Rotation.rotateSide(s ^ 1, r); // virtual internal face
         int vr = Rotation.rotationTo(vs, s); // virtual rotation
         FaceLookup lookup = FaceLookup.lookupCorner(getLevel(), getBlockPos(), vs, vr);
         return resolveArray(lookup);
     }
 
     private @Nullable byte[] calcStraightSignal(int s, int r) {
-        int vs = Rotation.rotateSide(s, r); // virtual internal face
+        int vs = Rotation.rotateSide(s ^ 1, r); // virtual internal face
         int vr = Rotation.rotationTo(vs, s); // virtual rotation
         FaceLookup lookup = FaceLookup.lookupStraight(getLevel(), getBlockPos(), vs, vr);
         return resolveArray(lookup);

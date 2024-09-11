@@ -42,7 +42,10 @@ public class IllumarSmartLampBlock extends ProjectRedBlock implements EntityBloc
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        return defaultBlockState().setValue(LEVEL, 0);
+        int s = pContext.getClickedFace().ordinal() ^ 1; // Place bottom of block on the side clicked
+        return defaultBlockState()
+                .setValue(LEVEL, 0)
+                .setValue(SIDE, s);
     }
 
     @Override
