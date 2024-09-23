@@ -7,8 +7,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
 
-import static mrtjp.projectred.core.init.CoreItems.PLATE_ITEM;
-import static mrtjp.projectred.core.init.CoreItems.SILICON_ITEM;
+import static mrtjp.projectred.core.init.CoreItems.*;
 import static mrtjp.projectred.core.init.CoreTags.ELECTROTINE_ALLOY_INGOT_TAG;
 import static mrtjp.projectred.core.init.CoreTags.SAPPHIRE_GEM_TAG;
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.MOD_ID;
@@ -81,5 +80,17 @@ public class FabricationRecipeProvider extends RecipeProvider {
 
         smelting(ROUGH_SILICON_WAFER_ITEM.get())
                 .ingredient(SILICON_ITEM.get());
+
+        shapelessRecipe(PURIFIED_SILICON_WAFER_ITEM.get())
+                .addIngredient(ROUGH_SILICON_WAFER_ITEM.get())
+                .addIngredient(Items.WATER_BUCKET);
+
+        shapedRecipe(POLISHED_SILICON_WAFER_ITEM.get())
+                .key('c', WOVEN_CLOTH_ITEM.get())
+                .key('p', PURIFIED_SILICON_WAFER_ITEM.get())
+                .enableUnlocking()
+                .patternLine(" c ")
+                .patternLine("cpc")
+                .patternLine(" c ");
     }
 }
