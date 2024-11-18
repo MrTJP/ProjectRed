@@ -37,6 +37,7 @@ import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.event.level.ChunkWatchEvent;
 import net.minecraftforge.event.level.LevelEvent;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -65,7 +66,7 @@ public class MovementManager {
         return map.computeIfAbsent(level.dimension(), MovementManager::new);
     }
 
-    public static MovementManager getClientInstanceNullable() {
+    public static @Nullable MovementManager getClientInstanceNullable() {
         var clientLevel = Minecraft.getInstance().level;
         if (clientLevel == null) {
            return null;
