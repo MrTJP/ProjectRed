@@ -67,6 +67,11 @@ public class MovementRegistry {
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof MovementController mbe) return mbe;
 
+        if (be != null) {
+            LazyOptional<MovementController> cap = be.getCapability(IExpansionAPI.MOVEMENT_CONTROLLER_CAPABILITY);
+            if (cap.isPresent()) return cap.orElseThrow(() -> new RuntimeException("??"));
+        }
+
         return null;
     }
 
