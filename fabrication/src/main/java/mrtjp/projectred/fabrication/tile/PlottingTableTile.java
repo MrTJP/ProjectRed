@@ -60,7 +60,7 @@ public class PlottingTableTile extends FabricationMachineTile {
     @Override
     public void saveToNBT(CompoundTag tag) {
         super.saveToNBT(tag);
-        tag.put("inventory", inventory.createTag());
+        inventory.saveTo(tag, "inventory");
     }
 
     @Override
