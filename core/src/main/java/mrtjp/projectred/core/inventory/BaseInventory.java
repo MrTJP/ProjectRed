@@ -59,8 +59,8 @@ public class BaseInventory extends SimpleContainer {
         // Check if list-format tags are present
         ListTag itemList = parent.getList(key, 10);
         if (!itemList.isEmpty()) {
-            ProjectRedCore.LOGGER.warn("Inventory {} loaded from non-ordered data. Its contents may have shuffled", this);
             fromTag(itemList);
+            ProjectRedCore.LOGGER.warn("Inventory {} loaded from non-ordered data. Its contents may have shuffled", this);
         } else {
             // Otherwise, use new compound format
             load(parent.getCompound(key));
@@ -70,4 +70,18 @@ public class BaseInventory extends SimpleContainer {
     public static int getItemCount(CompoundTag tag) {
         return tag.contains(TAG_ITEM_COUNT) ? tag.getInt(TAG_ITEM_COUNT) : tag.getList(TAG_ITEMS, 10).size(); //TODO remove legacy support
     }
+
+    //region Deprecate vanilla save/load as it does not load back to correct slots
+    @Override
+    @Deprecated // Use saveTo or save
+    public ListTag createTag() {
+        return super.createTag();
+    }
+
+    @Override
+    @Deprecated // Use loadFrom or load
+    public void fromTag(ListTag pContainerNbt) {
+        super.fromTag(pContainerNbt);
+    }
+    //endregion
 }

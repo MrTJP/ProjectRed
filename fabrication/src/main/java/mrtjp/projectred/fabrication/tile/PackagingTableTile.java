@@ -15,7 +15,6 @@ import mrtjp.projectred.fabrication.item.ValidDieItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
@@ -72,7 +71,7 @@ public class PackagingTableTile extends FabricationMachineTile implements IPacke
     @Override
     public void saveToNBT(CompoundTag tag) {
         super.saveToNBT(tag);
-        tag.put("inventory", inventory.createTag());
+        inventory.saveTo(tag, "inventory");
     }
 
     @Override
