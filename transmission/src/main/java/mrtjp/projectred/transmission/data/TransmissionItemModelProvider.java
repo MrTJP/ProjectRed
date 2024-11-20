@@ -2,6 +2,8 @@ package mrtjp.projectred.transmission.data;
 
 import codechicken.lib.datagen.ItemModelProvider;
 import mrtjp.projectred.transmission.WireType;
+import mrtjp.projectred.transmission.client.FramedWirePartItemRenderer;
+import mrtjp.projectred.transmission.client.WirePartItemRenderer;
 import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -19,6 +21,7 @@ public class TransmissionItemModelProvider extends ItemModelProvider {
         // Wires and framed wires
         for (WireType type : WireType.values()) {
             generated(type.getItem()).noTexture();
+            clazz(type.getItem(), type.isCenterPart() ? FramedWirePartItemRenderer.class : WirePartItemRenderer.class);
         }
     }
 }

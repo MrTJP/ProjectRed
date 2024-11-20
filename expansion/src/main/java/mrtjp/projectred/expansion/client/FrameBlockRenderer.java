@@ -26,7 +26,7 @@ public class FrameBlockRenderer implements ICCBlockRenderer, IItemRenderer {
 
     public static final FrameBlockRenderer INSTANCE = new FrameBlockRenderer();
 
-    private FrameBlockRenderer() {
+    public FrameBlockRenderer() {
     }
 
     //region ICCBlockRenderer

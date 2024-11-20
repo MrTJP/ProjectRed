@@ -2,6 +2,7 @@ package mrtjp.projectred.integration.data;
 
 import codechicken.lib.datagen.ItemModelProvider;
 import mrtjp.projectred.integration.GateType;
+import mrtjp.projectred.integration.client.GatePartItemRenderer;
 import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -18,7 +19,7 @@ public class IntegrationItemModelProvider extends ItemModelProvider {
 
         for (GateType type : GateType.values()) {
             if (type.isExternalGate()) continue;
-            generated(type.getItem()).noTexture();
+            clazz(type.getItem(), GatePartItemRenderer.class);
         }
     }
 }

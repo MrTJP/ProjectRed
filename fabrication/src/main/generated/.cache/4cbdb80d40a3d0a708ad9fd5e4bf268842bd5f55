@@ -1,7 +1,7 @@
-// 1.20.1	2024-05-02T16:38:46.517119	projectred_fabrication Item models.
+// 1.20.1	2024-11-20T10:19:10.612339	projectred_fabrication Item models.
 1ed00fc3905c39043afd5719cad608e5f9083e9b assets/projectred_fabrication/models/item/blank_photomask.json
 ad27f25b0b09f179175e551b1f53b0d5b44ede55 assets/projectred_fabrication/models/item/etched_silicon_wafer.json
-a163c9ce1e63e428f3fa804b66e491b455f18540 assets/projectred_fabrication/models/item/fabricated_gate.json
+1ad624e432abba49e3dca47630174141d067ebb1 assets/projectred_fabrication/models/item/fabricated_gate.json
 4cbf55f2a0a67b14bd3a287a664bce6020f5ddcf assets/projectred_fabrication/models/item/ic_blueprint.json
 e5461019a64c6770cc104f21fecd3bbea6dd167d assets/projectred_fabrication/models/item/ic_workbench.json
 ea3630e414ed66ce7e05657e56165c1a2b391648 assets/projectred_fabrication/models/item/invalid_die.json

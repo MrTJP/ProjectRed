@@ -102,32 +102,8 @@ public abstract class MultipartLightProperties {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public IItemRenderer getItemRenderer() {
-        return new IItemRenderer() {
-            @Override
-            public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack mStack, MultiBufferSource getter, int packedLight, int packedOverlay) {
-                if (!(stack.getItem() instanceof MultipartLightPartItem lightItem)) return;
-
-                CCRenderState ccrs = CCRenderState.instance();
-                ccrs.reset();
-                ccrs.brightness = packedLight;
-                ccrs.overlay = packedOverlay;
-                ccrs.bind(RenderType.cutout(), getter, mStack);
-                renderInventory(lightItem.getColor(), lightItem.isInverted(), Vector3.ZERO, ccrs);
-
-                if (lightItem.isInverted()) {
-                    HaloRenderer.renderInventoryHalo(ccrs, mStack, getter, getInventoryGlowBounds(), Vector3.ZERO, lightItem.getColor());
-                    HaloRenderer.addItemRendererBloom(transformType, mStack, Vector3.ZERO, getInventoryGlowBounds(), lightItem.getColor());
-                }
-            }
-
-            //@formatter:off
-            @Override public PerspectiveModelState getModelState() { return TransformUtils.DEFAULT_BLOCK; }
-            @Override public boolean useAmbientOcclusion() { return false; }
-            @Override public boolean isGui3d() { return true; }
-            @Override public boolean usesBlockLight() { return true; }
-            //@formatter:on
-        };
+    public Class<? extends IItemRenderer> getItemRendererClass() {
+        return DefaultMultipartLightItemRenderer.class;
     }
     //endregion
 
@@ -175,4 +151,37 @@ public abstract class MultipartLightProperties {
         return boxes;
     }
     //endregion
+
+    @OnlyIn(Dist.CLIENT)
+    public static final class DefaultMultipartLightItemRenderer implements IItemRenderer {
+
+        public DefaultMultipartLightItemRenderer() {
+        }
+
+        @Override
+        public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack mStack, MultiBufferSource getter, int packedLight, int packedOverlay) {
+            if (!(stack.getItem() instanceof MultipartLightPartItem lightItem)) return;
+
+            var props = lightItem.getLightProperties();
+
+            CCRenderState ccrs = CCRenderState.instance();
+            ccrs.reset();
+            ccrs.brightness = packedLight;
+            ccrs.overlay = packedOverlay;
+            ccrs.bind(RenderType.cutout(), getter, mStack);
+            props.renderInventory(lightItem.getColor(), lightItem.isInverted(), Vector3.ZERO, ccrs);
+
+            if (lightItem.isInverted()) {
+                HaloRenderer.renderInventoryHalo(ccrs, mStack, getter, props.getInventoryGlowBounds(), Vector3.ZERO, lightItem.getColor());
+                HaloRenderer.addItemRendererBloom(transformType, mStack, Vector3.ZERO, props.getInventoryGlowBounds(), lightItem.getColor());
+            }
+        }
+
+        //@formatter:off
+        @Override public PerspectiveModelState getModelState() { return TransformUtils.DEFAULT_BLOCK; }
+        @Override public boolean useAmbientOcclusion() { return false; }
+        @Override public boolean isGui3d() { return true; }
+        @Override public boolean usesBlockLight() { return true; }
+        //@formatter:on
+    }
 }

@@ -15,7 +15,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class GatePartItemRenderer implements IItemRenderer {
 
-    public static final GatePartItemRenderer INSTANCE = new GatePartItemRenderer();
+    public GatePartItemRenderer() {
+    }
 
     @Override
     public boolean useAmbientOcclusion() {

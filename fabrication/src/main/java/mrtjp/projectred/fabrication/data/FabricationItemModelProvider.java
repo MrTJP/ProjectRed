@@ -1,6 +1,7 @@
 package mrtjp.projectred.fabrication.data;
 
 import codechicken.lib.datagen.ItemModelProvider;
+import mrtjp.projectred.integration.client.GatePartItemRenderer;
 import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -32,6 +33,6 @@ public class FabricationItemModelProvider extends ItemModelProvider {
         generated(VALID_DIE_ITEM);
         generated(INVALID_DIE_ITEM);
 
-        generated(FABRICATED_GATE_ITEM).noTexture(); // Dummy model to suppress warnings (actually rendered runtime via IItemRenderer)
+        clazz(FABRICATED_GATE_ITEM, GatePartItemRenderer.class);
    }
 }

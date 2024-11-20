@@ -1,6 +1,5 @@
 package mrtjp.projectred.illumination.init;
 
-import codechicken.lib.model.ModelRegistryHelper;
 import codechicken.multipart.api.MultipartClientRegistry;
 import mrtjp.projectred.illumination.BlockLightType;
 import mrtjp.projectred.illumination.MultipartLightType;
@@ -19,8 +18,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.Objects;
 
 public class IlluminationClientInit {
-
-    private static final ModelRegistryHelper MODEL_HELPER = new ModelRegistryHelper();
 
     public static void init() {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -49,17 +46,8 @@ public class IlluminationClientInit {
         // Register light part renderers
         for (MultipartLightType type : MultipartLightType.values()) {
             for (int colour = 0; colour < 16; colour++) {
-                // Block renderers
                 MultipartClientRegistry.register(type.getPartType(colour, false), MultipartLightPartRenderer.INSTANCE);
                 MultipartClientRegistry.register(type.getPartType(colour, true), MultipartLightPartRenderer.INSTANCE);
-
-                // Item renderers
-                MODEL_HELPER.register(
-                        new ModelResourceLocation(Objects.requireNonNull(type.getItemRegistryObject(colour, false).getId()), "inventory"),
-                        type.getProperties().getItemRenderer());
-                MODEL_HELPER.register(
-                        new ModelResourceLocation(Objects.requireNonNull(type.getItemRegistryObject(colour, true).getId()), "inventory"),
-                        type.getProperties().getItemRenderer());
             }
         }
     }

@@ -15,9 +15,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class TubePartItemRenderer implements IItemRenderer {
 
-    public static final TubePartItemRenderer INSTANCE = new TubePartItemRenderer();
-
-    private TubePartItemRenderer() { }
+    public TubePartItemRenderer() { }
 
     @Override
     public boolean useAmbientOcclusion() {

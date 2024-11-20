@@ -22,6 +22,10 @@ public class MultipartLightPartItem extends ItemMultipart {
         this.inverted = inverted;
     }
 
+    public MultipartLightProperties getLightProperties() {
+        return properties;
+    }
+
     public int getColor() {
         return color;
     }

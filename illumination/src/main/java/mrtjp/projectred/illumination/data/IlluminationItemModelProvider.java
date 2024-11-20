@@ -33,8 +33,8 @@ public class IlluminationItemModelProvider extends ItemModelProvider {
 
         for (MultipartLightType type : MultipartLightType.values()) {
             for (int color = 0; color < 16; color++) {
-                generated(type.getItem(color, false)).noTexture();
-                generated(type.getItem(color, true)).noTexture();
+                clazz(type.getItem(color, false), type.getProperties().getItemRendererClass());
+                clazz(type.getItem(color, true), type.getProperties().getItemRendererClass());
             }
         }
     }

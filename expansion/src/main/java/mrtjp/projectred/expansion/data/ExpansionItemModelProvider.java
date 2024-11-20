@@ -2,6 +2,9 @@ package mrtjp.projectred.expansion.data;
 
 import codechicken.lib.datagen.ItemModelProvider;
 import mrtjp.projectred.expansion.TubeType;
+import mrtjp.projectred.expansion.client.FrameBlockRenderer;
+import mrtjp.projectred.expansion.client.FrameMotorBlockRenderer;
+import mrtjp.projectred.expansion.client.TubePartItemRenderer;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -34,11 +37,11 @@ public class ExpansionItemModelProvider extends ItemModelProvider {
         simpleItemBlock(BLOCK_BREAKER_BLOCK.get());
         simpleItemBlock(DEPLOYER_BLOCK.get());
 
-        generated(FRAME_BLOCK.get()).noTexture();
-        generated(FRAME_MOTOR_BLOCK.get()).noTexture();
+        clazz(FRAME_BLOCK.get(), FrameBlockRenderer.class);
+        clazz(FRAME_MOTOR_BLOCK.get(), FrameMotorBlockRenderer.class);
 
         for (TubeType type : TubeType.values()) {
-            generated(type.getItem()).noTexture();
+            clazz(type.getItem(), TubePartItemRenderer.class);
         }
 
         generated(EMPTY_BATTERY_ITEM);

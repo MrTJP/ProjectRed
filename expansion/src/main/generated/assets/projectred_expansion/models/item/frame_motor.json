@@ -1,3 +1,5 @@
 {
-  "parent": "minecraft:item/generated"
+  "parent": "minecraft:item/generated",
+  "class": "mrtjp.projectred.expansion.client.FrameMotorBlockRenderer",
+  "loader": "codechickenlib:class"
 }
