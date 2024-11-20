@@ -1,4 +1,4 @@
-// 1.20.1	2024-07-17T09:25:42.182432	projectred_expansion Item models.
+// 1.20.1	2024-11-20T09:27:37.993874	projectred_expansion Item models.
 599e9047cbf1215359e3106b1a6a0757a569ffc9 assets/projectred_expansion/models/item/auto_crafter.json
 736ab07c8745c163e8a3cb90abc9308466032009 assets/projectred_expansion/models/item/battery.json
 d887cd7b776f1227da04cf267bf0a48dbc706027 assets/projectred_expansion/models/item/battery_box.json
@@ -16,10 +16,10 @@ ca8ee7426c8d4b145e75bc0bebca77c90e05779e assets/projectred_expansion/models/item
 f8ad62a7aa4f5ae87d36e422722c4ffbf46d22e1 assets/projectred_expansion/models/item/electric_screwdriver.json
 c04ad8c2f44fd4f5a6ea7c5bb9ddf98629332a84 assets/projectred_expansion/models/item/empty_battery.json
 8adfe244bf33706f67d587942e9179b74cf38fd0 assets/projectred_expansion/models/item/fire_starter.json
-a163c9ce1e63e428f3fa804b66e491b455f18540 assets/projectred_expansion/models/item/frame.json
+432462cb1b080b869c472c0e8f7495e9b4e1d638 assets/projectred_expansion/models/item/frame.json
 933ec48f28e2627aefbdcaa7d989eeac271ad282 assets/projectred_expansion/models/item/frame_actuator.json
-a163c9ce1e63e428f3fa804b66e491b455f18540 assets/projectred_expansion/models/item/frame_motor.json
-a163c9ce1e63e428f3fa804b66e491b455f18540 assets/projectred_expansion/models/item/pneumatic_tube.json
+78ea8ea37f9467201dc2e05ef372f4403ccbadb2 assets/projectred_expansion/models/item/frame_motor.json
+efabd61ed85b4d67f546ea6cfb90d9f5f17773cc assets/projectred_expansion/models/item/pneumatic_tube.json
 9457da7d0b200c883ca98241d9bf155043221c53 assets/projectred_expansion/models/item/project_bench.json
 5d8ae0bcb189be1eb7ce726fc4d28637dcdfaac8 assets/projectred_expansion/models/item/recipe_plan.json
 000ee856d11f86a527eb92dd81e20dee640de756 assets/projectred_expansion/models/item/recipe_plan_written.json

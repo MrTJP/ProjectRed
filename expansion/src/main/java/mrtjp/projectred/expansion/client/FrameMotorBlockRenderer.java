@@ -38,7 +38,7 @@ public class FrameMotorBlockRenderer extends FullyOrientableBlockRenderer {
     private static @Nullable MultiIconTransformation iconT2;
     private static @Nullable MultiIconTransformation iconT3;
 
-    private FrameMotorBlockRenderer() {
+    public FrameMotorBlockRenderer() {
     }
 
     @Override

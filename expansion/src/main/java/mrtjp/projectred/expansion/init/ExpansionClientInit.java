@@ -1,6 +1,5 @@
 package mrtjp.projectred.expansion.init;
 
-import codechicken.lib.model.ModelRegistryHelper;
 import codechicken.lib.render.block.BlockRenderingRegistry;
 import codechicken.multipart.api.MultipartClientRegistry;
 import mrtjp.projectred.expansion.GraphDebugManager;
@@ -15,15 +14,11 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import java.util.Objects;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
@@ -36,8 +31,6 @@ public class ExpansionClientInit {
 
     public static final ResourceLocation ITEM_MODEL_PROPERTY_CHARGE_LEVEL = new ResourceLocation(MOD_ID, "charge_level");
     public static final ResourceLocation ITEM_MODEL_PROPERTY_WRITTEN_RECIPE_PLAN = new ResourceLocation(MOD_ID, "written");
-
-    private static final ModelRegistryHelper MODEL_HELPER = new ModelRegistryHelper();
 
     public static void init() {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -78,10 +71,6 @@ public class ExpansionClientInit {
         BlockRenderingRegistry.registerRenderer(FRAME_MOTOR_BLOCK.get(), FrameMotorBlockRenderer.INSTANCE);
         BlockRenderingRegistry.registerGlobalRenderer(MovingBlockSuppressorRenderer.INSTANCE);
 
-        // Register item renderers
-        MODEL_HELPER.register(new ModelResourceLocation(ForgeRegistries.BLOCKS.getKey(FRAME_BLOCK.get()), "inventory"), FrameBlockRenderer.INSTANCE);
-        MODEL_HELPER.register(new ModelResourceLocation(ForgeRegistries.BLOCKS.getKey(FRAME_MOTOR_BLOCK.get()), "inventory"), FrameMotorBlockRenderer.INSTANCE);
-
         // Register part renderers
         MultipartClientRegistry.register(FRAME_PART.get(), FramePartRenderer.INSTANCE);
 
@@ -89,9 +78,6 @@ public class ExpansionClientInit {
         for (TubeType type : TubeType.values()) {
             // Block renderer
             MultipartClientRegistry.register(type.getPartType(), SneakyUtils.unsafeCast(TubePartRenderer.INSTANCE));
-
-            // Item renderer
-            MODEL_HELPER.register(new ModelResourceLocation(Objects.requireNonNull(type.getItemRegistryObject().getId()), "inventory"), TubePartItemRenderer.INSTANCE);
         }
     }
 

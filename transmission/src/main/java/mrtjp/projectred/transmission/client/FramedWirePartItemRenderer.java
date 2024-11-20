@@ -15,9 +15,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class FramedWirePartItemRenderer implements IItemRenderer {
 
-    public static final FramedWirePartItemRenderer INSTANCE = new FramedWirePartItemRenderer();
-
-    private FramedWirePartItemRenderer() { }
+    public FramedWirePartItemRenderer() { }
 
     @Override
     public boolean useAmbientOcclusion() {

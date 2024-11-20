@@ -15,9 +15,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class WirePartItemRenderer implements IItemRenderer {
 
-    public static final WirePartItemRenderer INSTANCE = new WirePartItemRenderer();
-
-    private WirePartItemRenderer() { }
+    public WirePartItemRenderer() { }
 
     @Override
     public boolean useAmbientOcclusion() {
