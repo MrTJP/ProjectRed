@@ -13,7 +13,6 @@ import mrtjp.projectred.fabrication.init.FabricationBlocks;
 import mrtjp.projectred.fabrication.inventory.container.PackagingTableContainer;
 import mrtjp.projectred.fabrication.item.ValidDieItem;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -24,12 +23,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import static mrtjp.projectred.fabrication.editor.EditorDataUtils.getInterfaceSpec;
 import static mrtjp.projectred.fabrication.editor.EditorDataUtils.hasFabricationTarget;
@@ -49,19 +43,13 @@ public class PackagingTableTile extends FabricationMachineTile implements IPacke
                 default -> true;
             };
         }
-
-        @Override
-        public void setChanged() {
-            super.setChanged();
-            cancelWorkIfNeeded();
-        }
     };
 
     private int problematicSlotMask = 0; // Masks of slots that client should render red highlights
 
     public PackagingTableTile(BlockPos pos, BlockState state) {
         super(FabricationBlocks.PACKAGING_TABLE_TILE.get(), pos, state);
-        inventory.addListener(c -> setChanged());
+        inventory.addListener(this::onInventoryChanged);
     }
 
     public Container getInventory() {
@@ -105,10 +93,9 @@ public class PackagingTableTile extends FabricationMachineTile implements IPacke
         dropInventory(inventory, getLevel(), Vector3.fromBlockPos(getBlockPos()));
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return super.getCapability(cap, side); //TODO add capabilities
+    private void onInventoryChanged(Container inventory) {
+        cancelWorkIfNeeded();
+        setChanged();
     }
 
     @Override
