@@ -11,7 +11,7 @@ Icon?
 ehthumbs.db
 Thumbs.db
 #gradle stuff
-/.gradle
+**/.gradle
 /build/
 /*/build/
 /run/
