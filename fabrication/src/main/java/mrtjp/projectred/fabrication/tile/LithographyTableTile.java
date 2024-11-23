@@ -14,7 +14,6 @@ import mrtjp.projectred.fabrication.item.PhotomaskSetItem;
 import mrtjp.projectred.fabrication.lithography.ProcessNode;
 import mrtjp.projectred.fabrication.lithography.WaferType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -25,11 +24,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class LithographyTableTile extends FabricationMachineTile {
 
@@ -43,17 +37,11 @@ public class LithographyTableTile extends FabricationMachineTile {
                 default -> false;
             };
         }
-
-        @Override
-        public void setChanged() {
-            super.setChanged();
-            cancelWorkIfNeeded();
-        }
     };
 
     public LithographyTableTile(BlockPos pos, BlockState state) {
         super(FabricationBlocks.LITHOGRAPHY_TABLE_TILE.get(), pos, state);
-        inventory.addListener(c -> setChanged());
+        inventory.addListener(this::onInventoryChanged);
     }
 
     public Container getInventory() {
@@ -97,10 +85,9 @@ public class LithographyTableTile extends FabricationMachineTile {
         dropInventory(inventory, getLevel(), Vector3.fromBlockPos(getBlockPos()));
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return super.getCapability(cap, side); //TODO add capabilities
+    private void onInventoryChanged(Container inventory) {
+        cancelWorkIfNeeded();
+        setChanged();
     }
 
     @Override
