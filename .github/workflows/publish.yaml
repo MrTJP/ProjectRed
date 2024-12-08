@@ -129,9 +129,41 @@ jobs:
 
       - name: Curse publish
         if: ${{ steps.release_type.outputs.publish_curse == 'true' }}
-        run: ./gradlew curseforge
+        run: |
+          # Base args for all modules
+          COMMON_ARGS=( \
+            -k    $CURSE_TOKEN \
+            -rt   $CURSE_RELEASE_TYPE \
+            -v    'Java 17' \
+            -v    1.19.2 \
+            -v    Forge \
+            -c    ./CHANGELOG.md \
+            --required-dep codechicken-lib-1-8 \
+            --required-dep cb-multipart \
+          )
+
+          # All submodules need PR Core
+          MODULE_ARGS=( \
+            "${COMMON_ARGS[@]}" \
+            --required-dep project-red-core \
+          )
+
+          # Fabrication is special and also needs Integration and Transmission
+          FAB_ARGS=( \
+            "${MODULE_ARGS[@]}" \
+            --required-dep project-red-integration \
+            --required-dep project-red-transmission \
+          )
+
+          python -m curseuploadpy "${COMMON_ARGS[@]}" -p 228702 -f core/build/libs/*-core.jar
+          python -m curseuploadpy "${MODULE_ARGS[@]}" -p 229048 -f expansion/build/libs/*-expansion.jar
+          python -m curseuploadpy "${MODULE_ARGS[@]}" -p 229049 -f exploration/build/libs/*-exploration.jar
+          python -m curseuploadpy "${FAB_ARGS[@]}"    -p 230111 -f fabrication/build/libs/*-fabrication.jar
+          python -m curseuploadpy "${MODULE_ARGS[@]}" -p 229046 -f illumination/build/libs/*-illumination.jar
+          python -m curseuploadpy "${MODULE_ARGS[@]}" -p 229045 -f integration/build/libs/*-integration.jar
+          python -m curseuploadpy "${MODULE_ARGS[@]}" -p 478939 -f transmission/build/libs/*-transmission.jar
+
         env:
-          AUTO_GENERATED_VERSION: ${{ steps.versioning.outputs.version }}
           CURSE_RELEASE_TYPE: ${{ steps.release_type.outputs.release_type }}
           CURSE_TOKEN: ${{ secrets.CURSE_TOKEN }}
 
