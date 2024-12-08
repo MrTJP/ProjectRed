@@ -1,1 +1,2 @@
 fire==0.4.0
+curseuploadpy @ git+https://github.com/MrTJP/curseuploadpy.git@dev

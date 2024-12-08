@@ -1,6 +1,5 @@
 plugins {
     id 'net.neoforged.gradle'
-    id 'com.matthewprenger.cursegradle'
 }
 
 String mod_id = 'projectred_core'
@@ -45,24 +44,4 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-}
-
-curseforge {
-    apiKey = System.getenv('CURSE_TOKEN') ?: 'XXX'
-
-    // Core
-    project {
-        id = '228702'
-        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
-        changelogType = 'markdown'
-        changelog = rootProject.file('CHANGELOG.md')
-        relations {
-            requiredDependency 'codechicken-lib-1-8' // CCL is required for everything
-            requiredDependency 'cb-multipart' // CBMultipart is required for everything
-        }
-
-        // Java/ForgeGradle integrations don't work after 1.18.2 port
-        addGameVersion "${mc_version}"
-        addGameVersion "Java ${java_lang_version}"
-    }
 }
