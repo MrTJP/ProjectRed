@@ -1,6 +1,5 @@
 plugins {
     id 'net.minecraftforge.gradle'
-    id 'com.matthewprenger.cursegradle'
 }
 
 apply plugin: 'net.minecraftforge.gradle'
@@ -34,23 +33,4 @@ dependencies {
     implementation fg.deobf("codechicken:CBMultipart:${mc_version}-${cbm_version}:universal")
 
     implementation project(":core")
-}
-
-curseforge {
-    apiKey = System.getenv('CURSE_TOKEN') ?: 'XXX'
-
-    // Transmission
-    project {
-        id = '478939'
-        releaseType = System.getenv('CURSE_RELEASE_TYPE') ?: 'alpha'
-        changelogType = 'markdown'
-        changelog = rootProject.file('CHANGELOG.md')
-        relations {
-            requiredDependency 'project-red-core'
-        }
-
-        // Java/ForgeGradle integrations don't work after 1.18.2 port
-        addGameVersion "${mc_version}"
-        addGameVersion "Java ${java_lang_version}"
-    }
 }
