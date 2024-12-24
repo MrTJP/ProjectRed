@@ -1,11 +1,10 @@
 package mrtjp.projectred.redui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import mrtjp.projectred.lib.GuiLib;
 import mrtjp.projectred.lib.Point;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 
 import java.util.LinkedList;
@@ -16,6 +15,12 @@ public abstract class AbstractButtonNode extends AbstractGuiNode {
     public static final int BUTTON_STATE_DISABLED = 0;
     public static final int BUTTON_STATE_IDLE = 1;
     public static final int BUTTON_STATE_HIGHLIGHT = 2;
+
+    private static final ResourceLocation[] buttonSprites = {
+        new ResourceLocation("widget/button_disabled"),
+        new ResourceLocation("widget/button"),
+        new ResourceLocation("widget/button_highlighted")
+    };
 
     protected abstract void onButtonClicked();
 
@@ -34,8 +39,6 @@ public abstract class AbstractButtonNode extends AbstractGuiNode {
     public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
 
         boolean mouseover = getFrame().contains(mouse) && isFirstHit(mouse);
-
-        RenderSystem.setShaderTexture(0, GuiLib.WIDGETS_TEXTURE);
         int state = getButtonState(mouseover);
 
         drawMCButton(graphics, state);
@@ -72,10 +75,7 @@ public abstract class AbstractButtonNode extends AbstractGuiNode {
         int width = getFrame().width();
         int height = getFrame().height();
 
-        graphics.blit(GuiLib.WIDGETS_TEXTURE, x,              y,              0,                46 + state * 20,                    width / 2, height / 2, 256, 256);
-        graphics.blit(GuiLib.WIDGETS_TEXTURE, x + width / 2,  y,              200 - width / 2f, 46 + state * 20,                    width / 2, height / 2, 256, 256);
-        graphics.blit(GuiLib.WIDGETS_TEXTURE, x,              y + height / 2, 0,                46 + state * 20 + 20 - height / 2f, width / 2, height / 2, 256, 256);
-        graphics.blit(GuiLib.WIDGETS_TEXTURE, x + width / 2,  y + height / 2, 200 - width / 2f, 46 + state * 20 + 20 - height / 2f, width / 2, height / 2, 256, 256);
+        graphics.blitSprite(buttonSprites[state], x, y, width, height);
     }
 
     protected abstract void drawButtonBody(GuiGraphics graphics, boolean mouseover);

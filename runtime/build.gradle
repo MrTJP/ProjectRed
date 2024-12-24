@@ -2,41 +2,35 @@
  * Used only for generating run configs that include all ProjectRed modules in the classpath.
  */
 plugins {
-    id 'net.neoforged.gradle'
-    id 'org.spongepowered.mixin'
+    id 'net.neoforged.gradle.userdev'
 }
 
 minecraft {
-    mappings channel: mcp_mappings, version: mc_version
-    accessTransformer = file("../core/src/main/resources/META-INF/accesstransformer.cfg")
+    accessTransformers.file file("../core/src/main/resources/META-INF/accesstransformer.cfg")
+}
 
-    runs {
-        configureEach {
-            ideaModule "${rootProject.name}.${project.name}.main"
+runs {
+    configureEach {
+        modSource project(":core").sourceSets.main
+        modSource project(":expansion").sourceSets.main
+        modSource project(":exploration").sourceSets.main
+        modSource project(":fabrication").sourceSets.main
+        modSource project(":illumination").sourceSets.main
+        modSource project(":integration").sourceSets.main
+        modSource project(":transmission").sourceSets.main
+    }
 
-            mods {
-                'projectred_core' { source project(":core").sourceSets.main }
-                'projectred_expansion' { source project(":expansion").sourceSets.main }
-                'projectred_exploration' { source project(":exploration").sourceSets.main }
-                'projectred_fabrication' { source project(":fabrication").sourceSets.main }
-                'projectred_illumination' { source project(":illumination").sourceSets.main }
-                'projectred_integration' { source project(":integration").sourceSets.main }
-                'projectred_transmission' { source project(":transmission").sourceSets.main }
-            }
-        }
+    client {
+        workingDirectory file('run')
+    }
 
-        client {
-            workingDirectory file('run')
-        }
-
-        server {
-            workingDirectory file('run_server')
-        }
+    server {
+        workingDirectory file('run_server')
     }
 }
 
 dependencies {
-    minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
+    implementation "net.neoforged:neoforge:${forge_version}"
 
     runtimeOnly project(":core")
     runtimeOnly project(":expansion")
@@ -47,7 +41,3 @@ dependencies {
     runtimeOnly project(":transmission")
 }
 
-mixin {
-    debug.verbose = true
-    debug.export = true
-}

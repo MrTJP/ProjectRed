@@ -5,14 +5,14 @@ import mrtjp.projectred.illumination.BlockLightType;
 import mrtjp.projectred.illumination.ProjectRedIllumination;
 import mrtjp.projectred.illumination.block.IllumarLampBlock;
 import mrtjp.projectred.illumination.block.IllumarSmartLampBlock;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.model.generators.BlockModelBuilder;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ConfiguredModel;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
+import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import static mrtjp.projectred.illumination.init.IlluminationBlocks.ILLUMAR_SMART_LAMP;
 
@@ -64,7 +64,7 @@ public class IlluminationBlockStateModelProvider extends BlockStateProvider {
     }
 
     private BlockModelBuilder createSmartLampModel(Block block, boolean lit) {
-        String texture = ForgeRegistries.BLOCKS.getKey(block).getPath();
+        String texture = BuiltInRegistries.BLOCK.getKey(block).getPath();
         String litKey = lit ? "_on" : "";
         String modelName = texture + litKey;
         return models().cubeBottomTop(modelName,

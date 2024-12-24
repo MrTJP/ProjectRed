@@ -42,6 +42,9 @@
                   "enchantment": "minecraft:fortune",
                   "formula": "minecraft:ore_drops",
                   "function": "minecraft:apply_bonus"
+                },
+                {
+                  "function": "minecraft:explosion_decay"
                 }
               ],
               "name": "projectred_core:ruby"
@@ -51,5 +54,6 @@
       ],
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "projectred_exploration:blocks/ruby_ore"
 }

@@ -10,7 +10,6 @@ import mrtjp.projectred.core.power.ILowLoadMachine;
 import mrtjp.projectred.core.power.ILowLoadPowerLine;
 import mrtjp.projectred.core.power.PowerConductor;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -21,14 +20,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 import static mrtjp.projectred.core.init.CoreBlocks.ELECTROTINE_GENERATOR_BLOCK_ENTITY;
 import static mrtjp.projectred.core.init.CoreItems.ELECTROTINE_DUST_ITEM;
@@ -40,7 +33,7 @@ public class ElectrotineGeneratorBlockEntity extends BasePoweredBlockEntity impl
     private int chargeFlow = 0;
 
     private final ElectrotineGeneratorInventory inventory = new ElectrotineGeneratorInventory();
-    private final LazyOptional<? extends IItemHandler> handler = LazyOptional.of(() -> new InvWrapper(inventory));
+    private final IItemHandler handler = new InvWrapper(inventory);
 
     private int burnTimeRemaining = 0;
     private int powerStored = 0;
@@ -206,19 +199,8 @@ public class ElectrotineGeneratorBlockEntity extends BasePoweredBlockEntity impl
     }
 
     //region Capabilities
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (!this.remove && cap == ForgeCapabilities.ITEM_HANDLER) {
-            return handler.cast();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        handler.invalidate();
+    public IItemHandler getHandler() {
+        return handler;
     }
     //endregion
 

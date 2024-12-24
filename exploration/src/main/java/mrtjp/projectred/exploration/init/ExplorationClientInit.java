@@ -2,17 +2,14 @@ package mrtjp.projectred.exploration.init;
 
 import mrtjp.projectred.exploration.gui.screen.inventory.BackpackScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
 import static mrtjp.projectred.exploration.init.ExplorationMenus.BACKPACK_MENU;
 
 public class ExplorationClientInit {
 
-    public static void init() {
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
+    public static void init(IEventBus modEventBus) {
         modEventBus.addListener(ExplorationClientInit::clientSetup);
     }
 

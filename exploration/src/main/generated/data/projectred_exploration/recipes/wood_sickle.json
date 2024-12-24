@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "M": {
       "tag": "forge:rods/wooden"
@@ -14,7 +15,6 @@
     "SM "
   ],
   "result": {
-    "item": "projectred_exploration:wood_sickle",
-    "nbt": "{Damage:0}"
+    "item": "projectred_exploration:wood_sickle"
   }
 }

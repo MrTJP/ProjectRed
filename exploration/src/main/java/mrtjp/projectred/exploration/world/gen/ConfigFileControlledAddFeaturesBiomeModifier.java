@@ -9,19 +9,19 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
-import net.minecraftforge.common.world.BiomeGenerationSettingsBuilder;
-import net.minecraftforge.common.world.BiomeModifier;
-import net.minecraftforge.common.world.ForgeBiomeModifiers;
-import net.minecraftforge.common.world.ModifiableBiomeInfo;
+import net.neoforged.neoforge.common.world.BiomeGenerationSettingsBuilder;
+import net.neoforged.neoforge.common.world.BiomeModifier;
+import net.neoforged.neoforge.common.world.BiomeModifiers;
+import net.neoforged.neoforge.common.world.ModifiableBiomeInfo;
 
 /**
- * A type of {@link ForgeBiomeModifiers.AddFeaturesBiomeModifier} that can be disabled by its corresponding
+ * A type of {@link BiomeModifiers.AddFeaturesBiomeModifier} that can be disabled by its corresponding
  * field in ProjectRed's Config file.
  */
 public record ConfigFileControlledAddFeaturesBiomeModifier(HolderSet<Biome> biomes, HolderSet<PlacedFeature> features, GenerationStep.Decoration step, String configKey) implements BiomeModifier {
 
     @Override
-    public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
+    public void modify(Holder<Biome> biome, BiomeModifier.Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
 
         if (isEnabled() && phase == Phase.ADD && this.biomes.contains(biome)) {
             BiomeGenerationSettingsBuilder generationSettings = builder.getGenerationSettings();

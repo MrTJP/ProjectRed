@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.event.TextureStitchEvent;
+import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -82,7 +82,7 @@ public class FrameMotorBlockRenderer extends FullyOrientableBlockRenderer {
         }
     }
 
-    public static  void onTextureStitchEvent(TextureStitchEvent.Post event) {
+    public static  void onTextureStitchEvent(TextureAtlasStitchedEvent event) {
         if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
         topIcon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_top"));
         frontBack0Icon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_front_back_0"));

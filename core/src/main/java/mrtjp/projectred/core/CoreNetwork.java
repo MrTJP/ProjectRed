@@ -3,15 +3,14 @@ package mrtjp.projectred.core;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.packet.ICustomPacketHandler;
 import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.packet.PacketCustomChannelBuilder;
+import codechicken.lib.packet.PacketCustomChannel;
 import mrtjp.projectred.core.tile.IPacketReceiverBlockEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.bus.api.IEventBus;
 
 import java.util.Objects;
 
@@ -27,11 +26,14 @@ public class CoreNetwork {
     // Client to server messages
     public static final int NET_TILE_PACKET_TO_SERVER = 3;
 
-    public static void init() {
-        PacketCustomChannelBuilder.named(NET_CHANNEL)
-                .assignClientHandler(() -> ClientHandler::new)
-                .assignServerHandler(() -> ServerHandler::new)
-                .build();
+    // Channel instance
+    private static final PacketCustomChannel channel = new PacketCustomChannel(NET_CHANNEL)
+            .versioned(ProjectRedCore.getContainer().getModInfo().getVersion().toString())
+            .client(() -> ClientHandler::new)
+            .server(() -> ServerHandler::new);
+
+    public static void init(IEventBus modBus) {
+        channel.init(modBus);
     }
 
     public static PacketCustom createTileClientPacket(IPacketReceiverBlockEntity tile, byte key) {
@@ -51,7 +53,7 @@ public class CoreNetwork {
     private static class ClientHandler implements ICustomPacketHandler.IClientPacketHandler {
 
         @Override
-        public void handlePacket(PacketCustom packet, Minecraft mc, ClientPacketListener handler) {
+        public void handlePacket(PacketCustom packet, Minecraft mc) {
             switch (packet.getType()) {
                 case NET_TILE_PACKET_TO_CLIENT:
                     handleTilePacket(Objects.requireNonNull(mc.level), packet);
@@ -73,7 +75,7 @@ public class CoreNetwork {
     private static class ServerHandler implements ICustomPacketHandler.IServerPacketHandler {
 
         @Override
-        public void handlePacket(PacketCustom packet, ServerPlayer sender, ServerGamePacketListenerImpl handler) {
+        public void handlePacket(PacketCustom packet, ServerPlayer sender) {
             switch (packet.getType()) {
                 case NET_TILE_PACKET_TO_SERVER:
                     handleTilePacket(sender.level(), packet, sender);

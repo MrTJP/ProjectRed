@@ -1,13 +1,7 @@
 plugins {
-    id 'net.neoforged.gradle'
-}
-
-minecraft {
-    mappings channel: mcp_mappings, version: mcp_mappings_version
-//    accessTransformer = file("../core/src/main/resources/META-INF/accesstransformer.cfg")
+    id 'net.neoforged.gradle.userdev'
 }
 
 dependencies {
-    minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
+    implementation "net.neoforged:neoforge:${forge_version}"
 }
-

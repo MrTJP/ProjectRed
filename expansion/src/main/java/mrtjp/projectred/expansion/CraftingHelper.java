@@ -11,12 +11,12 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.function.Predicate;
 
 public class CraftingHelper {
@@ -37,8 +37,8 @@ public class CraftingHelper {
         }
 
         @Override
-        public List<ItemStack> getItems() {
-            return List.copyOf(items);
+        public NonNullList<ItemStack> getItems() {
+            return NonNullList.copyOf(items);
         }
     }
 
@@ -48,7 +48,7 @@ public class CraftingHelper {
 
     private final InventorySource inputSource;
 
-    private @Nullable CraftingRecipe recipe = null;
+    private @Nullable RecipeHolder<CraftingRecipe> recipe = null;
     private CraftingResult result = CraftingResult.EMPTY;
 
     public CraftingHelper(InventorySource inputSource) {
@@ -90,7 +90,7 @@ public class CraftingHelper {
         recipe = inputSource.getWorld().getRecipeManager()
                 .getRecipeFor(RecipeType.CRAFTING, craftingInventory, inputSource.getWorld()).orElse(null);
 
-        craftResultInventory.setItem(0, recipe == null ? ItemStack.EMPTY : recipe.assemble(craftingInventory, inputSource.getWorld().registryAccess()));
+        craftResultInventory.setItem(0, recipe == null ? ItemStack.EMPTY : recipe.value().assemble(craftingInventory, inputSource.getWorld().registryAccess()));
     }
 
     public void loadOutput() {
@@ -128,9 +128,9 @@ public class CraftingHelper {
         }
 
         // Re-obtain remaining items in case "setCraftingPlayer" changes remaining items
-        ForgeHooks.setCraftingPlayer(player);
-        NonNullList<ItemStack> remainingStacks = recipe.getRemainingItems(craftingInventory); // Skip re-searching for recipe, should be ok
-        ForgeHooks.setCraftingPlayer(null);
+        CommonHooks.setCraftingPlayer(player);
+        NonNullList<ItemStack> remainingStacks = recipe.value().getRemainingItems(craftingInventory); // Skip re-searching for recipe, should be ok
+        CommonHooks.setCraftingPlayer(null);
 
         Container craftingGird = inputSource.getCraftingMatrix();
         Container storage = inputSource.getStorage();
@@ -184,9 +184,9 @@ public class CraftingHelper {
 
         if (recipe == null) return CraftingResult.EMPTY;
 
-        if (!recipe.matches(craftingInventory, inputSource.getWorld())) return CraftingResult.EMPTY;
+        if (!recipe.value().matches(craftingInventory, inputSource.getWorld())) return CraftingResult.EMPTY;
 
-        ItemStack result = recipe.assemble(craftingInventory, inputSource.getWorld().registryAccess());
+        ItemStack result = recipe.value().assemble(craftingInventory, inputSource.getWorld().registryAccess());
         if (result.isEmpty()) return CraftingResult.EMPTY;
 
         if (simulate) {
@@ -207,8 +207,8 @@ public class CraftingHelper {
                 // Recipe must still function with new input swapped in
                 craftingInventory.setItem(slot, input);
                 boolean canStillCraft =
-                        recipe.matches(craftingInventory, inputSource.getWorld()) &&
-                        ItemStack.isSameItem(result, recipe.assemble(craftingInventory, inputSource.getWorld().registryAccess()));
+                        recipe.value().matches(craftingInventory, inputSource.getWorld()) &&
+                        ItemStack.isSameItem(result, recipe.value().assemble(craftingInventory, inputSource.getWorld().registryAccess()));
                 craftingInventory.setItem(slot, previousInput);
 
                 return canStillCraft;
@@ -223,7 +223,7 @@ public class CraftingHelper {
             return CraftingResult.missingIngredients(missingIngredientMask);
         }
 
-        return new CraftingResult(result, recipe.getRemainingItems(craftingInventory), 0, simulate ? source : copyInventory(source));
+        return new CraftingResult(result, recipe.value().getRemainingItems(craftingInventory), 0, simulate ? source : copyInventory(source));
     }
 
     private boolean consumeIngredient(Container storage, int startIndex, Predicate<ItemStack> matchFunc) {

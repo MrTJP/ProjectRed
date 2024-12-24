@@ -4,7 +4,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.packet.ICustomPacketHandler;
 import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.packet.PacketCustomChannelBuilder;
+import codechicken.lib.packet.PacketCustomChannel;
 import codechicken.multipart.api.part.MultiPart;
 import codechicken.multipart.block.BlockMultipart;
 import mrtjp.projectred.integration.gui.screen.CounterScreen;
@@ -12,12 +12,11 @@ import mrtjp.projectred.integration.gui.screen.TimerScreen;
 import mrtjp.projectred.integration.part.ComplexGatePart;
 import mrtjp.projectred.integration.part.GatePart;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.IEventBus;
 
 import java.util.Objects;
 
@@ -36,12 +35,14 @@ public class IntegrationNetwork {
     public static final int INCR_TIMER_FROM_CLIENT = 3;
     public static final int INCR_COUNTER_FROM_CLIENT = 4;
 
-    public static void init() {
+    // Channel instance
+    private static final PacketCustomChannel channel = new PacketCustomChannel(NET_CHANNEL)
+            .versioned(ProjectRedIntegration.getContainer().getModInfo().getVersion().toString())
+            .client(() -> ClientHandler::new)
+            .server(() -> ServerHandler::new);
 
-        PacketCustomChannelBuilder.named(NET_CHANNEL)
-                .assignClientHandler(() -> ClientHandler::new)
-                .assignServerHandler(() -> ServerHandler::new)
-                .build();
+    public static void init(IEventBus modBus) {
+        channel.init(modBus);
     }
 
     public static MCDataOutput writePartIndex(MCDataOutput out, MultiPart part) {
@@ -58,7 +59,7 @@ public class IntegrationNetwork {
     private static class ClientHandler implements ICustomPacketHandler.IClientPacketHandler {
 
         @Override
-        public void handlePacket(PacketCustom packet, Minecraft mc, ClientPacketListener handler) {
+        public void handlePacket(PacketCustom packet, Minecraft mc) {
             switch (packet.getType()) {
                 case OPEN_TIMER_GUI_FROM_SERVER:
                     handleOpenTimerGuiMessage(mc, packet);
@@ -90,7 +91,7 @@ public class IntegrationNetwork {
     private static class ServerHandler implements ICustomPacketHandler.IServerPacketHandler {
 
         @Override
-        public void handlePacket(PacketCustom packet, ServerPlayer sender, ServerGamePacketListenerImpl handler) {
+        public void handlePacket(PacketCustom packet, ServerPlayer sender) {
             switch (packet.getType()) {
 
                 case INCR_TIMER_FROM_CLIENT:

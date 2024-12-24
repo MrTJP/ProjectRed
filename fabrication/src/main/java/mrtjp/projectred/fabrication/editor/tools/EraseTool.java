@@ -11,8 +11,8 @@ import mrtjp.projectred.fabrication.editor.ICEditorToolType;
 import mrtjp.projectred.fabrication.gui.ICRenderTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import static mrtjp.projectred.fabrication.editor.tools.IICEditorTool.toNearestPosition;
@@ -115,7 +115,7 @@ public class EraseTool extends BaseICEditorTool {
     }
 
     @Override
-    @OnlyIn (Dist.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void renderOverlay(Vector3 mousePosition, boolean isFirstHit, CCRenderState ccrs, MultiBufferSource getter, PoseStack matrixStack) {
 
         if (!isFirstHit) return;

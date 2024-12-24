@@ -9,7 +9,6 @@ import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import mrtjp.projectred.expansion.inventory.container.AutoCrafterMenu;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -20,14 +19,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 public class AutoCrafterBlockEntity extends BaseMachineBlockEntity implements CraftingHelper.InventorySource {
 
@@ -42,7 +35,7 @@ public class AutoCrafterBlockEntity extends BaseMachineBlockEntity implements Cr
     private final BaseContainer storageInventory = new BaseContainer(18);
     private final BaseContainer craftingGrid = new BaseContainer(9);
 
-    private final LazyOptional<? extends IItemHandler> handler = LazyOptional.of(() -> new InvWrapper(storageInventory));
+    private final IItemHandler handler = new InvWrapper(storageInventory);
 
     private final CraftingHelper craftingHelper = new CraftingHelper(this);
 
@@ -232,19 +225,8 @@ public class AutoCrafterBlockEntity extends BaseMachineBlockEntity implements Cr
     //endregion
 
     //region Capabilities
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (!this.remove && cap == ForgeCapabilities.ITEM_HANDLER) {
-            return handler.cast();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        handler.invalidate();
+    public IItemHandler getHandler() {
+        return handler;
     }
     //endregion
 }

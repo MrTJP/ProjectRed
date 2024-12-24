@@ -7,6 +7,7 @@ import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.illumination.tile.IllumarSmartLampBlockEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.world.phys.AABB;
 
 public class IllumarSmartLampBlockEntityRenderer implements BlockEntityRenderer<IllumarSmartLampBlockEntity> {
 
@@ -26,5 +27,13 @@ public class IllumarSmartLampBlockEntityRenderer implements BlockEntityRenderer<
     @Override
     public int getViewDistance() {
         return 256;
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(IllumarSmartLampBlockEntity blockEntity) {
+        return GLOW_BOUNDS
+                .copy()
+                .add(blockEntity.getBlockPos())
+                .aabb();
     }
 }

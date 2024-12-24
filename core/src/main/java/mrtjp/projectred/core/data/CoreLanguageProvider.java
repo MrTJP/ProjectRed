@@ -1,7 +1,7 @@
 package mrtjp.projectred.core.data;
 
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.common.data.LanguageProvider;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 import static mrtjp.projectred.core.init.CoreBlocks.ELECTROTINE_GENERATOR_BLOCK;
@@ -11,11 +11,6 @@ public class CoreLanguageProvider extends LanguageProvider {
 
     public CoreLanguageProvider(PackOutput output) {
         super(output, MOD_ID, "en_us");
-    }
-
-    @Override
-    public String getName() {
-        return "ProjectRed-Core Languages: en_us";
     }
 
     @Override

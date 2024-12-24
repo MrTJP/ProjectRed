@@ -12,14 +12,14 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.crafting.StrictNBTIngredient;
+import net.neoforged.neoforge.common.crafting.NBTIngredient;
 
 import java.util.Objects;
 
 import static mrtjp.projectred.core.init.CoreBlocks.ELECTROTINE_GENERATOR_BLOCK;
 import static mrtjp.projectred.core.init.CoreItems.*;
 import static mrtjp.projectred.core.init.CoreTags.*;
-import static net.minecraftforge.common.Tags.Items.*;
+import static net.neoforged.neoforge.common.Tags.Items.*;
 
 public class CoreRecipeProvider extends RecipeProvider {
 
@@ -197,8 +197,8 @@ public class CoreRecipeProvider extends RecipeProvider {
         }
 
         shapedRecipe(DRAW_PLATE_ITEM.get())
-                .key('I', StrictNBTIngredient.of(ItemMicroBlock.create(3, 2, Objects.requireNonNull(MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.IRON_BLOCK.defaultBlockState()))))))
-                .key('D', StrictNBTIngredient.of(ItemMicroBlock.create(0, 2, Objects.requireNonNull(MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.DIAMOND_BLOCK.defaultBlockState()))))))
+                .key('I', NBTIngredient.of(true, ItemMicroBlock.create(3, 2, Objects.requireNonNull(MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.IRON_BLOCK.defaultBlockState()))))))
+                .key('D', NBTIngredient.of(true, ItemMicroBlock.create(0, 2, Objects.requireNonNull(MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.DIAMOND_BLOCK.defaultBlockState()))))))
                 .patternLine(" I ")
                 .patternLine("IDI")
                 .patternLine(" I ");

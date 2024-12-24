@@ -135,8 +135,7 @@ jobs:
             -k    $API_TOKEN \
             -rt   $RELEASE_TYPE \
             -v    'Java 17' \
-            -v    1.20.1 \
-            -v    Forge \
+            -v    1.20.4 \
             -v    NeoForge \
             -c    ./CHANGELOG.md \
             --required-dep codechicken-lib-1-8 \
@@ -178,9 +177,8 @@ jobs:
             create-version \
             -v    "$MOD_VERSION" \
             -c    ./CHANGELOG.md \
-            -gv   1.20.1 \
+            -gv   1.20.4 \
             -vt   $RELEASE_TYPE \
-            -l    forge \
             -l    neoforge \
             --required-dep codechicken-lib \
             --required-dep cb-multipart \

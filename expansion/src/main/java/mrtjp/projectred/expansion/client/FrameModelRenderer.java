@@ -10,8 +10,8 @@ import codechicken.lib.vec.uv.IconTransformation;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -45,7 +45,7 @@ public class FrameModelRenderer {
         return getOrGenerateModel(mask).verts;
     }
 
-    public static void onTextureStitchEvent(TextureStitchEvent.Post event) {
+    public static void onTextureStitchEvent(TextureAtlasStitchedEvent event) {
         if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
         frameIcon = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame")));
     }

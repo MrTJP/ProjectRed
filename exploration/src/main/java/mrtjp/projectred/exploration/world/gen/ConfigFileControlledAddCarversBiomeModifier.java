@@ -9,19 +9,19 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
-import net.minecraftforge.common.world.BiomeGenerationSettingsBuilder;
-import net.minecraftforge.common.world.BiomeModifier;
-import net.minecraftforge.common.world.ForgeBiomeModifiers;
-import net.minecraftforge.common.world.ModifiableBiomeInfo;
+import net.neoforged.neoforge.common.world.BiomeGenerationSettingsBuilder;
+import net.neoforged.neoforge.common.world.BiomeModifier;
+import net.neoforged.neoforge.common.world.BiomeModifiers;
+import net.neoforged.neoforge.common.world.ModifiableBiomeInfo;
 
 /**
- * For some reason, Forge does not provide this in {@link ForgeBiomeModifiers}. This one also allows for
+ * For some reason, Forge does not provide this in {@link BiomeModifiers}. This one also allows for
  * dynamic control via ProjectRed's mod config file.
  */
 public record ConfigFileControlledAddCarversBiomeModifier(HolderSet<Biome> biomes, HolderSet<ConfiguredWorldCarver<?>> carvers, GenerationStep.Carving step, String configKey) implements BiomeModifier {
 
     @Override
-    public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
+    public void modify(Holder<Biome> biome, BiomeModifier.Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
 
         if (isEnabled() && phase == Phase.ADD && this.biomes.contains(biome)) {
             BiomeGenerationSettingsBuilder generationSettings = builder.getGenerationSettings();

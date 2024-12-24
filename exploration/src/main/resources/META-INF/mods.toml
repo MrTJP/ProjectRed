@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[${lang_version},)"
+loaderVersion="[2,)"
 issueTrackerURL="https://github.com/MrTJP/ProjectRed"
 license="MIT"
 
@@ -15,38 +15,38 @@ license="MIT"
 Redstone. The way it was meant to be.
     '''
 [[dependencies.projectred_exploration]]
-    modId="forge"
-    mandatory=true
+    modId="neoforge"
+    type="required"
     versionRange="[${forge_version},)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.projectred_exploration]]
     modId="minecraft"
-    mandatory=true
-    versionRange="[1.20.1]"
+    type="required"
+    versionRange="[1.20.4]"
     ordering="AFTER"
     side="BOTH"
 [[dependencies.projectred_exploration]]
     modId="codechickenlib"
-    mandatory=true
+    type="required"
     versionRange="[${ccl_version},)"
     ordering="AFTER"
     side="BOTH"
 [[dependencies.projectred_exploration]]
     modId="cb_multipart"
-    mandatory=true
+    type="required"
     versionRange="[${cbm_version},)"
     ordering="AFTER"
     side="BOTH"
 [[dependencies.projectred_exploration]]
     modId="cb_microblock"
-    mandatory=true
+    type="required"
     versionRange="[${cbm_version},)"
     ordering="AFTER"
     side="BOTH"
 [[dependencies.projectred_exploration]]
     modId="projectred_core"
-    mandatory=true
+    type="required"
     versionRange="[${file.jarVersion},)"
     ordering="AFTER"
     side="BOTH"

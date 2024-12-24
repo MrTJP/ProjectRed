@@ -25,18 +25,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -50,7 +45,7 @@ public class DeployerBlockEntity extends BaseDeviceBlockEntity {
 
     private final BaseContainer inventory = new BaseContainer(9);
 
-    private final LazyOptional<? extends IItemHandler> handler = LazyOptional.of(() -> new InvWrapper(inventory));
+    private final IItemHandler handler = new InvWrapper(inventory);
 
     public DeployerBlockEntity(BlockPos pos, BlockState state) {
         super(ExpansionBlocks.DEPLOYER_BLOCK_ENTITY.get(), pos, state);
@@ -174,7 +169,7 @@ public class DeployerBlockEntity extends BaseDeviceBlockEntity {
 
     // Mimics the logic of and MultiPlayerGameMode#performUseItemOn
     protected InteractionResult runUseOnLogic(Player player, BlockPos usePos, BlockHitResult hit) {
-        RightClickBlock event = ForgeHooks.onRightClickBlock(player, InteractionHand.MAIN_HAND, usePos, hit);
+        PlayerInteractEvent.RightClickBlock event = CommonHooks.onRightClickBlock(player, InteractionHand.MAIN_HAND, usePos, hit);
         if (event.isCanceled()) {
             return event.getCancellationResult();
         }
@@ -208,7 +203,7 @@ public class DeployerBlockEntity extends BaseDeviceBlockEntity {
         }
 
         // At this point, block use has failed. PLayer use is now attempted (i.e. food, weapons, etc)
-        result = ForgeHooks.onItemRightClick(player, InteractionHand.MAIN_HAND);
+        result = CommonHooks.onItemRightClick(player, InteractionHand.MAIN_HAND);
         if (result != null) {
             return result;
         }
@@ -243,7 +238,7 @@ public class DeployerBlockEntity extends BaseDeviceBlockEntity {
 
             // Then try direct interaction
             Vec3 vec3 = hit.getLocation().subtract(entity.getX(), entity.getY(), entity.getZ());
-            result = ForgeHooks.onInteractEntityAt(player, entity, vec3, InteractionHand.MAIN_HAND);
+            result = CommonHooks.onInteractEntityAt(player, entity, vec3, InteractionHand.MAIN_HAND);
             if (result != null) {
                 return result;
             }
@@ -261,21 +256,8 @@ public class DeployerBlockEntity extends BaseDeviceBlockEntity {
     }
 
     //region Capabilities
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (!this.remove && cap == ForgeCapabilities.ITEM_HANDLER) {
-            if (side != Direction.values()[this.side ^ 1]) {
-                return handler.cast();
-            }
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        handler.invalidate();
+    public IItemHandler getHandler() {
+        return handler;
     }
     //endregion
 

@@ -4,6 +4,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.packet.PacketCustom;
 import mrtjp.projectred.core.CoreNetwork;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Collection;
@@ -20,7 +21,7 @@ public interface IPacketReceiverBlockEntity extends IBlockEventBlockEntity {
     default void sendUpdateToPlayersWatchingChunk(int key, Consumer<MCDataOutput> writer) {
         PacketCustom packet = CoreNetwork.createTileClientPacket(this, (byte) key);
         writer.accept(packet);
-        packet.sendToChunk(getBlockLevel(), getBlockPosition());
+        packet.sendToChunk((ServerLevel) getBlockLevel(), getBlockPosition());
     }
 
     default void sendUpdateToPlayer(int key, Consumer<MCDataOutput> writer, ServerPlayer player) {

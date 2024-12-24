@@ -105,9 +105,9 @@ public class RedUIScreen extends Screen implements RedUIRootNode {
     }
 
     @Override
-    public boolean mouseScrolled(double x, double y, double scroll) {
-        boolean consumed = super.mouseScrolled(x, y, scroll);
-        return operateOnZOrderedSubtree(new Point((int) x, (int) y), (n, p, c) -> n.mouseScrolled(p, scroll, c), consumed);
+    public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
+        boolean consumed = super.mouseScrolled(x, y, scrollX, scrollY);
+        return operateOnZOrderedSubtree(new Point((int) x, (int) y), (n, p, c) -> n.mouseScrolled(p, scrollX, scrollY, c), consumed);
     }
 
     @Override

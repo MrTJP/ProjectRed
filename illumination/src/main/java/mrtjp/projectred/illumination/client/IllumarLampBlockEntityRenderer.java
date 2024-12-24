@@ -8,6 +8,7 @@ import mrtjp.projectred.illumination.tile.IllumarLampBlockEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 public class IllumarLampBlockEntityRenderer implements BlockEntityRenderer<IllumarLampBlockEntity> {
 
@@ -32,5 +33,13 @@ public class IllumarLampBlockEntityRenderer implements BlockEntityRenderer<Illum
     @Override
     public int getViewDistance() {
         return 256;
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(IllumarLampBlockEntity blockEntity) {
+        return GLOW_BOUNDS
+                .copy()
+                .add(blockEntity.getBlockPos())
+                .aabb();
     }
 }

@@ -21,13 +21,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.SidedInvWrapper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
@@ -39,7 +35,10 @@ public class BatteryBoxBlockEntity extends LowLoadPoweredBlockEntity {
     public static final String TAG_KEY_CHARGE_LEVEL_STATE = "charge_level";
 
     private final BatteryBoxInventory inventory = new BatteryBoxInventory();
-    private final LazyOptional<? extends IItemHandler>[] handlers = SidedInvWrapper.create(inventory, Direction.UP, Direction.DOWN);
+    private final IItemHandler[] handlers = {
+            new SidedInvWrapper(inventory, Direction.DOWN),
+            new SidedInvWrapper(inventory, Direction.UP),
+    };
 
     private int powerStored = 0;
 
@@ -213,21 +212,8 @@ public class BatteryBoxBlockEntity extends LowLoadPoweredBlockEntity {
     }
 
     //region Capabilities
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (!this.remove && cap == ForgeCapabilities.ITEM_HANDLER) {
-            return side == Direction.UP ? handlers[0].cast() : handlers[1].cast();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        for (LazyOptional<?> handler : handlers) {
-            handler.invalidate();
-        }
+    public IItemHandler getHandler(Direction side) {
+        return handlers[side == Direction.UP ? 1 : 0];
     }
     //endregion
 

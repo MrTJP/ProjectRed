@@ -4,6 +4,7 @@ import codechicken.multipart.api.MultipartType;
 import mrtjp.projectred.compatibility.ComputerCraftCompatibility;
 import mrtjp.projectred.core.data.*;
 import mrtjp.projectred.core.init.*;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -13,20 +14,22 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.data.BlockTagsProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.OptionalMod;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.OptionalMod;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 
@@ -37,13 +40,15 @@ public class ProjectRedCore {
 
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MOD_ID);
-    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MOD_ID);
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
-    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MOD_ID);
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(BuiltInRegistries.MENU, MOD_ID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
+    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MOD_ID);
     public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
+
+    private static @Nullable ModContainer container;
 
     static {
         CoreBlocks.register();
@@ -53,13 +58,19 @@ public class ProjectRedCore {
         CoreCreativeModeTabs.register();
     }
 
-    public ProjectRedCore() {
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public ProjectRedCore(ModContainer container, IEventBus modEventBus) {
+        ProjectRedCore.container = container;
 
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::onGatherDataEvent);
+        modEventBus.addListener(this::onRegisterCaps);
 
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> CoreClientInit::init);
+        if (FMLEnvironment.dist.isClient()) {
+            CoreClientInit.init(modEventBus);
+        }
+
+        // Init packet handler
+        CoreNetwork.init(modEventBus);
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
@@ -69,10 +80,11 @@ public class ProjectRedCore {
         CREATIVE_TABS.register(modEventBus);
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event) {
-        // Init packet handler
-        CoreNetwork.init();
+    public static ModContainer getContainer() {
+        return Objects.requireNonNull(container);
+    }
 
+    private void commonSetup(final FMLCommonSetupEvent event) {
         // Load config file
         Configurator.load();
 
@@ -99,5 +111,9 @@ public class ProjectRedCore {
         BlockTagsProvider blockTagsProvider = new CoreBlockTagsProvider(output, event.getLookupProvider(), fileHelper);
         generator.addProvider(event.includeServer(), blockTagsProvider);
         generator.addProvider(event.includeServer(), new CoreItemTagsProvider(output, event.getLookupProvider(), blockTagsProvider.contentsGetter(), fileHelper));
+    }
+
+    public void onRegisterCaps(RegisterCapabilitiesEvent event) {
+        CoreBlocks.registerCaps(event);
     }
 }

@@ -8,11 +8,11 @@ import mrtjp.projectred.illumination.part.*;
 import net.covers1624.quack.collection.FastStream;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public enum MultipartLightType {
     FIXTURE("fixture_light", "Fixture Light", new FixtureLightProperties()),
@@ -25,11 +25,11 @@ public enum MultipartLightType {
     private final String localName;
     private final MultipartLightProperties properties;
 
-    private final List<RegistryObject<Item>> itemSuppliers = new ArrayList<>();
-    private final List<RegistryObject<Item>> invertedItemSuppliers = new ArrayList<>();
+    private final List<Supplier<Item>> itemSuppliers = new ArrayList<>();
+    private final List<Supplier<Item>> invertedItemSuppliers = new ArrayList<>();
 
-    private final List<RegistryObject<MultipartType<MultipartLightPart>>> partSuppliers = new ArrayList<>();
-    private final List<RegistryObject<MultipartType<MultipartLightPart>>> invertedPartSuppliers = new ArrayList<>();
+    private final List<Supplier<MultipartType<MultipartLightPart>>> partSuppliers = new ArrayList<>();
+    private final List<Supplier<MultipartType<MultipartLightPart>>> invertedPartSuppliers = new ArrayList<>();
 
     MultipartLightType(String unlocalName, String localName, MultipartLightProperties properties) {
         this.unlocalName = unlocalName;
@@ -59,7 +59,7 @@ public enum MultipartLightType {
         }
     }
 
-    public RegistryObject<Item> getItemRegistryObject(int color, boolean inverted) {
+    public Supplier<Item> getItemRegistryObject(int color, boolean inverted) {
         return inverted ? invertedItemSuppliers.get(color) : itemSuppliers.get(color);
     }
 
@@ -68,7 +68,7 @@ public enum MultipartLightType {
     }
 
     public Iterable<Item> getAllItems(boolean inverted) {
-        return FastStream.of(inverted ? invertedItemSuppliers : itemSuppliers).map(RegistryObject::get);
+        return FastStream.of(inverted ? invertedItemSuppliers : itemSuppliers).map(Supplier::get);
     }
 
     public ItemStack makeStack(int colour, boolean inverted) {

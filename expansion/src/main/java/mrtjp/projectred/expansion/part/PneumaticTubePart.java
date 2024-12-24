@@ -21,10 +21,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fml.DistExecutor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.capabilities.Capabilities;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -50,10 +50,10 @@ public class PneumaticTubePart extends GraphContainerTubePart implements Pneumat
 
     public PneumaticTubePart(TubeType pipeType) {
         super(pipeType);
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (FMLEnvironment.dist.isClient()) {
             linkCache.setRemovedCallback(this::onLinksRemoved);
             linkCache.setAddedCallback(this::onLinksAdded);
-        });
+        }
     }
 
     @Override
@@ -254,9 +254,9 @@ public class PneumaticTubePart extends GraphContainerTubePart implements Pneumat
             return wc.getSlotsForFace(Direction.values()[lookup.otherDirection]).length > 0;
         }
 
-        var itemCapOpt = lookup.tile.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.values()[lookup.otherDirection]);
-        if (itemCapOpt.isPresent()) {
-            return itemCapOpt.orElseThrow(NullPointerException::new).getSlots() > 0;
+        var itemCap = level().getCapability(Capabilities.ItemHandler.BLOCK, lookup.tile.getBlockPos(), Direction.values()[lookup.otherDirection]);
+        if (itemCap != null) {
+            return itemCap.getSlots() > 0;
         }
 
         return false;
@@ -464,9 +464,8 @@ public class PneumaticTubePart extends GraphContainerTubePart implements Pneumat
         }
 
         // Pass to IItemHandler capability
-        var itemCapOpt = lookup.tile.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.values()[lookup.otherDirection]);
-        if (itemCapOpt.isPresent()) {
-            var itemCap = itemCapOpt.orElseThrow(NullPointerException::new);
+        var itemCap = level().getCapability(Capabilities.ItemHandler.BLOCK, lookup.tile.getBlockPos(), Direction.values()[lookup.otherDirection]);
+        if (itemCap != null) {
             if (InventoryLib.injectItemHandler(itemCap, payload.getItemStack(), false)) {
                 sendPayloadRemoved(Collections.singletonList(id));
                 return true;
@@ -506,9 +505,8 @@ public class PneumaticTubePart extends GraphContainerTubePart implements Pneumat
         }
 
         // Check IItemHandler cap
-        var itemCapOpt = lookup.tile.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.values()[lookup.otherDirection]);
-        if (itemCapOpt.isPresent()) {
-            var itemCap = itemCapOpt.orElseThrow(NullPointerException::new);
+        var itemCap = level().getCapability(Capabilities.ItemHandler.BLOCK, lookup.tile.getBlockPos(), Direction.values()[lookup.otherDirection]);
+        if (itemCap != null) {
             ItemStack copy = payload.getItemStack().copy();
             InventoryLib.injectItemHandler(itemCap, copy, true);
             if (copy.getCount() < payload.getItemStack().getCount()) { // If anything was inserted

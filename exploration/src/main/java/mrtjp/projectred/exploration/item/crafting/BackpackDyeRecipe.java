@@ -4,7 +4,6 @@ import mrtjp.projectred.exploration.init.ExplorationItems;
 import mrtjp.projectred.exploration.init.ExplorationRecipeSerializers;
 import mrtjp.projectred.exploration.item.BackpackItem;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -12,14 +11,14 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
 import java.util.Objects;
 
 public class BackpackDyeRecipe extends CustomRecipe {
 
-    public BackpackDyeRecipe(ResourceLocation id, CraftingBookCategory category) {
-        super(id, category);
+    public BackpackDyeRecipe(CraftingBookCategory category) {
+        super(category);
     }
 
     @Override

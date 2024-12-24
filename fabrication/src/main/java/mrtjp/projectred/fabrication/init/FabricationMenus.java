@@ -5,7 +5,8 @@ import mrtjp.projectred.fabrication.inventory.container.LithographyTableMenu;
 import mrtjp.projectred.fabrication.inventory.container.PackagingTableMenu;
 import mrtjp.projectred.fabrication.inventory.container.PlottingTableMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.MENU_TYPES;
 import static mrtjp.projectred.fabrication.init.FabricationBlocks.*;
@@ -13,9 +14,9 @@ import static mrtjp.projectred.fabrication.init.FabricationBlocks.*;
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class FabricationMenus {
 
-    public static RegistryObject<MenuType<PlottingTableMenu>> PLOTTING_TABLE_MENU;
-    public static RegistryObject<MenuType<LithographyTableMenu>> LITHOGRAPHY_TABLE_MENU;
-    public static RegistryObject<MenuType<PackagingTableMenu>> PACKAGING_TABLE_MENU;
+    public static Supplier<MenuType<PlottingTableMenu>> PLOTTING_TABLE_MENU;
+    public static Supplier<MenuType<LithographyTableMenu>> LITHOGRAPHY_TABLE_MENU;
+    public static Supplier<MenuType<PackagingTableMenu>> PACKAGING_TABLE_MENU;
 
     public static void register() {
 
