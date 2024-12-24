@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "I": {
       "item": "projectred_core:iron_coil"
@@ -14,7 +15,6 @@
     " S "
   ],
   "result": {
-    "item": "projectred_exploration:wool_gin",
-    "nbt": "{Damage:0}"
+    "item": "projectred_exploration:wool_gin"
   }
 }

@@ -3,7 +3,7 @@ package mrtjp.projectred.fabrication.data;
 import codechicken.lib.datagen.ItemModelProvider;
 import mrtjp.projectred.integration.client.GatePartItemRenderer;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.MOD_ID;
 import static mrtjp.projectred.fabrication.init.FabricationBlocks.*;

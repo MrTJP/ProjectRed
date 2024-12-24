@@ -2,7 +2,8 @@ package mrtjp.projectred.exploration.init;
 
 import mrtjp.projectred.exploration.item.crafting.BackpackDyeRecipe;
 import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.RECIPE_SERIALIZERS;
 
@@ -11,7 +12,7 @@ public class ExplorationRecipeSerializers {
 
     public static final String ID_BACKPACK_DYE = "backpack_dye";
 
-    public static RegistryObject<SimpleCraftingRecipeSerializer<?>> BACKPACK_DYE_RECIPE_SERIALIZER;
+    public static Supplier<SimpleCraftingRecipeSerializer<?>> BACKPACK_DYE_RECIPE_SERIALIZER;
 
     public static void register() {
 

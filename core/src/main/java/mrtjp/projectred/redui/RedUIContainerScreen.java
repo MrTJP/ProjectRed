@@ -56,14 +56,12 @@ public class RedUIContainerScreen<T extends AbstractContainerMenu> extends Abstr
             return false;
         }, false);
 
-        // Render semi-transparent grey background
-        renderBackground(graphics);
-
         // Super render call, which does the following:
-        //  - Call renderBg(), which is typically overridden to draw main background
+        //  - Call renderBackground() which draws semi-transparent gray background and then
+        //    calls renderBg(), which is typically overridden to draw main background
         //  - Fire ContainerScreenEvent.Render.Background client event
+        //  - Render each widget in renderables list (for each call Renderable#render())
         //  - Disable depth test
-        //  - Render each widget in renderables list (call Screen#render())
         //  - Render each slot and its highlight (via renderSlot() and renderSlotHighlight())
         //  - Render labels (renderLabels())
         //  - Fire ContainerScreenEvent.Render.Foreground client event
@@ -121,9 +119,9 @@ public class RedUIContainerScreen<T extends AbstractContainerMenu> extends Abstr
     }
 
     @Override
-    public boolean mouseScrolled(double x, double y, double scroll) {
-        boolean consumed = super.mouseScrolled(x, y, scroll);
-        return operateOnZOrderedSubtree(new Point((int) x, (int) y), (n, p, c) -> n.mouseScrolled(p, scroll, c), consumed);
+    public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
+        boolean consumed = super.mouseScrolled(x, y, scrollX, scrollY);
+        return operateOnZOrderedSubtree(new Point((int) x, (int) y), (n, p, c) -> n.mouseScrolled(p, scrollX, scrollY, c), consumed);
     }
 
     @Override

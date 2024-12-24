@@ -4,6 +4,8 @@ import codechicken.lib.datagen.recipe.RecipeProvider;
 import codechicken.lib.datagen.recipe.ShapedRecipeBuilder;
 import codechicken.microblock.init.CBMicroblockModContent;
 import mrtjp.projectred.exploration.item.BackpackItem;
+import mrtjp.projectred.exploration.item.crafting.BackpackDyeRecipe;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
@@ -11,9 +13,9 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.Tags;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +25,6 @@ import static mrtjp.projectred.core.init.CoreTags.*;
 import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 import static mrtjp.projectred.exploration.init.ExplorationBlocks.*;
 import static mrtjp.projectred.exploration.init.ExplorationItems.*;
-import static mrtjp.projectred.exploration.init.ExplorationRecipeSerializers.BACKPACK_DYE_RECIPE_SERIALIZER;
 import static mrtjp.projectred.exploration.init.ExplorationTags.*;
 
 @SuppressWarnings("DataFlowIssue")
@@ -158,14 +159,15 @@ public class ExplorationRecipeProvider extends RecipeProvider {
             backpackRecipe(getBackpackByColor(i));
         }
 
-        special(BACKPACK_DYE_RECIPE_SERIALIZER.get(), new ResourceLocation(MOD_ID, "backpack_dye"));
+        //TODO Now we have to hardcode CraftingBookCategory.MISC?
+        special(new ResourceLocation(MOD_ID, "backpack_dye"), () -> new BackpackDyeRecipe(CraftingBookCategory.MISC));
     }
 
     private void oreSmeltingRecipe(ItemLike result, Collection<ItemLike> sources, float xp) {
-        String resultName = ForgeRegistries.ITEMS.getKey(result.asItem()).getPath();
+        String resultName = BuiltInRegistries.ITEM.getKey(result.asItem()).getPath();
 
         for (ItemLike source : sources) {
-            String sourceName = ForgeRegistries.ITEMS.getKey(source.asItem()).getPath();
+            String sourceName = BuiltInRegistries.ITEM.getKey(source.asItem()).getPath();
 
             smelting(result, 1, new ResourceLocation(MOD_ID, resultName + "_from_" + sourceName + "_smelting"))
                     .ingredient(source)
@@ -182,7 +184,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .patternLine("SSS");
 
         // Block to item
-        shapelessRecipe(item, 9, new ResourceLocation(MOD_ID, ForgeRegistries.ITEMS.getKey(item.asItem()).getPath() + "_from_nineblock"))
+        shapelessRecipe(item, 9, new ResourceLocation(MOD_ID, BuiltInRegistries.ITEM.getKey(item.asItem()).getPath() + "_from_nineblock"))
                 .addIngredient(block);
     }
 

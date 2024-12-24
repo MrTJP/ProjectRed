@@ -3,7 +3,8 @@ package mrtjp.projectred.expansion.init;
 import codechicken.lib.inventory.container.ICCLContainerType;
 import mrtjp.projectred.expansion.inventory.container.*;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MENU_TYPES;
 import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
@@ -11,11 +12,11 @@ import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class ExpansionMenus {
 
-    public static RegistryObject<MenuType<ProjectBenchMenu>> PROJECT_BENCH_MENU;
-    public static RegistryObject<MenuType<BatteryBoxMenu>> BATTERY_BOX_MENU;
-    public static RegistryObject<MenuType<AutoCrafterMenu>> AUTO_CRAFTER_MENU;
-    public static RegistryObject<MenuType<ChargingBenchMenu>> CHARGING_BENCH_MENU;
-    public static RegistryObject<MenuType<DeployerMenu>> DEPLOYER_MENU;
+    public static Supplier<MenuType<ProjectBenchMenu>> PROJECT_BENCH_MENU;
+    public static Supplier<MenuType<BatteryBoxMenu>> BATTERY_BOX_MENU;
+    public static Supplier<MenuType<AutoCrafterMenu>> AUTO_CRAFTER_MENU;
+    public static Supplier<MenuType<ChargingBenchMenu>> CHARGING_BENCH_MENU;
+    public static Supplier<MenuType<DeployerMenu>> DEPLOYER_MENU;
 
     public static void register() {
 

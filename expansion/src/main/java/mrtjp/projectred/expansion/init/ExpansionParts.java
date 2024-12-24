@@ -5,7 +5,8 @@ import codechicken.multipart.api.SimpleMultipartType;
 import mrtjp.projectred.expansion.TubeType;
 import mrtjp.projectred.expansion.part.FramePart;
 import mrtjp.projectred.expansion.part.FramePartConverter;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.*;
 
@@ -16,7 +17,7 @@ public class ExpansionParts {
 
     public static final String ID_PNEUMATIC_TUBE = "pneumatic_tube";
 
-    public static RegistryObject<MultipartType<FramePart>> FRAME_PART;
+    public static Supplier<MultipartType<FramePart>> FRAME_PART;
 
     public static void register() {
 

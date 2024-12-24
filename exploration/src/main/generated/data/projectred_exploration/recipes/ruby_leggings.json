@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "M": {
       "tag": "forge:gems/ruby"
@@ -11,7 +12,6 @@
     "M M"
   ],
   "result": {
-    "item": "projectred_exploration:ruby_leggings",
-    "nbt": "{Damage:0}"
+    "item": "projectred_exploration:ruby_leggings"
   }
 }

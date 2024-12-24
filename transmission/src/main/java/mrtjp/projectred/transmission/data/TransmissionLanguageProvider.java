@@ -2,7 +2,7 @@ package mrtjp.projectred.transmission.data;
 
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.common.data.LanguageProvider;
 
 import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 
@@ -14,11 +14,6 @@ public class TransmissionLanguageProvider extends LanguageProvider {
 
     public TransmissionLanguageProvider(PackOutput output) {
         super(output, MOD_ID, "en_us");
-    }
-
-    @Override
-    public String getName() {
-        return "ProjectRed-Transmission Language: en_us";
     }
 
     @Override

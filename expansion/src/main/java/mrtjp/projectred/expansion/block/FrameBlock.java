@@ -19,7 +19,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.fml.DistExecutor;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -103,9 +103,12 @@ public class FrameBlock extends Block implements Frame {
 
         // Clients will use verts directly from parsed OBJ.
         // Server will use data-pack JSON file with verts from OBJ
-        Vertex5[] verts = DistExecutor.unsafeRunForDist(
-                () -> () -> FrameModelRenderer.getQuadsForMask(mask),
-                () -> () -> getQuadsForMask(mask));
+        Vertex5[] verts;
+        if (FMLEnvironment.dist.isClient()) {
+            verts = FrameModelRenderer.getQuadsForMask(mask);
+        } else {
+            verts = getQuadsForMask(mask);
+        }
 
         VoxelShape parent = VoxelShapeCache.merge(ImmutableSet.copyOf(faceShapes));
         return ModelVoxelShape.fromQuads(parent, verts);

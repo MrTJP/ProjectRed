@@ -13,8 +13,9 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.registries.RegisterEvent;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.RegisterEvent;
+
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.BLOCKS;
 import static mrtjp.projectred.exploration.ProjectRedExploration.ITEMS;
@@ -60,44 +61,44 @@ public class ExplorationBlocks {
     public static final String ID_ELECTROTINE_BLOCK_WALL = "electrotine_block_wall";
 
     // Ores
-    public static RegistryObject<Block> RUBY_ORE_BLOCK;
-    public static RegistryObject<Block> DEEPSLATE_RUBY_ORE_BLOCK;
-    public static RegistryObject<Block> SAPPHIRE_ORE_BLOCK;
-    public static RegistryObject<Block> DEEPSLATE_SAPPHIRE_ORE_BLOCK;
-    public static RegistryObject<Block> PERIDOT_ORE_BLOCK;
-    public static RegistryObject<Block> DEEPSLATE_PERIDOT_ORE_BLOCK;
-    public static RegistryObject<Block> TIN_ORE_BLOCK;
-    public static RegistryObject<Block> DEEPSLATE_TIN_ORE_BLOCK;
-    public static RegistryObject<Block> SILVER_ORE_BLOCK;
-    public static RegistryObject<Block> DEEPSLATE_SILVER_ORE_BLOCK;
-    public static RegistryObject<Block> ELECTROTINE_ORE_BLOCK;
-    public static RegistryObject<Block> DEEPSLATE_ELECTROTINE_ORE_BLOCK;
+    public static Supplier<Block> RUBY_ORE_BLOCK;
+    public static Supplier<Block> DEEPSLATE_RUBY_ORE_BLOCK;
+    public static Supplier<Block> SAPPHIRE_ORE_BLOCK;
+    public static Supplier<Block> DEEPSLATE_SAPPHIRE_ORE_BLOCK;
+    public static Supplier<Block> PERIDOT_ORE_BLOCK;
+    public static Supplier<Block> DEEPSLATE_PERIDOT_ORE_BLOCK;
+    public static Supplier<Block> TIN_ORE_BLOCK;
+    public static Supplier<Block> DEEPSLATE_TIN_ORE_BLOCK;
+    public static Supplier<Block> SILVER_ORE_BLOCK;
+    public static Supplier<Block> DEEPSLATE_SILVER_ORE_BLOCK;
+    public static Supplier<Block> ELECTROTINE_ORE_BLOCK;
+    public static Supplier<Block> DEEPSLATE_ELECTROTINE_ORE_BLOCK;
 
     // Decorative blocks
-    public static RegistryObject<Block> MARBLE_BLOCK;
-    public static RegistryObject<Block> MARBLE_BRICK_BLOCK;
-    public static RegistryObject<Block> BASALT_BLOCK;
-    public static RegistryObject<Block> BASALT_COBBLE_BLOCK;
-    public static RegistryObject<Block> BASALT_BRICK_BLOCK;
-    public static RegistryObject<Block> RUBY_BLOCK;
-    public static RegistryObject<Block> SAPPHIRE_BLOCK;
-    public static RegistryObject<Block> PERIDOT_BLOCK;
-    public static RegistryObject<Block> ELECTROTINE_BLOCK;
-    public static RegistryObject<Block> RAW_TIN_BLOCK;
-    public static RegistryObject<Block> RAW_SILVER_BLOCK;
-    public static RegistryObject<Block> TIN_BLOCK;
-    public static RegistryObject<Block> SILVER_BLOCK;
+    public static Supplier<Block> MARBLE_BLOCK;
+    public static Supplier<Block> MARBLE_BRICK_BLOCK;
+    public static Supplier<Block> BASALT_BLOCK;
+    public static Supplier<Block> BASALT_COBBLE_BLOCK;
+    public static Supplier<Block> BASALT_BRICK_BLOCK;
+    public static Supplier<Block> RUBY_BLOCK;
+    public static Supplier<Block> SAPPHIRE_BLOCK;
+    public static Supplier<Block> PERIDOT_BLOCK;
+    public static Supplier<Block> ELECTROTINE_BLOCK;
+    public static Supplier<Block> RAW_TIN_BLOCK;
+    public static Supplier<Block> RAW_SILVER_BLOCK;
+    public static Supplier<Block> TIN_BLOCK;
+    public static Supplier<Block> SILVER_BLOCK;
 
     // Walls
-    public static RegistryObject<WallBlock> MARBLE_WALL;
-    public static RegistryObject<WallBlock> MARBLE_BRICK_WALL;
-    public static RegistryObject<WallBlock> BASALT_WALL;
-    public static RegistryObject<WallBlock> BASALT_COBBLE_WALL;
-    public static RegistryObject<WallBlock> BASALT_BRICK_WALL;
-    public static RegistryObject<WallBlock> RUBY_BLOCK_WALL;
-    public static RegistryObject<WallBlock> SAPPHIRE_BLOCK_WALL;
-    public static RegistryObject<WallBlock> PERIDOT_BLOCK_WALL;
-    public static RegistryObject<WallBlock> ELECTROTINE_BLOCK_WALL;
+    public static Supplier<WallBlock> MARBLE_WALL;
+    public static Supplier<WallBlock> MARBLE_BRICK_WALL;
+    public static Supplier<WallBlock> BASALT_WALL;
+    public static Supplier<WallBlock> BASALT_COBBLE_WALL;
+    public static Supplier<WallBlock> BASALT_BRICK_WALL;
+    public static Supplier<WallBlock> RUBY_BLOCK_WALL;
+    public static Supplier<WallBlock> SAPPHIRE_BLOCK_WALL;
+    public static Supplier<WallBlock> PERIDOT_BLOCK_WALL;
+    public static Supplier<WallBlock> ELECTROTINE_BLOCK_WALL;
 
 
     public static void register() {
@@ -187,7 +188,7 @@ public class ExplorationBlocks {
 
     public static void onRegisterMicroMaterials(RegisterEvent event) {
 
-        event.register(MicroMaterialRegistry.MICRO_MATERIALS.getRegistryKey(), r -> {
+        event.register(MicroMaterialRegistry.microMaterials().key(), r -> {
             registerBlockMicro(r, new BlockMicroMaterial(MARBLE_BLOCK.get()));
             registerBlockMicro(r, new BlockMicroMaterial(MARBLE_BRICK_BLOCK.get()));
             registerBlockMicro(r, new BlockMicroMaterial(BASALT_BLOCK.get()));
@@ -205,24 +206,24 @@ public class ExplorationBlocks {
     }
 
     private static Block createOreBlock(boolean isDeepslate, int minxp, int maxxp) {
-        return new DropExperienceBlock(BlockBehaviour.Properties.of()
+        return new DropExperienceBlock(UniformInt.of(minxp, maxxp), BlockBehaviour.Properties.of()
                 .strength(isDeepslate ? 4.5F : 3.0F, 3.0F)
                 .requiresCorrectToolForDrops()
                 .mapColor(isDeepslate ? MapColor.DEEPSLATE : MapColor.STONE)
-                .sound(isDeepslate ? SoundType.DEEPSLATE : SoundType.STONE), UniformInt.of(minxp, maxxp));
+                .sound(isDeepslate ? SoundType.DEEPSLATE : SoundType.STONE));
     }
 
     private static Block createElectrotineOreBlock(boolean isDeepslate, int minxp, int maxxp) {
 
-        return new ElectrotineOreBlock(BlockBehaviour.Properties.of()
+        return new ElectrotineOreBlock(UniformInt.of(minxp, maxxp), BlockBehaviour.Properties.of()
                 .strength(isDeepslate ? 4.5F : 3.0F, 3.0F)
                 .requiresCorrectToolForDrops()
                 .mapColor(isDeepslate ? MapColor.DEEPSLATE : MapColor.STONE)
-                .sound(isDeepslate ? SoundType.DEEPSLATE : SoundType.STONE), UniformInt.of(minxp, maxxp));
+                .sound(isDeepslate ? SoundType.DEEPSLATE : SoundType.STONE));
     }
 
-    private static WallBlock createWallBlock(RegistryObject<Block> block) {
-        return new WallBlock(BlockBehaviour.Properties.copy(block.get()));
+    private static WallBlock createWallBlock(Supplier<Block> block) {
+        return new WallBlock(BlockBehaviour.Properties.ofFullCopy(block.get()));
     }
 
     private static Block createDecorativeStoneBlock(float hardness, float resistance) {
@@ -249,7 +250,7 @@ public class ExplorationBlocks {
                 .sound(SoundType.METAL));
     }
 
-    private static Item createBlockItem(RegistryObject<? extends Block> block) {
+    private static Item createBlockItem(Supplier<? extends Block> block) {
         return new BlockItem(block.get(), new Item.Properties());
     }
 

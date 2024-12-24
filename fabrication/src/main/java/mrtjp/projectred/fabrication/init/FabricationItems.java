@@ -1,7 +1,8 @@
 package mrtjp.projectred.fabrication.init;
 
 import mrtjp.projectred.fabrication.item.*;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.ITEMS;
 
@@ -16,13 +17,13 @@ public class FabricationItems {
     public static final String ID_VALID_DIE = "valid_die";
     public static final String ID_INVALID_DIE = "invalid_die";
 
-    public static RegistryObject<ICBlueprintItem> IC_BLUEPRINT_ITEM;
-    public static RegistryObject<BlankPhotomaskItem> BLANK_PHOTOMASK_ITEM;
-    public static RegistryObject<PhotomaskSetItem> PHOTOMASK_SET_ITEM;
-    public static RegistryObject<RoughSiliconWaferItem> ROUGH_SILICON_WAFER_ITEM;
-    public static RegistryObject<EtchedSiliconWaferItem> ETCHED_SILICON_WAFER_ITEM;
-    public static RegistryObject<ValidDieItem> VALID_DIE_ITEM;
-    public static RegistryObject<InvalidDieItem> INVALID_DIE_ITEM;
+    public static Supplier<ICBlueprintItem> IC_BLUEPRINT_ITEM;
+    public static Supplier<BlankPhotomaskItem> BLANK_PHOTOMASK_ITEM;
+    public static Supplier<PhotomaskSetItem> PHOTOMASK_SET_ITEM;
+    public static Supplier<RoughSiliconWaferItem> ROUGH_SILICON_WAFER_ITEM;
+    public static Supplier<EtchedSiliconWaferItem> ETCHED_SILICON_WAFER_ITEM;
+    public static Supplier<ValidDieItem> VALID_DIE_ITEM;
+    public static Supplier<InvalidDieItem> INVALID_DIE_ITEM;
 
     public static void register() {
 

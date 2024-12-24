@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "B": {
       "tag": "forge:dyes/blue"
@@ -14,7 +15,6 @@
     " BI"
   ],
   "result": {
-    "item": "projectred_core:screwdriver",
-    "nbt": "{Damage:0}"
+    "item": "projectred_core:screwdriver"
   }
 }

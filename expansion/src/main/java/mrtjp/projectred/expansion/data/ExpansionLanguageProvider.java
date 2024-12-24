@@ -2,7 +2,7 @@ package mrtjp.projectred.expansion.data;
 
 import mrtjp.projectred.expansion.TubeType;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.common.data.LanguageProvider;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
@@ -13,11 +13,6 @@ public class ExpansionLanguageProvider extends LanguageProvider {
 
     public ExpansionLanguageProvider(PackOutput output) {
         super(output, MOD_ID, "en_us");
-    }
-
-    @Override
-    public String getName() {
-        return "ProjectRed-Expansion Languages: en_us";
     }
 
     @Override

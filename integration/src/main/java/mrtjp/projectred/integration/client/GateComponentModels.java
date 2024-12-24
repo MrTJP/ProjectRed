@@ -11,7 +11,6 @@ import codechicken.lib.render.lighting.PlanarLightModel;
 import codechicken.lib.render.model.OBJParser;
 import codechicken.lib.render.pipeline.ColourMultiplier;
 import codechicken.lib.render.pipeline.IVertexOperation;
-import codechicken.lib.texture.AtlasRegistrar;
 import codechicken.lib.texture.TextureUtils;
 import codechicken.lib.vec.*;
 import codechicken.lib.vec.uv.*;
@@ -27,7 +26,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.event.TextureStitchEvent;
+import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -111,7 +110,7 @@ public class GateComponentModels {
     public static IconTransformation ioBundledBusIcon;
     public static IconTransformation ioPotentiometerIcon;
 
-    public static void onTextureStitchEvent(TextureStitchEvent.Post event) {
+    public static void onTextureStitchEvent(TextureAtlasStitchedEvent event) {
         //@formatter:off
         baseIcon                    = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/base")));
         wireBorderIcon              = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/wire_material_border")));
@@ -392,8 +391,6 @@ public class GateComponentModels {
 
         public abstract void renderModel(Transformation t, int orient, CCRenderState ccrs);
 
-        protected void registerIcons(AtlasRegistrar registrar) {
-        }
     }
 
     public static abstract class SingleComponentModel extends ComponentModel {

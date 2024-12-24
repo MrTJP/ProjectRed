@@ -3,7 +3,8 @@ package mrtjp.projectred.core.init;
 import mrtjp.projectred.core.ProjectRedCore;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 import static mrtjp.projectred.core.init.CoreBlocks.ELECTROTINE_GENERATOR_BLOCK;
@@ -12,7 +13,7 @@ import static mrtjp.projectred.core.init.CoreItems.*;
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class CoreCreativeModeTabs {
 
-    public static RegistryObject<CreativeModeTab> CORE_CREATIVE_TAB;
+    public static Supplier<CreativeModeTab> CORE_CREATIVE_TAB;
 
     public static void register() {
 

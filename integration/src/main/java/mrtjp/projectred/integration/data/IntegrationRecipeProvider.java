@@ -4,7 +4,7 @@ import codechicken.lib.datagen.recipe.RecipeProvider;
 import mrtjp.projectred.integration.GateType;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
 import static mrtjp.projectred.core.init.CoreItems.*;
 import static mrtjp.projectred.core.init.CoreTags.ILLUMAR_TAG;

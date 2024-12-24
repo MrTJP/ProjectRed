@@ -5,7 +5,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
 import static mrtjp.projectred.core.init.CoreItems.PLATE_ITEM;
 import static mrtjp.projectred.core.init.CoreItems.SILICON_ITEM;

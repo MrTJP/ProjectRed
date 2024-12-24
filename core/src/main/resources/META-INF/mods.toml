@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[${lang_version},)"
+loaderVersion="[2,)"
 issueTrackerURL="https://github.com/MrTJP/ProjectRed"
 license="MIT"
 
@@ -14,33 +14,37 @@ license="MIT"
     description='''
 Redstone. The way it was meant to be.
     '''
+
+[[accessTransformers]]
+    file="META-INF/accesstransformer.cfg"
+
 [[dependencies.projectred_core]]
-    modId="forge"
-    mandatory=true
+    modId="neoforge"
+    type="required"
     versionRange="[${forge_version},)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.projectred_core]]
     modId="minecraft"
-    mandatory=true
-    versionRange="[1.20.1]"
+    type="required"
+    versionRange="[1.20.4]"
     ordering="NONE"
     side="BOTH"
 [[dependencies.projectred_core]]
     modId="codechickenlib"
-    mandatory=true
+type="required"
     versionRange="[${ccl_version},)"
     ordering="AFTER"
     side="BOTH"
 [[dependencies.projectred_core]]
     modId="cb_multipart"
-    mandatory=true
+    type="required"
     versionRange="[${cbm_version},)"
     ordering="AFTER"
     side="BOTH"
 [[dependencies.projectred_core]]
     modId="computercraft"
-    mandatory=false
+    type="optional"
     versionRange="[${cct_version},)"
     ordering="AFTER"
     side="BOTH"

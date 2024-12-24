@@ -1,4 +1,4 @@
-// 1.20.1	2024-07-17T09:25:42.187734	Tags for minecraft:block mod id projectred_expansion
+// 1.20.4	2024-11-23T19:56:53.55822	Tags for minecraft:block mod id projectred_expansion
 2efbad637314a6835101b9f533fdf72e1ac5075c data/minecraft/tags/blocks/mineable/axe.json
 bb9a393ab494be5a5399d225556fb7aff2f4980c data/minecraft/tags/blocks/mineable/pickaxe.json
 bb9a393ab494be5a5399d225556fb7aff2f4980c data/minecraft/tags/blocks/needs_stone_tool.json

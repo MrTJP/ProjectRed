@@ -10,11 +10,12 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 public class IlluminationCreativeModeTabs {
 
-    public static RegistryObject<CreativeModeTab> ILLUMINATION_CREATIVE_TAB;
+    public static Supplier<CreativeModeTab> ILLUMINATION_CREATIVE_TAB;
 
     public static void register() {
         ILLUMINATION_CREATIVE_TAB = ProjectRedIllumination.CREATIVE_TABS.register("illumination",

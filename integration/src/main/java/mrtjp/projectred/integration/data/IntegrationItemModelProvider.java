@@ -4,7 +4,7 @@ import codechicken.lib.datagen.ItemModelProvider;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.client.GatePartItemRenderer;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 

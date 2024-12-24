@@ -7,11 +7,10 @@ import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.core.gui.screen.inventory.ElectrotineGeneratorScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.event.RegisterShadersEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 import static mrtjp.projectred.core.init.CoreMenus.ELECTROTINE_GENERATOR_MENU;
@@ -21,9 +20,7 @@ public class CoreClientInit {
 
     public static CCShaderInstance HALO_SHADER;
 
-    public static void init() {
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
+    public static void init(IEventBus modEventBus) {
         modEventBus.addListener(CoreClientInit::clientSetup);
         modEventBus.addListener(CoreClientInit::onRegisterShaders);
     }
@@ -37,7 +34,7 @@ public class CoreClientInit {
         HaloRenderer.init();
 
         // Register Halo renderer
-        MinecraftForge.EVENT_BUS.addListener(HaloRenderer::onRenderLevelStageEvent);
+        NeoForge.EVENT_BUS.addListener(HaloRenderer::onRenderLevelStageEvent);
 
         // Register resource reload listener
         ResourceUtils.registerReloadListener(HaloRenderer::onResourceManagerReload);

@@ -4,14 +4,15 @@ import mrtjp.projectred.exploration.ProjectRedExploration;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.exploration.init.ExplorationBlocks.*;
 import static mrtjp.projectred.exploration.init.ExplorationItems.*;
 
 public class ExplorationCreativeModeTabs {
 
-    public static RegistryObject<CreativeModeTab> EXPLORATION_CREATIVE_TAB;
+    public static Supplier<CreativeModeTab> EXPLORATION_CREATIVE_TAB;
 
     public static void register() {
 

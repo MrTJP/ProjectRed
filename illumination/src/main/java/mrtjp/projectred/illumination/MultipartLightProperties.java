@@ -27,9 +27,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.TextureStitchEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -57,7 +57,7 @@ public abstract class MultipartLightProperties {
 
     //region Client Registration
     @OnlyIn(Dist.CLIENT)
-    public abstract void onTextureStitchEvent(TextureStitchEvent.Post event);
+    public abstract void onTextureStitchEvent(TextureAtlasStitchedEvent event);
     //endregion
 
     //region Rendering

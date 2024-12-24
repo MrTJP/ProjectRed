@@ -6,12 +6,12 @@ import mrtjp.projectred.integration.item.GatePartItem;
 import mrtjp.projectred.integration.part.*;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.integration.init.IntegrationParts.*;
 
@@ -57,8 +57,8 @@ public enum GateType
     private @Nullable String unlocalName;
     private @Nullable Function<GateType, GatePart> partFactory;
 
-    private @Nullable RegistryObject<? extends Item> itemSupplier;
-    private @Nullable RegistryObject<MultipartType<GatePart>> partSupplier;
+    private @Nullable Supplier<? extends Item> itemSupplier;
+    private @Nullable Supplier<MultipartType<GatePart>> partSupplier;
 
     private final boolean isExternalGate;
 
@@ -77,7 +77,7 @@ public enum GateType
         return unlocalName;
     }
 
-    public RegistryObject<? extends Item> getItemRegistryObject() {
+    public Supplier<? extends Item> getItemRegistryObject() {
         assert itemSupplier != null;
         return itemSupplier;
     }
@@ -102,12 +102,13 @@ public enum GateType
     }
 
     public void registerParts(DeferredRegister<MultipartType<?>> partRegistry, DeferredRegister<Item> itemRegistry) {
+        assert unlocalName != null;
         itemSupplier = itemRegistry.register(unlocalName, () -> new GatePartItem(this));
         partSupplier = partRegistry.register(unlocalName, () -> new SimpleMultipartType<>(isClient -> Objects.requireNonNull(partFactory).apply(this)));
     }
 
     // TODO: Add proper gate registering mechanism
-    public void inject(String unlocalName, Function<GateType, GatePart> partFactory, RegistryObject<? extends Item> itemSupplier, RegistryObject<MultipartType<GatePart>> partSupplier) {
+    public void inject(String unlocalName, Function<GateType, GatePart> partFactory, Supplier<? extends Item> itemSupplier, Supplier<MultipartType<GatePart>> partSupplier) {
         if (this.itemSupplier != null || this.partSupplier != null) {
             throw new RuntimeException("GateType " + name() + " already registered!");
         }

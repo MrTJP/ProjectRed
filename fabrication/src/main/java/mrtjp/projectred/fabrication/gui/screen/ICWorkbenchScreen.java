@@ -15,10 +15,10 @@ import mrtjp.projectred.redui.RedUIScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
@@ -42,7 +42,7 @@ public class ICWorkbenchScreen extends RedUIScreen {
     private @Nullable InactiveOverlayNode overlayNode;
 
     public ICWorkbenchScreen(ICWorkbenchBlockEntity tile) {
-        super(304, 222, Component.literal(Objects.requireNonNull(ForgeRegistries.BLOCK_ENTITY_TYPES.getKey(tile.getType())).toString()));
+        super(304, 222, Component.literal(Objects.requireNonNull(BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(tile.getType())).toString()));
 
         this.tile = tile;
         this.editor = tile.getEditor();

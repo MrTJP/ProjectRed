@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "C": {
       "tag": "forge:ingots/copper"
@@ -17,7 +18,6 @@
     "ETE"
   ],
   "result": {
-    "item": "projectred_expansion:battery",
-    "nbt": "{Damage:0}"
+    "item": "projectred_expansion:battery"
   }
 }

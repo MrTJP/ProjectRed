@@ -36,8 +36,8 @@ public class ElectrotineOreBlock extends DropExperienceBlock {
     public static final DustParticleOptions ELECTROTINE_PARTICLE = new DustParticleOptions(
             new Vector3f(15 / 255F, 103 / 255F, 178 / 255F), 0.6F);
 
-    public ElectrotineOreBlock(BlockBehaviour.Properties properties, IntProvider xpRange) {
-        super(properties.lightLevel(s -> s.getValue(LIT) ? 9 : 0), xpRange);
+    public ElectrotineOreBlock(IntProvider xpRange, BlockBehaviour.Properties properties) {
+        super(xpRange, properties.lightLevel(s -> s.getValue(LIT) ? 9 : 0));
 
         registerDefaultState(defaultBlockState().setValue(LIT, false));
     }

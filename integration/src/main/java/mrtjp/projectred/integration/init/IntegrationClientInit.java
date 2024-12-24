@@ -5,15 +5,12 @@ import codechicken.multipart.api.MultipartClientRegistry;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.client.GateModelRenderer;
 import mrtjp.projectred.integration.client.GatePartRenderer;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
 public class IntegrationClientInit {
 
-    public static void init() {
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
+    public static void init(IEventBus modEventBus) {
         modEventBus.addListener(IntegrationClientInit::clientSetup);
 
         // Register sprites

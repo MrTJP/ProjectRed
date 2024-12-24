@@ -20,7 +20,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.event.TextureStitchEvent;
+import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import org.joml.Matrix4f;
 
 import java.util.OptionalDouble;
@@ -352,7 +352,7 @@ public class ICRenderTypes {
         }
     }
 
-    public static void onTextureStitchEvent(TextureStitchEvent.Post event) {
+    public static void onTextureStitchEvent(TextureAtlasStitchedEvent event) {
         if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
 
         icSurfaceIcon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/workbench_ui/perfboard"));

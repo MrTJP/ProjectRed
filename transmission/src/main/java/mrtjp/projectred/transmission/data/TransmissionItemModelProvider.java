@@ -5,7 +5,7 @@ import mrtjp.projectred.transmission.WireType;
 import mrtjp.projectred.transmission.client.FramedWirePartItemRenderer;
 import mrtjp.projectred.transmission.client.WirePartItemRenderer;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 

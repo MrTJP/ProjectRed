@@ -1,34 +1,29 @@
 plugins {
-    id 'net.neoforged.gradle'
+    id 'net.neoforged.gradle.userdev'
 }
 
 String mod_id = 'projectred_transmission'
 
 minecraft {
-    mappings channel: mcp_mappings, version: mcp_mappings_version
-    accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
-    runs {
-        data {
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+    accessTransformers.file file("../core/src/main/resources/META-INF/accesstransformer.cfg")
+}
 
-            ideaModule "${rootProject.name}.${project.name}.main"
+runs {
+    data {
+        systemProperty 'mixin.env.remapRefMap', 'true'
+        systemProperty 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
-            workingDirectory file('run')
-            args '--mod', mod_id, '--all', '--output', file("src/main/generated"), '--existing', file("src/main/resources")
-            mods {
-                'projectred_core' { source project(':core').sourceSets.main }
-                '${mod_id}' { source sourceSets.main }
-            }
-        }
+        workingDirectory file('run')
+        programArguments.addAll '--mod', mod_id, '--all', '--output', file("src/main/generated"), '--existing', file("src/main/resources")
+        modSource sourceSets.main
     }
 }
 
 dependencies {
-    minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
+    implementation "net.neoforged:neoforge:${forge_version}"
 
-    implementation fg.deobf("io.codechicken:CodeChickenLib:${mc_version}-${ccl_version}:universal")
-    implementation fg.deobf("io.codechicken:CBMultipart:${mc_version}-${cbm_version}:universal")
+    implementation "io.codechicken:CodeChickenLib:${mc_version}-${ccl_version}"
+    implementation "io.codechicken:CBMultipart:${mc_version}-${cbm_version}"
 
     implementation project(":core")
 }

@@ -3,7 +3,8 @@ package mrtjp.projectred.exploration.init;
 import codechicken.lib.inventory.container.ICCLContainerType;
 import mrtjp.projectred.exploration.inventory.container.BackpackMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.MENU_TYPES;
 
@@ -12,7 +13,7 @@ public class ExplorationMenus {
 
     public static final String ID_BACKPACK_CONTAINER = "backpack";
 
-    public static RegistryObject<MenuType<BackpackMenu>> BACKPACK_MENU;
+    public static Supplier<MenuType<BackpackMenu>> BACKPACK_MENU;
 
     public static void register() {
 

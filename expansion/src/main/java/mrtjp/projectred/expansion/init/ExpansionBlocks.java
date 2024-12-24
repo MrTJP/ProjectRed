@@ -6,7 +6,10 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.*;
 
@@ -26,30 +29,30 @@ public class ExpansionBlocks {
     public static final String ID_DEPLOYER = "deployer";
 
     // Blocks
-    public static RegistryObject<Block> FRAME_BLOCK;
+    public static Supplier<Block> FRAME_BLOCK;
 
-    public static RegistryObject<Block> PROJECT_BENCH_BLOCK;
-    public static RegistryObject<Block> BATTERY_BOX_BLOCK;
-    public static RegistryObject<Block> CHARGING_BENCH_BLOCK;
-    public static RegistryObject<Block> AUTO_CRAFTER_BLOCK;
-    public static RegistryObject<Block> FIRE_STARTER_BLOCK;
-    public static RegistryObject<Block> FRAME_MOTOR_BLOCK;
-    public static RegistryObject<Block> FRAME_ACTUATOR_BLOCK;
-    public static RegistryObject<Block> TRANSPOSER_BLOCK;
-    public static RegistryObject<Block> BLOCK_BREAKER_BLOCK;
-    public static RegistryObject<Block> DEPLOYER_BLOCK;
+    public static Supplier<Block> PROJECT_BENCH_BLOCK;
+    public static Supplier<Block> BATTERY_BOX_BLOCK;
+    public static Supplier<Block> CHARGING_BENCH_BLOCK;
+    public static Supplier<Block> AUTO_CRAFTER_BLOCK;
+    public static Supplier<Block> FIRE_STARTER_BLOCK;
+    public static Supplier<Block> FRAME_MOTOR_BLOCK;
+    public static Supplier<Block> FRAME_ACTUATOR_BLOCK;
+    public static Supplier<Block> TRANSPOSER_BLOCK;
+    public static Supplier<Block> BLOCK_BREAKER_BLOCK;
+    public static Supplier<Block> DEPLOYER_BLOCK;
 
     // Tiles
-    public static RegistryObject<BlockEntityType<?>> PROJECT_BENCH_BLOCK_ENTITY;
-    public static RegistryObject<BlockEntityType<?>> BATTERY_BOX_BLOCK_ENTITY;
-    public static RegistryObject<BlockEntityType<?>> CHARGING_BENCH_BLOCK_ENTITY;
-    public static RegistryObject<BlockEntityType<?>> AUTO_CRAFTER_BLOCK_ENTITY;
-    public static RegistryObject<BlockEntityType<?>> FIRE_STARTER_BLOCK_ENTITY;
-    public static RegistryObject<BlockEntityType<?>> FRAME_MOTOR_BLOCK_ENTITY;
-    public static RegistryObject<BlockEntityType<?>> FRAME_ACTUATOR_BLOCK_ENTITY;
-    public static RegistryObject<BlockEntityType<?>> TRANSPOSER_BLOCK_ENTITY;
-    public static RegistryObject<BlockEntityType<?>> BLOCK_BREAKER_BLOCK_ENTITY;
-    public static RegistryObject<BlockEntityType<?>> DEPLOYER_BLOCK_ENTITY;
+    public static Supplier<BlockEntityType<ProjectBenchBlockEntity>> PROJECT_BENCH_BLOCK_ENTITY;
+    public static Supplier<BlockEntityType<BatteryBoxBlockEntity>> BATTERY_BOX_BLOCK_ENTITY;
+    public static Supplier<BlockEntityType<ChargingBenchBlockEntity>> CHARGING_BENCH_BLOCK_ENTITY;
+    public static Supplier<BlockEntityType<AutoCrafterBlockEntity>> AUTO_CRAFTER_BLOCK_ENTITY;
+    public static Supplier<BlockEntityType<FireStarterBlockEntity>> FIRE_STARTER_BLOCK_ENTITY;
+    public static Supplier<BlockEntityType<FrameMotorBlockEntity>> FRAME_MOTOR_BLOCK_ENTITY;
+    public static Supplier<BlockEntityType<FrameActuatorBlockEntity>> FRAME_ACTUATOR_BLOCK_ENTITY;
+    public static Supplier<BlockEntityType<TransposerBlockEntity>> TRANSPOSER_BLOCK_ENTITY;
+    public static Supplier<BlockEntityType<BlockBreakerBlockEntity>> BLOCK_BREAKER_BLOCK_ENTITY;
+    public static Supplier<BlockEntityType<DeployerBlockEntity>> DEPLOYER_BLOCK_ENTITY;
 
 
     public static void register() {
@@ -98,4 +101,11 @@ public class ExpansionBlocks {
         ITEMS.register(ID_FRAME, () -> new BlockItem(FRAME_BLOCK.get(), new Item.Properties()));
     }
 
+    public static void registerCaps(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, PROJECT_BENCH_BLOCK_ENTITY.get(), (tile, ctx) -> tile.getHandler());
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BATTERY_BOX_BLOCK_ENTITY.get(), BatteryBoxBlockEntity::getHandler);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CHARGING_BENCH_BLOCK_ENTITY.get(), ChargingBenchBlockEntity::getHandler);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, AUTO_CRAFTER_BLOCK_ENTITY.get(), (tile, ctx) -> tile.getHandler());
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, DEPLOYER_BLOCK_ENTITY.get(), (tile, ctx) -> tile.getHandler());
+    }
 }

@@ -4,12 +4,13 @@ import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.ProjectRedIntegration;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class IntegrationCreativeModeTabs {
 
-    public static RegistryObject<CreativeModeTab> INTEGRATION_CREATIVE_TAB;
+    public static Supplier<CreativeModeTab> INTEGRATION_CREATIVE_TAB;
 
     public static void register() {
         INTEGRATION_CREATIVE_TAB = ProjectRedIntegration.CREATIVE_TABS.register("integration",
