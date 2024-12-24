@@ -32,26 +32,26 @@ jobs:
           case $release_type in
             "release")
               publish_maven=true
-              publish_curse=true
+              publish_launchers=true
               publish_gh_release=true
               version_format="{major}.{minor}.{patch}"
               ;;
             "beta")
               publish_maven=true
-              publish_curse=true
+              publish_launchers=true
               publish_gh_release=false
               version_format="{major}.{minor}.{patch}-beta+{increment}"
               ;;
             "alpha")
               publish_maven=true
-              publish_curse=false
+              publish_launchers=false
               publish_gh_release=false
               version_format="{major}.{minor}.{patch}-alpha+{increment}"
               ;;
             *)
               echo "::warning::Unknown release type: $release_type"
               publish_maven=false
-              publish_curse=false
+              publish_launchers=false
               publish_gh_release=false
               version_format="{major}.{minor}.{patch}-$release_type+{increment}"
           esac
@@ -61,7 +61,7 @@ jobs:
           echo "release_channel=$release_channel" >> $GITHUB_OUTPUT
           echo "release_type=$release_type" >> $GITHUB_OUTPUT
           echo "publish_maven=$publish_maven" >> $GITHUB_OUTPUT
-          echo "publish_curse=$publish_curse" >> $GITHUB_OUTPUT
+          echo "publish_launchers=$publish_launchers" >> $GITHUB_OUTPUT
           echo "publish_gh_release=$publish_gh_release" >> $GITHUB_OUTPUT
           echo "version_format=$version_format" >> $GITHUB_OUTPUT
           echo "tag_format=$tag_format" >> $GITHUB_OUTPUT
@@ -127,16 +127,17 @@ jobs:
           MAVEN_USER: ${{ secrets.MAVEN_USER }}
           MAVEN_PASS: ${{ secrets.MAVEN_PASS }}
 
-      - name: Curse publish
-        if: ${{ steps.release_type.outputs.publish_curse == 'true' }}
+      - name: Publish to Curse
+        if: ${{ steps.release_type.outputs.publish_launchers == 'true' }}
         run: |
           # Base args for all modules
           COMMON_ARGS=( \
-            -k    $CURSE_TOKEN \
-            -rt   $CURSE_RELEASE_TYPE \
+            -k    $API_TOKEN \
+            -rt   $RELEASE_TYPE \
             -v    'Java 17' \
             -v    1.20.1 \
             -v    Forge \
+            -v    NeoForge \
             -c    ./CHANGELOG.md \
             --required-dep codechicken-lib-1-8 \
             --required-dep cb-multipart \
@@ -164,8 +165,52 @@ jobs:
           python -m curseuploadpy "${MODULE_ARGS[@]}" -p 478939 -f transmission/build/libs/*-transmission.jar
 
         env:
-          CURSE_RELEASE_TYPE: ${{ steps.release_type.outputs.release_type }}
-          CURSE_TOKEN: ${{ secrets.CURSE_TOKEN }}
+          RELEASE_TYPE: ${{ steps.release_type.outputs.release_type }}
+          API_TOKEN: ${{ secrets.CURSE_TOKEN }}
+
+
+      - name: Publish to Modrinth
+        if: ${{ steps.release_type.outputs.publish_launchers == 'true' }}
+        run: |
+          # Base args for all modules
+          COMMON_ARGS=( \
+            -k    $API_TOKEN \
+            create-version \
+            -v    "$MOD_VERSION" \
+            -c    ./CHANGELOG.md \
+            -gv   1.20.1 \
+            -vt   $RELEASE_TYPE \
+            -l    forge \
+            -l    neoforge \
+            --required-dep codechicken-lib \
+            --required-dep cb-multipart \
+          )
+
+          # All submodules need PR Core
+          MODULE_ARGS=( \
+            "${COMMON_ARGS[@]}" \
+            --required-dep project-red-core \
+          )
+
+          # Fabrication is special and also needs Integration and Transmission
+          FAB_ARGS=( \
+            "${MODULE_ARGS[@]}" \
+            --required-dep project-red-integration \
+            --required-dep project-red-transmission \
+          )
+          
+          python -m modrinthpy "${COMMON_ARGS[@]}" -p project-red-core          -n "Project Red Core v$MOD_VERSION"         -f core/build/libs/*-core.jar
+          python -m modrinthpy "${MODULE_ARGS[@]}" -p project-red-expansion     -n "Project Red Expansion v$MOD_VERSION"    -f expansion/build/libs/*-expansion.jar
+          python -m modrinthpy "${MODULE_ARGS[@]}" -p project-red-exploration   -n "Project Red Exploration v$MOD_VERSION"  -f exploration/build/libs/*-exploration.jar
+          python -m modrinthpy "${FAB_ARGS[@]}"    -p project-red-fabrication   -n "Project Red Fabrication v$MOD_VERSION"  -f fabrication/build/libs/*-fabrication.jar
+          python -m modrinthpy "${MODULE_ARGS[@]}" -p project-red-illumination  -n "Project Red Illumination v$MOD_VERSION" -f illumination/build/libs/*-illumination.jar
+          python -m modrinthpy "${MODULE_ARGS[@]}" -p project-red-integration   -n "Project Red Integration v$MOD_VERSION"  -f integration/build/libs/*-integration.jar
+          python -m modrinthpy "${MODULE_ARGS[@]}" -p project-red-transmission  -n "Project Red Transmission v$MOD_VERSION" -f transmission/build/libs/*-transmission.jar
+
+        env:
+          RELEASE_TYPE: ${{ steps.release_type.outputs.release_type }}
+          API_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          MOD_VERSION: ${{ steps.versioning.outputs.version }}
 
       - name: Tag and Release
         if: ${{ steps.release_type.outputs.publish_gh_release == 'true' }}
