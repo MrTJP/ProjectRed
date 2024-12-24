@@ -14,6 +14,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
+import static mrtjp.projectred.fabrication.editor.EditorDataUtils.canFabricate;
+import static mrtjp.projectred.fabrication.editor.EditorDataUtils.createFabricationCopy;
+
 public class PhotomaskSetItem extends Item {
 
     public PhotomaskSetItem() {
@@ -28,16 +31,21 @@ public class PhotomaskSetItem extends Item {
 
     @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
-
-        if (stack.getTag() != null && context.getPlayer() != null) {
-            ItemStack gate = GateType.FABRICATED_GATE.makeStack();
-            gate.setTag(stack.getTag());
-
-            context.getPlayer().addItem(gate);
-            return InteractionResult.SUCCESS;
+        // Allow creative mode players to directly obtain a Fabricated Gate
+        var player = context.getPlayer();
+        if (player == null || !player.isCreative()) {
+            return InteractionResult.PASS;
         }
 
-        return InteractionResult.PASS;
+        if (!canFabricate(stack.getTag())) {
+            return InteractionResult.PASS;
+        }
+
+        ItemStack gate = GateType.FABRICATED_GATE.makeStack();
+        gate.setTag(createFabricationCopy(Objects.requireNonNull(stack.getTag())));
+
+        player.addItem(gate);
+        return InteractionResult.SUCCESS;
     }
 
     public static ItemStack createDieStack(ItemStack photomask, int count) {
