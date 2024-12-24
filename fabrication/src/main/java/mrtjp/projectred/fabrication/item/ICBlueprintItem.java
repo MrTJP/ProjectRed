@@ -36,22 +36,26 @@ public class ICBlueprintItem extends Item {
 
     @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
-
-        assert context.getPlayer() != null;
-        if (!context.getPlayer().isCreative()) return InteractionResult.PASS;
-
-        // Creative mode bypass: Convert blueprint directly to gate block
-        BlockState blockState = context.getLevel().getBlockState(context.getClickedPos());
-        if (blockState.getBlock() == FabricationBlocks.IC_WORKBENCH_BLOCK.get()) { return InteractionResult.PASS; }
+        // Allow creative mode players to directly obtain a Fabricated Gate
+        var player = context.getPlayer();
+        if (player == null || !player.isCreative()) {
+            return InteractionResult.PASS;
+        }
 
         if (!canFabricate(stack.getTag())) {
+            return InteractionResult.PASS;
+        }
+
+        // Always prioritize placing blueprint on IC workbench
+        BlockState blockState = context.getLevel().getBlockState(context.getClickedPos());
+        if (blockState.getBlock() == FabricationBlocks.IC_WORKBENCH_BLOCK.get()) {
             return InteractionResult.PASS;
         }
 
         ItemStack gate = GateType.FABRICATED_GATE.makeStack();
         gate.setTag(createFabricationCopy(Objects.requireNonNull(stack.getTag())));
 
-        context.getPlayer().addItem(gate);
+        player.addItem(gate);
         return InteractionResult.SUCCESS;
     }
 
