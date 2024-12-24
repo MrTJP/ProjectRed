@@ -11,8 +11,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
@@ -147,7 +147,7 @@ public class ModelVoxelShape extends VoxelShape {
             this.v1 = v1;
             this.v2 = v2;
             this.normal = VectorUtils.calculateNormal(v0, v1, v2);
-            this.side = Objects.requireNonNull(VectorUtils.calcNormalSide(normal));
+            this.side = Objects.requireNonNull(VectorUtils.findSideE(normal));
 
             // Precompute some constants to speed up tracing
             u = v1.copy().subtract(v0);

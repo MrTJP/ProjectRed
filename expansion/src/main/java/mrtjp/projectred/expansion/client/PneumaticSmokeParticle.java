@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.event.TextureStitchEvent;
+import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -135,7 +135,7 @@ public class PneumaticSmokeParticle extends BaseActionParticle {
         return PARTICLE_TYPE_SMOKE;
     }
 
-    public static void onTextureStitchEvent(TextureStitchEvent.Post event) {
+    public static void onTextureStitchEvent(TextureAtlasStitchedEvent event) {
         if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
         SMOKE_PARTICLE_SPRITE = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "particle/smoke"));
     }

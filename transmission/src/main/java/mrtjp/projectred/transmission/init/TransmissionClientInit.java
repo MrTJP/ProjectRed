@@ -7,15 +7,12 @@ import mrtjp.projectred.transmission.client.CenterWirePartRenderer;
 import mrtjp.projectred.transmission.client.FaceWirePartRenderer;
 import mrtjp.projectred.transmission.client.FramedWireHighlightRenderer;
 import net.covers1624.quack.util.SneakyUtils;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
 public class TransmissionClientInit {
 
-    public static void init() {
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
+    public static void init(IEventBus modEventBus) {
         modEventBus.addListener(TransmissionClientInit::clientSetup);
 
         // Register sprites

@@ -4,8 +4,8 @@ import codechicken.microblock.api.BlockMicroMaterial;
 import codechicken.microblock.util.MicroMaterialRegistry;
 import mrtjp.projectred.illumination.BlockLightType;
 import mrtjp.projectred.illumination.part.IllumarLampMicroMaterial;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.registries.RegisterEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 public class IlluminationMicroMaterials {
 
@@ -16,7 +16,7 @@ public class IlluminationMicroMaterials {
 
     @SubscribeEvent
     public void onRegisterMicroMaterials(RegisterEvent event) {
-        event.register(MicroMaterialRegistry.MICRO_MATERIALS.getRegistryKey(), r -> {
+        event.register(MicroMaterialRegistry.microMaterials().key(), r -> {
             for (int color = 0; color < 16; color++) {
                 int colorFinal = color;
                 IllumarLampMicroMaterial material = new IllumarLampMicroMaterial(() -> BlockLightType.ILLUMAR_LAMP.getBlock(colorFinal, true));

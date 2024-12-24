@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "M": {
       "tag": "forge:gems/sapphire"
@@ -11,7 +12,6 @@
     "MMM"
   ],
   "result": {
-    "item": "projectred_exploration:sapphire_chestplate",
-    "nbt": "{Damage:0}"
+    "item": "projectred_exploration:sapphire_chestplate"
   }
 }

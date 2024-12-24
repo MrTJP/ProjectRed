@@ -2,7 +2,7 @@ package mrtjp.projectred.integration.data;
 
 import mrtjp.projectred.integration.GateType;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.common.data.LanguageProvider;
 
 import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
@@ -10,11 +10,6 @@ public class IntegrationLanguageProvider extends LanguageProvider {
 
     public IntegrationLanguageProvider(PackOutput output) {
         super(output, MOD_ID, "en_us");
-    }
-
-    @Override
-    public String getName() {
-        return "ProjectRed-Integration Language: en_us";
     }
 
     @Override

@@ -31,9 +31,8 @@ import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguratio
 import net.minecraft.world.level.levelgen.heightproviders.UniformHeight;
 import net.minecraft.world.level.levelgen.placement.*;
 import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
-import net.minecraftforge.common.world.BiomeModifier;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.world.BiomeModifier;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -48,11 +47,11 @@ public class ExplorationWorldFeatures {
 
     /* Static registry entries */
     // World carvers
-    public static RegistryObject<WorldCarver<CaveCarverConfiguration>> MARBLE_CAVE_CARVER;
+    public static Supplier<WorldCarver<CaveCarverConfiguration>> MARBLE_CAVE_CARVER;
 
     // Biome Modifier Codecs
-    public static RegistryObject<Codec<ConfigFileControlledAddCarversBiomeModifier>> ADD_CARVER_BIOME_MODIFIER_CODEC;
-    public static RegistryObject<Codec<ConfigFileControlledAddFeaturesBiomeModifier>> ADD_FEATURES_BIOME_MODIFIER_CODEC;
+    public static Supplier<Codec<ConfigFileControlledAddCarversBiomeModifier>> ADD_CARVER_BIOME_MODIFIER_CODEC;
+    public static Supplier<Codec<ConfigFileControlledAddFeaturesBiomeModifier>> ADD_FEATURES_BIOME_MODIFIER_CODEC;
 
     /* Dynamic registry entries */
     // Configured carvers
@@ -100,7 +99,7 @@ public class ExplorationWorldFeatures {
     }
 
     public static ResourceKey<BiomeModifier> createBiomeModifierKey(String name) {
-        return ResourceKey.create(ForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(MOD_ID, name));
+        return ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(MOD_ID, name));
     }
 
     public static void bootstrapCarvers(BootstapContext<ConfiguredWorldCarver<?>> context) {

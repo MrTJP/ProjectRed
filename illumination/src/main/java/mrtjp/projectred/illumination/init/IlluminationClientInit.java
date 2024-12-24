@@ -8,20 +8,17 @@ import net.covers1624.quack.util.SneakyUtils;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
 
 import java.util.Objects;
 
 public class IlluminationClientInit {
 
-    public static void init() {
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
+    public static void init(IEventBus modEventBus) {
         modEventBus.addListener(IlluminationClientInit::clientSetup);
         modEventBus.addListener(IlluminationClientInit::onModelBake);
 
@@ -56,7 +53,7 @@ public class IlluminationClientInit {
 
         // Replace item models for inverted lamps with a wrapped renderer that renders the lamp glow
         for (int color = 0; color < 16; color++) {
-            ResourceLocation blockRL = Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(BlockLightType.ILLUMAR_LAMP.getBlock(color, true)));
+            ResourceLocation blockRL = Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(BlockLightType.ILLUMAR_LAMP.getBlock(color, true)));
             // Override default BlockItem renderer for the lit variants to render lamp glow
             BakedModel litModel = event.getModels().get(new ModelResourceLocation(blockRL, "lit=true"));
             event.getModels().put(
@@ -65,7 +62,7 @@ public class IlluminationClientInit {
         }
 
         // Illumar smart lamp renderer
-        ResourceLocation smartLampRl = Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(IlluminationBlocks.ILLUMAR_SMART_LAMP.get()));
+        ResourceLocation smartLampRl = Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(IlluminationBlocks.ILLUMAR_SMART_LAMP.get()));
         BakedModel smartLampModel = event.getModels().get(new ModelResourceLocation(smartLampRl, "level=15,side=0"));
         event.getModels().put(
                 new ModelResourceLocation(smartLampRl, "inventory"),

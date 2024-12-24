@@ -1,11 +1,10 @@
 package mrtjp.projectred.api;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import java.util.Set;
 
@@ -14,12 +13,12 @@ public interface IExpansionAPI {
     /**
      * The capability instance for {@link Frame}
      */
-    Capability<Frame> FRAME_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() { });
+    BlockCapability<Frame, Void> FRAME_CAPABILITY = BlockCapability.createVoid(new ResourceLocation(ProjectRedAPI.EXPANSION_MOD_ID, "frame"), Frame.class);
 
     /**
      * The capability instance for {@link MovementController}
      */
-    Capability<MovementController> MOVEMENT_CONTROLLER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() { });
+    BlockCapability<MovementController, Void> MOVEMENT_CONTROLLER_CAPABILITY = BlockCapability.createVoid(new ResourceLocation(ProjectRedAPI.EXPANSION_MOD_ID, "movement_controller"), MovementController.class);
 
     /**
      * Used to register a {@link BlockMover} to a specific block. This BlockMover will be engaged every time

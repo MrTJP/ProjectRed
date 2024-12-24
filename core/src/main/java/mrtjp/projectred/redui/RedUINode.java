@@ -681,11 +681,12 @@ public interface RedUINode {
      * Nodes throughout the graph are called in z order.
      *
      * @param p        The mouse position, relative to the parent
-     * @param scroll   The scroll amount (positive for scroll up, negative for scroll down)
+     * @param scrollX  The scroll amount (positive for scroll right, negative for scroll left)
+     * @param scrollY  The scroll amount (positive for scroll up, negative for scroll down)
      * @param consumed True if another higher-ordered node consumed this event
      * @return True if this event was consumed
      */
-    default boolean mouseScrolled(Point p, double scroll, boolean consumed) { return false; }
+    default boolean mouseScrolled(Point p, double scrollX, double scrollY, boolean consumed) { return false; }
 
     /**
      * Key press event called when any key is pressed down

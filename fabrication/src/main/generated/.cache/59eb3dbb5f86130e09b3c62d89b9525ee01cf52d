@@ -1,0 +1,5 @@
+// 1.20.4	2024-11-23T20:01:25.942416	Loot Tables
+0a9a4d46d97ea2505f1bc426b01b9115b2beb8d2 data/projectred_fabrication/loot_tables/blocks/ic_workbench.json
+0461b86faea0d61301092ed07b378ffc1ca86a15 data/projectred_fabrication/loot_tables/blocks/lithography_table.json
+3600d1d9fb076713d61edb43e92945f8957549e0 data/projectred_fabrication/loot_tables/blocks/packaging_table.json
+f68584b83a846928dda25e6c8ae5292e5e0565d3 data/projectred_fabrication/loot_tables/blocks/plotting_table.json

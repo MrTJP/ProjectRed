@@ -4,12 +4,13 @@ import mrtjp.projectred.transmission.ProjectRedTransmission;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class TransmissionCreativeModeTabs {
 
-    public static RegistryObject<CreativeModeTab> TRANSMISSION_CREATIVE_TAB;
+    public static Supplier<CreativeModeTab> TRANSMISSION_CREATIVE_TAB;
 
     public static void register() {
         TRANSMISSION_CREATIVE_TAB = ProjectRedTransmission.CREATIVE_TABS.register("transmission",

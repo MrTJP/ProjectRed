@@ -9,9 +9,9 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.TextureStitchEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -44,7 +44,7 @@ public class FixtureLightProperties extends MultipartLightProperties {
     //region Rendering
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void onTextureStitchEvent(TextureStitchEvent.Post event) {
+    public void onTextureStitchEvent(TextureAtlasStitchedEvent event) {
         if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
         icon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/fixture"));
     }
