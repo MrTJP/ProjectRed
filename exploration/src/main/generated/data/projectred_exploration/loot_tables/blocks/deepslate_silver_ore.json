@@ -5,8 +5,32 @@
       "bonus_rolls": 0.0,
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "projectred_exploration:raw_silver"
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "condition": "minecraft:match_tool",
+                  "predicate": {
+                    "enchantments": [
+                      {
+                        "enchantment": "minecraft:silk_touch",
+                        "levels": {
+                          "min": 1
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "name": "projectred_exploration:deepslate_silver_ore"
+            },
+            {
+              "type": "minecraft:item",
+              "name": "projectred_exploration:raw_silver"
+            }
+          ]
         }
       ],
       "rolls": 1.0

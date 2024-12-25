@@ -27,10 +27,10 @@ public class ExplorationLootTableProvider extends LootTableProvider.BlockLootPro
         register(DEEPSLATE_PERIDOT_ORE_BLOCK.get(),     valueRangeOrSilkWithFortune(DEEPSLATE_PERIDOT_ORE_BLOCK.get(),      PERIDOT_ITEM.get(), 1, 2));
         register(ELECTROTINE_ORE_BLOCK.get(),           valueRangeOrSilkWithFortune(ELECTROTINE_ORE_BLOCK.get(),            ELECTROTINE_DUST_ITEM.get(), 1, 8));
         register(DEEPSLATE_ELECTROTINE_ORE_BLOCK.get(), valueRangeOrSilkWithFortune(DEEPSLATE_ELECTROTINE_ORE_BLOCK.get(),  ELECTROTINE_DUST_ITEM.get(), 1, 8));
-        register(TIN_ORE_BLOCK.get(),                   singleItem(RAW_TIN_ITEM.get()));
-        register(DEEPSLATE_TIN_ORE_BLOCK.get(),         singleItem(RAW_TIN_ITEM.get()));
-        register(SILVER_ORE_BLOCK.get(),                singleItem(RAW_SILVER_ITEM.get()));
-        register(DEEPSLATE_SILVER_ORE_BLOCK.get(),      singleItem(RAW_SILVER_ITEM.get()));
+        register(TIN_ORE_BLOCK.get(),                   singleItemOrSilk(TIN_ORE_BLOCK.get(), RAW_TIN_ITEM.get()));
+        register(DEEPSLATE_TIN_ORE_BLOCK.get(),         singleItemOrSilk(DEEPSLATE_TIN_ORE_BLOCK.get(), RAW_TIN_ITEM.get()));
+        register(SILVER_ORE_BLOCK.get(),                singleItemOrSilk(SILVER_ORE_BLOCK.get(), RAW_SILVER_ITEM.get()));
+        register(DEEPSLATE_SILVER_ORE_BLOCK.get(),      singleItemOrSilk(DEEPSLATE_SILVER_ORE_BLOCK.get(), RAW_SILVER_ITEM.get()));
 
         // Decorative Blocks
         register(MARBLE_BLOCK.get(),         singleItem(MARBLE_BLOCK.get()));
