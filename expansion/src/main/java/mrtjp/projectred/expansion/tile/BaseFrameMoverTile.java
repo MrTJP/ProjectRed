@@ -59,7 +59,9 @@ public abstract class BaseFrameMoverTile extends LowLoadPoweredTile implements R
         assert level != null;
         BlockPos blockInFront = getBlockPos().relative(Direction.values()[getFrontSide()]);
         if (level.isEmptyBlock(blockInFront)) return;
+        // If target block already moving, or if we are moving, we cannot start a new move
         if (MovementManager.getInstance(level).getMovementInfo(blockInFront).isMoving()) return;
+        if (MovementManager.getInstance(level).getMovementInfo(getBlockPos()).isMoving()) return;
 
         assert ProjectRedAPI.expansionAPI != null;
         Set<BlockPos> blocks = ProjectRedAPI.expansionAPI.getStructure(level, blockInFront, getBlockPos());
@@ -144,13 +146,13 @@ public abstract class BaseFrameMoverTile extends LowLoadPoweredTile implements R
 
     @Override
     public boolean canGrab(Level w, BlockPos pos, Direction side) {
-        // If this block is moved, it will come along with whatever structure is on its front face
+        // If this block is moved, it will bring along whatever structure is touching its front face
         return side.ordinal() == getFrontSide();
     }
 
     @Override
     public boolean canBeGrabbed(Level w, BlockPos pos, Direction side) {
-        // If a structure on the front face is moved by something else, it may not bring this block along
+        // If a structure touching front face is moved by something else, it may not bring this block along
         return side.ordinal() != getFrontSide();
     }
 
