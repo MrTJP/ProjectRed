@@ -7,7 +7,8 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.illumination.ProjectRedIllumination.*;
 
@@ -17,10 +18,10 @@ public class IlluminationBlocks {
     public static final String ID_ILLUMAR_SMART_LAMP = "illumar_smart_lamp";
 
     // Blocks
-    public static RegistryObject<Block> ILLUMAR_SMART_LAMP;
+    public static Supplier<Block> ILLUMAR_SMART_LAMP;
 
     // Block Entities
-    public static RegistryObject<BlockEntityType<IllumarSmartLampBlockEntity>> ILLUMAR_SMART_LAMP_BLOCK_ENTITY;
+    public static Supplier<BlockEntityType<IllumarSmartLampBlockEntity>> ILLUMAR_SMART_LAMP_BLOCK_ENTITY;
 
 
     public static void register() {

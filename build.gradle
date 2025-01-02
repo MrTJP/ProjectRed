@@ -11,7 +11,7 @@ group = 'mrtjp'
 version = "${mc_version}-${mod_version}"
 
 println "Starting build of ${name}, Version: ${mod_version}"
-println "Using Forge: ${forge_version}, for Minecraft: ${mc_version}, with Mappings: ${mcp_mappings}"
+println "Using NeoForge: ${forge_version}, for Minecraft: ${mc_version}"
 
 // Common submodule configurations
 subprojects { p ->
@@ -28,7 +28,9 @@ subprojects { p ->
     version = rootProject.version
 
     // ForgeGradle version settings
-    archivesBaseName = rootProject.name
+    base {
+        archivesName = rootProject.name
+    }
 
     // Jar settings
     jar {

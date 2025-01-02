@@ -1,11 +1,10 @@
 {
   "type": "minecraft:smelting",
+  "category": "misc",
   "cookingtime": 200,
   "experience": 0.7,
   "ingredient": {
     "item": "projectred_exploration:raw_tin"
   },
-  "result": {
-    "item": "projectred_exploration:tin_ingot"
-  }
+  "result": "projectred_exploration:tin_ingot"
 }

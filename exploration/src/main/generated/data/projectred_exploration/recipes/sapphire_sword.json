@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "M": {
       "tag": "forge:gems/sapphire"
@@ -14,7 +15,6 @@
     "S"
   ],
   "result": {
-    "item": "projectred_exploration:sapphire_sword",
-    "nbt": "{Damage:0}"
+    "item": "projectred_exploration:sapphire_sword"
   }
 }

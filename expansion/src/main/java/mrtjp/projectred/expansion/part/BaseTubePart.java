@@ -34,8 +34,8 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -125,7 +125,7 @@ public abstract class BaseTubePart extends BaseMultipart implements IConnectable
         packet.writeByte(packedConnMap());
         packet.writeBoolean(material != null);
         if (material != null) {
-            packet.writeRegistryIdDirect(MicroMaterialRegistry.MICRO_MATERIALS, material);
+            packet.writeRegistryIdDirect(MicroMaterialRegistry.microMaterials(), material);
         }
     }
 
@@ -147,7 +147,7 @@ public abstract class BaseTubePart extends BaseMultipart implements IConnectable
     public void readDesc(MCDataInput packet) {
         connMap = packet.readUByte();
         if (packet.readBoolean()) {
-            material = packet.readRegistryIdDirect(MicroMaterialRegistry.MICRO_MATERIALS);
+            material = packet.readRegistryIdDirect(MicroMaterialRegistry.microMaterials());
         }
     }
     //endregion
@@ -179,7 +179,7 @@ public abstract class BaseTubePart extends BaseMultipart implements IConnectable
                 if (useStaticRenderer()) tile().markRender();
             }
             case KEY_MATERIAL -> {
-                material = packet.readRegistryIdDirect(MicroMaterialRegistry.MICRO_MATERIALS);
+                material = packet.readRegistryIdDirect(MicroMaterialRegistry.microMaterials());
                 if (useStaticRenderer()) tile().markRender();
             }
             case KEY_REMOVE_MATERIAL -> {
@@ -200,7 +200,7 @@ public abstract class BaseTubePart extends BaseMultipart implements IConnectable
         if (material == null) {
             sendUpdate(KEY_REMOVE_MATERIAL, p -> {});
         } else {
-            sendUpdate(KEY_MATERIAL, p -> p.writeRegistryIdDirect(MicroMaterialRegistry.MICRO_MATERIALS, material));
+            sendUpdate(KEY_MATERIAL, p -> p.writeRegistryIdDirect(MicroMaterialRegistry.microMaterials(), material));
         }
     }
     //endregion

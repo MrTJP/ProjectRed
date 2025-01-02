@@ -4,7 +4,8 @@ import mrtjp.projectred.integration.ProjectRedIntegration;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.MOD_ID;
 import static mrtjp.projectred.fabrication.init.FabricationBlocks.*;
@@ -12,7 +13,7 @@ import static mrtjp.projectred.fabrication.init.FabricationItems.*;
 
 public class FabricationCreativeModeTab {
 
-    public static RegistryObject<CreativeModeTab> FABRICATION_CREATIVE_TAB;
+    public static Supplier<CreativeModeTab> FABRICATION_CREATIVE_TAB;
 
     public static void register() {
         FABRICATION_CREATIVE_TAB = ProjectRedIntegration.CREATIVE_TABS.register("fabrication",

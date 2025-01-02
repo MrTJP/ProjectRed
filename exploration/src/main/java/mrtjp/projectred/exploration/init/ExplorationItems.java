@@ -1,7 +1,6 @@
 package mrtjp.projectred.exploration.init;
 
 import codechicken.lib.item.SimpleArmorMaterial;
-import codechicken.lib.item.SimpleItemTier;
 import codechicken.microblock.item.SawItem;
 import mrtjp.projectred.exploration.item.AthameItem;
 import mrtjp.projectred.exploration.item.BackpackItem;
@@ -9,10 +8,11 @@ import mrtjp.projectred.exploration.item.SickleItem;
 import mrtjp.projectred.exploration.item.WoolGinItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.TierSortingRegistry;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.SimpleTier;
+import net.neoforged.neoforge.common.TierSortingRegistry;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -100,116 +100,123 @@ public class ExplorationItems {
     public static final String ID_BLACK_BACKPACK = "black_backpack";
 
     // Ingots / dusts / gems
-    public static RegistryObject<Item> RAW_TIN_ITEM;
-    public static RegistryObject<Item> TIN_INGOT_ITEM;
-    public static RegistryObject<Item> RAW_SILVER_ITEM;
-    public static RegistryObject<Item> SILVER_INGOT_ITEM;
+    public static Supplier<Item> RAW_TIN_ITEM;
+    public static Supplier<Item> TIN_INGOT_ITEM;
+    public static Supplier<Item> RAW_SILVER_ITEM;
+    public static Supplier<Item> SILVER_INGOT_ITEM;
 
-    public static RegistryObject<Item> WOOL_GIN;
-    public static RegistryObject<Item> ATHAME;
+    public static Supplier<Item> WOOL_GIN;
+    public static Supplier<Item> ATHAME;
 
     // Tools
-    public static RegistryObject<Item> RUBY_AXE;
-    public static RegistryObject<Item> SAPPHIRE_AXE;
-    public static RegistryObject<Item> PERIDOT_AXE;
+    public static Supplier<Item> RUBY_AXE;
+    public static Supplier<Item> SAPPHIRE_AXE;
+    public static Supplier<Item> PERIDOT_AXE;
 
-    public static RegistryObject<Item> RUBY_PICKAXE;
-    public static RegistryObject<Item> SAPPHIRE_PICKAXE;
-    public static RegistryObject<Item> PERIDOT_PICKAXE;
+    public static Supplier<Item> RUBY_PICKAXE;
+    public static Supplier<Item> SAPPHIRE_PICKAXE;
+    public static Supplier<Item> PERIDOT_PICKAXE;
 
-    public static RegistryObject<Item> RUBY_SHOVEL;
-    public static RegistryObject<Item> SAPPHIRE_SHOVEL;
-    public static RegistryObject<Item> PERIDOT_SHOVEL;
+    public static Supplier<Item> RUBY_SHOVEL;
+    public static Supplier<Item> SAPPHIRE_SHOVEL;
+    public static Supplier<Item> PERIDOT_SHOVEL;
 
-    public static RegistryObject<Item> RUBY_HOE;
-    public static RegistryObject<Item> SAPPHIRE_HOE;
-    public static RegistryObject<Item> PERIDOT_HOE;
+    public static Supplier<Item> RUBY_HOE;
+    public static Supplier<Item> SAPPHIRE_HOE;
+    public static Supplier<Item> PERIDOT_HOE;
 
-    public static RegistryObject<Item> RUBY_SWORD;
-    public static RegistryObject<Item> SAPPHIRE_SWORD;
-    public static RegistryObject<Item> PERIDOT_SWORD;
+    public static Supplier<Item> RUBY_SWORD;
+    public static Supplier<Item> SAPPHIRE_SWORD;
+    public static Supplier<Item> PERIDOT_SWORD;
 
-    public static RegistryObject<Item> GOLD_SAW;
-    public static RegistryObject<Item> RUBY_SAW;
-    public static RegistryObject<Item> SAPPHIRE_SAW;
-    public static RegistryObject<Item> PERIDOT_SAW;
+    public static Supplier<Item> GOLD_SAW;
+    public static Supplier<Item> RUBY_SAW;
+    public static Supplier<Item> SAPPHIRE_SAW;
+    public static Supplier<Item> PERIDOT_SAW;
 
-    public static RegistryObject<Item> WOOD_SICKLE;
-    public static RegistryObject<Item> STONE_SICKLE;
-    public static RegistryObject<Item> IRON_SICKLE;
-    public static RegistryObject<Item> GOLD_SICKLE;
-    public static RegistryObject<Item> DIAMOND_SICKLE;
-    public static RegistryObject<Item> RUBY_SICKLE;
-    public static RegistryObject<Item> SAPPHIRE_SICKLE;
-    public static RegistryObject<Item> PERIDOT_SICKLE;
+    public static Supplier<Item> WOOD_SICKLE;
+    public static Supplier<Item> STONE_SICKLE;
+    public static Supplier<Item> IRON_SICKLE;
+    public static Supplier<Item> GOLD_SICKLE;
+    public static Supplier<Item> DIAMOND_SICKLE;
+    public static Supplier<Item> RUBY_SICKLE;
+    public static Supplier<Item> SAPPHIRE_SICKLE;
+    public static Supplier<Item> PERIDOT_SICKLE;
 
     // Armor
-    public static RegistryObject<Item> RUBY_HELMET;
-    public static RegistryObject<Item> SAPPHIRE_HELMET;
-    public static RegistryObject<Item> PERIDOT_HELMET;
+    public static Supplier<Item> RUBY_HELMET;
+    public static Supplier<Item> SAPPHIRE_HELMET;
+    public static Supplier<Item> PERIDOT_HELMET;
 
-    public static RegistryObject<Item> RUBY_CHESTPLATE;
-    public static RegistryObject<Item> SAPPHIRE_CHESTPLATE;
-    public static RegistryObject<Item> PERIDOT_CHESTPLATE;
+    public static Supplier<Item> RUBY_CHESTPLATE;
+    public static Supplier<Item> SAPPHIRE_CHESTPLATE;
+    public static Supplier<Item> PERIDOT_CHESTPLATE;
 
-    public static RegistryObject<Item> RUBY_LEGGINGS;
-    public static RegistryObject<Item> SAPPHIRE_LEGGINGS;
-    public static RegistryObject<Item> PERIDOT_LEGGINGS;
+    public static Supplier<Item> RUBY_LEGGINGS;
+    public static Supplier<Item> SAPPHIRE_LEGGINGS;
+    public static Supplier<Item> PERIDOT_LEGGINGS;
 
-    public static RegistryObject<Item> RUBY_BOOTS;
-    public static RegistryObject<Item> SAPPHIRE_BOOTS;
-    public static RegistryObject<Item> PERIDOT_BOOTS;
+    public static Supplier<Item> RUBY_BOOTS;
+    public static Supplier<Item> SAPPHIRE_BOOTS;
+    public static Supplier<Item> PERIDOT_BOOTS;
 
     //Backpacks
-    public static RegistryObject<Item> WHITE_BACKPACK;
-    public static RegistryObject<Item> ORANGE_BACKPACK;
-    public static RegistryObject<Item> MAGENTA_BACKPACK;
-    public static RegistryObject<Item> LIGHT_BLUE_BACKPACK;
-    public static RegistryObject<Item> YELLOW_BACKPACK;
-    public static RegistryObject<Item> LIME_BACKPACK;
-    public static RegistryObject<Item> PINK_BACKPACK;
-    public static RegistryObject<Item> GRAY_BACKPACK;
-    public static RegistryObject<Item> LIGHT_GRAY_BACKPACK;
-    public static RegistryObject<Item> CYAN_BACKPACK;
-    public static RegistryObject<Item> PURPLE_BACKPACK;
-    public static RegistryObject<Item> BLUE_BACKPACK;
-    public static RegistryObject<Item> BROWN_BACKPACK;
-    public static RegistryObject<Item> GREEN_BACKPACK;
-    public static RegistryObject<Item> RED_BACKPACK;
-    public static RegistryObject<Item> BLACK_BACKPACK;
+    public static Supplier<Item> WHITE_BACKPACK;
+    public static Supplier<Item> ORANGE_BACKPACK;
+    public static Supplier<Item> MAGENTA_BACKPACK;
+    public static Supplier<Item> LIGHT_BLUE_BACKPACK;
+    public static Supplier<Item> YELLOW_BACKPACK;
+    public static Supplier<Item> LIME_BACKPACK;
+    public static Supplier<Item> PINK_BACKPACK;
+    public static Supplier<Item> GRAY_BACKPACK;
+    public static Supplier<Item> LIGHT_GRAY_BACKPACK;
+    public static Supplier<Item> CYAN_BACKPACK;
+    public static Supplier<Item> PURPLE_BACKPACK;
+    public static Supplier<Item> BLUE_BACKPACK;
+    public static Supplier<Item> BROWN_BACKPACK;
+    public static Supplier<Item> GREEN_BACKPACK;
+    public static Supplier<Item> RED_BACKPACK;
+    public static Supplier<Item> BLACK_BACKPACK;
 
-    public static final SimpleItemTier ATHAME_ITEM_TIER = SimpleItemTier.builder(Tiers.DIAMOND)
-            .maxUses(100)
-            .enchantability(30)
-            .repairMaterial(() ->  Ingredient.of(SILVER_INGOT_TAG))
-            .build();
+    public static final SimpleTier ATHAME_ITEM_TIER = new SimpleTier(
+            Tiers.DIAMOND.getLevel(),
+            100,
+            Tiers.DIAMOND.getSpeed(),
+            Tiers.DIAMOND.getAttackDamageBonus(),
+            30,
+            BlockTags.NEEDS_IRON_TOOL,
+            () -> Ingredient.of(SILVER_INGOT_TAG)
+    );
 
-    public static final SimpleItemTier RUBY_ITEM_TIER = SimpleItemTier.builder()
-            .maxUses(512)
-            .efficiency(8.00F)
-            .attackDamage(3.00F)
-            .harvestLevel(2)
-            .enchantability(10)
-            .repairMaterial(() -> Ingredient.of(RUBY_GEM_TAG))
-            .build();
+    public static final SimpleTier RUBY_ITEM_TIER = new SimpleTier(
+            2,
+            512,
+            8.00F,
+            3.00F,
+            10,
+            BlockTags.NEEDS_IRON_TOOL,
+            () -> Ingredient.of(RUBY_GEM_TAG)
+    );
 
-    public static final SimpleItemTier SAPPHIRE_ITEM_TIER = SimpleItemTier.builder()
-            .maxUses(512)
-            .efficiency(8.00F)
-            .attackDamage(3.00F)
-            .harvestLevel(2)
-            .enchantability(10)
-            .repairMaterial(() -> Ingredient.of(SAPPHIRE_GEM_TAG))
-            .build();
+    public static final SimpleTier SAPPHIRE_ITEM_TIER = new SimpleTier(
+            2,
+            512,
+            8.00F,
+            3.00F,
+            10,
+            BlockTags.NEEDS_IRON_TOOL,
+            () -> Ingredient.of(SAPPHIRE_GEM_TAG)
+    );
 
-    public static final SimpleItemTier PERIDOT_ITEM_TIER = SimpleItemTier.builder()
-            .maxUses(512)
-            .efficiency(7.75F)
-            .attackDamage(2.75F)
-            .harvestLevel(2)
-            .enchantability(14)
-            .repairMaterial(() -> Ingredient.of(PERIDOT_GEM_TAG))
-            .build();
+    public static final SimpleTier PERIDOT_ITEM_TIER = new SimpleTier(
+            2,
+            512,
+            7.75F,
+            2.75F,
+            14,
+            BlockTags.NEEDS_IRON_TOOL,
+            () -> Ingredient.of(PERIDOT_GEM_TAG)
+    );
 
     public static final SimpleArmorMaterial RUBY_ARMOR_MATERIAL = SimpleArmorMaterial.builder()
             .durabilityFactor(16)
@@ -336,23 +343,23 @@ public class ExplorationItems {
         return () -> new Item(new Item.Properties());
     }
 
-    private static Item createAxeItem(SimpleItemTier tier, float attackDamage, float attackSpeed) {
+    private static Item createAxeItem(Tier tier, float attackDamage, float attackSpeed) {
         return new AxeItem(tier, attackDamage, attackSpeed, new Item.Properties());
     }
 
-    private static Item createPickaxeItem(SimpleItemTier tier, int attackDamage, float attackSpeed) {
+    private static Item createPickaxeItem(Tier tier, int attackDamage, float attackSpeed) {
         return new PickaxeItem(tier, attackDamage, attackSpeed, new Item.Properties());
     }
 
-    private static Item createShovelItem(SimpleItemTier tier, float attackDamage, float attackSpeed) {
+    private static Item createShovelItem(Tier tier, float attackDamage, float attackSpeed) {
         return new ShovelItem(tier, attackDamage, attackSpeed, new Item.Properties());
     }
 
-    private static Item createHoeItem(SimpleItemTier tier, int attackDamage, float attackSpeed) {
+    private static Item createHoeItem(Tier tier, int attackDamage, float attackSpeed) {
         return new HoeItem(tier, attackDamage, attackSpeed, new Item.Properties());
     }
 
-    private static Item createSwordItem(SimpleItemTier tier, int attackDamage, float attackSpeed) {
+    private static Item createSwordItem(Tier tier, int attackDamage, float attackSpeed) {
         return new SwordItem(tier, attackDamage, attackSpeed, new Item.Properties());
     }
 

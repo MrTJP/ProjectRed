@@ -4,14 +4,14 @@ import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
 import mrtjp.projectred.fabrication.block.FabricationMachineBlock;
 import mrtjp.projectred.fabrication.block.ICWorkbenchBlock;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.model.generators.BlockModelBuilder;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ConfiguredModel;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
+import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nonnull;
 
@@ -73,7 +73,7 @@ public class FabricationBlockStateModelProvider extends BlockStateProvider {
     }
 
     private BlockModelBuilder createDomedMachineModelFileForBlock(Block block, int chargeState) {
-        String textureName = ForgeRegistries.BLOCKS.getKey(block).getPath();
+        String textureName = BuiltInRegistries.BLOCK.getKey(block).getPath();
         String modelName = textureName + (chargeState > 0 ? "_state" + chargeState : "");
         return models()
                 .withExistingParent(modelName, modLoc("block/domed_machine"))
@@ -86,7 +86,7 @@ public class FabricationBlockStateModelProvider extends BlockStateProvider {
     }
 
     private BlockModelBuilder createICWorkbenchModel(Block block, boolean hasBlueprint) {
-        String textureName = ForgeRegistries.BLOCKS.getKey(block).getPath();
+        String textureName = BuiltInRegistries.BLOCK.getKey(block).getPath();
         String suffix = hasBlueprint ? "" : "_empty";
         String modelName = textureName + suffix;
         return models().cube(modelName,

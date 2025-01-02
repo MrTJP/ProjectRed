@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -42,15 +41,17 @@ public class MovementRegistry {
     }
 
     public static @Nullable Frame getFrame(Level level, BlockPos pos) {
-        Block block = level.getBlockState(pos).getBlock();
+        BlockState state = level.getBlockState(pos);
+        Block block = state.getBlock();
         if (block instanceof Frame f) return f;
 
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof Frame f) return f;
 
         if (be != null) {
-            LazyOptional<Frame> cap = be.getCapability(IExpansionAPI.FRAME_CAPABILITY);
-            if (cap.isPresent()) return cap.orElseThrow(() -> new RuntimeException("??"));
+            @SuppressWarnings("DataFlowIssue")
+            var cap = level.getCapability(IExpansionAPI.FRAME_CAPABILITY, pos, state, be, null);
+            if (cap != null) return cap;
         }
 
         for (FrameInteraction interaction : frameInteractions) {
@@ -61,15 +62,17 @@ public class MovementRegistry {
     }
 
     public static @Nullable MovementController getMovementController(Level level, BlockPos pos) {
-        Block block = level.getBlockState(pos).getBlock();
+        BlockState state = level.getBlockState(pos);
+        Block block = state.getBlock();
         if (block instanceof MovementController mhb) return mhb;
 
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof MovementController mbe) return mbe;
 
         if (be != null) {
-            LazyOptional<MovementController> cap = be.getCapability(IExpansionAPI.MOVEMENT_CONTROLLER_CAPABILITY);
-            if (cap.isPresent()) return cap.orElseThrow(() -> new RuntimeException("??"));
+            @SuppressWarnings("DataFlowIssue")
+            var cap = level.getCapability(IExpansionAPI.MOVEMENT_CONTROLLER_CAPABILITY, pos, state, be, null);
+            if (cap != null) return cap;
         }
 
         return null;

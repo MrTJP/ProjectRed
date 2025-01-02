@@ -4,7 +4,6 @@ import mrtjp.projectred.core.item.DrawPlateItem;
 import mrtjp.projectred.core.item.MultimeterItem;
 import mrtjp.projectred.core.item.ScrewdriverItem;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
@@ -68,64 +67,64 @@ public class CoreItems {
     public static final String ID_MULTIMETER = "multimeter";
 
     // Ingots / dusts / gems
-    public static RegistryObject<Item> RED_ALLOY_INGOT_ITEM;
-    public static RegistryObject<Item> ELECTROTINE_ALLOY_INGOT_ITEM;
-    public static RegistryObject<Item> ELECTROTINE_DUST_ITEM;
-    public static RegistryObject<Item> RUBY_ITEM;
-    public static RegistryObject<Item> SAPPHIRE_ITEM;
-    public static RegistryObject<Item> PERIDOT_ITEM;
+    public static Supplier<Item> RED_ALLOY_INGOT_ITEM;
+    public static Supplier<Item> ELECTROTINE_ALLOY_INGOT_ITEM;
+    public static Supplier<Item> ELECTROTINE_DUST_ITEM;
+    public static Supplier<Item> RUBY_ITEM;
+    public static Supplier<Item> SAPPHIRE_ITEM;
+    public static Supplier<Item> PERIDOT_ITEM;
 
     // Recipe ingredients
-    public static RegistryObject<Item> PLATE_ITEM;
-    public static RegistryObject<Item> CONDUCTIVE_PLATE_ITEM;
-    public static RegistryObject<Item> WIRED_PLATE_ITEM;
-    public static RegistryObject<Item> BUNDLED_PLATE_ITEM;
-    public static RegistryObject<Item> PLATFORMED_PLATE_ITEM;
-    public static RegistryObject<Item> ANODE_ITEM;
-    public static RegistryObject<Item> CATHODE_ITEM;
-    public static RegistryObject<Item> POINTER_ITEM;
-    public static RegistryObject<Item> SILICON_CHIP_ITEM;
-    public static RegistryObject<Item> ENERGIZED_SILICON_CHIP_ITEM;
-    public static RegistryObject<Item> SAND_COAL_COMP_ITEM;
-    public static RegistryObject<Item> RED_IRON_COMP_ITEM;
-    public static RegistryObject<Item> ELECTROTINE_IRON_COMP_ITEM;
-    public static RegistryObject<Item> SILICON_BOULE_ITEM;
-    public static RegistryObject<Item> SILICON_ITEM;
-    public static RegistryObject<Item> RED_SILICON_COMP_ITEM;
-    public static RegistryObject<Item> GLOW_SILICON_COMP_ITEM;
-    public static RegistryObject<Item> ELECTROTINE_SILICON_COMP_ITEM;
-    public static RegistryObject<Item> INFUSED_SILICON_ITEM;
-    public static RegistryObject<Item> ENERGIZED_SILICON_ITEM;
-    public static RegistryObject<Item> ELECTROTINE_SILICON_ITEM;
-    public static RegistryObject<Item> COPPER_COIL_ITEM;
-    public static RegistryObject<Item> IRON_COIL_ITEM;
-    public static RegistryObject<Item> GOLD_COIL_ITEM;
-    public static RegistryObject<Item> MOTOR_ITEM;
-    public static RegistryObject<Item> WOVEN_CLOTH_ITEM;
-    public static RegistryObject<Item> SAIL_ITEM;
+    public static Supplier<Item> PLATE_ITEM;
+    public static Supplier<Item> CONDUCTIVE_PLATE_ITEM;
+    public static Supplier<Item> WIRED_PLATE_ITEM;
+    public static Supplier<Item> BUNDLED_PLATE_ITEM;
+    public static Supplier<Item> PLATFORMED_PLATE_ITEM;
+    public static Supplier<Item> ANODE_ITEM;
+    public static Supplier<Item> CATHODE_ITEM;
+    public static Supplier<Item> POINTER_ITEM;
+    public static Supplier<Item> SILICON_CHIP_ITEM;
+    public static Supplier<Item> ENERGIZED_SILICON_CHIP_ITEM;
+    public static Supplier<Item> SAND_COAL_COMP_ITEM;
+    public static Supplier<Item> RED_IRON_COMP_ITEM;
+    public static Supplier<Item> ELECTROTINE_IRON_COMP_ITEM;
+    public static Supplier<Item> SILICON_BOULE_ITEM;
+    public static Supplier<Item> SILICON_ITEM;
+    public static Supplier<Item> RED_SILICON_COMP_ITEM;
+    public static Supplier<Item> GLOW_SILICON_COMP_ITEM;
+    public static Supplier<Item> ELECTROTINE_SILICON_COMP_ITEM;
+    public static Supplier<Item> INFUSED_SILICON_ITEM;
+    public static Supplier<Item> ENERGIZED_SILICON_ITEM;
+    public static Supplier<Item> ELECTROTINE_SILICON_ITEM;
+    public static Supplier<Item> COPPER_COIL_ITEM;
+    public static Supplier<Item> IRON_COIL_ITEM;
+    public static Supplier<Item> GOLD_COIL_ITEM;
+    public static Supplier<Item> MOTOR_ITEM;
+    public static Supplier<Item> WOVEN_CLOTH_ITEM;
+    public static Supplier<Item> SAIL_ITEM;
 
     // Illumars
-    public static RegistryObject<Item> WHITE_ILLUMAR_ITEM;
-    public static RegistryObject<Item> ORANGE_ILLUMAR_ITEM;
-    public static RegistryObject<Item> MAGENTA_ILLUMAR_ITEM;
-    public static RegistryObject<Item> LIGHT_BLUE_ILLUMAR_ITEM;
-    public static RegistryObject<Item> YELLOW_ILLUMAR_ITEM;
-    public static RegistryObject<Item> LIME_ILLUMAR_ITEM;
-    public static RegistryObject<Item> PINK_ILLUMAR_ITEM;
-    public static RegistryObject<Item> GRAY_ILLUMAR_ITEM;
-    public static RegistryObject<Item> LIGHT_GRAY_ILLUMAR_ITEM;
-    public static RegistryObject<Item> CYAN_ILLUMAR_ITEM;
-    public static RegistryObject<Item> PURPLE_ILLUMAR_ITEM;
-    public static RegistryObject<Item> BLUE_ILLUMAR_ITEM;
-    public static RegistryObject<Item> BROWN_ILLUMAR_ITEM;
-    public static RegistryObject<Item> GREEN_ILLUMAR_ITEM;
-    public static RegistryObject<Item> RED_ILLUMAR_ITEM;
-    public static RegistryObject<Item> BLACK_ILLUMAR_ITEM;
+    public static Supplier<Item> WHITE_ILLUMAR_ITEM;
+    public static Supplier<Item> ORANGE_ILLUMAR_ITEM;
+    public static Supplier<Item> MAGENTA_ILLUMAR_ITEM;
+    public static Supplier<Item> LIGHT_BLUE_ILLUMAR_ITEM;
+    public static Supplier<Item> YELLOW_ILLUMAR_ITEM;
+    public static Supplier<Item> LIME_ILLUMAR_ITEM;
+    public static Supplier<Item> PINK_ILLUMAR_ITEM;
+    public static Supplier<Item> GRAY_ILLUMAR_ITEM;
+    public static Supplier<Item> LIGHT_GRAY_ILLUMAR_ITEM;
+    public static Supplier<Item> CYAN_ILLUMAR_ITEM;
+    public static Supplier<Item> PURPLE_ILLUMAR_ITEM;
+    public static Supplier<Item> BLUE_ILLUMAR_ITEM;
+    public static Supplier<Item> BROWN_ILLUMAR_ITEM;
+    public static Supplier<Item> GREEN_ILLUMAR_ITEM;
+    public static Supplier<Item> RED_ILLUMAR_ITEM;
+    public static Supplier<Item> BLACK_ILLUMAR_ITEM;
 
     // Tools
-    public static RegistryObject<Item> DRAW_PLATE_ITEM;
-    public static RegistryObject<Item> SCREWDRIVER_ITEM;
-    public static RegistryObject<Item> MULTIMETER_ITEM;
+    public static Supplier<Item> DRAW_PLATE_ITEM;
+    public static Supplier<Item> SCREWDRIVER_ITEM;
+    public static Supplier<Item> MULTIMETER_ITEM;
 
     public static void register() {
 

@@ -8,7 +8,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
+
+import java.util.Objects;
 
 public class TransposerBlockEntity extends BasePneumaticDeviceBlockEntity implements RedstoneConnector {
 
@@ -57,9 +59,9 @@ public class TransposerBlockEntity extends BasePneumaticDeviceBlockEntity implem
         }
 
         // Import from Item Handler capability
-        var itemCapOpt = lookup.tile.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.values()[lookup.otherDirection]);
-        if (itemCapOpt.isPresent()) {
-            var itemCap = itemCapOpt.orElseThrow(NullPointerException::new);
+        var level = Objects.requireNonNull(lookup.tile.getLevel());
+        var itemCap = level.getCapability(Capabilities.ItemHandler.BLOCK, lookup.tile.getBlockPos(), Direction.values()[lookup.otherDirection]);
+        if (itemCap != null) {
 
             for (int s = 0; s < itemCap.getSlots(); s++) {
                 var extracted = itemCap.extractItem(s, containerImportStackSize(), false);

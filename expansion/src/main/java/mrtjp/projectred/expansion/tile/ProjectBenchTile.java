@@ -13,7 +13,6 @@ import mrtjp.projectred.expansion.inventory.container.ProjectBenchContainer;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.lib.InventoryLib;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.*;
@@ -23,14 +22,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 public class ProjectBenchTile extends ProjectRedTile implements IPacketReceiverTile, CraftingHelper.InventorySource {
 
@@ -48,7 +41,7 @@ public class ProjectBenchTile extends ProjectRedTile implements IPacketReceiverT
     private final BaseInventory planCraftingGrid = new BaseInventory(9);
 
     private final CraftingHelper craftingHelper = new CraftingHelper(this);
-    private final LazyOptional<?> storageInventoryCap = LazyOptional.of(this::createStorageInventoryCap);
+    private final IItemHandler handler = new InvWrapper(storageInventory);
 
     private boolean isPlanRecipe = false;
     private boolean recipeNeedsUpdate = true;
@@ -264,22 +257,8 @@ public class ProjectBenchTile extends ProjectRedTile implements IPacketReceiverT
     //endregion
 
     //region Capabilities
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (!this.remove && cap == ForgeCapabilities.ITEM_HANDLER)
-            return storageInventoryCap.cast();
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        storageInventoryCap.invalidate();
-    }
-
-    private IItemHandler createStorageInventoryCap() {
-        return new InvWrapper(storageInventory);
+    public IItemHandler getHandler() {
+        return handler;
     }
     //endregion
 }

@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "S": {
       "tag": "forge:ingots/silver"
@@ -13,7 +14,6 @@
     "W"
   ],
   "result": {
-    "item": "projectred_exploration:athame",
-    "nbt": "{Damage:0}"
+    "item": "projectred_exploration:athame"
   }
 }

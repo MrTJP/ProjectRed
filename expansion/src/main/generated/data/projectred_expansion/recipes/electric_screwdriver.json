@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "B": {
       "item": "projectred_expansion:battery"
@@ -17,7 +18,6 @@
     "  B"
   ],
   "result": {
-    "item": "projectred_expansion:electric_screwdriver",
-    "nbt": "{Damage:0}"
+    "item": "projectred_expansion:electric_screwdriver"
   }
 }

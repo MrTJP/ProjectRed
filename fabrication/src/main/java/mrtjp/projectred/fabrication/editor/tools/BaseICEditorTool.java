@@ -4,8 +4,8 @@ import codechicken.lib.vec.Vector3;
 import mrtjp.fengine.TileCoord;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;

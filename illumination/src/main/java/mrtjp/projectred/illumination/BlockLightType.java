@@ -11,11 +11,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.ArrayList;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 @SuppressWarnings("DataFlowIssue")
 public enum BlockLightType {
@@ -26,12 +26,12 @@ public enum BlockLightType {
     private final BiFunction<Integer, Boolean, Block> blockFactory;
     private final BlockLightBlockEntityFactory tileFactory;
 
-    private final ArrayList<RegistryObject<Block>> blockSupplier = new ArrayList<>();
-    private final ArrayList<RegistryObject<Block>> invertedBlockSupplier = new ArrayList<>();
-    private final ArrayList<RegistryObject<Item>> itemBlockSupplier = new ArrayList<>();
-    private final ArrayList<RegistryObject<Item>> invertedItemBlockSupplier = new ArrayList<>();
-    private final ArrayList<RegistryObject<BlockEntityType<?>>> tileEntityTypeSupplier = new ArrayList<>();
-    private final ArrayList<RegistryObject<BlockEntityType<?>>> invertedTileEntityTypeSupplier = new ArrayList<>();
+    private final ArrayList<Supplier<Block>> blockSupplier = new ArrayList<>();
+    private final ArrayList<Supplier<Block>> invertedBlockSupplier = new ArrayList<>();
+    private final ArrayList<Supplier<Item>> itemBlockSupplier = new ArrayList<>();
+    private final ArrayList<Supplier<Item>> invertedItemBlockSupplier = new ArrayList<>();
+    private final ArrayList<Supplier<BlockEntityType<?>>> tileEntityTypeSupplier = new ArrayList<>();
+    private final ArrayList<Supplier<BlockEntityType<?>>> invertedTileEntityTypeSupplier = new ArrayList<>();
 
     BlockLightType(String unlocalName, String localName, BiFunction<Integer, Boolean, Block> blockFactory, BlockLightBlockEntityFactory tileFactory) {
         this.unlocalName = unlocalName;
@@ -73,7 +73,7 @@ public enum BlockLightType {
     }
 
     public Iterable<Block> allColors(boolean inverted) {
-        return FastStream.of(inverted ? invertedBlockSupplier : blockSupplier).map(RegistryObject::get);
+        return FastStream.of(inverted ? invertedBlockSupplier : blockSupplier).map(Supplier::get);
     }
 
     public BlockEntityType<?> getTileEntityType(int color, boolean inverted) {

@@ -19,7 +19,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -29,8 +29,8 @@ import java.util.List;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 import static net.minecraft.client.renderer.RenderStateShard.*;
-import static net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL;
-import static net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES;
+import static net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL;
+import static net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES;
 
 public class HaloRenderer {
 

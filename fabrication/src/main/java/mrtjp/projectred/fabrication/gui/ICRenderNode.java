@@ -269,10 +269,10 @@ public class ICRenderNode extends ViewportRenderNode {
     }
 
     @Override
-    public boolean mouseScrolled(Point p, double scroll, boolean consumed) {
+    public boolean mouseScrolled(Point p, double scrollX, double scrollY, boolean consumed) {
         lastMousePos = p;
         if (!consumed && isFirstHit(p)) {
-            eventReceiver.mouseScrolled(this, mouseToWorld(p), scroll);
+            eventReceiver.mouseScrolled(this, mouseToWorld(p), scrollY);
             return true;
         }
         return false;

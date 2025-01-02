@@ -12,17 +12,17 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 import static mrtjp.projectred.transmission.init.TransmissionParts.*;
@@ -122,10 +122,10 @@ public enum WireType {
     private final int itemColour;
     private final List<String> textureNames;
 
-    private @Nullable RegistryObject<Item> itemSupplier;
-    private @Nullable RegistryObject<MultipartType<BaseWirePart>> partSupplier;
+    private @Nullable Supplier<Item> itemSupplier;
+    private @Nullable Supplier<MultipartType<BaseWirePart>> partSupplier;
 
-    @OnlyIn (Dist.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private @Nullable List<TextureAtlasSprite> textures;
 
     WireType(String unlocalName, boolean isCenterPart, Function<WireType, BaseWirePart> partFactory, int thickness, String... textures) {
@@ -158,7 +158,7 @@ public enum WireType {
         return isCenterPart;
     }
 
-    public RegistryObject<Item> getItemRegistryObject() {
+    public Supplier<Item> getItemRegistryObject() {
         assert itemSupplier != null;
         return itemSupplier;
     }
@@ -201,7 +201,7 @@ public enum WireType {
     }
 
     @OnlyIn (Dist.CLIENT)
-    public void onTextureStitchEvent(TextureStitchEvent.Post event) {
+    public void onTextureStitchEvent(TextureAtlasStitchedEvent event) {
         if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
 
         if (textureNames.isEmpty()) return;

@@ -1,19 +1,44 @@
 package mrtjp.projectred.core.data;
 
-import codechicken.lib.datagen.LootTableProvider;
+import mrtjp.projectred.core.ProjectRedCore;
+import net.minecraft.core.Holder;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.loot.BlockLootSubProvider;
+import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
-import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
+import java.util.List;
+import java.util.Set;
+
 import static mrtjp.projectred.core.init.CoreBlocks.ELECTROTINE_GENERATOR_BLOCK;
 
-public class CoreLootTableProvider extends LootTableProvider.BlockLootProvider {
+public class CoreLootTableProvider extends LootTableProvider {
 
     public CoreLootTableProvider(PackOutput output) {
-        super(output, MOD_ID);
+        super(output, Set.of(), List.of(
+                new LootTableProvider.SubProviderEntry(BlockLootTables::new, LootContextParamSets.BLOCK)
+        ));
     }
 
-    @Override
-    protected void registerTables() {
-        register(ELECTROTINE_GENERATOR_BLOCK.get(), singleItem(ELECTROTINE_GENERATOR_BLOCK.get()));
+    private static final class BlockLootTables extends BlockLootSubProvider {
+
+        BlockLootTables() {
+            super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+        }
+
+        @Override
+        protected Iterable<Block> getKnownBlocks() {
+            return ProjectRedCore.BLOCKS.getEntries()
+                    .stream()
+                    .map(Holder::value)
+                    .toList();
+        }
+
+        @Override
+        protected void generate() {
+            dropSelf(ELECTROTINE_GENERATOR_BLOCK.get());
+        }
     }
 }

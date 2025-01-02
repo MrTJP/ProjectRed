@@ -1,17 +1,18 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "D": {
-      "type": "forge:nbt",
-      "count": 1,
+      "type": "neoforge:nbt",
       "item": "cb_microblock:microblock",
-      "nbt": "{factory_id:0,mat:\"minecraft:diamond_block\",size:2}"
+      "strict": true,
+      "tag": "{factory_id:0,mat:\"minecraft:diamond_block\",size:2}"
     },
     "I": {
-      "type": "forge:nbt",
-      "count": 1,
+      "type": "neoforge:nbt",
       "item": "cb_microblock:microblock",
-      "nbt": "{factory_id:3,mat:\"minecraft:iron_block\",size:2}"
+      "strict": true,
+      "tag": "{factory_id:3,mat:\"minecraft:iron_block\",size:2}"
     }
   },
   "pattern": [
@@ -20,7 +21,6 @@
     " I "
   ],
   "result": {
-    "item": "projectred_core:draw_plate",
-    "nbt": "{Damage:0}"
+    "item": "projectred_core:draw_plate"
   }
 }

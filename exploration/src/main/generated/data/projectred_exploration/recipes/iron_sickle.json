@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "M": {
       "tag": "forge:ingots/iron"
@@ -14,7 +15,6 @@
     "SM "
   ],
   "result": {
-    "item": "projectred_exploration:iron_sickle",
-    "nbt": "{Damage:0}"
+    "item": "projectred_exploration:iron_sickle"
   }
 }

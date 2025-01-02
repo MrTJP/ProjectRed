@@ -7,24 +7,26 @@ import mrtjp.projectred.transmission.data.*;
 import mrtjp.projectred.transmission.init.TransmissionClientInit;
 import mrtjp.projectred.transmission.init.TransmissionCreativeModeTabs;
 import mrtjp.projectred.transmission.init.TransmissionParts;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.data.BlockTagsProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.event.server.ServerAboutToStartEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 
@@ -33,9 +35,11 @@ public class ProjectRedTransmission {
 
     public static final String MOD_ID = "projectred_transmission";
 
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
     public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
+
+    private static @Nullable ModContainer container;
 
     static {
         ProjectRedAPI.transmissionAPI = TransmissionAPI.INSTANCE;
@@ -44,19 +48,25 @@ public class ProjectRedTransmission {
         TransmissionCreativeModeTabs.register();
     }
 
-    public ProjectRedTransmission() {
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public ProjectRedTransmission(ModContainer container, IEventBus modEventBus) {
+        ProjectRedTransmission.container = container;
 
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::onGatherDataEvent);
 
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> TransmissionClientInit::init);
+        if (FMLEnvironment.dist.isClient()) {
+            TransmissionClientInit.init(modEventBus);
+        }
 
         ITEMS.register(modEventBus);
         PART_TYPES.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
 
-        MinecraftForge.EVENT_BUS.addListener(this::onServerStartEvent);
+        NeoForge.EVENT_BUS.addListener(this::onServerStartEvent);
+    }
+
+    public static ModContainer getContainer() {
+        return Objects.requireNonNull(container);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

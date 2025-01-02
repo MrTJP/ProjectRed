@@ -14,8 +14,6 @@ import static com.mojang.blaze3d.vertex.VertexFormat.Mode.QUADS;
 
 public class GuiLib {
 
-    public static final ResourceLocation WIDGETS_TEXTURE = new ResourceLocation("minecraft", "textures/gui/widgets.png");
-
     public static void drawVerticalTank(GuiGraphics graphics, ResourceLocation loc, int x, int y, int u, int v, int w, int h, int prog) {
         graphics.blit(loc, x, y + h - prog, u, v + h - prog, w, prog);
     }

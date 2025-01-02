@@ -11,7 +11,8 @@ import mrtjp.projectred.fabrication.tile.PlottingTableTile;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.*;
 
@@ -24,16 +25,16 @@ public class FabricationBlocks {
     public static final String ID_PACKAGING_TABLE = "packaging_table";
 
     // Blocks
-    public static RegistryObject<ICWorkbenchBlock> IC_WORKBENCH_BLOCK;
-    public static RegistryObject<PlottingTableBlock> PLOTTING_TABLE_BLOCK;
-    public static RegistryObject<LithographyTableBlock> LITHOGRAPHY_TABLE_BLOCK;
-    public static RegistryObject<PackagingTableBlock> PACKAGING_TABLE_BLOCK;
+    public static Supplier<ICWorkbenchBlock> IC_WORKBENCH_BLOCK;
+    public static Supplier<PlottingTableBlock> PLOTTING_TABLE_BLOCK;
+    public static Supplier<LithographyTableBlock> LITHOGRAPHY_TABLE_BLOCK;
+    public static Supplier<PackagingTableBlock> PACKAGING_TABLE_BLOCK;
 
     // Block Entities
-    public static RegistryObject<BlockEntityType<ICWorkbenchTile>> IC_WORKBENCH_TILE;
-    public static RegistryObject<BlockEntityType<PlottingTableTile>> PLOTTING_TABLE_TILE;
-    public static RegistryObject<BlockEntityType<LithographyTableTile>> LITHOGRAPHY_TABLE_TILE;
-    public static RegistryObject<BlockEntityType<PackagingTableTile>> PACKAGING_TABLE_TILE;
+    public static Supplier<BlockEntityType<ICWorkbenchTile>> IC_WORKBENCH_TILE;
+    public static Supplier<BlockEntityType<PlottingTableTile>> PLOTTING_TABLE_TILE;
+    public static Supplier<BlockEntityType<LithographyTableTile>> LITHOGRAPHY_TABLE_TILE;
+    public static Supplier<BlockEntityType<PackagingTableTile>> PACKAGING_TABLE_TILE;
 
 
     public static void register() {

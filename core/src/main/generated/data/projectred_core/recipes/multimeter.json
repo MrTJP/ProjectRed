@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "A": {
       "tag": "forge:ingots/red_alloy"
@@ -23,7 +24,6 @@
     "BGR"
   ],
   "result": {
-    "item": "projectred_core:multimeter",
-    "nbt": "{Damage:0}"
+    "item": "projectred_core:multimeter"
   }
 }

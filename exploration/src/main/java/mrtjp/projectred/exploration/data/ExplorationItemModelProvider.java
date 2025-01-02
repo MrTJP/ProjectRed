@@ -1,10 +1,10 @@
 package mrtjp.projectred.exploration.data;
 
 import codechicken.lib.datagen.ItemModelProvider;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 import static mrtjp.projectred.exploration.init.ExplorationBlocks.*;
@@ -147,6 +147,6 @@ public class ExplorationItemModelProvider extends ItemModelProvider {
     private void wallItemBlock(Block wallBlock, Block textureBlock) {
         getSimple(wallBlock)
                 .noTexture()
-                .parent(wallInventory(ForgeRegistries.BLOCKS.getKey(wallBlock) + "_inventory", blockTexture(textureBlock)));
+                .parent(wallInventory(BuiltInRegistries.BLOCK.getKey(wallBlock) + "_inventory", blockTexture(textureBlock)));
     }
 }

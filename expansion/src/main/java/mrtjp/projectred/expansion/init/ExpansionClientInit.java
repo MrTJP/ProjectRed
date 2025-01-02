@@ -15,10 +15,9 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
@@ -32,16 +31,14 @@ public class ExpansionClientInit {
     public static final ResourceLocation ITEM_MODEL_PROPERTY_CHARGE_LEVEL = new ResourceLocation(MOD_ID, "charge_level");
     public static final ResourceLocation ITEM_MODEL_PROPERTY_WRITTEN_RECIPE_PLAN = new ResourceLocation(MOD_ID, "written");
 
-    public static void init() {
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
+    public static void init(IEventBus modEventBus) {
         modEventBus.addListener(ExpansionClientInit::clientSetup);
 
         // MovementManager hooks
-        MinecraftForge.EVENT_BUS.addListener(MovementManager::onRenderLevelStage);
+        NeoForge.EVENT_BUS.addListener(MovementManager::onRenderLevelStage);
 
         // GraphDebugManager hooks
-        MinecraftForge.EVENT_BUS.addListener(GraphDebugManager::onRenderLevelStage);
+        NeoForge.EVENT_BUS.addListener(GraphDebugManager::onRenderLevelStage);
 
         // Register sprites
         modEventBus.addListener(FrameModelRenderer::onTextureStitchEvent);

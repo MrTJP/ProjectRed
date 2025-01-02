@@ -5,7 +5,8 @@ import mrtjp.projectred.expansion.TubeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
@@ -14,7 +15,7 @@ import static mrtjp.projectred.expansion.init.ExpansionItems.*;
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class ExpansionCreativeModeTabs {
 
-    public static RegistryObject<CreativeModeTab> EXPANSION_CREATIVE_TAB;
+    public static Supplier<CreativeModeTab> EXPANSION_CREATIVE_TAB;
 
     public static void register() {
 
