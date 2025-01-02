@@ -58,25 +58,34 @@ public class RedUIContainerScreen<T extends AbstractContainerMenu> extends Abstr
             return false;
         }, false);
 
-        RenderSystem.enableDepthTest(); // Nodes render out of order, so depth test is needed
-
         // Render semi-transparent grey background
-        int x = getScreenFrame().x();
-        int y = getScreenFrame().y();
-        fillGradient(stack, x, y, x + getScreenFrame().width(), y + getScreenFrame().height(), -1072689136, -804253680);
+        renderBackground(stack);
 
-        // Render background
-        drawBackForSubtree(stack, new Point(mouseX, mouseY), partialFrame);
-        // Sandwich ContainerScreen's default rendering between RedUI's foreground and background rendering
+        // Super render call, which does the following:
+        //  - Call renderBg(), which is typically overridden to draw main background
+        //  - Fire ContainerScreenEvent.Render.Background client event
+        //  - Disable depth test
+        //  - Render each widget in renderables list (call Screen#render())
+        //  - Render each slot and its highlight (via renderSlot() and renderSlotHighlight())
+        //  - Render labels (renderLabels())
+        //  - Fire ContainerScreenEvent.Render.Foreground client event
+        //  - Render picked up item on cursor (via renderFloatingItem())
+        //  - Render snapback items (via renderFloatingItem())
+        //  - Enable depth test
         super.render(stack, mouseX, mouseY, partialFrame);
+
+        // Render tooltips
         renderTooltip(stack, mouseX, mouseY);
+
         // Render foreground
         drawFrontForSubtree(stack, new Point(mouseX, mouseY), partialFrame);
     }
 
     @Override
     protected void renderBg(PoseStack stack, float partialFrame, int mouseX, int mouseY) {
-        // We render through RedUI's render methods
+        // Draw back of all nodes in RedUI tree (this class is expected to provide the main background via RedUI's render call)
+        RenderSystem.enableDepthTest(); // Nodes render out of order, so depth test is needed
+        drawBackForSubtree(stack, new Point(mouseX, mouseY), partialFrame);
     }
 
     @Override
