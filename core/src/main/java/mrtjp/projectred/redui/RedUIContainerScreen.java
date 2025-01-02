@@ -49,7 +49,6 @@ public class RedUIContainerScreen<T extends AbstractContainerMenu> extends Abstr
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialFrame) {
-
         // Call frame update function on all nodes
         Point mousePoint = new Point(mouseX, mouseY);
         operateOnSubtree(mousePoint, (n, p, c) -> {
@@ -57,25 +56,34 @@ public class RedUIContainerScreen<T extends AbstractContainerMenu> extends Abstr
             return false;
         }, false);
 
-        RenderSystem.enableDepthTest(); // Nodes render out of order, so depth test is needed
-
         // Render semi-transparent grey background
-        int x = getScreenFrame().x();
-        int y = getScreenFrame().y();
-        graphics.fillGradient(x, y, x + getScreenFrame().width(), y + getScreenFrame().height(), -1072689136, -804253680);
+        renderBackground(graphics);
 
-        // Render background
-        drawBackForSubtree(graphics, new Point(mouseX, mouseY), partialFrame);
-        // Sandwich ContainerScreen's default rendering between RedUI's foreground and background rendering
+        // Super render call, which does the following:
+        //  - Call renderBg(), which is typically overridden to draw main background
+        //  - Fire ContainerScreenEvent.Render.Background client event
+        //  - Disable depth test
+        //  - Render each widget in renderables list (call Screen#render())
+        //  - Render each slot and its highlight (via renderSlot() and renderSlotHighlight())
+        //  - Render labels (renderLabels())
+        //  - Fire ContainerScreenEvent.Render.Foreground client event
+        //  - Render picked up item on cursor (via renderFloatingItem())
+        //  - Render snapback items (via renderFloatingItem())
+        //  - Enable depth test
         super.render(graphics, mouseX, mouseY, partialFrame);
+
+        // Render tooltips
         renderTooltip(graphics, mouseX, mouseY);
+
         // Render foreground
         drawFrontForSubtree(graphics, new Point(mouseX, mouseY), partialFrame);
     }
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialFrame, int mouseX, int mouseY) {
-        // We render through RedUI's render methods
+        // Draw back of all nodes in RedUI tree (this class is expected to provide the main background via RedUI's render call)
+        RenderSystem.enableDepthTest(); // Nodes render out of order, so depth test is needed
+        drawBackForSubtree(graphics, new Point(mouseX, mouseY), partialFrame);
     }
 
     @Override
