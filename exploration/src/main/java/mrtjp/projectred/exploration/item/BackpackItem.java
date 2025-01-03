@@ -1,9 +1,9 @@
 package mrtjp.projectred.exploration.item;
 
 import codechicken.lib.util.ServerUtils;
-import mrtjp.projectred.core.inventory.BaseInventory;
+import mrtjp.projectred.core.inventory.BaseContainer;
 import mrtjp.projectred.exploration.init.ExplorationTags;
-import mrtjp.projectred.exploration.inventory.container.BackpackContainer;
+import mrtjp.projectred.exploration.inventory.container.BackpackMenu;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -61,7 +61,7 @@ public class BackpackItem extends Item {
 
     private void openGui(ServerPlayer player) {
         ServerUtils.openContainer(player,
-                new SimpleMenuProvider((windowId, playerInventory, playerEntity) -> new BackpackContainer(windowId, playerInventory),
+                new SimpleMenuProvider((windowId, playerInventory, playerEntity) -> new BackpackMenu(windowId, playerInventory),
                         Component.translatable(this.getDescriptionId())));
     }
 
@@ -94,7 +94,7 @@ public class BackpackItem extends Item {
 
     public static int getBackpackItemCount(ItemStack stack) {
         if (hasBackpackInventory(stack)) {
-            return BaseInventory.getItemCount(Objects.requireNonNull(stack.getTag()).getCompound(TAG_INVENTORY));
+            return BaseContainer.getItemCount(Objects.requireNonNull(stack.getTag()).getCompound(TAG_INVENTORY));
         }
         return 0;
     }

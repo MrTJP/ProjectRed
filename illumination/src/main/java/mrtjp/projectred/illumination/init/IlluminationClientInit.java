@@ -36,8 +36,8 @@ public class IlluminationClientInit {
         for (BlockLightType lampType : BlockLightType.values()) {
             for (int color = 0; color < 16; color++) {
                 //TODO this only works because Illumar lamp is the only BlockLightType
-                BlockEntityRenderers.register(SneakyUtils.unsafeCast(lampType.getTileEntityType(color, false)), c ->  IllumarLampTileRenderer.INSTANCE);
-                BlockEntityRenderers.register(SneakyUtils.unsafeCast(lampType.getTileEntityType(color, true)), c -> IllumarLampTileRenderer.INSTANCE);
+                BlockEntityRenderers.register(SneakyUtils.unsafeCast(lampType.getTileEntityType(color, false)), c ->  IllumarLampBlockEntityRenderer.INSTANCE);
+                BlockEntityRenderers.register(SneakyUtils.unsafeCast(lampType.getTileEntityType(color, true)), c -> IllumarLampBlockEntityRenderer.INSTANCE);
             }
         }
 

@@ -3,7 +3,7 @@ package mrtjp.projectred.expansion.block;
 import codechicken.lib.vec.Rotation;
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.expansion.init.ExpansionBlocks;
-import mrtjp.projectred.expansion.tile.FrameMotorTile;
+import mrtjp.projectred.expansion.tile.FrameMotorBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
@@ -22,12 +22,12 @@ public class FrameMotorBlock extends ProjectRedBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new FrameMotorTile(pos, state);
+        return new FrameMotorBlockEntity(pos, state);
     }
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return ExpansionBlocks.FRAME_MOTOR_TILE.get();
+        return ExpansionBlocks.FRAME_MOTOR_BLOCK_ENTITY.get();
     }
 
     @Nullable

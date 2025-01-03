@@ -1,7 +1,7 @@
 package mrtjp.projectred.fabrication.block;
 
 import mrtjp.projectred.fabrication.init.FabricationBlocks;
-import mrtjp.projectred.fabrication.tile.PackagingTableTile;
+import mrtjp.projectred.fabrication.tile.PackagingTableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -17,11 +17,11 @@ public class PackagingTableBlock extends FabricationMachineBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new PackagingTableTile(pos, state);
+        return new PackagingTableBlockEntity(pos, state);
     }
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return FabricationBlocks.PACKAGING_TABLE_TILE.get();
+        return FabricationBlocks.PACKAGING_TABLE_BLOCK_ENTITY.get();
     }
 }

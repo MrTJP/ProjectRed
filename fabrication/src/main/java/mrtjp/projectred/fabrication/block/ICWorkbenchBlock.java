@@ -2,7 +2,7 @@ package mrtjp.projectred.fabrication.block;
 
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.fabrication.init.FabricationBlocks;
-import mrtjp.projectred.fabrication.tile.ICWorkbenchTile;
+import mrtjp.projectred.fabrication.tile.ICWorkbenchBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
@@ -31,12 +31,12 @@ public class ICWorkbenchBlock extends ProjectRedBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ICWorkbenchTile(pos, state);
+        return new ICWorkbenchBlockEntity(pos, state);
     }
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return FabricationBlocks.IC_WORKBENCH_TILE.get();
+        return FabricationBlocks.IC_WORKBENCH_BLOCK_ENTITY.get();
     }
 
     @Override

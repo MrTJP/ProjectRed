@@ -2,7 +2,7 @@ package mrtjp.projectred.illumination;
 
 import codechicken.lib.colour.EnumColour;
 import mrtjp.projectred.illumination.block.IllumarLampBlock;
-import mrtjp.projectred.illumination.tile.IllumarLampTile;
+import mrtjp.projectred.illumination.tile.IllumarLampBlockEntity;
 import net.covers1624.quack.collection.FastStream;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
@@ -19,7 +19,7 @@ import java.util.function.BiFunction;
 
 @SuppressWarnings("DataFlowIssue")
 public enum BlockLightType {
-    ILLUMAR_LAMP("illumar_lamp", "Illumar Lamp", IllumarLampBlock::new, IllumarLampTile::new);
+    ILLUMAR_LAMP("illumar_lamp", "Illumar Lamp", IllumarLampBlock::new, IllumarLampBlockEntity::new);
 
     private final String unlocalName;
     private final String localName;

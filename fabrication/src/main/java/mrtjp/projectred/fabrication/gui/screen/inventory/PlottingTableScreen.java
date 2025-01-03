@@ -1,7 +1,7 @@
 package mrtjp.projectred.fabrication.gui.screen.inventory;
 
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
-import mrtjp.projectred.fabrication.inventory.container.PlottingTableContainer;
+import mrtjp.projectred.fabrication.inventory.container.PlottingTableMenu;
 import mrtjp.projectred.lib.GuiLib;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.RedUIContainerScreen;
@@ -10,11 +10,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-public class PlottingTableScreen extends RedUIContainerScreen<PlottingTableContainer> {
+public class PlottingTableScreen extends RedUIContainerScreen<PlottingTableMenu> {
 
     public static final ResourceLocation BACKGROUND = new ResourceLocation(ProjectRedFabrication.MOD_ID, "textures/gui/plotting_table.png");
 
-    public PlottingTableScreen(PlottingTableContainer container, Inventory playerInventory, Component title) {
+    public PlottingTableScreen(PlottingTableMenu container, Inventory playerInventory, Component title) {
         super(176, 171, container, playerInventory, title); //TODO size
 
         inventoryLabelX = 8;

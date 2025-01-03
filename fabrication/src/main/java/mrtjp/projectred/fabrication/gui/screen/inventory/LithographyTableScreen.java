@@ -1,7 +1,7 @@
 package mrtjp.projectred.fabrication.gui.screen.inventory;
 
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
-import mrtjp.projectred.fabrication.inventory.container.LithographyTableContainer;
+import mrtjp.projectred.fabrication.inventory.container.LithographyTableMenu;
 import mrtjp.projectred.lib.GuiLib;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.RedUIContainerScreen;
@@ -10,11 +10,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-public class LithographyTableScreen extends RedUIContainerScreen<LithographyTableContainer> {
+public class LithographyTableScreen extends RedUIContainerScreen<LithographyTableMenu> {
 
     public static final ResourceLocation BACKGROUND = new ResourceLocation(ProjectRedFabrication.MOD_ID, "textures/gui/lithography_table.png");
 
-    public LithographyTableScreen(LithographyTableContainer container, Inventory playerInventory, Component title) {
+    public LithographyTableScreen(LithographyTableMenu container, Inventory playerInventory, Component title) {
         super(176, 171, container, playerInventory, title); //TODO size
 
         inventoryLabelX = 8;

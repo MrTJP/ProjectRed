@@ -1,7 +1,7 @@
 package mrtjp.projectred.expansion.gui.screen.inventory;
 
 import codechicken.lib.colour.EnumColour;
-import mrtjp.projectred.expansion.inventory.container.AutoCrafterContainer;
+import mrtjp.projectred.expansion.inventory.container.AutoCrafterMenu;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.lib.GuiLib;
 import mrtjp.projectred.lib.Point;
@@ -17,13 +17,13 @@ import org.lwjgl.glfw.GLFW;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 
-public class AutoCrafterScreen extends RedUIContainerScreen<AutoCrafterContainer> {
+public class AutoCrafterScreen extends RedUIContainerScreen<AutoCrafterMenu> {
 
     public static final ResourceLocation BACKGROUND = new ResourceLocation(MOD_ID, "textures/gui/auto_crafter.png");
 
     private boolean isShiftDown = false;
 
-    public AutoCrafterScreen(AutoCrafterContainer container, Inventory playerInventory, Component title) {
+    public AutoCrafterScreen(AutoCrafterMenu container, Inventory playerInventory, Component title) {
         super(176, 212, container, playerInventory, title);
 
         inventoryLabelX = 8;

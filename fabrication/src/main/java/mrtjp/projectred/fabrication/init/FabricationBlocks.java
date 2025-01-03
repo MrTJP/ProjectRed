@@ -4,10 +4,10 @@ import mrtjp.projectred.fabrication.block.ICWorkbenchBlock;
 import mrtjp.projectred.fabrication.block.LithographyTableBlock;
 import mrtjp.projectred.fabrication.block.PackagingTableBlock;
 import mrtjp.projectred.fabrication.block.PlottingTableBlock;
-import mrtjp.projectred.fabrication.tile.ICWorkbenchTile;
-import mrtjp.projectred.fabrication.tile.LithographyTableTile;
-import mrtjp.projectred.fabrication.tile.PackagingTableTile;
-import mrtjp.projectred.fabrication.tile.PlottingTableTile;
+import mrtjp.projectred.fabrication.tile.ICWorkbenchBlockEntity;
+import mrtjp.projectred.fabrication.tile.LithographyTableBlockEntity;
+import mrtjp.projectred.fabrication.tile.PackagingTableBlockEntity;
+import mrtjp.projectred.fabrication.tile.PlottingTableBlockEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -30,10 +30,10 @@ public class FabricationBlocks {
     public static RegistryObject<PackagingTableBlock> PACKAGING_TABLE_BLOCK;
 
     // Block Entities
-    public static RegistryObject<BlockEntityType<ICWorkbenchTile>> IC_WORKBENCH_TILE;
-    public static RegistryObject<BlockEntityType<PlottingTableTile>> PLOTTING_TABLE_TILE;
-    public static RegistryObject<BlockEntityType<LithographyTableTile>> LITHOGRAPHY_TABLE_TILE;
-    public static RegistryObject<BlockEntityType<PackagingTableTile>> PACKAGING_TABLE_TILE;
+    public static RegistryObject<BlockEntityType<ICWorkbenchBlockEntity>> IC_WORKBENCH_BLOCK_ENTITY;
+    public static RegistryObject<BlockEntityType<PlottingTableBlockEntity>> PLOTTING_TABLE_BLOCK_ENTITY;
+    public static RegistryObject<BlockEntityType<LithographyTableBlockEntity>> LITHOGRAPHY_TABLE_BLOCK_ENTITY;
+    public static RegistryObject<BlockEntityType<PackagingTableBlockEntity>> PACKAGING_TABLE_BLOCK_ENTITY;
 
 
     public static void register() {
@@ -51,9 +51,9 @@ public class FabricationBlocks {
         ITEMS.register(ID_PACKAGING_TABLE, () -> new BlockItem(PACKAGING_TABLE_BLOCK.get(), new Item.Properties()));
 
         // Tiles
-        IC_WORKBENCH_TILE = BLOCK_ENTITY_TYPES.register(ID_IC_WORKBENCH, () -> BlockEntityType.Builder.of(ICWorkbenchTile::new, IC_WORKBENCH_BLOCK.get()).build(null));
-        PLOTTING_TABLE_TILE = BLOCK_ENTITY_TYPES.register(ID_PLOTTING_TABLE, () -> BlockEntityType.Builder.of(PlottingTableTile::new, PLOTTING_TABLE_BLOCK.get()).build(null));
-        LITHOGRAPHY_TABLE_TILE = BLOCK_ENTITY_TYPES.register(ID_LITHOGRAPHY_TABLE, () -> BlockEntityType.Builder.of(LithographyTableTile::new, LITHOGRAPHY_TABLE_BLOCK.get()).build(null));
-        PACKAGING_TABLE_TILE = BLOCK_ENTITY_TYPES.register(ID_PACKAGING_TABLE, () -> BlockEntityType.Builder.of(PackagingTableTile::new, PACKAGING_TABLE_BLOCK.get()).build(null));
+        IC_WORKBENCH_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(ID_IC_WORKBENCH, () -> BlockEntityType.Builder.of(ICWorkbenchBlockEntity::new, IC_WORKBENCH_BLOCK.get()).build(null));
+        PLOTTING_TABLE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(ID_PLOTTING_TABLE, () -> BlockEntityType.Builder.of(PlottingTableBlockEntity::new, PLOTTING_TABLE_BLOCK.get()).build(null));
+        LITHOGRAPHY_TABLE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(ID_LITHOGRAPHY_TABLE, () -> BlockEntityType.Builder.of(LithographyTableBlockEntity::new, LITHOGRAPHY_TABLE_BLOCK.get()).build(null));
+        PACKAGING_TABLE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(ID_PACKAGING_TABLE, () -> BlockEntityType.Builder.of(PackagingTableBlockEntity::new, PACKAGING_TABLE_BLOCK.get()).build(null));
     }
 }

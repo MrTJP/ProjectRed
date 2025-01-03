@@ -27,7 +27,7 @@ public class BlockBreakerBlockEntity extends BasePneumaticDeviceBlockEntity impl
     private static final GameProfile PR_FAKE_PLAYER = new GameProfile(UUID.fromString("6140461b-e5b4-41ba-beb1-dce616e6abc0"), "[ProjectRed]");
 
     public BlockBreakerBlockEntity(BlockPos pos, BlockState state) {
-        super(ExpansionBlocks.BLOCK_BREAKER_TILE.get(), pos, state);
+        super(ExpansionBlocks.BLOCK_BREAKER_BLOCK_ENTITY.get(), pos, state);
     }
 
     //region PneumaticTransportDevice implementation

@@ -16,7 +16,7 @@ public class DeployerBlock extends BaseDeviceBlock {
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return ExpansionBlocks.DEPLOYER_TILE.get();
+        return ExpansionBlocks.DEPLOYER_BLOCK_ENTITY.get();
     }
 
     @Nullable

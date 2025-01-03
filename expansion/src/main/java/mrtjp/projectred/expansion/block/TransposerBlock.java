@@ -22,6 +22,6 @@ public class TransposerBlock extends BaseDeviceBlock {
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return ExpansionBlocks.TRANSPOSER_BLOCK_TILE.get();
+        return ExpansionBlocks.TRANSPOSER_BLOCK_ENTITY.get();
     }
 }

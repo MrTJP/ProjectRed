@@ -3,7 +3,7 @@ package mrtjp.projectred.expansion.block;
 import codechicken.lib.vec.Rotation;
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.expansion.init.ExpansionBlocks;
-import mrtjp.projectred.expansion.tile.ChargingBenchTile;
+import mrtjp.projectred.expansion.tile.ChargingBenchBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
@@ -23,12 +23,12 @@ public class ChargingBenchBlock extends ProjectRedBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ChargingBenchTile(pos, state);
+        return new ChargingBenchBlockEntity(pos, state);
     }
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return ExpansionBlocks.CHARGING_BENCH_TILE.get();
+        return ExpansionBlocks.CHARGING_BENCH_BLOCK_ENTITY.get();
     }
 
     @Nullable
