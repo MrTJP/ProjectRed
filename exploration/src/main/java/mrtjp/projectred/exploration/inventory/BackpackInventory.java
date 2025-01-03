@@ -1,12 +1,12 @@
 package mrtjp.projectred.exploration.inventory;
 
-import mrtjp.projectred.core.inventory.BaseInventory;
+import mrtjp.projectred.core.inventory.BaseContainer;
 import mrtjp.projectred.exploration.item.BackpackItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
-public class BackpackInventory extends BaseInventory {
+public class BackpackInventory extends BaseContainer {
 
     public BackpackInventory(int inventorySize) {
         super(inventorySize);

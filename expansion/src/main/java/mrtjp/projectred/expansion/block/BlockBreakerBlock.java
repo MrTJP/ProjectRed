@@ -22,6 +22,6 @@ public class BlockBreakerBlock extends BaseDeviceBlock {
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return ExpansionBlocks.BLOCK_BREAKER_TILE.get();
+        return ExpansionBlocks.BLOCK_BREAKER_BLOCK_ENTITY.get();
     }
 }

@@ -1,6 +1,6 @@
 package mrtjp.projectred.core.gui.screen.inventory;
 
-import mrtjp.projectred.core.inventory.container.ElectrotineGeneratorContainer;
+import mrtjp.projectred.core.inventory.container.ElectrotineGeneratorMenu;
 import mrtjp.projectred.lib.GuiLib;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.RedUIContainerScreen;
@@ -11,11 +11,11 @@ import net.minecraft.world.entity.player.Inventory;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 
-public class ElectrotineGeneratorScreen extends RedUIContainerScreen<ElectrotineGeneratorContainer> {
+public class ElectrotineGeneratorScreen extends RedUIContainerScreen<ElectrotineGeneratorMenu> {
 
     public static final ResourceLocation BACKGROUND = new ResourceLocation(MOD_ID, "textures/gui/electrotine_generator.png");
 
-    public ElectrotineGeneratorScreen(ElectrotineGeneratorContainer container, Inventory playerInventory, Component title) {
+    public ElectrotineGeneratorScreen(ElectrotineGeneratorMenu container, Inventory playerInventory, Component title) {
         super(176, 171, container, playerInventory, title);
 
         inventoryLabelX = 8;

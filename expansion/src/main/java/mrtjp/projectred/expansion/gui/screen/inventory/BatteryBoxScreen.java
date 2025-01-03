@@ -1,6 +1,6 @@
 package mrtjp.projectred.expansion.gui.screen.inventory;
 
-import mrtjp.projectred.expansion.inventory.container.BatteryBoxContainer;
+import mrtjp.projectred.expansion.inventory.container.BatteryBoxMenu;
 import mrtjp.projectred.lib.GuiLib;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.RedUIContainerScreen;
@@ -11,11 +11,11 @@ import net.minecraft.world.entity.player.Inventory;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 
-public class BatteryBoxScreen extends RedUIContainerScreen<BatteryBoxContainer> {
+public class BatteryBoxScreen extends RedUIContainerScreen<BatteryBoxMenu> {
 
     public static final ResourceLocation BACKGROUND = new ResourceLocation(MOD_ID, "textures/gui/battery_box.png");
 
-    public BatteryBoxScreen(BatteryBoxContainer container, Inventory playerInventory, Component title) {
+    public BatteryBoxScreen(BatteryBoxMenu container, Inventory playerInventory, Component title) {
         super(176, 171, container, playerInventory, title);
 
         inventoryLabelX = 8;

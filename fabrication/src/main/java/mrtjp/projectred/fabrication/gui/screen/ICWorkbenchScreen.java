@@ -7,7 +7,7 @@ import mrtjp.projectred.fabrication.engine.log.ICCompilerLog;
 import mrtjp.projectred.fabrication.gui.SimpleUVTab;
 import mrtjp.projectred.fabrication.gui.TabButtonNode;
 import mrtjp.projectred.fabrication.gui.TabControllerNode;
-import mrtjp.projectred.fabrication.tile.ICWorkbenchTile;
+import mrtjp.projectred.fabrication.tile.ICWorkbenchBlockEntity;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractGuiNode;
 import mrtjp.projectred.redui.ItemStackNode;
@@ -35,13 +35,13 @@ public class ICWorkbenchScreen extends RedUIScreen {
 
     public static final ResourceLocation BACKGROUND = new ResourceLocation(ProjectRedFabrication.MOD_ID, "textures/gui/ic_workbench.png");
 
-    private final ICWorkbenchTile tile;
+    private final ICWorkbenchBlockEntity tile;
     private final ICWorkbenchEditor editor;
 
     private @Nullable AbstractGuiNode contentNode;
     private @Nullable InactiveOverlayNode overlayNode;
 
-    public ICWorkbenchScreen(ICWorkbenchTile tile) {
+    public ICWorkbenchScreen(ICWorkbenchBlockEntity tile) {
         super(304, 222, Component.literal(Objects.requireNonNull(ForgeRegistries.BLOCK_ENTITY_TYPES.getKey(tile.getType())).toString()));
 
         this.tile = tile;
@@ -50,7 +50,7 @@ public class ICWorkbenchScreen extends RedUIScreen {
         initSubNodes();
     }
 
-    public static void openGuiOnClient(ICWorkbenchTile tile) {
+    public static void openGuiOnClient(ICWorkbenchBlockEntity tile) {
         Minecraft.getInstance().setScreen(new ICWorkbenchScreen(tile));
     }
 

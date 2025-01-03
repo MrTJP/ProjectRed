@@ -1,7 +1,7 @@
 package mrtjp.projectred.core.init;
 
 import mrtjp.projectred.core.block.ElectrotineGeneratorBlock;
-import mrtjp.projectred.core.tile.ElectrotineGeneratorTile;
+import mrtjp.projectred.core.tile.ElectrotineGeneratorBlockEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -19,7 +19,7 @@ public class CoreBlocks {
     public static RegistryObject<Block> ELECTROTINE_GENERATOR_BLOCK;
 
     // Tile
-    public static RegistryObject<BlockEntityType<ElectrotineGeneratorTile>> ELECTROTINE_GENERATOR_TILE;
+    public static RegistryObject<BlockEntityType<ElectrotineGeneratorBlockEntity>> ELECTROTINE_GENERATOR_BLOCK_ENTITY;
 
 
     public static void register() {
@@ -31,6 +31,6 @@ public class CoreBlocks {
         ITEMS.register(ID_ELECTROTINE_GENERATOR, () -> new BlockItem(ELECTROTINE_GENERATOR_BLOCK.get(), new Item.Properties()));
 
         // Tiles
-        ELECTROTINE_GENERATOR_TILE = BLOCK_ENTITY_TYPES.register(ID_ELECTROTINE_GENERATOR, () -> BlockEntityType.Builder.of(ElectrotineGeneratorTile::new, ELECTROTINE_GENERATOR_BLOCK.get()).build(null));
+        ELECTROTINE_GENERATOR_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(ID_ELECTROTINE_GENERATOR, () -> BlockEntityType.Builder.of(ElectrotineGeneratorBlockEntity::new, ELECTROTINE_GENERATOR_BLOCK.get()).build(null));
     }
 }

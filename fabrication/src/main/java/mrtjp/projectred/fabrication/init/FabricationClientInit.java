@@ -31,8 +31,8 @@ public class FabricationClientInit {
         MultipartClientRegistry.register(FabricationParts.FABRICATED_GATE_PART.get(), GatePartRenderer.INSTANCE);
 
         // Register screens
-        MenuScreens.register(PLOTTING_TABLE_CONTAINER.get(), PlottingTableScreen::new);
-        MenuScreens.register(LITHOGRAPHY_TABLE_CONTAINER.get(), LithographyTableScreen::new);
-        MenuScreens.register(PACKAGING_TABLE_CONTAINER.get(), PackagingTableScreen::new);
+        MenuScreens.register(PLOTTING_TABLE_MENU.get(), PlottingTableScreen::new);
+        MenuScreens.register(LITHOGRAPHY_TABLE_MENU.get(), LithographyTableScreen::new);
+        MenuScreens.register(PACKAGING_TABLE_MENU.get(), PackagingTableScreen::new);
     }
 }

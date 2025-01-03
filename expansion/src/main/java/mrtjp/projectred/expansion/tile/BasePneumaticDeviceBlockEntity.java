@@ -4,7 +4,7 @@ import codechicken.lib.util.ItemUtils;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.api.tile.RedstoneConnector;
 import mrtjp.projectred.core.CenterLookup;
-import mrtjp.projectred.core.tile.ProjectRedTile;
+import mrtjp.projectred.core.tile.ProjectRedBlockEntity;
 import mrtjp.projectred.expansion.part.PneumaticTubePayload;
 import mrtjp.projectred.expansion.pneumatics.PneumaticQueue;
 import mrtjp.projectred.expansion.pneumatics.PneumaticTransportContainer;
@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Objects;
 
-public abstract class BasePneumaticDeviceBlockEntity extends BaseDeviceTile implements PneumaticTransportDevice, RedstoneConnector {
+public abstract class BasePneumaticDeviceBlockEntity extends BaseDeviceBlockEntity implements PneumaticTransportDevice, RedstoneConnector {
 
     protected final PneumaticQueue itemQueue = new PneumaticQueue();
 
@@ -47,7 +47,7 @@ public abstract class BasePneumaticDeviceBlockEntity extends BaseDeviceTile impl
     public void onBlockRemoved() {
         super.onBlockRemoved();
         while (!itemQueue.isEmpty()) {
-            ProjectRedTile.dropItem(
+            ProjectRedBlockEntity.dropItem(
                     Objects.requireNonNull(itemQueue.poll()).getItemStack(),
                     getLevel(),
                     Vector3.fromTileCenter(this));

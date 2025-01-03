@@ -14,7 +14,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
-import static mrtjp.projectred.core.init.CoreMenus.ELECTROTINE_GENERATOR_CONTAINER;
+import static mrtjp.projectred.core.init.CoreMenus.ELECTROTINE_GENERATOR_MENU;
 
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class CoreClientInit {
@@ -31,7 +31,7 @@ public class CoreClientInit {
     private static void clientSetup(final FMLClientSetupEvent event) {
 
         // Register screens
-        MenuScreens.register(ELECTROTINE_GENERATOR_CONTAINER.get(), ElectrotineGeneratorScreen::new);
+        MenuScreens.register(ELECTROTINE_GENERATOR_MENU.get(), ElectrotineGeneratorScreen::new);
 
         // Init Halo Renderer
         HaloRenderer.init();

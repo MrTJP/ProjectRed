@@ -1,6 +1,6 @@
 package mrtjp.projectred.expansion;
 
-import mrtjp.projectred.core.inventory.BaseInventory;
+import mrtjp.projectred.core.inventory.BaseContainer;
 import mrtjp.projectred.lib.InventoryLib;
 import net.covers1624.quack.util.LazyValue;
 import net.minecraft.core.NonNullList;
@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 
 public class CraftingHelper {
 
-    private static class CraftingHelperContainer extends BaseInventory implements CraftingContainer {
+    private static class CraftingHelperContainer extends BaseContainer implements CraftingContainer {
         public CraftingHelperContainer() {
             super(9);
         }

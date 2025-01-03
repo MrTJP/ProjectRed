@@ -2,7 +2,7 @@ package mrtjp.projectred.fabrication.block;
 
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.fabrication.init.FabricationBlocks;
-import mrtjp.projectred.fabrication.tile.PlottingTableTile;
+import mrtjp.projectred.fabrication.tile.PlottingTableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -18,11 +18,11 @@ public class PlottingTableBlock extends FabricationMachineBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new PlottingTableTile(pos, state);
+        return new PlottingTableBlockEntity(pos, state);
     }
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return FabricationBlocks.PLOTTING_TABLE_TILE.get();
+        return FabricationBlocks.PLOTTING_TABLE_BLOCK_ENTITY.get();
     }
 }

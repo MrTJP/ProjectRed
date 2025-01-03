@@ -3,9 +3,9 @@ package mrtjp.projectred.expansion.tile;
 import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
 import com.mojang.authlib.GameProfile;
-import mrtjp.projectred.core.inventory.BaseInventory;
+import mrtjp.projectred.core.inventory.BaseContainer;
 import mrtjp.projectred.expansion.init.ExpansionBlocks;
-import mrtjp.projectred.expansion.inventory.container.DeployerContainerMenu;
+import mrtjp.projectred.expansion.inventory.container.DeployerMenu;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -43,17 +43,17 @@ import java.util.UUID;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.LOGGER;
 
-public class DeployerBlockEntity extends BaseDeviceTile {
+public class DeployerBlockEntity extends BaseDeviceBlockEntity {
 
     // Fake player ID used to break blocks
     private static final GameProfile PR_FAKE_PLAYER = new GameProfile(UUID.fromString("6140461b-e5b4-41ba-beb1-dce616e6abc0"), "[ProjectRed]");
 
-    private final BaseInventory inventory = new BaseInventory(9);
+    private final BaseContainer inventory = new BaseContainer(9);
 
     private final LazyOptional<? extends IItemHandler> handler = LazyOptional.of(() -> new InvWrapper(inventory));
 
     public DeployerBlockEntity(BlockPos pos, BlockState state) {
-        super(ExpansionBlocks.DEPLOYER_TILE.get(), pos, state);
+        super(ExpansionBlocks.DEPLOYER_BLOCK_ENTITY.get(), pos, state);
         inventory.addListener(c -> setChanged());
     }
 
@@ -83,7 +83,7 @@ public class DeployerBlockEntity extends BaseDeviceTile {
             ServerUtils.openContainer(
                     (ServerPlayer) player,
                     new SimpleMenuProvider(
-                            (id, inv, p) -> new DeployerContainerMenu(inv, this, id),
+                            (id, inv, p) -> new DeployerMenu(inv, this, id),
                             getBlockState().getBlock().getName()),
                     p -> p.writePos(getBlockPos()));
         }
@@ -280,7 +280,7 @@ public class DeployerBlockEntity extends BaseDeviceTile {
     //endregion
 
     //region ContainerMenu interface
-    public BaseInventory getInventory() {
+    public BaseContainer getInventory() {
         return inventory;
     }
     //endregion

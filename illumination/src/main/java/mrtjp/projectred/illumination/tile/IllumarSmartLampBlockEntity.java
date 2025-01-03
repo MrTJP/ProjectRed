@@ -10,7 +10,7 @@ import mrtjp.projectred.api.IMaskedBundledTile;
 import mrtjp.projectred.core.BundledSignalsLib;
 import mrtjp.projectred.core.CenterLookup;
 import mrtjp.projectred.core.FaceLookup;
-import mrtjp.projectred.core.tile.BaseConnectableTile;
+import mrtjp.projectred.core.tile.BaseConnectableBlockEntity;
 import mrtjp.projectred.core.tile.IOrientableBlockEntity;
 import mrtjp.projectred.illumination.block.IllumarSmartLampBlock;
 import mrtjp.projectred.illumination.init.IlluminationBlocks;
@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class IllumarSmartLampBlockEntity extends BaseConnectableTile implements IOrientableBlockEntity, IMaskedBundledTile {
+public class IllumarSmartLampBlockEntity extends BaseConnectableBlockEntity implements IOrientableBlockEntity, IMaskedBundledTile {
 
     private static final int PACKET_SIGNAL = 10;
 
