@@ -2,7 +2,8 @@ package mrtjp.projectred.illumination;
 
 import codechicken.lib.colour.EnumColour;
 import mrtjp.projectred.illumination.block.IllumarLampBlock;
-import mrtjp.projectred.illumination.tile.IllumarLampTile;
+import mrtjp.projectred.illumination.tile.IllumarLampBlockEntity;
+import net.covers1624.quack.collection.FastStream;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -18,7 +19,7 @@ import java.util.function.BiFunction;
 
 @SuppressWarnings("DataFlowIssue")
 public enum BlockLightType {
-    ILLUMAR_LAMP("illumar_lamp", "Illumar Lamp", IllumarLampBlock::new, IllumarLampTile::new);
+    ILLUMAR_LAMP("illumar_lamp", "Illumar Lamp", IllumarLampBlock::new, IllumarLampBlockEntity::new);
 
     private final String unlocalName;
     private final String localName;
@@ -46,7 +47,7 @@ public enum BlockLightType {
             String registryID = getRegistryID(color, false);
 
             blockSupplier.add(color, blockRegistry.register(registryID, () -> blockFactory.apply(colorFinal, false)));
-            itemBlockSupplier.add(color, itemRegistry.register(registryID, () -> new BlockItem(getBlock(colorFinal, false), new Item.Properties().tab(ProjectRedIllumination.ILLUMINATION_GROUP))));
+            itemBlockSupplier.add(color, itemRegistry.register(registryID, () -> new BlockItem(getBlock(colorFinal, false), new Item.Properties())));
             tileEntityTypeSupplier.add(color, tileRegistry.register(registryID, () -> BlockEntityType.Builder.of(
                             (pos, state) -> tileFactory.create(colorFinal, false, pos, state),
                             getBlock(colorFinal, false))
@@ -59,7 +60,7 @@ public enum BlockLightType {
             String invertedRegistryID = getRegistryID(color, true);
 
             invertedBlockSupplier.add(color, blockRegistry.register(invertedRegistryID, () -> blockFactory.apply(colorFinal, true)));
-            invertedItemBlockSupplier.add(color, itemRegistry.register(invertedRegistryID, () -> new BlockItem(getBlock(colorFinal, true), new Item.Properties().tab(ProjectRedIllumination.ILLUMINATION_GROUP))));
+            invertedItemBlockSupplier.add(color, itemRegistry.register(invertedRegistryID, () -> new BlockItem(getBlock(colorFinal, true), new Item.Properties())));
             invertedTileEntityTypeSupplier.add(color, tileRegistry.register(invertedRegistryID, () -> BlockEntityType.Builder.of(
                             (pos, state) -> tileFactory.create(colorFinal, true, pos, state),
                             getBlock(colorFinal, true))
@@ -69,6 +70,10 @@ public enum BlockLightType {
 
     public Block getBlock(int color, boolean inverted) {
         return inverted ? invertedBlockSupplier.get(color).get() : blockSupplier.get(color).get();
+    }
+
+    public Iterable<Block> allColors(boolean inverted) {
+        return FastStream.of(inverted ? invertedBlockSupplier : blockSupplier).map(RegistryObject::get);
     }
 
     public BlockEntityType<?> getTileEntityType(int color, boolean inverted) {

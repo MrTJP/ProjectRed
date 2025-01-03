@@ -2,7 +2,7 @@ package mrtjp.projectred.expansion.block;
 
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.expansion.init.ExpansionBlocks;
-import mrtjp.projectred.expansion.tile.BatteryBoxTile;
+import mrtjp.projectred.expansion.tile.BatteryBoxBlockEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -39,12 +39,12 @@ public class BatteryBoxBlock extends ProjectRedBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new BatteryBoxTile(pos, state);
+        return new BatteryBoxBlockEntity(pos, state);
     }
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return ExpansionBlocks.BATTERY_BOX_TILE.get();
+        return ExpansionBlocks.BATTERY_BOX_BLOCK_ENTITY.get();
     }
 
     @Nullable
@@ -62,7 +62,7 @@ public class BatteryBoxBlock extends ProjectRedBlock {
     @Override
     public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
         BlockEntity tile = builder.getParameter(LootContextParams.BLOCK_ENTITY);
-        if (tile instanceof BatteryBoxTile batteryBoxTile) {
+        if (tile instanceof BatteryBoxBlockEntity batteryBoxTile) {
             return Collections.singletonList(batteryBoxTile.createStackWithStoredPower()); // Retain power inside itemstack
         }
         return super.getDrops(state, builder);
@@ -71,8 +71,8 @@ public class BatteryBoxBlock extends ProjectRedBlock {
     @Override
     public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
         BlockEntity tile = world.getBlockEntity(pos);
-        if (tile instanceof BatteryBoxTile)
-            return ((BatteryBoxTile) tile).createStackWithStoredPower(); // Pick block with stored power
+        if (tile instanceof BatteryBoxBlockEntity)
+            return ((BatteryBoxBlockEntity) tile).createStackWithStoredPower(); // Pick block with stored power
 
         return super.getCloneItemStack(state, target, world, pos, player);
     }
@@ -81,7 +81,7 @@ public class BatteryBoxBlock extends ProjectRedBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> toolTip, TooltipFlag flag) {
         super.appendHoverText(stack, level, toolTip, flag);
         if (stack.hasTag()) {
-            int power = Objects.requireNonNull(stack.getTag()).getInt(BatteryBoxTile.TAG_KEY_POWER_STORED);
+            int power = Objects.requireNonNull(stack.getTag()).getInt(BatteryBoxBlockEntity.TAG_KEY_POWER_STORED);
             toolTip.add(Component.translatable(UL_STORED_POWER_TOOLTIP).append(": " + power + " / " + 8000).withStyle(ChatFormatting.GRAY)); //TODO make this static constant
         }
     }

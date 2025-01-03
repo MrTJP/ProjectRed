@@ -1,7 +1,7 @@
 package mrtjp.projectred.expansion.block;
 
 import mrtjp.projectred.expansion.init.ExpansionBlocks;
-import mrtjp.projectred.expansion.tile.AutoCrafterTile;
+import mrtjp.projectred.expansion.tile.AutoCrafterBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -17,11 +17,11 @@ public class AutoCrafterBlock extends BaseMachineBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new AutoCrafterTile(pos, state);
+        return new AutoCrafterBlockEntity(pos, state);
     }
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return ExpansionBlocks.AUTO_CRAFTER_TILE.get();
+        return ExpansionBlocks.AUTO_CRAFTER_BLOCK_ENTITY.get();
     }
 }

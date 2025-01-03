@@ -11,18 +11,18 @@ import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class ExpansionMenus {
 
-    public static RegistryObject<MenuType<ProjectBenchContainer>> PROJECT_BENCH_CONTAINER;
-    public static RegistryObject<MenuType<BatteryBoxContainer>> BATTERY_BOX_CONTAINER;
-    public static RegistryObject<MenuType<AutoCrafterContainer>> AUTO_CRAFTER_CONTAINER;
-    public static RegistryObject<MenuType<ChargingBenchContainer>> CHARGING_BENCH_CONTAINER;
-    public static RegistryObject<MenuType<DeployerContainerMenu>> DEPLOYER_CONTAINER;
+    public static RegistryObject<MenuType<ProjectBenchMenu>> PROJECT_BENCH_MENU;
+    public static RegistryObject<MenuType<BatteryBoxMenu>> BATTERY_BOX_MENU;
+    public static RegistryObject<MenuType<AutoCrafterMenu>> AUTO_CRAFTER_MENU;
+    public static RegistryObject<MenuType<ChargingBenchMenu>> CHARGING_BENCH_MENU;
+    public static RegistryObject<MenuType<DeployerMenu>> DEPLOYER_MENU;
 
     public static void register() {
 
-        PROJECT_BENCH_CONTAINER = MENU_TYPES.register(ID_PROJECT_BENCH, () -> ICCLContainerType.create(ProjectBenchContainer.FACTORY));
-        BATTERY_BOX_CONTAINER = MENU_TYPES.register(ID_BATTERY_BOX, () -> ICCLContainerType.create(BatteryBoxContainer.FACTORY));
-        AUTO_CRAFTER_CONTAINER = MENU_TYPES.register(ID_AUTO_CRAFTER, () -> ICCLContainerType.create(AutoCrafterContainer.FACTORY));
-        CHARGING_BENCH_CONTAINER = MENU_TYPES.register(ID_CHARGING_BENCH, () -> ICCLContainerType.create(ChargingBenchContainer.FACTORY));
-        DEPLOYER_CONTAINER = MENU_TYPES.register(ID_DEPLOYER, () -> ICCLContainerType.create(DeployerContainerMenu.FACTORY));
+        PROJECT_BENCH_MENU = MENU_TYPES.register(ID_PROJECT_BENCH, () -> ICCLContainerType.create(ProjectBenchMenu.FACTORY));
+        BATTERY_BOX_MENU = MENU_TYPES.register(ID_BATTERY_BOX, () -> ICCLContainerType.create(BatteryBoxMenu.FACTORY));
+        AUTO_CRAFTER_MENU = MENU_TYPES.register(ID_AUTO_CRAFTER, () -> ICCLContainerType.create(AutoCrafterMenu.FACTORY));
+        CHARGING_BENCH_MENU = MENU_TYPES.register(ID_CHARGING_BENCH, () -> ICCLContainerType.create(ChargingBenchMenu.FACTORY));
+        DEPLOYER_MENU = MENU_TYPES.register(ID_DEPLOYER, () -> ICCLContainerType.create(DeployerMenu.FACTORY));
     }
 }

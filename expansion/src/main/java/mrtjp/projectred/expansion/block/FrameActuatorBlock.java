@@ -2,7 +2,7 @@ package mrtjp.projectred.expansion.block;
 
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.expansion.init.ExpansionBlocks;
-import mrtjp.projectred.expansion.tile.FrameActuatorTile;
+import mrtjp.projectred.expansion.tile.FrameActuatorBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
@@ -21,12 +21,12 @@ public class FrameActuatorBlock extends ProjectRedBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new FrameActuatorTile(pos, state);
+        return new FrameActuatorBlockEntity(pos, state);
     }
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return ExpansionBlocks.FRAME_ACTUATOR_TILE.get();
+        return ExpansionBlocks.FRAME_ACTUATOR_BLOCK_ENTITY.get();
     }
 
     @Nullable

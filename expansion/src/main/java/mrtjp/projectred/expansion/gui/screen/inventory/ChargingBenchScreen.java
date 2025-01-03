@@ -2,7 +2,7 @@ package mrtjp.projectred.expansion.gui.screen.inventory;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mrtjp.projectred.expansion.inventory.container.ChargingBenchContainer;
+import mrtjp.projectred.expansion.inventory.container.ChargingBenchMenu;
 import mrtjp.projectred.lib.GuiLib;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.RedUIContainerScreen;
@@ -12,11 +12,11 @@ import net.minecraft.world.entity.player.Inventory;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 
-public class ChargingBenchScreen extends RedUIContainerScreen<ChargingBenchContainer> {
+public class ChargingBenchScreen extends RedUIContainerScreen<ChargingBenchMenu> {
 
     public static final ResourceLocation BACKGROUND = new ResourceLocation(MOD_ID, "textures/gui/charging_bench.png");
 
-    public ChargingBenchScreen(ChargingBenchContainer container, Inventory playerInventory, Component title) {
+    public ChargingBenchScreen(ChargingBenchMenu container, Inventory playerInventory, Component title) {
         super(176, 183, container, playerInventory, title);
 
         inventoryLabelX = 8;

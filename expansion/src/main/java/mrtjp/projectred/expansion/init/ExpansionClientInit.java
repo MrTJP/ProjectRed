@@ -10,7 +10,7 @@ import mrtjp.projectred.expansion.TubeType;
 import mrtjp.projectred.expansion.client.*;
 import mrtjp.projectred.expansion.gui.screen.inventory.*;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
-import mrtjp.projectred.expansion.tile.BatteryBoxTile;
+import mrtjp.projectred.expansion.tile.BatteryBoxBlockEntity;
 import net.covers1624.quack.util.SneakyUtils;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -65,11 +65,11 @@ public class ExpansionClientInit {
     private static void clientSetup(final FMLClientSetupEvent event) {
 
         // Register screens
-        MenuScreens.register(PROJECT_BENCH_CONTAINER.get(), ProjectBenchScreen::new);
-        MenuScreens.register(BATTERY_BOX_CONTAINER.get(), BatteryBoxScreen::new);
-        MenuScreens.register(AUTO_CRAFTER_CONTAINER.get(), AutoCrafterScreen::new);
-        MenuScreens.register(CHARGING_BENCH_CONTAINER.get(), ChargingBenchScreen::new);
-        MenuScreens.register(DEPLOYER_CONTAINER.get(), DeployerScreen::new);
+        MenuScreens.register(PROJECT_BENCH_MENU.get(), ProjectBenchScreen::new);
+        MenuScreens.register(BATTERY_BOX_MENU.get(), BatteryBoxScreen::new);
+        MenuScreens.register(AUTO_CRAFTER_MENU.get(), AutoCrafterScreen::new);
+        MenuScreens.register(CHARGING_BENCH_MENU.get(), ChargingBenchScreen::new);
+        MenuScreens.register(DEPLOYER_MENU.get(), DeployerScreen::new);
 
         // Register item model properties
         addItemModelProperties();
@@ -101,7 +101,7 @@ public class ExpansionClientInit {
     private static void addItemModelProperties() {
         ItemProperties.register(BATTERY_BOX_BLOCK.get().asItem(), ITEM_MODEL_PROPERTY_CHARGE_LEVEL, (stack, world, entity, seed) -> {
             if (stack.hasTag()) {
-                return stack.getTag().getInt(BatteryBoxTile.TAG_KEY_CHARGE_LEVEL_STATE);
+                return stack.getTag().getInt(BatteryBoxBlockEntity.TAG_KEY_CHARGE_LEVEL_STATE);
             }
             return 0.0F;
         });

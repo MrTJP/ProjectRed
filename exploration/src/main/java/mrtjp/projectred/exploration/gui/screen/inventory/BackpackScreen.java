@@ -2,7 +2,7 @@ package mrtjp.projectred.exploration.gui.screen.inventory;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mrtjp.projectred.exploration.inventory.container.BackpackContainer;
+import mrtjp.projectred.exploration.inventory.container.BackpackMenu;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.RedUIContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -11,11 +11,11 @@ import net.minecraft.world.entity.player.Inventory;
 
 import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 
-public class BackpackScreen extends RedUIContainerScreen<BackpackContainer> {
+public class BackpackScreen extends RedUIContainerScreen<BackpackMenu> {
 
     public static final ResourceLocation BACKGROUND = new ResourceLocation(MOD_ID, "textures/gui/backpack.png");
 
-    public BackpackScreen(BackpackContainer container, Inventory playerInventory, Component title) {
+    public BackpackScreen(BackpackMenu container, Inventory playerInventory, Component title) {
         super(176, 168, container, playerInventory, title);
 
         inventoryLabelX = 8;
