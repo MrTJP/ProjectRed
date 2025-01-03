@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
-public interface IOrientableBlockEntity extends IBlockEventTile {
+public interface IOrientableBlockEntity extends IBlockEventBlockEntity {
 
     default int getRotation() {
         return getBlockLevel().getBlockState(getBlockPosition()).getValue(ProjectRedBlock.ROTATION);

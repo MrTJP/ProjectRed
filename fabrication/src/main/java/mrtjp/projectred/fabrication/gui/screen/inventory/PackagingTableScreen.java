@@ -4,7 +4,7 @@ import codechicken.lib.colour.EnumColour;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
-import mrtjp.projectred.fabrication.inventory.container.PackagingTableContainer;
+import mrtjp.projectred.fabrication.inventory.container.PackagingTableMenu;
 import mrtjp.projectred.lib.GuiLib;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.RedUIContainerScreen;
@@ -13,11 +13,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 
-public class PackagingTableScreen extends RedUIContainerScreen<PackagingTableContainer> {
+public class PackagingTableScreen extends RedUIContainerScreen<PackagingTableMenu> {
 
     public static final ResourceLocation BACKGROUND = new ResourceLocation(ProjectRedFabrication.MOD_ID, "textures/gui/packaging_table.png");
 
-    public PackagingTableScreen(PackagingTableContainer container, Inventory playerInventory, Component title) {
+    public PackagingTableScreen(PackagingTableMenu container, Inventory playerInventory, Component title) {
         super(176, 171, container, playerInventory, title); //TODO size
 
         inventoryLabelX = 8;

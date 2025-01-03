@@ -1,7 +1,7 @@
 package mrtjp.projectred.illumination.block;
 
 import codechicken.multipart.api.RedstoneConnectorBlock;
-import mrtjp.projectred.illumination.tile.IllumarLampTile;
+import mrtjp.projectred.illumination.tile.IllumarLampBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.Material;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class IllumarLampBlock extends Block implements EntityBlock, RedstoneConnectorBlock {
 
@@ -87,7 +86,7 @@ public class IllumarLampBlock extends Block implements EntityBlock, RedstoneConn
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new IllumarLampTile(color, inverted, pos, state);
+        return new IllumarLampBlockEntity(color, inverted, pos, state);
     }
 
     //region Redstone Connector block

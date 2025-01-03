@@ -13,7 +13,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 public class TransposerBlockEntity extends BasePneumaticDeviceBlockEntity implements RedstoneConnector {
 
     public TransposerBlockEntity(BlockPos pos, BlockState state) {
-        super(ExpansionBlocks.TRANSPOSER_BLOCK_TILE.get(), pos, state);
+        super(ExpansionBlocks.TRANSPOSER_BLOCK_ENTITY.get(), pos, state);
     }
 
     //region BaseDeviceTile implementation

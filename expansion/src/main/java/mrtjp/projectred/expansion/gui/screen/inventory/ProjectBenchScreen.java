@@ -4,9 +4,9 @@ import codechicken.lib.colour.EnumColour;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.expansion.ProjectRedExpansion;
-import mrtjp.projectred.expansion.inventory.container.ProjectBenchContainer;
+import mrtjp.projectred.expansion.inventory.container.ProjectBenchMenu;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
-import mrtjp.projectred.expansion.tile.ProjectBenchTile;
+import mrtjp.projectred.expansion.tile.ProjectBenchBlockEntity;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.AbstractButtonNode;
 import mrtjp.projectred.redui.RedUIContainerScreen;
@@ -19,13 +19,13 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
-public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContainer> {
+public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchMenu> {
 
     public static final ResourceLocation BACKGROUND = new ResourceLocation(ProjectRedExpansion.MOD_ID, "textures/gui/project_bench.png");
 
     private boolean isShiftDown = false;
 
-    public ProjectBenchScreen(ProjectBenchContainer container, Inventory playerInventory, Component title) {
+    public ProjectBenchScreen(ProjectBenchMenu container, Inventory playerInventory, Component title) {
         super(176, 208, container, playerInventory, title);
 
         inventoryLabelX = 8;
@@ -77,7 +77,7 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchContain
 
         blit(stack, x, y, 0, 0, getFrame().width(), getFrame().height());
 
-        ProjectBenchTile tile = getMenu().getProjectBenchTile();
+        ProjectBenchBlockEntity tile = getMenu().getProjectBenchTile();
         if (tile.isPlanRecipe()) {
             int missingMask = tile.getCraftingHelper().getMissingIngredientMask();
             Container inputs = tile.getCraftingHelper().getCraftingInventory();

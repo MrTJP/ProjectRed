@@ -1,8 +1,8 @@
 package mrtjp.projectred.expansion.block;
 
-import mrtjp.projectred.core.tile.IBlockEventTile;
+import mrtjp.projectred.core.tile.IBlockEventBlockEntity;
 import mrtjp.projectred.expansion.init.ExpansionBlocks;
-import mrtjp.projectred.expansion.tile.FireStarterTile;
+import mrtjp.projectred.expansion.tile.FireStarterBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelReader;
@@ -20,12 +20,12 @@ public class FireStarterBlock extends BaseDeviceBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new FireStarterTile(pos, state);
+        return new FireStarterBlockEntity(pos, state);
     }
 
     @Override
     protected BlockEntityType<?> getBlockEntityType() {
-        return ExpansionBlocks.FIRE_STARTER_TILE.get();
+        return ExpansionBlocks.FIRE_STARTER_BLOCK_ENTITY.get();
     }
 
     @Override
@@ -33,7 +33,7 @@ public class FireStarterBlock extends BaseDeviceBlock {
         if (super.isFireSource(state, world, pos, side)) return true;
 
         BlockEntity tile = world.getBlockEntity(pos);
-        if (tile instanceof IBlockEventTile) return ((IBlockEventTile) tile).isFireSource(side.ordinal());
+        if (tile instanceof IBlockEventBlockEntity) return ((IBlockEventBlockEntity) tile).isFireSource(side.ordinal());
         return false;
     }
 }

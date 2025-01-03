@@ -4,7 +4,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.packet.ICustomPacketHandler;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.packet.PacketCustomChannelBuilder;
-import mrtjp.projectred.core.tile.IPacketReceiverTile;
+import mrtjp.projectred.core.tile.IPacketReceiverBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.resources.ResourceLocation;
@@ -34,14 +34,14 @@ public class CoreNetwork {
                 .build();
     }
 
-    public static PacketCustom createTileClientPacket(IPacketReceiverTile tile, byte key) {
+    public static PacketCustom createTileClientPacket(IPacketReceiverBlockEntity tile, byte key) {
         PacketCustom packet = new PacketCustom(NET_CHANNEL, NET_TILE_PACKET_TO_CLIENT);
         packet.writePos(tile.getBlockPosition());
         packet.writeByte(key);
         return packet;
     }
 
-    public static PacketCustom createTileServerPacket(IPacketReceiverTile tile, byte key) {
+    public static PacketCustom createTileServerPacket(IPacketReceiverBlockEntity tile, byte key) {
         PacketCustom packet = new PacketCustom(NET_CHANNEL, NET_TILE_PACKET_TO_SERVER);
         packet.writePos(tile.getBlockPosition());
         packet.writeByte(key);
@@ -65,8 +65,8 @@ public class CoreNetwork {
         private void handleTilePacket(Level world, MCDataInput data) {
             BlockEntity tile = world.getBlockEntity(data.readPos());
             int key = data.readUByte();
-            if (tile instanceof IPacketReceiverTile)
-                ((IPacketReceiverTile) tile).receiveUpdateFromServer(key, data);
+            if (tile instanceof IPacketReceiverBlockEntity)
+                ((IPacketReceiverBlockEntity) tile).receiveUpdateFromServer(key, data);
         }
     }
 
@@ -87,8 +87,8 @@ public class CoreNetwork {
         private void handleTilePacket(Level world, MCDataInput data, ServerPlayer sender) {
             BlockEntity tile = world.getBlockEntity(data.readPos());
             int key = data.readUByte();
-            if (tile instanceof IPacketReceiverTile)
-                ((IPacketReceiverTile) tile).receiveUpdateFromClient(key, data, sender);
+            if (tile instanceof IPacketReceiverBlockEntity)
+                ((IPacketReceiverBlockEntity) tile).receiveUpdateFromClient(key, data, sender);
         }
     }
 }
