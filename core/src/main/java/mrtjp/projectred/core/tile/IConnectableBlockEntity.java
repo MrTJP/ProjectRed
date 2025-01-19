@@ -211,7 +211,7 @@ public interface IConnectableBlockEntity extends IBlockEventBlockEntity, IConnec
         CenterLookup lookup = CenterLookup.lookupStraightCenter(getBlockLevel(), getBlockPosition(), s);
 
         if (lookup.tile instanceof IConnectable connectable) {
-            return canConnectPart(connectable, s, -1) && connectable.connectStraight(this, s, -1);
+            return canConnectPart(connectable, s, -1) && connectable.connectStraight(this, s ^ 1, -1);
         }
 
         return false;
