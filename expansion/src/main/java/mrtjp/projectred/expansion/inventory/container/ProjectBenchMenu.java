@@ -65,7 +65,7 @@ public class ProjectBenchMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return !tile.isRemoved(); //TODO
+        return Container.stillValidBlockEntity(tile, player);
     }
 
     //region Utils

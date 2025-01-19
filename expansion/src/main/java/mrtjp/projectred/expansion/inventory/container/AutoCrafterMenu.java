@@ -46,10 +46,10 @@ public class AutoCrafterMenu extends BaseMachineMenu {
         InventoryLib.addInventory(tile.getPlanInventory(), 0, 44, 22, 3, 3, PlanSlot::new, this::addSlot);
     }
 
+    //TODO copied from superclass due to compile bug. Retest in 1.20.4
     @Override
-    public boolean stillValid(Player player) {
-        //TODO move to superclass once reobf bug is fixed
-        return !tile.isRemoved();
+    public boolean stillValid(Player pPlayer) {
+        return Container.stillValidBlockEntity(tile, pPlayer);
     }
 
     public AutoCrafterBlockEntity getAutoCrafterTile() {
