@@ -1,6 +1,8 @@
 package mrtjp.projectred.core.inventory.container;
 
 import mrtjp.projectred.core.tile.BasePoweredBlockEntity;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 
@@ -22,12 +24,10 @@ public abstract class BasePoweredBlockEntityMenu extends AbstractContainerMenu {
         addDataSlot(new SimpleDataSlot(() -> tile.getConductorFlow() >> 16 & 0xFFFF, value -> condFlow = condFlow & 0xFFFF | value << 16));
     }
 
-    // Needs to be implemented by subclass due to reobf bug
-    // TODO revisit in 1.20
-//    @Override
-//    public boolean stillValid(Player player) {
-//        return !tile.isRemoved();
-//    }
+    @Override
+    public boolean stillValid(Player pPlayer) {
+        return Container.stillValidBlockEntity(tile, pPlayer);
+    }
 
     public int getChargeScaled(int scale) {
         return Math.min(scale, scale * condCharge / 1000);

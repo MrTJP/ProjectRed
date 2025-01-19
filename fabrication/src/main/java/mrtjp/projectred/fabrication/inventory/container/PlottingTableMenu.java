@@ -7,6 +7,7 @@ import mrtjp.projectred.fabrication.item.BlankPhotomaskItem;
 import mrtjp.projectred.fabrication.item.ICBlueprintItem;
 import mrtjp.projectred.fabrication.tile.PlottingTableBlockEntity;
 import mrtjp.projectred.lib.InventoryLib;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -40,10 +41,10 @@ public class PlottingTableMenu extends FabricationMachineMenu {
         addSlot(new TakeOnlySlot(tile.getInventory(), 2, 116, 40)); // output
     }
 
+    //TODO copied from superclass due to compile bug. Retest in 1.20.4
     @Override
-    public boolean stillValid(Player player) {
-        //TODO move to superclass once reobf bug is fixed
-        return !tile.isRemoved();
+    public boolean stillValid(Player pPlayer) {
+        return Container.stillValidBlockEntity(tile, pPlayer);
     }
 
     @Override

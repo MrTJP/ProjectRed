@@ -7,6 +7,7 @@ import mrtjp.projectred.fabrication.item.PhotomaskSetItem;
 import mrtjp.projectred.fabrication.item.RoughSiliconWaferItem;
 import mrtjp.projectred.fabrication.tile.LithographyTableBlockEntity;
 import mrtjp.projectred.lib.InventoryLib;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -41,10 +42,10 @@ public class LithographyTableMenu extends FabricationMachineMenu {
         addSlot(new TakeOnlySlot(tile.getInventory(), 3, 110, 49)); // invalid die output
     }
 
+    //TODO copied from superclass due to compile bug. Retest in 1.20.4
     @Override
-    public boolean stillValid(Player player) {
-        //TODO move to superclass once reobf bug is fixed
-        return !tile.isRemoved();
+    public boolean stillValid(Player pPlayer) {
+        return Container.stillValidBlockEntity(tile, pPlayer);
     }
 
     public ItemStack quickMoveStack(Player player, int slotIndex) {

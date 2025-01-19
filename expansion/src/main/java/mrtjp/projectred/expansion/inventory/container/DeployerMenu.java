@@ -4,6 +4,7 @@ import codechicken.lib.inventory.container.ICCLContainerFactory;
 import mrtjp.projectred.expansion.init.ExpansionMenus;
 import mrtjp.projectred.expansion.tile.DeployerBlockEntity;
 import mrtjp.projectred.lib.InventoryLib;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -38,7 +39,7 @@ public class DeployerMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return !tile.isRemoved(); //TODO
+        return Container.stillValidBlockEntity(tile, player);
     }
 
     //region Quickmove
