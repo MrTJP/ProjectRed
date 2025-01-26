@@ -4,8 +4,10 @@ on:
   pull_request:
     branches:
       - main
-      - main/**
       - feature/**
+      - 1.20.1
+      - 1.19.x
+      - 1.18.x
 
 jobs:
   style_check:
