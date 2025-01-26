@@ -44,7 +44,7 @@ jobs:
               ;;
             "alpha")
               publish_maven=true
-              publish_launchers=false
+              publish_launchers=true
               publish_gh_release=false
               version_format="{major}.{minor}.{patch}-alpha+{increment}"
               ;;
