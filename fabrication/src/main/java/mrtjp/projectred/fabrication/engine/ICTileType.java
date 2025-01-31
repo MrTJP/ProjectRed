@@ -49,7 +49,7 @@ public enum ICTileType {
     INSULATED_WHITE_WIRE     (ID_OFFSET_WIRE_RED + 1,  INSULATED_WHITE,      () -> new InsulatedWireTile(0)),
     INSULATED_ORANGE_WIRE    (ID_OFFSET_WIRE_RED + 2,  INSULATED_ORANGE,     () -> new InsulatedWireTile(1)),
     INSULATED_MAGENTA_WIRE   (ID_OFFSET_WIRE_RED + 3,  INSULATED_MAGENTA,    () -> new InsulatedWireTile(2)),
-    INSULATED_LIGHT_BLUE_WIRE(ID_OFFSET_WIRE_RED + 4,  INSULATED_BLUE,       () -> new InsulatedWireTile(3)),
+    INSULATED_LIGHT_BLUE_WIRE(ID_OFFSET_WIRE_RED + 4,  INSULATED_LIGHT_BLUE, () -> new InsulatedWireTile(3)),
     INSULATED_YELLOW_WIRE    (ID_OFFSET_WIRE_RED + 5,  INSULATED_YELLOW,     () -> new InsulatedWireTile(4)),
     INSULATED_LIME_WIRE      (ID_OFFSET_WIRE_RED + 6,  INSULATED_LIME,       () -> new InsulatedWireTile(5)),
     INSULATED_PINK_WIRE      (ID_OFFSET_WIRE_RED + 7,  INSULATED_PINK,       () -> new InsulatedWireTile(6)),
