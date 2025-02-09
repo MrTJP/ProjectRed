@@ -6,15 +6,24 @@ import mrtjp.projectred.expansion.tile.FireStarterBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 import org.jetbrains.annotations.Nullable;
 
 public class FireStarterBlock extends BaseDeviceBlock {
 
     public FireStarterBlock() {
-        super(STONE_PROPERTIES);
+        super(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.NETHER)
+                .instrument(NoteBlockInstrument.BASEDRUM)
+                .requiresCorrectToolForDrops()
+                .strength(3.5F)
+                .sound(SoundType.NETHERRACK));
     }
 
     @Nullable
