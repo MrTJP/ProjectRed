@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public class TransposerBlock extends BaseDeviceBlock {
 
     public TransposerBlock() {
-        super(STONE_PROPERTIES);
+        super(STONE_MACHINE_PROPERTIES);
     }
 
     @Nullable

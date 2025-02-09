@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public class LithographyTableBlock extends FabricationMachineBlock {
 
     public LithographyTableBlock() {
-        super(STONE_PROPERTIES);
+        super(STONE_MACHINE_PROPERTIES);
     }
 
     @Nullable

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public class PlottingTableBlock extends FabricationMachineBlock {
 
     public PlottingTableBlock() {
-        super(ProjectRedBlock.STONE_PROPERTIES);
+        super(ProjectRedBlock.STONE_MACHINE_PROPERTIES);
     }
 
     @Nullable

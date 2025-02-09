@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public class BlockBreakerBlock extends BaseDeviceBlock {
 
     public BlockBreakerBlock() {
-        super(STONE_PROPERTIES);
+        super(STONE_MACHINE_PROPERTIES);
     }
 
     @Nullable
