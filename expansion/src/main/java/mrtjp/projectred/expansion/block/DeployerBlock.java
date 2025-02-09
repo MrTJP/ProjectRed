@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public class DeployerBlock extends BaseDeviceBlock {
 
     public DeployerBlock() {
-        super(STONE_PROPERTIES);
+        super(STONE_MACHINE_PROPERTIES);
     }
 
     @Override
