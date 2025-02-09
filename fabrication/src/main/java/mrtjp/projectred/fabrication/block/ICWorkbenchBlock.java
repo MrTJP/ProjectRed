@@ -18,7 +18,7 @@ public class ICWorkbenchBlock extends ProjectRedBlock {
     public static final BooleanProperty BLUEPRINT_PROPERTY = BooleanProperty.create("blueprint");
 
     public ICWorkbenchBlock() {
-        super(STONE_PROPERTIES);
+        super(STONE_MACHINE_PROPERTIES);
     }
 
     @Nullable

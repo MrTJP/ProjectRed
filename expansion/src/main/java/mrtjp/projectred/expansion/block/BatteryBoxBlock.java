@@ -34,7 +34,7 @@ public class BatteryBoxBlock extends ProjectRedBlock {
     public static final IntegerProperty CHARGE_LEVEL = IntegerProperty.create("charge_level", 0, 8);
 
     public BatteryBoxBlock() {
-        super(WOODEN_PROPERTIES);
+        super(WOODEN_MACHINE_PROPERTIES);
     }
 
     @Nullable

@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -207,6 +208,7 @@ public class ExplorationBlocks {
 
     private static Block createOreBlock(boolean isDeepslate, int minxp, int maxxp) {
         return new DropExperienceBlock(UniformInt.of(minxp, maxxp), BlockBehaviour.Properties.of()
+                .instrument(NoteBlockInstrument.BASEDRUM)
                 .strength(isDeepslate ? 4.5F : 3.0F, 3.0F)
                 .requiresCorrectToolForDrops()
                 .mapColor(isDeepslate ? MapColor.DEEPSLATE : MapColor.STONE)
@@ -214,8 +216,8 @@ public class ExplorationBlocks {
     }
 
     private static Block createElectrotineOreBlock(boolean isDeepslate, int minxp, int maxxp) {
-
         return new ElectrotineOreBlock(UniformInt.of(minxp, maxxp), BlockBehaviour.Properties.of()
+                .instrument(NoteBlockInstrument.BASEDRUM)
                 .strength(isDeepslate ? 4.5F : 3.0F, 3.0F)
                 .requiresCorrectToolForDrops()
                 .mapColor(isDeepslate ? MapColor.DEEPSLATE : MapColor.STONE)
@@ -223,12 +225,13 @@ public class ExplorationBlocks {
     }
 
     private static WallBlock createWallBlock(Supplier<Block> block) {
-        return new WallBlock(BlockBehaviour.Properties.ofFullCopy(block.get()));
+        return new WallBlock(BlockBehaviour.Properties.ofLegacyCopy(block.get()).forceSolidOn());
     }
 
     private static Block createDecorativeStoneBlock(float hardness, float resistance) {
         return new Block(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.STONE)
+                .instrument(NoteBlockInstrument.BASEDRUM)
                 .strength(hardness, resistance)
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.STONE));

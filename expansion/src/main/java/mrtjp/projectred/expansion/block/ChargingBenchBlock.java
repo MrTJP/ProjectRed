@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 public class ChargingBenchBlock extends ProjectRedBlock {
 
     public ChargingBenchBlock() {
-        super(STONE_PROPERTIES);
+        super(STONE_MACHINE_PROPERTIES);
     }
 
     @Nullable

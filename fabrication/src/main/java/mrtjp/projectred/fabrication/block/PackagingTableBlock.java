@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public class PackagingTableBlock extends FabricationMachineBlock {
 
     public PackagingTableBlock() {
-        super(STONE_PROPERTIES);
+        super(STONE_MACHINE_PROPERTIES);
     }
 
     @Nullable

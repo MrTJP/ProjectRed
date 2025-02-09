@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public class AutoCrafterBlock extends BaseMachineBlock {
 
     public AutoCrafterBlock() {
-        super(STONE_PROPERTIES);
+        super(STONE_MACHINE_PROPERTIES);
     }
 
     @Nullable
