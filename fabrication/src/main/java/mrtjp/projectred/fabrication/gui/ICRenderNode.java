@@ -27,7 +27,7 @@ public class ICRenderNode extends ViewportRenderNode {
     private static final int CAMERA_ANIMATION_TIME_MS = 100;
     private static final int FOCUS_ANIMATION_TIME_MS = 400;
     private static final int ZOOM_DIST_MAX = 18;
-    private static final int ZOOM_DIST_MIN = 2;
+    private static final int ZOOM_DIST_MIN = 1;
 
     private final ICWorkbenchEditor editor;
     private final IICRenderNodeEventReceiver eventReceiver;

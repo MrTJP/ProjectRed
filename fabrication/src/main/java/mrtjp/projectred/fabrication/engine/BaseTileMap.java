@@ -6,6 +6,7 @@ import mrtjp.fengine.TileCoord;
 import mrtjp.fengine.tiles.FETile;
 import mrtjp.fengine.tiles.FETileMap;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
+import mrtjp.projectred.fabrication.editor.WorkbenchDimension;
 import net.covers1624.quack.collection.FastStream;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -16,18 +17,14 @@ import static mrtjp.projectred.fabrication.editor.EditorDataUtils.loadTileCoord;
 import static mrtjp.projectred.fabrication.editor.EditorDataUtils.saveTileCoord;
 
 public class BaseTileMap implements FETileMap {
-
-    private static final TileCoord defaultMinBounds = new TileCoord(-8, 0, -8);
-    private static final TileCoord defaultMaxBounds = new TileCoord(7, 0, 7);
-
     private final Map<TileCoord, BaseTile> tileMap = new HashMap<>();
     private final ICWorkbenchEditor editor;
 
     private final Set<IIOConnectionTile> ioTiles = new HashSet<>();
     private final Map<Integer, Map<TileCoord, BaseTile>> layerToTileMap = new HashMap<>();
 
-    private TileCoord minBounds = defaultMinBounds;
-    private TileCoord maxBounds = defaultMaxBounds;
+    private TileCoord minBounds = WorkbenchDimension.SIXTEEN.getMinBounds();
+    private TileCoord maxBounds = WorkbenchDimension.SIXTEEN.getMaxBounds();
 
     public BaseTileMap(ICWorkbenchEditor editor) {
         this.editor = editor;
@@ -47,6 +44,10 @@ public class BaseTileMap implements FETileMap {
 
     public TileCoord getDimensions() {
         return maxBounds.subtract(minBounds).add(1, 1, 1);
+    }
+
+    public String getDimensionsString() {
+        return String.format("%d x %d x %d", getDimensions().x, getDimensions().y, getDimensions().z);
     }
 
     public void setBounds(TileCoord minBounds, TileCoord maxBounds) {
@@ -108,8 +109,8 @@ public class BaseTileMap implements FETileMap {
         tileMap.clear();
         layerToTileMap.clear();
 
-        minBounds = defaultMinBounds;
-        maxBounds = defaultMaxBounds;
+        minBounds = WorkbenchDimension.SIXTEEN.getMinBounds();
+        maxBounds = WorkbenchDimension.SIXTEEN.getMaxBounds();
     }
 
     private void cacheType(TileCoord coord, BaseTile tile) {
