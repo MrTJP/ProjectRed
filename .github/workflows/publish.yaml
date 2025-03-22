@@ -212,12 +212,12 @@ jobs:
 
       - name: Tag and Release
         if: ${{ steps.release_type.outputs.publish_gh_release == 'true' }}
-        uses: softprops/action-gh-release@v0.1.15
+        uses: softprops/action-gh-release@v2
         with:
           body_path: CHANGELOG.md
           tag_name: ${{ steps.versioning.outputs.version_tag }}
           files: |
-            build/libs/*
+            */build/libs/ProjectRed-*.jar
             CHANGELOG.md
             CHANGELOG.txt
 
@@ -245,6 +245,6 @@ jobs:
         with:
           name: project-red-${{ steps.versioning.outputs.version }}
           path: |
-            '*/build/libs/ProjectRed-*.jar'
+            */build/libs/ProjectRed-*.jar
             CHANGELOG.md
             CHANGELOG.txt
