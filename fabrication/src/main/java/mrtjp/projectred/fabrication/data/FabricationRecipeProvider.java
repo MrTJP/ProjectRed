@@ -1,11 +1,14 @@
 package mrtjp.projectred.fabrication.data;
 
 import codechicken.lib.datagen.recipe.RecipeProvider;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
+
+import java.util.concurrent.CompletableFuture;
 
 import static mrtjp.projectred.core.init.CoreItems.PLATE_ITEM;
 import static mrtjp.projectred.core.init.CoreItems.SILICON_ITEM;
@@ -17,8 +20,8 @@ import static mrtjp.projectred.fabrication.init.FabricationItems.*;
 
 public class FabricationRecipeProvider extends RecipeProvider {
 
-    public FabricationRecipeProvider(PackOutput output) {
-        super(output, MOD_ID);
+    public FabricationRecipeProvider(CompletableFuture<HolderLookup.Provider> registries, PackOutput output) {
+        super(registries, output, MOD_ID);
     }
 
     @Override
@@ -46,7 +49,7 @@ public class FabricationRecipeProvider extends RecipeProvider {
         shapedRecipe(LITHOGRAPHY_TABLE_BLOCK.get())
                 .key('g', Blocks.GLASS)
                 .key('t', Tags.Items.GEMS_EMERALD)
-                .key('o', Tags.Items.OBSIDIAN)
+                .key('o', Tags.Items.OBSIDIANS)
                 .key('i', Tags.Items.INGOTS_IRON)
                 .key('w', ItemTags.PLANKS)
                 .key('b', ELECTROTINE_ALLOY_INGOT_TAG)

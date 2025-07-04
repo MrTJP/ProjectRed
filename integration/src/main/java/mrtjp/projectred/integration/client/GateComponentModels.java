@@ -112,49 +112,49 @@ public class GateComponentModels {
 
     public static void onTextureStitchEvent(TextureAtlasStitchedEvent event) {
         //@formatter:off
-        baseIcon                    = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/base")));
-        wireBorderIcon              = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/wire_material_border")));
-        wireOffIcon                 = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/wire_material_off")));
-        wireOnIcon                  = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/wire_material_on")));
+        baseIcon                    = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/base")));
+        wireBorderIcon              = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/wire_material_border")));
+        wireOffIcon                 = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/wire_material_off")));
+        wireOnIcon                  = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/wire_material_on")));
 
-        redstoneTorchOffIcon        = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/redstone_torch_off")));
-        redstoneTorchOnIcon         = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/redstone_torch")));
+        redstoneTorchOffIcon        = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/redstone_torch_off")));
+        redstoneTorchOnIcon         = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/redstone_torch")));
 
-        yellowChipOffIcon           = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/yellow_chip_off")));
-        yellowChipOnIcon            = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/yellow_chip_on")));
-        redChipOffIcon              = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/red_chip_off")));
-        redChipOnIcon               = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/red_chip_on")));
-        minusChipOffIcon            = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/minus_chip_off")));
-        minusChipOnIcon             = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/minus_chip_on")));
-        plusChipOffIcon             = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/plus_chip_off")));
-        plusChipOnIcon              = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/plus_chip_on")));
+        yellowChipOffIcon           = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/yellow_chip_off")));
+        yellowChipOnIcon            = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/yellow_chip_on")));
+        redChipOffIcon              = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/red_chip_off")));
+        redChipOnIcon               = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/red_chip_on")));
+        minusChipOffIcon            = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/minus_chip_off")));
+        minusChipOnIcon             = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/minus_chip_on")));
+        plusChipOffIcon             = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/plus_chip_off")));
+        plusChipOnIcon              = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/plus_chip_on")));
 
-        solarDualMode               = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/solar_dual_mode")));
-        solarSkyMode                = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/solar_sky_mode")));
-        solarBlockMode              = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/solar_block_mode")));
+        solarDualMode               = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/solar_dual_mode")));
+        solarSkyMode                = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/solar_sky_mode")));
+        solarBlockMode              = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/solar_block_mode")));
 
-        rainSensorIcon              = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/rain_sensor")));
-        leverIcon                   = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/lever")));
-        pointerIcon                 = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/pointer")));
-        busXcvrIcon                 = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/bus_xcvr")));
-        nullCellIcon                = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/null_cell")));
-        logicCellIcon               = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/logic_cell")));
-        andCellIcon                 = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/and_cell")));
-        transparentLatchCellIcon    = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/transparent_latch_cell")));
-        busRandIcon                 = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/bus_randomizer")));
-        busConvIcon                 = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/bus_converter")));
-        busInputIcon                = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/bus_input_panel")));
-        segment                     = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/segment_display")));
-        segmentDisp                 = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/segment_display_digit")));
-        icChipIcon                  = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/ic_active")));
-        icChipIconOff               = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/ic_inert")));
-        icHousingIcon               = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/ic_housing")));
-        ioRedstoneConnectorIcon     = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/io_redstone_connector")));
-        ioBundledConnectorIcon      = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/io_bundled_connector")));
-        ioBufferIcon                = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/io_buffer")));
-        ioBundledBufferIcon         = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/io_bundled_buffer")));
-        ioBundledBusIcon            = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/io_bundled_bus")));
-        ioPotentiometerIcon         = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/io_potentiometer")));
+        rainSensorIcon              = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/rain_sensor")));
+        leverIcon                   = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/lever")));
+        pointerIcon                 = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/pointer")));
+        busXcvrIcon                 = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/bus_xcvr")));
+        nullCellIcon                = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/null_cell")));
+        logicCellIcon               = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/logic_cell")));
+        andCellIcon                 = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/and_cell")));
+        transparentLatchCellIcon    = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/transparent_latch_cell")));
+        busRandIcon                 = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/bus_randomizer")));
+        busConvIcon                 = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/bus_converter")));
+        busInputIcon                = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/bus_input_panel")));
+        segment                     = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/segment_display")));
+        segmentDisp                 = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/segment_display_digit")));
+        icChipIcon                  = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/ic_active")));
+        icChipIconOff               = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/ic_inert")));
+        icHousingIcon               = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/ic_housing")));
+        ioRedstoneConnectorIcon     = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/io_redstone_connector")));
+        ioBundledConnectorIcon      = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/io_bundled_connector")));
+        ioBufferIcon                = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/io_buffer")));
+        ioBundledBufferIcon         = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/io_bundled_buffer")));
+        ioBundledBusIcon            = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/io_bundled_bus")));
+        ioPotentiometerIcon         = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/io_potentiometer")));
         //@formatter:on
     }
 
@@ -163,7 +163,7 @@ public class GateComponentModels {
     }
 
     public static Map<String, CCModel> loadModels(String path, BiConsumer<String, CCModel> operation) {
-        Map<String, CCModel> models = new OBJParser(new ResourceLocation(MOD_ID, "obj/" + path + ".obj"))
+        Map<String, CCModel> models = new OBJParser(ResourceLocation.fromNamespaceAndPath(MOD_ID, "obj/" + path + ".obj"))
                 .ignoreMtl()
                 .quads()
                 .parse();
@@ -586,7 +586,7 @@ public class GateComponentModels {
         }
 
         private static CCModel[] generateModels(String textureName) {
-            Colour[] data = TextureUtils.loadTextureColours(new ResourceLocation(MOD_ID, "textures/block/surface/" + textureName + ".png"));
+            Colour[] data = TextureUtils.loadTextureColours(ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/block/surface/" + textureName + ".png"));
             List<Rectangle4i> rects = rectangulate(data);
             CCModel model = CCModel.quadModel(rects.size() * 40);
             int i = 0;
@@ -1495,7 +1495,7 @@ public class GateComponentModels {
 
         public static final FabricatedICModel INSTANCE = new FabricatedICModel();
 
-        private static final Style UNIFORM = Style.EMPTY.withFont(new ResourceLocation("minecraft", "uniform"));
+        private static final Style UNIFORM = Style.EMPTY.withFont(ResourceLocation.fromNamespaceAndPath("minecraft", "uniform"));
         private static final CCModel[] platformModel = bakeOrients(fabIC.get("platform"));
         private static final CCModel[] icChipModel = bakeOrients(fabIC.get("ic"));
 
@@ -1528,7 +1528,7 @@ public class GateComponentModels {
 
             // Draw text
             mStack.pushPose();
-            mStack.mulPoseMatrix(m.toMatrix4f());
+            mStack.mulPose(m.toMatrix4f());
             fr.drawInBatch(nameComponent, 0, 0, argb, false, mStack.last().pose(), bufferSource, Font.DisplayMode.NORMAL, 0, packedLight);
             mStack.popPose();
         }

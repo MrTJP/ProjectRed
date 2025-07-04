@@ -37,7 +37,6 @@ public class ExplorationBlockTagsProvider extends BlockTagsProvider {
                 .addTag(RUBY_ORES_BLOCK_TAG)
                 .addTag(SAPPHIRE_ORES_BLOCK_TAG)
                 .addTag(PERIDOT_ORES_BLOCK_TAG)
-                .addTag(COPPER_ORES_BLOCK_TAG)
                 .addTag(TIN_ORES_BLOCK_TAG)
                 .addTag(SILVER_ORES_BLOCK_TAG)
                 .addTag(ELECTROTINE_ORES_BLOCK_TAG);
@@ -46,7 +45,6 @@ public class ExplorationBlockTagsProvider extends BlockTagsProvider {
                 .addTag(RUBY_STORAGE_BLOCK_TAG)
                 .addTag(SAPPHIRE_STORAGE_BLOCK_TAG)
                 .addTag(PERIDOT_STORAGE_BLOCK_TAG)
-                .addTag(COPPER_STORAGE_BLOCK_TAG)
                 .addTag(ELECTROTINE_STORAGE_BLOCK_TAG)
                 .addTag(RAW_TIN_STORAGE_BLOCK_TAG)
                 .addTag(TIN_STORAGE_BLOCK_TAG)

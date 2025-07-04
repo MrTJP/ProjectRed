@@ -2,23 +2,24 @@ package mrtjp.projectred.fabrication.tile;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.util.ServerUtils;
+import codechicken.lib.inventory.container.CCLMenuType;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.core.inventory.BaseContainer;
-import mrtjp.projectred.fabrication.editor.EditorDataUtils;
 import mrtjp.projectred.fabrication.init.FabricationBlocks;
 import mrtjp.projectred.fabrication.init.FabricationItems;
 import mrtjp.projectred.fabrication.inventory.container.LithographyTableMenu;
 import mrtjp.projectred.fabrication.item.BaseSiliconWaferItem;
 import mrtjp.projectred.fabrication.item.PhotomaskSetItem;
+import mrtjp.projectred.fabrication.item.component.ICDataComponent;
 import mrtjp.projectred.fabrication.lithography.ProcessNode;
 import mrtjp.projectred.fabrication.lithography.WaferType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -49,15 +50,15 @@ public class LithographyTableBlockEntity extends FabricationMachineBlockEntity {
     }
 
     @Override
-    public void saveToNBT(CompoundTag tag) {
-        super.saveToNBT(tag);
-        inventory.saveTo(tag, "inventory");;
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.saveToNBT(tag, lookupProvider);
+        inventory.saveTo(tag, "inventory", lookupProvider);;
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
-        super.loadFromNBT(tag);
-        inventory.loadFrom(tag, "inventory");
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.loadFromNBT(tag, lookupProvider);
+        inventory.loadFrom(tag, "inventory", lookupProvider);
     }
 
     @Override
@@ -69,14 +70,14 @@ public class LithographyTableBlockEntity extends FabricationMachineBlockEntity {
     }
 
     @Override
-    public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
+    public ItemInteractionResult useItemOn(ItemStack itemStack, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!getLevel().isClientSide) {
-            ServerUtils.openContainer((ServerPlayer) player,
+            CCLMenuType.openMenu((ServerPlayer) player,
                     new SimpleMenuProvider((id, inv, p) -> new LithographyTableMenu(inv, this, id), getBlockState().getBlock().getName()),
                     p -> p.writePos(getBlockPos()));
         }
 
-        return InteractionResult.sidedSuccess(getLevel().isClientSide);
+        return ItemInteractionResult.sidedSuccess(getLevel().isClientSide);
     }
 
     @Override
@@ -103,7 +104,10 @@ public class LithographyTableBlockEntity extends FabricationMachineBlockEntity {
         if (!(slot0.getItem() instanceof PhotomaskSetItem)) return false;
         if (!(slot1.getItem() instanceof BaseSiliconWaferItem)) return false;
 
-        if (!EditorDataUtils.canFabricate(slot0.getTag())) return false;
+        var component = ICDataComponent.getComponent(slot0);
+        if (component == null || !component.canFabricate()) {
+            return false;
+        }
 
         return inventory.getItem(2).isEmpty() && inventory.getItem(3).isEmpty();
     }

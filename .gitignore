@@ -16,6 +16,8 @@ Thumbs.db
 /*/build/
 /run/
 /*/run/
+/runs/
+/*/runs/
 /projectFilesBackup/
 #IDEA files from Gradle
 .idea/

@@ -113,7 +113,7 @@ public abstract class MultipartLightProperties {
     }
 
     public static Map<String, CCModel> parseCorrectedModel(String name) {
-        Map<String, CCModel> models = new OBJParser(new ResourceLocation(MOD_ID, "obj/" + name + ".obj"))
+        Map<String, CCModel> models = new OBJParser(ResourceLocation.fromNamespaceAndPath(MOD_ID, "obj/" + name + ".obj"))
                 .ignoreMtl()
                 .quads()
                 .parse();
@@ -146,8 +146,7 @@ public abstract class MultipartLightProperties {
     public static Cuboid6[] sidedBoxes(Cuboid6 box) {
         Cuboid6[] boxes = new Cuboid6[6];
         boxes[0] = box.copy();
-        for (int s = 1; s < 6; s++)
-            boxes[s] = box.copy().apply(Rotation.sideRotations[s].at(Vector3.CENTER));
+        for (int s = 1; s < 6; s++) { boxes[s] = box.copy().apply(Rotation.sideRotations[s].at(Vector3.CENTER)); }
         return boxes;
     }
     //endregion

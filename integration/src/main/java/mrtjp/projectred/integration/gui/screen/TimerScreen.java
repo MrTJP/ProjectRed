@@ -7,6 +7,7 @@ import mrtjp.projectred.integration.part.GatePart;
 import mrtjp.projectred.lib.Point;
 import mrtjp.projectred.redui.ButtonNode;
 import mrtjp.projectred.redui.RedUIScreen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +18,7 @@ import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
 public class TimerScreen extends RedUIScreen {
 
-    private static final ResourceLocation BACKGROUND = new ResourceLocation(MOD_ID, "textures/gui/timer_gate.png");
+    private static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/timer_gate.png");
 
     private final GatePart gate;
     private final ComplexGatePart.ITimerGuiLogic timerGate;
@@ -41,7 +42,7 @@ public class TimerScreen extends RedUIScreen {
         b.setSize(w, h);
         b.setButtonText(text);
         b.setClickFunction(() -> {
-            PacketCustom packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.INCR_TIMER_FROM_CLIENT);
+            PacketCustom packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.INCR_TIMER_FROM_CLIENT, Minecraft.getInstance().level.registryAccess());
             IntegrationNetwork.writePartIndex(packet, gate);
             packet.writeShort(delta);
             packet.sendToServer();

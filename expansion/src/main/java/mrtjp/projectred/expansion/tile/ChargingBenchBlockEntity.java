@@ -2,6 +2,7 @@ package mrtjp.projectred.expansion.tile;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.inventory.container.CCLMenuType;
 import codechicken.lib.util.ServerUtils;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.core.block.ProjectRedBlock;
@@ -12,6 +13,7 @@ import mrtjp.projectred.expansion.item.IChargable;
 import mrtjp.projectred.lib.InventoryLib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
@@ -44,19 +46,19 @@ public class ChargingBenchBlockEntity extends LowLoadPoweredBlockEntity {
     }
 
     @Override
-    public void saveToNBT(CompoundTag tag) {
-        super.saveToNBT(tag);
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.saveToNBT(tag, lookupProvider);
         tag.putInt("storage", powerStored);
         tag.putByte("chargeSlot", (byte) chargeSlot);
-        inventory.saveTo(tag, "inventory");
+        inventory.saveTo(tag, "inventory", lookupProvider);
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
-        super.loadFromNBT(tag);
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.loadFromNBT(tag, lookupProvider);
         powerStored = tag.getInt("storage");
         chargeSlot = tag.getByte("chargeSlot") & 0xFF;
-        inventory.loadFrom(tag, "inventory");
+        inventory.loadFrom(tag, "inventory", lookupProvider);
     }
 
     @Override
@@ -70,9 +72,9 @@ public class ChargingBenchBlockEntity extends LowLoadPoweredBlockEntity {
     }
 
     @Override
-    public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(Player player, BlockHitResult hit) {
         if (!getLevel().isClientSide) {
-            ServerUtils.openContainer(
+            CCLMenuType.openMenu(
                     (ServerPlayer) player,
                     new SimpleMenuProvider(
                             (id, inv, p) -> new ChargingBenchMenu(inv, this, id),

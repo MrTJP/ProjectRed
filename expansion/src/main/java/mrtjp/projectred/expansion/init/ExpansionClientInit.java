@@ -7,16 +7,16 @@ import mrtjp.projectred.expansion.MovementManager;
 import mrtjp.projectred.expansion.TubeType;
 import mrtjp.projectred.expansion.client.*;
 import mrtjp.projectred.expansion.gui.screen.inventory.*;
-import mrtjp.projectred.expansion.item.RecipePlanItem;
-import mrtjp.projectred.expansion.tile.BatteryBoxBlockEntity;
+import mrtjp.projectred.expansion.item.BatteryBoxStorageComponent;
+import mrtjp.projectred.expansion.item.RecipePlanComponent;
 import net.covers1624.quack.util.SneakyUtils;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
@@ -28,11 +28,14 @@ import static mrtjp.projectred.expansion.init.ExpansionParts.FRAME_PART;
 @SuppressWarnings("DataFlowIssue")
 public class ExpansionClientInit {
 
-    public static final ResourceLocation ITEM_MODEL_PROPERTY_CHARGE_LEVEL = new ResourceLocation(MOD_ID, "charge_level");
-    public static final ResourceLocation ITEM_MODEL_PROPERTY_WRITTEN_RECIPE_PLAN = new ResourceLocation(MOD_ID, "written");
+    public static final ResourceLocation ITEM_MODEL_PROPERTY_CHARGE_LEVEL = ResourceLocation.fromNamespaceAndPath(MOD_ID, "charge_level");
+    public static final ResourceLocation ITEM_MODEL_PROPERTY_WRITTEN_RECIPE_PLAN = ResourceLocation.fromNamespaceAndPath(MOD_ID, "written");
 
     public static void init(IEventBus modEventBus) {
         modEventBus.addListener(ExpansionClientInit::clientSetup);
+
+        // Register menu screens
+        modEventBus.addListener(ExpansionClientInit::onRegisterMenuScreensEvent);
 
         // MovementManager hooks
         NeoForge.EVENT_BUS.addListener(MovementManager::onRenderLevelStage);
@@ -50,13 +53,6 @@ public class ExpansionClientInit {
     }
 
     private static void clientSetup(final FMLClientSetupEvent event) {
-
-        // Register screens
-        MenuScreens.register(PROJECT_BENCH_MENU.get(), ProjectBenchScreen::new);
-        MenuScreens.register(BATTERY_BOX_MENU.get(), BatteryBoxScreen::new);
-        MenuScreens.register(AUTO_CRAFTER_MENU.get(), AutoCrafterScreen::new);
-        MenuScreens.register(CHARGING_BENCH_MENU.get(), ChargingBenchScreen::new);
-        MenuScreens.register(DEPLOYER_MENU.get(), DeployerScreen::new);
 
         // Register item model properties
         addItemModelProperties();
@@ -78,14 +74,23 @@ public class ExpansionClientInit {
         }
     }
 
+    private static void onRegisterMenuScreensEvent(RegisterMenuScreensEvent event) {
+        event.register(PROJECT_BENCH_MENU.get(), ProjectBenchScreen::new);
+        event.register(BATTERY_BOX_MENU.get(), BatteryBoxScreen::new);
+        event.register(AUTO_CRAFTER_MENU.get(), AutoCrafterScreen::new);
+        event.register(CHARGING_BENCH_MENU.get(), ChargingBenchScreen::new);
+        event.register(DEPLOYER_MENU.get(), DeployerScreen::new);
+    }
+
     private static void addItemModelProperties() {
         ItemProperties.register(BATTERY_BOX_BLOCK.get().asItem(), ITEM_MODEL_PROPERTY_CHARGE_LEVEL, (stack, world, entity, seed) -> {
-            if (stack.hasTag()) {
-                return stack.getTag().getInt(BatteryBoxBlockEntity.TAG_KEY_CHARGE_LEVEL_STATE);
-            }
-            return 0.0F;
+            var component = BatteryBoxStorageComponent.getComponent(stack);
+            return component != null ? component.storedPowerRenderLevel() : 0.0F;
         });
 
-        ItemProperties.register(RECIPE_PLAN_ITEM.get(), ITEM_MODEL_PROPERTY_WRITTEN_RECIPE_PLAN, (stack, world, entity, seed) -> RecipePlanItem.hasRecipeInside(stack) ? 1.0F : 0.0F);
+        ItemProperties.register(RECIPE_PLAN_ITEM.get(), ITEM_MODEL_PROPERTY_WRITTEN_RECIPE_PLAN, (stack, world, entity, seed) -> {
+            var recipeData = RecipePlanComponent.getComponent(stack);
+            return recipeData != null && recipeData.isRecipeValid() ? 1.0F : 0.0F;
+        });
     }
 }

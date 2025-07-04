@@ -196,7 +196,8 @@ public class ICRenderNode extends ViewportRenderNode {
                 renderStack.translate(entry.getKey().x, y, entry.getKey().z);
                 ccrs.bind(ICRenderTypes.layersRenderType, getter, renderStack);
 
-                entry.getValue().renderTile(ccrs, RedundantTransformation.INSTANCE, Minecraft.getInstance().getPartialTick());
+                //TODO [1.21.1] Is this valid? Minecraft.getInstance().getPartialTick() -> partialFrame? Why was partialFrame not used here before?
+                entry.getValue().renderTile(ccrs, RedundantTransformation.INSTANCE, partialFrame);
 
                 renderStack.popPose();
             }

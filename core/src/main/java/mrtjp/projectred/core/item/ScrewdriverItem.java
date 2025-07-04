@@ -3,6 +3,8 @@ package mrtjp.projectred.core.item;
 import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.Configurator;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -23,14 +25,14 @@ public class ScrewdriverItem extends Item implements IScrewdriver {
     }
 
     @Override
-    public boolean canUse(Player player, ItemStack stack) {
+    public boolean canUse(Player player, InteractionHand hand) {
         return true;
     }
 
     @Override
-    public void damageScrewdriver(Player player, ItemStack stack) {
+    public void damageScrewdriver(Player player, InteractionHand hand) {
         if (!Configurator.unbreakableScrewdriver) {
-            stack.hurtAndBreak(1, player, p -> {});
+            player.getItemInHand(hand).hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
         }
     }
 }

@@ -1,6 +1,6 @@
 package mrtjp.projectred.expansion.inventory.container;
 
-import codechicken.lib.inventory.container.ICCLContainerFactory;
+import codechicken.lib.inventory.container.CCLMenuType;
 import mrtjp.projectred.core.inventory.container.BasePoweredBlockEntityMenu;
 import mrtjp.projectred.core.inventory.container.SimpleDataSlot;
 import mrtjp.projectred.expansion.init.ExpansionMenus;
@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class BatteryBoxMenu extends BasePoweredBlockEntityMenu {
 
-    public static final ICCLContainerFactory<BatteryBoxMenu> FACTORY = (windowId, inventory, packet) -> {
+    public static final CCLMenuType<BatteryBoxMenu> FACTORY = (windowId, inventory, packet) -> {
         BlockEntity tile = inventory.player.level().getBlockEntity(packet.readPos());
         if (!(tile instanceof BatteryBoxBlockEntity)) return null;
 

@@ -33,7 +33,7 @@ import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class ICWorkbenchScreen extends RedUIScreen {
 
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(ProjectRedFabrication.MOD_ID, "textures/gui/ic_workbench.png");
+    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(ProjectRedFabrication.MOD_ID, "textures/gui/ic_workbench.png");
 
     private final ICWorkbenchBlockEntity tile;
     private final ICWorkbenchEditor editor;

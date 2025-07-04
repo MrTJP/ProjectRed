@@ -7,6 +7,7 @@ import mrtjp.projectred.api.Frame;
 import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.expansion.data.*;
 import mrtjp.projectred.expansion.init.*;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
@@ -50,6 +51,7 @@ public class ProjectRedExpansion {
     public static final DeferredRegister<MultipartType<?>> PART_TYPES = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
     public static final DeferredRegister<PartConverter> PART_CONVERTERS = DeferredRegister.create(PartConverter.PART_CONVERTERS, MOD_ID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
+    public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENT_TYPES = DeferredRegister.create(BuiltInRegistries.DATA_COMPONENT_TYPE, MOD_ID);
 
     private static @Nullable ModContainer container;
 
@@ -62,6 +64,7 @@ public class ProjectRedExpansion {
         ExpansionSounds.register();
         ExpansionParts.register();
         ExpansionCreativeModeTabs.register();
+        ExpansionDataComponents.register();
     }
 
     public ProjectRedExpansion(ModContainer container, IEventBus modEventBus) {
@@ -86,6 +89,7 @@ public class ProjectRedExpansion {
         PART_TYPES.register(modEventBus);
         PART_CONVERTERS.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
+        DATA_COMPONENT_TYPES.register(modEventBus);
 
         // MovementManager hooks
         NeoForge.EVENT_BUS.addListener(MovementManager::onChunkWatchEvent);
@@ -124,8 +128,8 @@ public class ProjectRedExpansion {
         generator.addProvider(event.includeClient(), new ExpansionSoundProvider(output, fileHelper));
 
         generator.addProvider(event.includeServer(), new ExpansionBlockTagsProvider(output, event.getLookupProvider(), fileHelper));
-        generator.addProvider(event.includeServer(), new ExpansionRecipeProvider(output));
-        generator.addProvider(event.includeServer(), new ExpansionLootTableProvider(output));
+        generator.addProvider(event.includeServer(), new ExpansionRecipeProvider(event.getLookupProvider(), output));
+        generator.addProvider(event.includeServer(), new ExpansionLootTableProvider(event.getLookupProvider(), output));
     }
 
     public void onRegisterCaps(RegisterCapabilitiesEvent event) {

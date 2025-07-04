@@ -1,6 +1,6 @@
 package mrtjp.projectred.fabrication.init;
 
-import codechicken.lib.inventory.container.ICCLContainerType;
+import codechicken.lib.inventory.container.CCLMenuType;
 import mrtjp.projectred.fabrication.inventory.container.LithographyTableMenu;
 import mrtjp.projectred.fabrication.inventory.container.PackagingTableMenu;
 import mrtjp.projectred.fabrication.inventory.container.PlottingTableMenu;
@@ -20,8 +20,8 @@ public class FabricationMenus {
 
     public static void register() {
 
-        PLOTTING_TABLE_MENU = MENU_TYPES.register(ID_PLOTTING_TABLE, () -> ICCLContainerType.create(PlottingTableMenu.FACTORY));
-        LITHOGRAPHY_TABLE_MENU = MENU_TYPES.register(ID_LITHOGRAPHY_TABLE, () -> ICCLContainerType.create(LithographyTableMenu.FACTORY));
-        PACKAGING_TABLE_MENU = MENU_TYPES.register(ID_PACKAGING_TABLE, () -> ICCLContainerType.create(PackagingTableMenu.FACTORY));
+        PLOTTING_TABLE_MENU = MENU_TYPES.register(ID_PLOTTING_TABLE, () -> CCLMenuType.create(PlottingTableMenu.FACTORY));
+        LITHOGRAPHY_TABLE_MENU = MENU_TYPES.register(ID_LITHOGRAPHY_TABLE, () -> CCLMenuType.create(LithographyTableMenu.FACTORY));
+        PACKAGING_TABLE_MENU = MENU_TYPES.register(ID_PACKAGING_TABLE, () -> CCLMenuType.create(PackagingTableMenu.FACTORY));
     }
 }

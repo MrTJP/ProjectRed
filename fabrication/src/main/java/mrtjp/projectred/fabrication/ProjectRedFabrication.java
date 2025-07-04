@@ -3,6 +3,7 @@ package mrtjp.projectred.fabrication;
 import codechicken.multipart.api.MultipartType;
 import mrtjp.projectred.fabrication.data.*;
 import mrtjp.projectred.fabrication.init.*;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
@@ -39,6 +40,7 @@ public class ProjectRedFabrication {
     public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(BuiltInRegistries.MENU, MOD_ID);
     public static final DeferredRegister<MultipartType<?>> PARTS = DeferredRegister.create(MultipartType.MULTIPART_TYPES, MOD_ID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
+    public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENT_TYPES = DeferredRegister.create(BuiltInRegistries.DATA_COMPONENT_TYPE, MOD_ID);
 
     private static @Nullable ModContainer container;
 
@@ -48,6 +50,7 @@ public class ProjectRedFabrication {
         FabricationItems.register();
         FabricationParts.register();
         FabricationCreativeModeTab.register();
+        FabricationDataComponents.register();
     }
 
     public ProjectRedFabrication(ModContainer container, IEventBus modEventBus) {
@@ -66,6 +69,7 @@ public class ProjectRedFabrication {
         MENU_TYPES.register(modEventBus);
         PARTS.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
+        DATA_COMPONENT_TYPES.register(modEventBus);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -82,7 +86,7 @@ public class ProjectRedFabrication {
         generator.addProvider(event.includeClient(), new FabricationLanguageProvider(output));
 
         generator.addProvider(event.includeServer(), new FabricationBlockTagsProvider(output, event.getLookupProvider(), fileHelper));
-        generator.addProvider(event.includeServer(), new FabricationLootTableProvider(output));
-        generator.addProvider(event.includeServer(), new FabricationRecipeProvider(output));
+        generator.addProvider(event.includeServer(), new FabricationLootTableProvider(output, event.getLookupProvider()));
+        generator.addProvider(event.includeServer(), new FabricationRecipeProvider(event.getLookupProvider(), output));
     }
 }

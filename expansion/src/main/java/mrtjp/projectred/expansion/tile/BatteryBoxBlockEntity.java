@@ -2,20 +2,25 @@ package mrtjp.projectred.expansion.tile;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.util.ServerUtils;
+import codechicken.lib.inventory.container.CCLMenuType;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.core.inventory.BaseContainer;
 import mrtjp.projectred.expansion.block.BatteryBoxBlock;
 import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import mrtjp.projectred.expansion.inventory.container.BatteryBoxMenu;
+import mrtjp.projectred.expansion.item.BatteryBoxStorageComponent;
 import mrtjp.projectred.expansion.item.IChargable;
 import mrtjp.projectred.expansion.item.IRechargableBattery;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
-import net.minecraft.world.*;
+import net.minecraft.world.Container;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -25,14 +30,10 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 import static mrtjp.projectred.expansion.ProjectRedExpansion.LOGGER;
 
 public class BatteryBoxBlockEntity extends LowLoadPoweredBlockEntity {
-
-    public static final String TAG_KEY_POWER_STORED = "power_stored";
-    public static final String TAG_KEY_CHARGE_LEVEL_STATE = "charge_level";
 
     private final BatteryBoxInventory inventory = new BatteryBoxInventory();
     private final IItemHandler[] handlers = {
@@ -40,6 +41,7 @@ public class BatteryBoxBlockEntity extends LowLoadPoweredBlockEntity {
             new SidedInvWrapper(inventory, Direction.UP),
     };
 
+    // Stored power in kW
     private int powerStored = 0;
 
     public BatteryBoxBlockEntity(BlockPos pos, BlockState state) {
@@ -48,17 +50,17 @@ public class BatteryBoxBlockEntity extends LowLoadPoweredBlockEntity {
     }
 
     @Override
-    public void saveToNBT(CompoundTag tag) {
-        super.saveToNBT(tag);
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.saveToNBT(tag, lookupProvider);
         tag.putInt("storage", powerStored);
-        inventory.saveTo(tag, "inventory");
+        inventory.saveTo(tag, "inventory", lookupProvider);
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
-        super.loadFromNBT(tag);
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.loadFromNBT(tag, lookupProvider);
         powerStored = tag.getInt("storage");
-        inventory.loadFrom(tag, "inventory");
+        inventory.loadFrom(tag, "inventory", lookupProvider);
     }
 
     @Override
@@ -72,9 +74,9 @@ public class BatteryBoxBlockEntity extends LowLoadPoweredBlockEntity {
     }
 
     @Override
-    public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(Player player, BlockHitResult hit) {
         if (!getLevel().isClientSide) {
-            ServerUtils.openContainer(
+            CCLMenuType.openMenu(
                     (ServerPlayer) player,
                     new SimpleMenuProvider(
                             (id, inv, p) -> new BatteryBoxMenu(inv, this, id),
@@ -88,8 +90,9 @@ public class BatteryBoxBlockEntity extends LowLoadPoweredBlockEntity {
     @Override
     public void onBlockPlaced(@Nullable LivingEntity player, ItemStack item) {
         super.onBlockPlaced(player, item);
-        if (!getBlockLevel().isClientSide && item.hasTag() && Objects.requireNonNull(item.getTag()).contains(TAG_KEY_POWER_STORED)) {
-            powerStored = item.getTag().getInt(TAG_KEY_POWER_STORED);
+        var component = BatteryBoxStorageComponent.getComponent(item);
+        if (component != null) {
+            powerStored = component.storedPower();
             pushBlockState();
         }
     }
@@ -103,9 +106,8 @@ public class BatteryBoxBlockEntity extends LowLoadPoweredBlockEntity {
     public ItemStack createStackWithStoredPower() {
         ItemStack stack = new ItemStack(ExpansionBlocks.BATTERY_BOX_BLOCK.get(), 1);
         if (powerStored > 0) {
-            CompoundTag tag = stack.getOrCreateTag();
-            tag.putInt(TAG_KEY_POWER_STORED, powerStored);
-            tag.putInt(TAG_KEY_CHARGE_LEVEL_STATE, getPowerStoredScaled(8));
+            var component = new BatteryBoxStorageComponent(powerStored, getPowerStoredScaled(8));
+            BatteryBoxStorageComponent.setComponent(stack, component);
         }
         return stack;
     }

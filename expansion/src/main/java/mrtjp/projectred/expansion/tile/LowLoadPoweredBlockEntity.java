@@ -6,6 +6,7 @@ import mrtjp.projectred.core.power.ILowLoadPowerLine;
 import mrtjp.projectred.core.power.PowerConductor;
 import mrtjp.projectred.core.tile.BasePoweredBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,15 +22,15 @@ public abstract class LowLoadPoweredBlockEntity extends BasePoweredBlockEntity i
     }
 
     @Override
-    public void saveToNBT(CompoundTag tag) {
-        super.saveToNBT(tag);
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.saveToNBT(tag, lookupProvider);
         conductor.save(tag);
         tag.putInt("chargeFlow", chargeFlow);
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
-        super.loadFromNBT(tag);
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.loadFromNBT(tag, lookupProvider);
         conductor.load(tag);
         chargeFlow = tag.getInt("chargeFlow");
     }

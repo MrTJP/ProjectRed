@@ -1,6 +1,7 @@
 package mrtjp.projectred.expansion.pneumatics;
 
 import mrtjp.projectred.expansion.part.PneumaticTubePayload;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -42,26 +43,26 @@ public class PneumaticQueue {
     }
 
     //region Save/Load
-    public void save(CompoundTag tag) {
+    public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         var payloads = new ListTag();
         // save to list
         for (var payload : queue) {
             var payloadTag = new CompoundTag();
-            payload.save(payloadTag);
+            payload.save(payloadTag, lookupProvider);
             payloads.add(payloadTag);
         }
         tag.put("payloads", payloads);
         tag.putBoolean("backstuffed", backStuffed);
     }
 
-    public void load(CompoundTag tag) {
+    public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         queue.clear();
         // Load from list
         var payloads = tag.getList("payloads", Tag.TAG_COMPOUND);
         for (int i = 0; i < payloads.size(); i++) {
             var payloadTag = payloads.getCompound(i);
             var payload = new PneumaticTubePayload();
-            payload.load(payloadTag);
+            payload.load(payloadTag, lookupProvider);
             queue.addLast(payload);
         }
         backStuffed = tag.getBoolean("backstuffed");

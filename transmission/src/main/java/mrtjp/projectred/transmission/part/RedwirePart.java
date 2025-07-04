@@ -16,6 +16,7 @@ import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.core.part.*;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
 import static mrtjp.projectred.core.RedstonePropagator.FORCE;
@@ -33,14 +34,14 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
 
     //region Save/Load
     @Override
-    public void save(CompoundTag tag) {
-        super.save(tag);
+    public void save(CompoundTag tag, HolderLookup.Provider registries) {
+        super.save(tag, registries);
         tag.putByte("signal", signal);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void load(CompoundTag tag, HolderLookup.Provider registries) {
+        super.load(tag, registries);
         signal = tag.getByte("signal");
     }
 

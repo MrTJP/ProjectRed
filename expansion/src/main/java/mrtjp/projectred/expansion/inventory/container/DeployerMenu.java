@@ -1,6 +1,6 @@
 package mrtjp.projectred.expansion.inventory.container;
 
-import codechicken.lib.inventory.container.ICCLContainerFactory;
+import codechicken.lib.inventory.container.CCLMenuType;
 import mrtjp.projectred.expansion.init.ExpansionMenus;
 import mrtjp.projectred.expansion.tile.DeployerBlockEntity;
 import mrtjp.projectred.lib.InventoryLib;
@@ -12,10 +12,12 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import java.util.Objects;
+
 public class DeployerMenu extends AbstractContainerMenu {
 
-    public static final ICCLContainerFactory<DeployerMenu> FACTORY = (windowId, playerInv, packet) -> {
-        BlockEntity tile = playerInv.player.level().getBlockEntity(packet.readPos());
+    public static final CCLMenuType<DeployerMenu> FACTORY = (windowId, playerInv, packet) -> {
+        BlockEntity tile = playerInv.player.level().getBlockEntity(Objects.requireNonNull(packet).readPos());
         if (!(tile instanceof DeployerBlockEntity dbe)) return null;
         return new DeployerMenu(playerInv, dbe, windowId);
     };

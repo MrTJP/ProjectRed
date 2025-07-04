@@ -7,8 +7,9 @@ import mrtjp.projectred.core.inventory.BaseContainer;
 import mrtjp.projectred.expansion.CraftingHelper;
 import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import mrtjp.projectred.expansion.inventory.container.AutoCrafterMenu;
-import mrtjp.projectred.expansion.item.RecipePlanItem;
+import mrtjp.projectred.expansion.item.RecipePlanComponent;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -29,7 +30,8 @@ public class AutoCrafterBlockEntity extends BaseMachineBlockEntity implements Cr
     private final BaseContainer planInventory = new BaseContainer(9) {
         @Override
         public boolean canPlaceItem(int slot, ItemStack stack) {
-            return RecipePlanItem.hasRecipeInside(stack);
+            var recipeData = RecipePlanComponent.getComponent(stack);
+            return recipeData != null && recipeData.isRecipeValid();
         }
     };
     private final BaseContainer storageInventory = new BaseContainer(18);
@@ -50,18 +52,18 @@ public class AutoCrafterBlockEntity extends BaseMachineBlockEntity implements Cr
     }
 
     @Override
-    public void saveToNBT(CompoundTag tag) {
-        super.saveToNBT(tag);
-        storageInventory.saveTo(tag, "storage_inv");
-        planInventory.saveTo(tag, "plan_inv");
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.saveToNBT(tag, lookupProvider);
+        storageInventory.saveTo(tag, "storage_inv", lookupProvider);
+        planInventory.saveTo(tag, "plan_inv", lookupProvider);
         tag.putByte("plan_slot", (byte) planSlot);
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
-        super.loadFromNBT(tag);
-        storageInventory.loadFrom(tag, "storage_inv");
-        planInventory.loadFrom(tag, "plan_inv");
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.loadFromNBT(tag, lookupProvider);
+        storageInventory.loadFrom(tag, "storage_inv", lookupProvider);
+        planInventory.loadFrom(tag, "plan_inv", lookupProvider);
         planSlot = tag.getByte("plan_slot") & 0xFF;
     }
 
@@ -130,9 +132,9 @@ public class AutoCrafterBlockEntity extends BaseMachineBlockEntity implements Cr
         if (recipeNeedsUpdate) {
             recipeNeedsUpdate = false;
 
-            ItemStack plan = planInventory.getItem(planSlot);
-            if (RecipePlanItem.hasRecipeInside(plan)) {
-                RecipePlanItem.loadPlanInputsToGrid(craftingGrid, plan);
+            var recipeData = RecipePlanComponent.getComponent(planInventory.getItem(planSlot));
+            if (recipeData != null && recipeData.isRecipeValid()) {
+                recipeData.loadPlanInputsToGrid(craftingGrid);
             } else {
                 craftingGrid.clearContent();
             }

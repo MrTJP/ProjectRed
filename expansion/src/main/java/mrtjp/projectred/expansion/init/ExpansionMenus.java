@@ -1,6 +1,6 @@
 package mrtjp.projectred.expansion.init;
 
-import codechicken.lib.inventory.container.ICCLContainerType;
+import codechicken.lib.inventory.container.CCLMenuType;
 import mrtjp.projectred.expansion.inventory.container.*;
 import net.minecraft.world.inventory.MenuType;
 
@@ -20,10 +20,10 @@ public class ExpansionMenus {
 
     public static void register() {
 
-        PROJECT_BENCH_MENU = MENU_TYPES.register(ID_PROJECT_BENCH, () -> ICCLContainerType.create(ProjectBenchMenu.FACTORY));
-        BATTERY_BOX_MENU = MENU_TYPES.register(ID_BATTERY_BOX, () -> ICCLContainerType.create(BatteryBoxMenu.FACTORY));
-        AUTO_CRAFTER_MENU = MENU_TYPES.register(ID_AUTO_CRAFTER, () -> ICCLContainerType.create(AutoCrafterMenu.FACTORY));
-        CHARGING_BENCH_MENU = MENU_TYPES.register(ID_CHARGING_BENCH, () -> ICCLContainerType.create(ChargingBenchMenu.FACTORY));
-        DEPLOYER_MENU = MENU_TYPES.register(ID_DEPLOYER, () -> ICCLContainerType.create(DeployerMenu.FACTORY));
+        PROJECT_BENCH_MENU = MENU_TYPES.register(ID_PROJECT_BENCH, () -> CCLMenuType.create(ProjectBenchMenu.FACTORY));
+        BATTERY_BOX_MENU = MENU_TYPES.register(ID_BATTERY_BOX, () -> CCLMenuType.create(BatteryBoxMenu.FACTORY));
+        AUTO_CRAFTER_MENU = MENU_TYPES.register(ID_AUTO_CRAFTER, () -> CCLMenuType.create(AutoCrafterMenu.FACTORY));
+        CHARGING_BENCH_MENU = MENU_TYPES.register(ID_CHARGING_BENCH, () -> CCLMenuType.create(ChargingBenchMenu.FACTORY));
+        DEPLOYER_MENU = MENU_TYPES.register(ID_DEPLOYER, () -> CCLMenuType.create(DeployerMenu.FACTORY));
     }
 }

@@ -8,12 +8,14 @@ import mrtjp.projectred.fabrication.engine.BaseTile;
 import mrtjp.projectred.fabrication.engine.BaseTileMap;
 import mrtjp.projectred.fabrication.engine.ICSimulationContainer;
 import mrtjp.projectred.fabrication.engine.ICTileType;
+import mrtjp.projectred.fabrication.item.component.BlueprintDataComponent;
+import mrtjp.projectred.fabrication.item.component.ICDataComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
@@ -21,7 +23,7 @@ import static mrtjp.projectred.fabrication.editor.EditorDataUtils.*;
 
 public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallback {
 
-    public static final Style UNIFORM = Style.EMPTY.withFont(new ResourceLocation("minecraft", "uniform"));
+    public static final Style UNIFORM = Style.EMPTY.withFont(ResourceLocation.fromNamespaceAndPath("minecraft", "uniform"));
     public static final Style UNIFORM_DARK_GRAY = UNIFORM.withColor(ChatFormatting.DARK_GRAY);
     public static final Style UNIFORM_GRAY = UNIFORM.withColor(ChatFormatting.GRAY);
     public static final Style UNIFORM_RED = UNIFORM.withColor(ChatFormatting.RED);
@@ -126,25 +128,41 @@ public class ICWorkbenchEditor implements ICEditorStateMachine.StateMachineCallb
         icName = "untitled";
     }
 
-    public void readBlueprintTagAndActivate(@Nullable CompoundTag tag) {
+    public void readBlueprintTagAndActivate(ItemStack stack) {
         // Clear the session
         clear();
 
-        // Save editor contents
-        if (tag != null) load(tag);
+        var editorData = BlueprintDataComponent.getComponent(stack);
+
+        // Load editor data
+        if (editorData != null) {
+            load(editorData.getEditorTag());
+        }
 
         // Activate editor
         isActive = true;
     }
 
-    public void writeBlueprintTagAndDeactivate(CompoundTag tag) {
+    public void writeBlueprintTagAndDeactivate(ItemStack stack) {
         // Save all editor contents
+        var tag = new CompoundTag();
         save(tag);
 
-        // Save additional metadata for blueprints
-        tileMap.getInterfaceSpec().saveTo(tag, KEY_IO_SPEC);
-        tag.putInt(KEY_TILE_COUNT, tileMap.getTileCount());
-        tag.putBoolean(KEY_IS_BUILT, stateMachine.isSimulating());
+        // Create design component
+        var designData = ICDataComponent.builder()
+                .setName(icName)
+                .setTileCount(tileMap.getTileCount())
+                .setWarningCount(stateMachine.getCompilerLog().getWarningCount())
+                .setErrorCount(stateMachine.getCompilerLog().getErrorCount())
+                .setBuilt(stateMachine.isSimulating())
+                .setCompileFormat(stateMachine.getLastCompiledFormat())
+                .setInterfaceSpec(tileMap.getInterfaceSpec())
+                .setFlatMap(stateMachine.getLastCompiledFlatMap())
+                .build();
+
+        // Save blueprint data to item stack
+        BlueprintDataComponent.setComponent(stack,
+                new BlueprintDataComponent(tag, designData));
 
         // Deactivate editor
         isActive = false;

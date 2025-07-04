@@ -26,7 +26,7 @@ import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class ICWorkbenchInfoTab extends AbstractGuiNode {
 
-    public static final ResourceLocation TAB_BACKGROUND = new ResourceLocation(ProjectRedFabrication.MOD_ID, "textures/gui/info_tab.png");
+    public static final ResourceLocation TAB_BACKGROUND = ResourceLocation.fromNamespaceAndPath(ProjectRedFabrication.MOD_ID, "textures/gui/info_tab.png");
 
     private final ICWorkbenchEditor editor;
 

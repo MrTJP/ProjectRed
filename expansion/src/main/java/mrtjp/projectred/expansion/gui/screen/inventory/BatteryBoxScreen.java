@@ -13,7 +13,7 @@ import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 
 public class BatteryBoxScreen extends RedUIContainerScreen<BatteryBoxMenu> {
 
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(MOD_ID, "textures/gui/battery_box.png");
+    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/battery_box.png");
 
     public BatteryBoxScreen(BatteryBoxMenu container, Inventory playerInventory, Component title) {
         super(176, 171, container, playerInventory, title);

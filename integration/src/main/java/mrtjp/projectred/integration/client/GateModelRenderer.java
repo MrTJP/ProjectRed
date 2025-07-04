@@ -3,21 +3,17 @@ package mrtjp.projectred.integration.client;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.buffer.TransformingVertexConsumer;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.part.GatePart;
 import mrtjp.projectred.integration.part.IGateRenderData;
 import mrtjp.projectred.lib.VecLib;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
@@ -25,10 +21,8 @@ import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Supplier;
 
 import static mrtjp.projectred.core.part.IOrientableFacePart.flipMaskZ;
 import static mrtjp.projectred.integration.client.GateComponentModels.*;
@@ -76,7 +70,6 @@ public class GateModelRenderer {
             new RenderTransparentLatchCell(),
             new RenderSegmentDisplay(),
             new RenderDecodingRandomizer(),
-            new RenderFabricatedGate(),
     };
 
     private final GateRenderer[] nonPartRenderers = new GateRenderer[] {
@@ -85,6 +78,19 @@ public class GateModelRenderer {
             new RenderBundledBusIOGate(),
             new RenderAnalogIOGate(),
     };
+
+    private final Map<Integer, GateRenderer> externalRenderers = new HashMap<>();
+
+    private static final Map<Integer, Supplier<GateRenderer>> rendererRegistry = new HashMap<>();
+
+    //region External Render Type registration
+    public static void registerRenderer(GateType type, Supplier<GateRenderer> renderer) {
+        if (rendererRegistry.containsKey(type.ordinal())) {
+            throw new RuntimeException("Renderer for " + type.name() + " already registered!");
+        }
+        rendererRegistry.put(type.ordinal(), renderer);
+    }
+    //endregion
 
     //region Static rendering
     public void renderStatic(CCRenderState ccrs, IGateRenderData key, Transformation t) {
@@ -147,9 +153,23 @@ public class GateModelRenderer {
     private GateRenderer getRenderer(int renderIndex) {
         if ((renderIndex & 0x100) != 0) {
             return nonPartRenderers[renderIndex & 0xFF];
-        } else {
-            return renderers[renderIndex];
         }
+
+        // TODO: This is gross. We should just use CBM's part-by-part render registry
+        if (renderIndex >= renderers.length) {
+            // Externally registered renderers. Try to get or
+            if (externalRenderers.containsKey(renderIndex)) {
+                return externalRenderers.get(renderIndex);
+            } else if (rendererRegistry.containsKey(renderIndex)) {
+                GateRenderer renderer = rendererRegistry.get(renderIndex).get();
+                externalRenderers.put(renderIndex, renderer);
+                return renderer;
+            }
+
+            throw new RuntimeException("No renderer registered for index: " + renderIndex);
+        }
+
+        return renderers[renderIndex];
     }
 
     public static void onTextureStitchEvent(TextureAtlasStitchedEvent event) {
@@ -1854,125 +1874,6 @@ public class GateModelRenderer {
             chips[0].on = (state >> 4) == 2;
             chips[1].on = (state >> 4) == 1 || (state >> 4) == 2;
             chips[2].on = true;
-        }
-    }
-
-    public static class RenderFabricatedGate extends GateRenderer {
-
-        private final List<ComponentModel> models = new LinkedList<>();
-
-        private final SidedWireModel simpleWires = new SidedWireModel(generateWireModels("ic1", 4));
-        private final SidedWireModel analogWires = new SidedWireModel(generateWireModels("ic2", 4));
-        private final SidedICBundledCableModel bundledWires = new SidedICBundledCableModel();
-        private final FabricatedICModel icHousing = FabricatedICModel.INSTANCE;
-
-        //**** Copied from EditorDataUtils.class ****/
-        public static final String KEY_FORMAT = "format"; // int
-        public static final String KEY_ACTIVE = "active"; // boolean
-        public static final String KEY_IC_NAME = "ic_name"; // String
-        public static final String KEY_TILE_MAP = "tile_map"; // CompoundTag
-        public static final String KEY_IS_BUILT = "is_built"; // boolean
-        public static final String KEY_IO_SPEC = "io_spec";
-        public static final String KEY_COMP_STATE = "state"; // byte
-        public static final String KEY_FLAT_MAP = "flat_map"; // String
-        public static final String KEY_SIMULATION = "sim_cont"; // CompoundTag
-        public static final String KEY_COMPILER_LOG = "compiler_log"; // CompoundTag
-
-        // Minimum subset of data required to fabricate gate (i.e. create photomask)
-        public static boolean hasFabricationTarget(@Nullable CompoundTag tag) {
-            return tag != null &&
-                    tag.contains(KEY_IS_BUILT) &&
-                    tag.contains(KEY_FLAT_MAP);
-        }
-
-        private boolean runtimeError = false;
-        private String name = "untitled";
-
-        public RenderFabricatedGate() {
-            models.add(BaseComponentModel.INSTANCE);
-            models.add(simpleWires);
-            models.add(analogWires);
-            models.add(bundledWires);
-            models.add(icHousing);
-        }
-
-        @Override
-        protected List<ComponentModel> getModels() {
-            return models;
-        }
-
-        @Override
-        protected void prepareInventory(@Nullable ItemStack stack) {
-            if (stack == null  || !hasFabricationTarget(stack.getTag())) {
-                runtimeError = true;
-                name = "ERROR!";
-                simpleWires.sidemask = 0;
-                analogWires.sidemask = 0;
-                bundledWires.sidemask = 0;
-                return;
-            }
-
-            //TODO use EditorDataUtils helpers once this class is moved to Fabrication
-
-            runtimeError = false;
-            CompoundTag tag = stack.getTag();
-            name = tag.getString("ic_name");
-
-            CompoundTag ifspecTag = tag.getCompound("io_spec");
-            byte rMask = ifspecTag.getByte("rmask");
-            byte aMask = ifspecTag.getByte("amask");
-            byte bMask = ifspecTag.getByte("bmask");
-
-            simpleWires.sidemask = rMask & 0xF | (rMask >> 4) & 0xF;
-            analogWires.sidemask = aMask & 0xF | (aMask >> 4) & 0xF;
-            bundledWires.sidemask = bMask & 0xF | (bMask >> 4) & 0xF;
-        }
-
-        @Override
-        protected void prepare(IGateRenderData gate) {
-
-            simpleWires.sidemask = gate.state2() & 0xF;
-            analogWires.sidemask = (gate.state2() >> 4) & 0xF;
-            bundledWires.sidemask = (gate.state2() >> 8) & 0xF;
-
-            simpleWires.wires[0].on = (gate.state() & 0x11) != 0;
-            simpleWires.wires[1].on = (gate.state() & 0x22) != 0;
-            simpleWires.wires[2].on = (gate.state() & 0x44) != 0;
-            simpleWires.wires[3].on = (gate.state() & 0x88) != 0;
-
-            analogWires.wires[0].on = simpleWires.wires[0].on;
-            analogWires.wires[1].on = simpleWires.wires[1].on;
-            analogWires.wires[2].on = simpleWires.wires[2].on;
-            analogWires.wires[3].on = simpleWires.wires[3].on;
-        }
-
-        @Override
-        public boolean hasSpecials() {
-            return true;
-        }
-
-        @Override
-        protected void prepareDynamic(IGateRenderData gate, float partialFrame) {
-            runtimeError = gate.hasRuntimeError();
-            name = gate.getGateName();
-        }
-
-        @Override
-        public void renderDynamic(CCRenderState ccrs, Transformation t) {
-        }
-
-        @Override
-        public void renderCustomDynamic(CCRenderState ccrs, Transformation t, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, float partialTicks) {
-
-            // Render name
-            icHousing.renderName(name, t, mStack, buffers, runtimeError ? EnumColour.RED.argb() : EnumColour.WHITE.argb(), packedLight);
-
-            // Render glass
-            ccrs.reset();
-            ccrs.brightness = packedLight;
-            ccrs.overlay = packedOverlay;
-            ccrs.bind(new TransformingVertexConsumer(buffers.getBuffer(RenderType.translucentMovingBlock()), mStack), DefaultVertexFormat.BLOCK);
-            icHousing.renderGlass(t, ccrs);
         }
     }
 

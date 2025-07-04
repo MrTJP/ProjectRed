@@ -84,13 +84,13 @@ public class FrameMotorBlockRenderer extends FullyOrientableBlockRenderer {
 
     public static  void onTextureStitchEvent(TextureAtlasStitchedEvent event) {
         if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
-        topIcon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_top"));
-        frontBack0Icon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_front_back_0"));
-        frontBack1Icon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_front_back_1"));
-        frontBack2Icon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_front_back_2"));
-        leftIcon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_left"));
-        rightIcon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_right"));
-        bottomIcon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame_motor_bottom"));
+        topIcon = event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/frame_motor_top"));
+        frontBack0Icon = event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/frame_motor_front_back_0"));
+        frontBack1Icon = event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/frame_motor_front_back_1"));
+        frontBack2Icon = event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/frame_motor_front_back_2"));
+        leftIcon = event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/frame_motor_left"));
+        rightIcon = event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/frame_motor_right"));
+        bottomIcon = event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/frame_motor_bottom"));
     }
 
     public static TextureAtlasSprite getParticleIcon(BlockState state, int side) {

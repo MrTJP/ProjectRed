@@ -2,15 +2,16 @@ package mrtjp.projectred.expansion.block;
 
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.expansion.init.ExpansionBlocks;
+import mrtjp.projectred.expansion.item.BatteryBoxStorageComponent;
 import mrtjp.projectred.expansion.tile.BatteryBoxBlockEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -25,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import static mrtjp.projectred.expansion.init.ExpansionUnlocal.UL_STORED_POWER_TOOLTIP;
 
@@ -79,11 +79,13 @@ public class BatteryBoxBlock extends ProjectRedBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> toolTip, TooltipFlag flag) {
-        super.appendHoverText(stack, level, toolTip, flag);
-        if (stack.hasTag()) {
-            int power = Objects.requireNonNull(stack.getTag()).getInt(BatteryBoxBlockEntity.TAG_KEY_POWER_STORED);
-            toolTip.add(Component.translatable(UL_STORED_POWER_TOOLTIP).append(": " + power + " / " + 8000).withStyle(ChatFormatting.GRAY)); //TODO make this static constant
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> toolTip, TooltipFlag flag) {
+        super.appendHoverText(stack, context, toolTip, flag);
+        var component = BatteryBoxStorageComponent.getComponent(stack);
+        if (component != null) {
+            toolTip.add(Component.translatable(UL_STORED_POWER_TOOLTIP)
+                    .append(": " + component.storedPower() + " / " + 8000) //TODO Remove magic number
+                    .withStyle(ChatFormatting.GRAY));
         }
     }
 }

@@ -2,7 +2,9 @@ package mrtjp.projectred.expansion.item;
 
 import mrtjp.projectred.api.IScrewdriver;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -28,13 +30,14 @@ public class ElectricScrewdriverItem extends Item implements IScrewdriver, IChar
     }
 
     @Override
-    public boolean canUse(Player player, ItemStack stack) {
+    public boolean canUse(Player player, InteractionHand hand) {
+        var stack = player.getItemInHand(hand);
         return stack.getDamageValue() < stack.getMaxDamage();
     }
 
     @Override
-    public void damageScrewdriver(Player player, ItemStack stack) {
-        stack.hurtAndBreak(1, player, p -> {});
+    public void damageScrewdriver(Player player, InteractionHand hand) {
+        player.getItemInHand(hand).hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
     }
 
     @Override

@@ -12,6 +12,7 @@ import mrtjp.projectred.expansion.pneumatics.PneumaticTransportDevice;
 import mrtjp.projectred.expansion.pneumatics.PneumaticTransportMode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -28,17 +29,17 @@ public abstract class BasePneumaticDeviceBlockEntity extends BaseDeviceBlockEnti
 
     //region save/load
     @Override
-    public void saveToNBT(CompoundTag tag) {
-        super.saveToNBT(tag);
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.saveToNBT(tag, lookupProvider);
         CompoundTag queueTag = new CompoundTag();
-        itemQueue.save(queueTag);
+        itemQueue.save(queueTag, lookupProvider);
         tag.put("queue", queueTag);
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
-        super.loadFromNBT(tag);
-        itemQueue.load(tag.getCompound("queue"));
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.loadFromNBT(tag, lookupProvider);
+        itemQueue.load(tag.getCompound("queue"), lookupProvider);
     }
     //endregion
 

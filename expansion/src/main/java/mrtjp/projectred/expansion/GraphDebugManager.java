@@ -31,8 +31,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.*;
 import java.util.function.Function;
@@ -59,7 +60,8 @@ public class GraphDebugManager {
     }
 
     private PacketCustom createPacket(int key) {
-        return new PacketCustom(ExpansionNetwork.NET_CHANNEL, ExpansionNetwork.LINK_DEBUG_RENDERER_FROM_SERVER)
+        return new PacketCustom(ExpansionNetwork.NET_CHANNEL, ExpansionNetwork.LINK_DEBUG_RENDERER_FROM_SERVER,
+                Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer()).registryAccess())
                 .writeByte(key);
     }
 
@@ -101,7 +103,7 @@ public class GraphDebugManager {
         }
     }
 
-    public static void onLevelTick(TickEvent.LevelTickEvent event) {
+    public static void onLevelTick(LevelTickEvent.Pre event) {
 
     }
     //endregion
@@ -244,8 +246,8 @@ public class GraphDebugManager {
         Vector3 v1 = new Vector3(x1, y1, z1).subtract(x2, y2, z2);
         double d = v1.mag();
         v1.divide(d);
-        builder.vertex(x1, y1, z1).color(r, g, b, a).normal((float) v1.x, (float) v1.y, (float) v1.z).endVertex();
-        builder.vertex(x2, y2, z2).color(r, g, b, a).normal((float) v1.x, (float) v1.y, (float) v1.z).endVertex();
+        builder.addVertex((float) x1, (float) y1, (float) z1).setColor(r, g, b, a).setNormal((float) v1.x, (float) v1.y, (float) v1.z);
+        builder.addVertex((float) x2, (float) y2, (float) z2).setColor(r, g, b, a).setNormal((float) v1.x, (float) v1.y, (float) v1.z);
     }
     //endregion
 }

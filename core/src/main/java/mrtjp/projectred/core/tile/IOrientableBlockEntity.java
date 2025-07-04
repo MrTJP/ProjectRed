@@ -4,6 +4,7 @@ import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
@@ -30,26 +31,24 @@ public interface IOrientableBlockEntity extends IBlockEventBlockEntity {
     }
 
     @Override
-    default InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
-        ItemStack held = player.getItemInHand(hand);
-
+    default ItemInteractionResult useItemOn(ItemStack held, Player player, InteractionHand hand, BlockHitResult hit) {
         // Try to rotate block
         if (held.getItem() instanceof IScrewdriver screwdriver) {
-            if (screwdriver.canUse(player, held)) {
+            if (screwdriver.canUse(player, hand)) {
                 if (!getBlockLevel().isClientSide) {
                     if ((player.isShiftKeyDown() || !canOrient()) && canRotate()) {
                         rotateBlock();
                     } else if (canOrient()) {
                         orientBlock();
                     }
-                    screwdriver.damageScrewdriver(player, held);
+                    screwdriver.damageScrewdriver(player, hand);
                 }
-                return InteractionResult.sidedSuccess(getBlockLevel().isClientSide);
+                return ItemInteractionResult.sidedSuccess(getBlockLevel().isClientSide);
             }
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
         }
 
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     default boolean canRotate() {

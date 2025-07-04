@@ -1,6 +1,6 @@
 package mrtjp.projectred.expansion.inventory.container;
 
-import codechicken.lib.inventory.container.ICCLContainerFactory;
+import codechicken.lib.inventory.container.CCLMenuType;
 import mrtjp.projectred.expansion.init.ExpansionMenus;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.expansion.tile.ProjectBenchBlockEntity;
@@ -14,10 +14,12 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import java.util.Objects;
+
 public class ProjectBenchMenu extends AbstractContainerMenu {
 
-    public static final ICCLContainerFactory<ProjectBenchMenu> FACTORY = (windowId, playerInv, packet) -> {
-        BlockEntity tile = playerInv.player.level().getBlockEntity(packet.readPos());
+    public static final CCLMenuType<ProjectBenchMenu> FACTORY = (windowId, playerInv, packet) -> {
+        BlockEntity tile = playerInv.player.level().getBlockEntity(Objects.requireNonNull(packet).readPos());
         if (!(tile instanceof ProjectBenchBlockEntity)) return null;
         return new ProjectBenchMenu(playerInv, (ProjectBenchBlockEntity) tile, windowId);
     };

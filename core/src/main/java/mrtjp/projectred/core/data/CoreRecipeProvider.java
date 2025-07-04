@@ -7,14 +7,16 @@ import codechicken.microblock.init.CBMicroblockModContent;
 import codechicken.microblock.item.ItemMicroBlock;
 import codechicken.microblock.util.MicroMaterialRegistry;
 import mrtjp.projectred.core.ProjectRedCore;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.crafting.NBTIngredient;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import static mrtjp.projectred.core.init.CoreBlocks.ELECTROTINE_GENERATOR_BLOCK;
 import static mrtjp.projectred.core.init.CoreItems.*;
@@ -23,8 +25,8 @@ import static net.neoforged.neoforge.common.Tags.Items.*;
 
 public class CoreRecipeProvider extends RecipeProvider {
 
-    public CoreRecipeProvider(PackOutput output) {
-        super(output, ProjectRedCore.MOD_ID);
+    public CoreRecipeProvider(CompletableFuture<HolderLookup.Provider> registries, PackOutput output) {
+        super(registries, output, ProjectRedCore.MOD_ID);
     }
 
     @Override
@@ -88,7 +90,7 @@ public class CoreRecipeProvider extends RecipeProvider {
                 .patternLine("P");
 
         shapedRecipe(POINTER_ITEM.get())
-                .key('S', STONE)
+                .key('S', STONES)
                 .key('T', Items.REDSTONE_TORCH)
                 .key('P', PLATE_ITEM.get())
                 .patternLine("S")
@@ -108,7 +110,7 @@ public class CoreRecipeProvider extends RecipeProvider {
                 .patternLine("PPP");
 
         shapedRecipe(SAND_COAL_COMP_ITEM.get())
-                .key('S', SAND)
+                .key('S', SANDS)
                 .key('C', STORAGE_BLOCKS_COAL)
                 .patternLine("SSS")
                 .patternLine("SCS")
@@ -172,7 +174,7 @@ public class CoreRecipeProvider extends RecipeProvider {
 
         shapedRecipe(MOTOR_ITEM.get())
                 .key('I', INGOTS_IRON)
-                .key('S', STONE)
+                .key('S', STONES)
                 .key('C', COPPER_COIL_ITEM.get())
                 .key('R', DUSTS_REDSTONE)
                 .patternLine(" I ")
@@ -180,7 +182,7 @@ public class CoreRecipeProvider extends RecipeProvider {
                 .patternLine("RCR");
 
         shapedRecipe(WOVEN_CLOTH_ITEM.get())
-                .key('S', STRING)
+                .key('S', STRINGS)
                 .key('W', RODS_WOODEN)
                 .patternLine("SSS")
                 .patternLine("SWS")
@@ -197,8 +199,8 @@ public class CoreRecipeProvider extends RecipeProvider {
         }
 
         shapedRecipe(DRAW_PLATE_ITEM.get())
-                .key('I', NBTIngredient.of(true, ItemMicroBlock.create(3, 2, Objects.requireNonNull(MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.IRON_BLOCK.defaultBlockState()))))))
-                .key('D', NBTIngredient.of(true, ItemMicroBlock.create(0, 2, Objects.requireNonNull(MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.DIAMOND_BLOCK.defaultBlockState()))))))
+                .key('I', DataComponentIngredient.of(true, ItemMicroBlock.create(3, 2, Objects.requireNonNull(MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.IRON_BLOCK.defaultBlockState()))))))
+                .key('D', DataComponentIngredient.of(true, ItemMicroBlock.create(0, 2, Objects.requireNonNull(MicroMaterialRegistry.getMaterial(BlockMicroMaterial.makeMaterialKey(Blocks.DIAMOND_BLOCK.defaultBlockState()))))))
                 .patternLine(" I ")
                 .patternLine("IDI")
                 .patternLine(" I ");

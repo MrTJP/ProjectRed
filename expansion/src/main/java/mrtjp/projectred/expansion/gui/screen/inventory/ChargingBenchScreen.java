@@ -13,7 +13,7 @@ import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 
 public class ChargingBenchScreen extends RedUIContainerScreen<ChargingBenchMenu> {
 
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(MOD_ID, "textures/gui/charging_bench.png");
+    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/charging_bench.png");
 
     public ChargingBenchScreen(ChargingBenchMenu container, Inventory playerInventory, Component title) {
         super(176, 183, container, playerInventory, title);

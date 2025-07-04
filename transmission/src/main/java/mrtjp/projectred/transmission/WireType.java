@@ -211,7 +211,7 @@ public enum WireType {
             textures.add(null);
         }
         for (int i = 0; i < textureNames.size(); i++) {
-            ResourceLocation tex = new ResourceLocation(MOD_ID, "block/" + textureNames.get(i));
+            ResourceLocation tex = ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/" + textureNames.get(i));
             textures.set(i, event.getAtlas().getSprite(tex));
         }
     }

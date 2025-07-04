@@ -2,6 +2,7 @@ package mrtjp.projectred.expansion.gui.screen.inventory;
 
 import codechicken.lib.colour.EnumColour;
 import mrtjp.projectred.expansion.inventory.container.AutoCrafterMenu;
+import mrtjp.projectred.expansion.item.RecipePlanComponent;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.lib.GuiLib;
 import mrtjp.projectred.lib.Point;
@@ -19,7 +20,7 @@ import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 
 public class AutoCrafterScreen extends RedUIContainerScreen<AutoCrafterMenu> {
 
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(MOD_ID, "textures/gui/auto_crafter.png");
+    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/auto_crafter.png");
 
     private boolean isShiftDown = false;
 
@@ -102,10 +103,10 @@ public class AutoCrafterScreen extends RedUIContainerScreen<AutoCrafterMenu> {
     private void drawPlanOutputsOverlay(GuiGraphics graphics, int xPos, int yPos) {
 
         for (Slot slot : getMenu().slots) {
-            ItemStack stack = slot.getItem();
-            if (RecipePlanItem.hasRecipeInside(stack)) {
+            var recipeData = RecipePlanComponent.getComponent(slot.getItem());
+            if (recipeData != null && recipeData.isRecipeValid()) {
 
-                ItemStack output = RecipePlanItem.loadPlanOutput(stack);
+                ItemStack output = recipeData.getOutput();
                 int colour = EnumColour.LIGHT_BLUE.argb(0xCC);
                 graphics.fillGradient(xPos + slot.x, yPos + slot.y, xPos + slot.x + 16, yPos + slot.y + 16, colour, colour);
 

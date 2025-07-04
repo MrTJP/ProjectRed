@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class DeployerScreen extends RedUIContainerScreen<DeployerMenu> {
 
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(ProjectRedExpansion.MOD_ID, "textures/gui/deployer.png");
+    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(ProjectRedExpansion.MOD_ID, "textures/gui/deployer.png");
 
     public DeployerScreen(DeployerMenu menu, Inventory playerInventory, Component title) {
         super(176, 168, menu, playerInventory, title);

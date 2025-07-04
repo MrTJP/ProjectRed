@@ -1,6 +1,6 @@
 package mrtjp.projectred.fabrication.inventory.container;
 
-import codechicken.lib.inventory.container.ICCLContainerFactory;
+import codechicken.lib.inventory.container.CCLMenuType;
 import mrtjp.projectred.core.inventory.container.TakeOnlySlot;
 import mrtjp.projectred.fabrication.init.FabricationMenus;
 import mrtjp.projectred.fabrication.item.PhotomaskSetItem;
@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class LithographyTableMenu extends FabricationMachineMenu {
 
-    public static ICCLContainerFactory<LithographyTableMenu> FACTORY = (windowId, inventory, packet) -> {
+    public static CCLMenuType<LithographyTableMenu> FACTORY = (windowId, inventory, packet) -> {
         BlockEntity tile = inventory.player.level().getBlockEntity(packet.readPos());
         if (!(tile instanceof LithographyTableBlockEntity)) return null;
 

@@ -1,6 +1,6 @@
 package mrtjp.projectred.core.inventory.container;
 
-import codechicken.lib.inventory.container.ICCLContainerFactory;
+import codechicken.lib.inventory.container.CCLMenuType;
 import mrtjp.projectred.core.tile.ElectrotineGeneratorBlockEntity;
 import mrtjp.projectred.lib.InventoryLib;
 import net.minecraft.world.entity.player.Inventory;
@@ -9,15 +9,19 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import java.util.Objects;
+
 import static mrtjp.projectred.core.init.CoreItems.ELECTROTINE_DUST_ITEM;
 import static mrtjp.projectred.core.init.CoreMenus.ELECTROTINE_GENERATOR_MENU;
 
 public class ElectrotineGeneratorMenu extends BasePoweredBlockEntityMenu {
 
-    public static final ICCLContainerFactory<ElectrotineGeneratorMenu> FACTORY = (windowId, inventory, packet) -> {
-        BlockEntity tile = inventory.player.level().getBlockEntity(packet.readPos());
-        if (!(tile instanceof ElectrotineGeneratorBlockEntity)) return null;
-
+    public static final CCLMenuType<ElectrotineGeneratorMenu> FACTORY = (windowId, inventory, packet) -> {
+        var pos = Objects.requireNonNull(packet).readPos();
+        BlockEntity tile = inventory.player.level().getBlockEntity(pos);
+        if (!(tile instanceof ElectrotineGeneratorBlockEntity)) {
+            throw new IllegalStateException("Could not open ElectrotineGeneratorMenu for tile " + tile + " at pos " + pos);
+        }
         return new ElectrotineGeneratorMenu(inventory, (ElectrotineGeneratorBlockEntity) tile, windowId);
     };
 

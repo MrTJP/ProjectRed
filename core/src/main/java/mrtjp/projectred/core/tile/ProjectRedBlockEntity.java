@@ -3,6 +3,7 @@ package mrtjp.projectred.core.tile;
 import codechicken.lib.data.MCDataByteBuf;
 import codechicken.lib.vec.Vector3;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -21,20 +22,20 @@ public abstract class ProjectRedBlockEntity extends BlockEntity implements IBloc
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        saveToNBT(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.saveAdditional(tag, lookupProvider);
+        saveToNBT(tag, lookupProvider);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        loadFromNBT(tag);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.loadAdditional(tag, lookupProvider);
+        loadFromNBT(tag, lookupProvider);
     }
 
     @Override
-    public final CompoundTag getUpdateTag() {
-        CompoundTag tag = super.getUpdateTag();
+    public final CompoundTag getUpdateTag(HolderLookup.Provider lookupProvider) {
+        CompoundTag tag = super.getUpdateTag(lookupProvider);
         MCDataByteBuf out = new MCDataByteBuf();
         writeDesc(out);
         out.writeToNBT(tag, "descpkt");
@@ -42,9 +43,9 @@ public abstract class ProjectRedBlockEntity extends BlockEntity implements IBloc
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.handleUpdateTag(tag);
-        MCDataByteBuf in = MCDataByteBuf.readFromNBT(tag, "descpkt");
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.handleUpdateTag(tag, lookupProvider);
+        MCDataByteBuf in = MCDataByteBuf.readFromNBT(tag, "descpkt", getLevel().registryAccess());
         readDesc(in);
     }
 

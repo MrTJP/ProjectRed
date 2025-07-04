@@ -20,6 +20,7 @@ import mrtjp.projectred.core.part.*;
 import mrtjp.projectred.integration.GateType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -336,15 +337,15 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
 
         //region save/load
         @Override
-        public void save(CompoundTag tag) {
-            super.save(tag);
+        public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.save(tag, lookupProvider);
             tag.putByte("s1", signal1);
             tag.putByte("s2", signal2);
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            super.load(tag);
+        public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.load(tag, lookupProvider);
             signal1 = tag.getByte("s1");
             signal2 = tag.getByte("s2");
         }
@@ -558,14 +559,14 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
 
         //region save/load
         @Override
-        public void save(CompoundTag tag) {
-            super.save(tag);
+        public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.save(tag, lookupProvider);
             tag.putByte("signal", signal);
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            super.load(tag);
+        public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.load(tag, lookupProvider);
             signal = tag.getByte("signal");
         }
 

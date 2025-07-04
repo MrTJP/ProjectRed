@@ -5,9 +5,11 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.raytracer.VoxelShapeCache;
 import codechicken.lib.vec.Cuboid6;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -47,10 +49,16 @@ public interface IBlockEventBlockEntity {
 
     default boolean isFireSource(int side) { return false; }
 
-//    default List<ItemStack> getDrops() { return Collections.emptyList(); }
-//    ItemStack getPickBlock();
+    default InteractionResult useWithoutItem(Player player, BlockHitResult hit) {
+        // And by default, we will attempt to figure out the hand and pass to onBlockActivated
+        return InteractionResult.PASS;
+    }
 
-    default InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) { return InteractionResult.PASS; }
+    default ItemInteractionResult useItemOn(ItemStack itemStack, Player player, InteractionHand hand, BlockHitResult hit) {
+        // By default, this passes to useWithoutItem
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
     default void onBlockClicked(Player player) { }
 
     default void onEntityCollision(Entity entity) { }
@@ -65,8 +73,8 @@ public interface IBlockEventBlockEntity {
     default int getStrongPower(int side) { return 0; }
     default int getWeakPower(int side) { return 0; }
 
-    void saveToNBT(CompoundTag tag);
-    void loadFromNBT(CompoundTag tag);
+    void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider);
+    void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider);
 
     void writeDesc(MCDataOutput out);
     void readDesc(MCDataInput in);

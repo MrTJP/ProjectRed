@@ -12,7 +12,7 @@ import static mrtjp.projectred.exploration.ProjectRedExploration.MOD_ID;
 
 public class BackpackScreen extends RedUIContainerScreen<BackpackMenu> {
 
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(MOD_ID, "textures/gui/backpack.png");
+    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/backpack.png");
 
     public BackpackScreen(BackpackMenu container, Inventory playerInventory, Component title) {
         super(176, 168, container, playerInventory, title);

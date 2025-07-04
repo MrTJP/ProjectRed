@@ -17,9 +17,9 @@ public abstract class AbstractButtonNode extends AbstractGuiNode {
     public static final int BUTTON_STATE_HIGHLIGHT = 2;
 
     private static final ResourceLocation[] buttonSprites = {
-        new ResourceLocation("widget/button_disabled"),
-        new ResourceLocation("widget/button"),
-        new ResourceLocation("widget/button_highlighted")
+        ResourceLocation.withDefaultNamespace("widget/button_disabled"),
+        ResourceLocation.withDefaultNamespace("widget/button"),
+        ResourceLocation.withDefaultNamespace("widget/button_highlighted")
     };
 
     protected abstract void onButtonClicked();

@@ -16,6 +16,7 @@ import mrtjp.projectred.illumination.block.IllumarSmartLampBlock;
 import mrtjp.projectred.illumination.init.IlluminationBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -39,14 +40,14 @@ public class IllumarSmartLampBlockEntity extends BaseConnectableBlockEntity impl
     }
 
     @Override
-    public void saveToNBT(CompoundTag tag) {
-        super.saveToNBT(tag);
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.saveToNBT(tag, lookupProvider);
         tag.putByteArray("signal", signal);
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
-        super.loadFromNBT(tag);
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.loadFromNBT(tag, lookupProvider);
 
         var s = tag.getByteArray("signal");
         if (s.length == 16)

@@ -6,9 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_DEFECT_CHANCE;
@@ -24,8 +22,8 @@ public class BaseSiliconWaferItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltipList, TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, world, tooltipList, tooltipFlag);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipList, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipList, tooltipFlag);
 
         tooltipList.add(Component.translatable(UL_SIZE).append(": " + waferType.getWaferWidth() + "nm x " + waferType.getWaferHeight() + "nm").withStyle(ChatFormatting.GRAY));
         tooltipList.add(Component.translatable(UL_DEFECT_CHANCE).append(": %.2e%% / nm^2".formatted(waferType.getDefectRatePerUnitArea()*100)).withStyle(ChatFormatting.GRAY));

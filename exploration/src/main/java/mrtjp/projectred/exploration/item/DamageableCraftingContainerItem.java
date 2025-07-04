@@ -16,7 +16,7 @@ public class DamageableCraftingContainerItem extends Item {
 
     @Override
     public ItemStack getCraftingRemainingItem(ItemStack stack) {
-        if (canBeDepleted()) {
+        if (stack.isDamageableItem()) {
             if (stack.getDamageValue() + 1 >= stack.getMaxDamage()) {
                 return ItemStack.EMPTY;
             }

@@ -31,14 +31,8 @@ public class PowerConductor {
     }
 
     public void load(CompoundTag tag) {
-        if (tag.contains("vCap")) {
-            vCap = tag.getDouble("vCap");
-            iCap = tag.getDouble("iCap");
-        } else {
-            // TODO Remove legacy support
-            vCap = tag.getDouble("vl");
-            iCap = tag.getDouble("il");
-        }
+        vCap = tag.getDouble("vCap");
+        iCap = tag.getDouble("iCap");
     }
     //endregion
 

@@ -47,11 +47,11 @@ public class FrameModelRenderer {
 
     public static void onTextureStitchEvent(TextureAtlasStitchedEvent event) {
         if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
-        frameIcon = new IconTransformation(event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/frame")));
+        frameIcon = new IconTransformation(event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/frame")));
     }
 
     private static Map<String, CCModel> loadModels(String path) {
-        ResourceLocation rl = new ResourceLocation(MOD_ID, "obj/" + path + ".obj");
+        ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(MOD_ID, "obj/" + path + ".obj");
         Map<String, CCModel> models = new OBJParser(rl)
                 .ignoreMtl()
                 .quads()

@@ -66,7 +66,7 @@ public class PVMMatrix {
     public PoseStack getModelViewMatrixStack() {
         PoseStack stack = new PoseStack();
         stack.setIdentity();
-        stack.mulPoseMatrix(viewMatrix.toMatrix4f());
+        stack.mulPose(viewMatrix.toMatrix4f());
         return stack;
     }
 

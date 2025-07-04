@@ -5,6 +5,7 @@ import codechicken.lib.datagen.recipe.ShapedRecipeBuilder;
 import codechicken.microblock.init.CBMicroblockModContent;
 import mrtjp.projectred.exploration.item.BackpackItem;
 import mrtjp.projectred.exploration.item.crafting.BackpackDyeRecipe;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -19,6 +20,7 @@ import net.neoforged.neoforge.common.Tags;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static mrtjp.projectred.core.init.CoreItems.*;
 import static mrtjp.projectred.core.init.CoreTags.*;
@@ -30,8 +32,8 @@ import static mrtjp.projectred.exploration.init.ExplorationTags.*;
 @SuppressWarnings("DataFlowIssue")
 public class ExplorationRecipeProvider extends RecipeProvider {
 
-    public ExplorationRecipeProvider(PackOutput output) {
-        super(output, MOD_ID);
+    public ExplorationRecipeProvider(CompletableFuture<HolderLookup.Provider> registries, PackOutput output) {
+        super(registries, output, MOD_ID);
     }
 
     @Override
@@ -89,7 +91,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .patternLine("SSS")
                 .patternLine(" S ");
 
-        shapedRecipe(Items.STRING, 4, new ResourceLocation(MOD_ID, "string_from_wool_gin"))
+        shapedRecipe(Items.STRING, 4, ResourceLocation.fromNamespaceAndPath(MOD_ID, "string_from_wool_gin"))
                 .key('W', ItemTags.WOOL)
                 .key('G', WOOL_GIN.get())
                 .patternLine("GW");
@@ -128,7 +130,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
         sawRecipe(PERIDOT_SAW.get(), PERIDOT_GEM_TAG);
 
         sickleRecipe(WOOD_SICKLE.get(), Tags.Items.RODS_WOODEN);
-        sickleRecipe(STONE_SICKLE.get(), Tags.Items.COBBLESTONE);
+        sickleRecipe(STONE_SICKLE.get(), Tags.Items.COBBLESTONES);
         sickleRecipe(IRON_SICKLE.get(), Tags.Items.INGOTS_IRON);
         sickleRecipe(GOLD_SICKLE.get(), Tags.Items.INGOTS_GOLD);
         sickleRecipe(DIAMOND_SICKLE.get(), Tags.Items.GEMS_DIAMOND);
@@ -159,7 +161,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
             backpackRecipe(getBackpackByColor(i));
         }
 
-        special(new ResourceLocation(MOD_ID, "backpack_dye"), () -> new BackpackDyeRecipe(CraftingBookCategory.MISC));
+        special(ResourceLocation.fromNamespaceAndPath(MOD_ID, "backpack_dye"), () -> new BackpackDyeRecipe(CraftingBookCategory.MISC));
     }
 
     private void oreSmeltingRecipe(ItemLike result, Collection<ItemLike> sources, float xp) {
@@ -168,7 +170,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
         for (ItemLike source : sources) {
             String sourceName = BuiltInRegistries.ITEM.getKey(source.asItem()).getPath();
 
-            smelting(result, 1, new ResourceLocation(MOD_ID, resultName + "_from_" + sourceName + "_smelting"))
+            smelting(result, 1, ResourceLocation.fromNamespaceAndPath(MOD_ID, resultName + "_from_" + sourceName + "_smelting"))
                     .ingredient(source)
                     .experience(xp);
         }
@@ -183,7 +185,7 @@ public class ExplorationRecipeProvider extends RecipeProvider {
                 .patternLine("SSS");
 
         // Block to item
-        shapelessRecipe(item, 9, new ResourceLocation(MOD_ID, BuiltInRegistries.ITEM.getKey(item.asItem()).getPath() + "_from_nineblock"))
+        shapelessRecipe(item, 9, ResourceLocation.fromNamespaceAndPath(MOD_ID, BuiltInRegistries.ITEM.getKey(item.asItem()).getPath() + "_from_nineblock"))
                 .addIngredient(block);
     }
 

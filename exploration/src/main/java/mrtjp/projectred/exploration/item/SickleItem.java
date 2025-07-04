@@ -11,8 +11,9 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class SickleItem extends DiggerItem {
 
-    public SickleItem(Tier itemTier, float attackDamage, float attackSpeed, Properties properties) {
-        super(attackDamage, attackSpeed, itemTier, BlockTags.REPLACEABLE, properties); //TODO is this tag correct?
+    public SickleItem(Tier tier, Properties properties) {
+        //TODO fix tag, or create our own sickle-able tag
+        super(tier, BlockTags.REPLACEABLE, properties);
     }
 
     //TODO !!!!

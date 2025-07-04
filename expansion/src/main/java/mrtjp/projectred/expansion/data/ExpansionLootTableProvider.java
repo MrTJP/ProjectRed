@@ -2,6 +2,7 @@ package mrtjp.projectred.expansion.data;
 
 import mrtjp.projectred.expansion.ProjectRedExpansion;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
@@ -11,20 +12,21 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import static mrtjp.projectred.expansion.init.ExpansionBlocks.*;
 
 public class ExpansionLootTableProvider extends LootTableProvider {
 
-    public ExpansionLootTableProvider(PackOutput output) {
+    public ExpansionLootTableProvider(CompletableFuture<HolderLookup.Provider> registries, PackOutput output) {
         super(output, Set.of(), List.of(
                 new LootTableProvider.SubProviderEntry(BlockLootTable::new, LootContextParamSets.BLOCK)
-        ));
+        ), registries);
     }
 
     private static final class BlockLootTable extends BlockLootSubProvider {
-        BlockLootTable() {
-            super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+        BlockLootTable(HolderLookup.Provider provider) {
+            super(Set.of(), FeatureFlags.REGISTRY.allFlags(), provider);
         }
 
         @Override

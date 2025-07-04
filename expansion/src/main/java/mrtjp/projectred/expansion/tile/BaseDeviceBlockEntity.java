@@ -6,9 +6,11 @@ import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.core.tile.ProjectRedBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -29,7 +31,7 @@ public abstract class BaseDeviceBlockEntity extends ProjectRedBlockEntity {
     }
 
     @Override
-    public void saveToNBT(CompoundTag tag) {
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         tag.putLong("schedTick", schedTick);
         tag.putByte("side", (byte) side);
         tag.putBoolean("powered", powered);
@@ -37,7 +39,7 @@ public abstract class BaseDeviceBlockEntity extends ProjectRedBlockEntity {
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         schedTick = tag.getLong("schedTick");
         side = tag.getByte("side");
         powered = tag.getBoolean("powered");
@@ -116,23 +118,21 @@ public abstract class BaseDeviceBlockEntity extends ProjectRedBlockEntity {
     }
 
     @Override
-    public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
-        ItemStack held = player.getItemInHand(hand);
-
+    public ItemInteractionResult useItemOn(ItemStack held, Player player, InteractionHand hand, BlockHitResult hit) {
         // Try to rotate block
         if (held.getItem() instanceof IScrewdriver screwdriver) {
-            if (screwdriver.canUse(player, held)) {
+            if (screwdriver.canUse(player, hand)) {
                 if (!level.isClientSide) {
                     side = (side + 1) % 6;
-                    screwdriver.damageScrewdriver(player, held);
+                    screwdriver.damageScrewdriver(player, hand);
                     pushBlockState();
                     setChanged();
                 }
-                return InteractionResult.sidedSuccess(level.isClientSide);
+                return ItemInteractionResult.sidedSuccess(level.isClientSide);
             }
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override

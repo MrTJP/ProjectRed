@@ -13,7 +13,7 @@ import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 
 public class ElectrotineGeneratorScreen extends RedUIContainerScreen<ElectrotineGeneratorMenu> {
 
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(MOD_ID, "textures/gui/electrotine_generator.png");
+    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/electrotine_generator.png");
 
     public ElectrotineGeneratorScreen(ElectrotineGeneratorMenu container, Inventory playerInventory, Component title) {
         super(176, 171, container, playerInventory, title);

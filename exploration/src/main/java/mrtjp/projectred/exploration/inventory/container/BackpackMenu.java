@@ -1,9 +1,10 @@
 package mrtjp.projectred.exploration.inventory.container;
 
-import codechicken.lib.inventory.container.ICCLContainerFactory;
+import codechicken.lib.inventory.container.CCLMenuType;
 import mrtjp.projectred.exploration.init.ExplorationMenus;
 import mrtjp.projectred.exploration.inventory.BackpackInventory;
 import mrtjp.projectred.exploration.item.BackpackItem;
+import mrtjp.projectred.exploration.item.component.BackpackDataComponent;
 import mrtjp.projectred.lib.InventoryLib;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -16,9 +17,9 @@ import net.minecraft.world.item.ItemStack;
 
 public class BackpackMenu extends AbstractContainerMenu {
 
-    public static final ICCLContainerFactory<BackpackMenu> FACTORY = (windowId, playerInv, packet) -> new BackpackMenu(windowId, playerInv);
+    public static final CCLMenuType<BackpackMenu> FACTORY = (windowId, playerInv, packet) -> new BackpackMenu(windowId, playerInv);
 
-    private final BackpackInventory inventory = new BackpackInventory(27);
+    private final BackpackInventory inventory;// = new BackpackInventory(27);
 
     private final Inventory playerInventory;
 
@@ -26,12 +27,40 @@ public class BackpackMenu extends AbstractContainerMenu {
         super(ExplorationMenus.BACKPACK_MENU.get(), windowId);
 
         this.playerInventory = playerInventory;
+        this.inventory = this.loadInventoryFromMainHand(playerInventory);
+
+        inventory.addListener(this::onBackpackInventoryChanged);
 
         InventoryLib.addPlayerInventory(playerInventory, 8, 86, BackpackPlayerSlot::new, this::addSlot);
         InventoryLib.addInventory(inventory, 0, 8, 18, 9, 3, BackpackSlot::new, this::addSlot);
+    }
 
-        inventory.addListener(this::onBackpackInventoryChanged);
-        inventory.loadInventoryFromMainHand(playerInventory);
+    public BackpackInventory loadInventoryFromMainHand(Inventory playerInventory) {
+        ItemStack backpack = playerInventory.player.getMainHandItem();
+        if (!BackpackItem.isBackpack(backpack)) {
+            return new BackpackInventory(27);
+        }
+
+        // Get or create the backpack data component
+        var component = BackpackDataComponent.getOrCreateComponent(backpack, 27, true);
+
+        // Save it in opened state. Previously, we also emptied it here to prevent duplication.
+        BackpackDataComponent.setComponent(backpack, component);
+
+        return component.createInventory();
+    }
+
+    public void saveInventoryToMainHand(Inventory playerInventory) {
+        ItemStack backpack = playerInventory.player.getMainHandItem();
+        if (!BackpackItem.isBackpack(backpack)) {
+            return;
+        }
+
+        // Convert inventory to a Backpack component with closed state
+        var component = BackpackDataComponent.fromInventory(inventory, false);
+
+        // Save it
+        BackpackDataComponent.setComponent(backpack, component);
     }
 
     @Override
@@ -64,7 +93,7 @@ public class BackpackMenu extends AbstractContainerMenu {
     @Override
     public void removed(Player player) {
         super.removed(player);
-        inventory.saveInventoryToMainHand(playerInventory);
+        saveInventoryToMainHand(playerInventory);
     }
 
     @Override

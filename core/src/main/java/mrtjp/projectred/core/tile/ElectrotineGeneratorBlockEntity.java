@@ -1,6 +1,6 @@
 package mrtjp.projectred.core.tile;
 
-import codechicken.lib.util.ServerUtils;
+import codechicken.lib.inventory.container.CCLMenuType;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.block.ProjectRedBlock;
@@ -10,10 +10,11 @@ import mrtjp.projectred.core.power.ILowLoadMachine;
 import mrtjp.projectred.core.power.ILowLoadPowerLine;
 import mrtjp.projectred.core.power.PowerConductor;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
@@ -43,19 +44,19 @@ public class ElectrotineGeneratorBlockEntity extends BasePoweredBlockEntity impl
     }
 
     @Override
-    public void saveToNBT(CompoundTag tag) {
-        super.saveToNBT(tag);
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.saveToNBT(tag, lookupProvider);
         conductor.save(tag);
-        inventory.saveTo(tag, "inventory");
+        inventory.saveTo(tag, "inventory", lookupProvider);
         tag.putInt("burnTime", burnTimeRemaining);
         tag.putInt("stored", powerStored);
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
-        super.loadFromNBT(tag);
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.loadFromNBT(tag, lookupProvider);
         conductor.load(tag);
-        inventory.loadFrom(tag, "inventory");
+        inventory.loadFrom(tag, "inventory", lookupProvider);
         burnTimeRemaining = tag.getInt("burnTime");
         powerStored = tag.getInt("stored");
     }
@@ -68,15 +69,15 @@ public class ElectrotineGeneratorBlockEntity extends BasePoweredBlockEntity impl
     }
 
     @Override
-    public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
+    public ItemInteractionResult useItemOn(ItemStack itemStack, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!getLevel().isClientSide) {
-            ServerUtils.openContainer((ServerPlayer) player, new SimpleMenuProvider(
+            CCLMenuType.openMenu((ServerPlayer) player, new SimpleMenuProvider(
                             (id, inv, p) -> new ElectrotineGeneratorMenu(inv, this, id),
                             getBlockState().getBlock().getName()),
                     p -> p.writePos(getBlockPos()));
         }
 
-        return InteractionResult.sidedSuccess(getLevel().isClientSide);
+        return ItemInteractionResult.sidedSuccess(getLevel().isClientSide);
     }
 
     @Override

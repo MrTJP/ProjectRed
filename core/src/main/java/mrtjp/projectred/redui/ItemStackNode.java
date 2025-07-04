@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
@@ -43,7 +44,10 @@ public class ItemStackNode extends AbstractGuiNode {
     public void drawFront(GuiGraphics graphics, Point mouse, float partialFrame) {
         if (isFirstHit(mouse)) {
             Minecraft minecraft = getRoot().getMinecraft();
-            List<Component> tooltip = itemStack.getTooltipLines(minecraft.player, minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
+            List<Component> tooltip = itemStack.getTooltipLines(
+                    Item.TooltipContext.of(getRoot().getMinecraft().level),
+                    minecraft.player,
+                    minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
             renderTooltip(graphics, mouse, tooltip);
         }
     }

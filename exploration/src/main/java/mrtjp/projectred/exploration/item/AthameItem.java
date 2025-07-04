@@ -9,7 +9,7 @@ import net.minecraft.world.item.Tier;
 public class AthameItem extends SwordItem {
 
     public AthameItem(Tier itemTier, int attackDamage, float attackSpeed) {
-        super(itemTier, attackDamage, attackSpeed, new Item.Properties());
+        super(itemTier, new Item.Properties().attributes(SwordItem.createAttributes(itemTier, attackDamage, attackSpeed)));
     }
 
     @Override

@@ -43,8 +43,8 @@ subprojects { p ->
     // Add default repositories
     repositories {
         mavenLocal()
-        maven { url = "https://proxy-maven.covers1624.net/" }
-        maven { url = "https://squiddev.cc/maven/" }
+        maven { url = "https://maven.covers1624.net/" }
+        maven { url = "https://maven.squiddev.cc" }
         maven { url = "https://maven.blamejared.com/" }
     }
 
@@ -53,7 +53,7 @@ subprojects { p ->
         inputs.property 'mod_version', mod_version
         inputs.property 'mc_version', mc_version
 
-        filesMatching('META-INF/mods.toml') {
+        filesMatching('META-INF/neoforge.mods.toml') {
             expand 'file': ['jarVersion': mod_version],
                     'mc_version': mc_version,
                     'forge_version': forge_version,

@@ -1,0 +1,12 @@
+{
+  "values": [
+    "#c:storage_blocks/ruby",
+    "#c:storage_blocks/sapphire",
+    "#c:storage_blocks/peridot",
+    "#c:storage_blocks/electrotine",
+    "#c:storage_blocks/raw_tin",
+    "#c:storage_blocks/tin",
+    "#c:storage_blocks/raw_silver",
+    "#c:storage_blocks/silver"
+  ]
+}

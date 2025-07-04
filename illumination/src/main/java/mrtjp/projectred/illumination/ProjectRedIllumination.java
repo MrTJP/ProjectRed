@@ -6,6 +6,7 @@ import mrtjp.projectred.illumination.init.IlluminationBlocks;
 import mrtjp.projectred.illumination.init.IlluminationClientInit;
 import mrtjp.projectred.illumination.init.IlluminationMicroMaterials;
 import mrtjp.projectred.illumination.init.IlluminationParts;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
@@ -25,6 +26,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.CompletableFuture;
 
 import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
 
@@ -77,12 +80,13 @@ public class ProjectRedIllumination {
         DataGenerator generator = event.getGenerator();
         PackOutput output = generator.getPackOutput();
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
+        CompletableFuture<HolderLookup.Provider> provider = event.getLookupProvider();
 
         generator.addProvider(event.includeClient(), new IlluminationBlockStateModelProvider(output, fileHelper));
         generator.addProvider(event.includeClient(), new IlluminationItemModelProvider(output, fileHelper));
         generator.addProvider(event.includeClient(), new IlluminationLanguageProvider(output));
 
-        generator.addProvider(event.includeServer(), new IlluminationLootTableProvider(output));
-        generator.addProvider(event.includeServer(), new IlluminationRecipeProvider(output));
+        generator.addProvider(event.includeServer(), new IlluminationLootTableProvider(output, provider));
+        generator.addProvider(event.includeServer(), new IlluminationRecipeProvider(provider, output));
     }
 }

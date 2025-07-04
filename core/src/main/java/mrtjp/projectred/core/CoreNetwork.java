@@ -6,11 +6,14 @@ import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.packet.PacketCustomChannel;
 import mrtjp.projectred.core.tile.IPacketReceiverBlockEntity;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -18,7 +21,7 @@ import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 
 public class CoreNetwork {
 
-    public static final ResourceLocation NET_CHANNEL = new ResourceLocation(MOD_ID, "network");
+    public static final ResourceLocation NET_CHANNEL = ResourceLocation.fromNamespaceAndPath(MOD_ID, "network");
 
     // Server to client messages
     public static final int NET_TILE_PACKET_TO_CLIENT = 1;
@@ -36,15 +39,15 @@ public class CoreNetwork {
         channel.init(modBus);
     }
 
-    public static PacketCustom createTileClientPacket(IPacketReceiverBlockEntity tile, byte key) {
-        PacketCustom packet = new PacketCustom(NET_CHANNEL, NET_TILE_PACKET_TO_CLIENT);
+    public static PacketCustom createTileClientPacket(IPacketReceiverBlockEntity tile, byte key, @Nullable RegistryAccess registryAccess) {
+        PacketCustom packet = new PacketCustom(NET_CHANNEL, NET_TILE_PACKET_TO_CLIENT, registryAccess);
         packet.writePos(tile.getBlockPosition());
         packet.writeByte(key);
         return packet;
     }
 
-    public static PacketCustom createTileServerPacket(IPacketReceiverBlockEntity tile, byte key) {
-        PacketCustom packet = new PacketCustom(NET_CHANNEL, NET_TILE_PACKET_TO_SERVER);
+    public static PacketCustom createTileServerPacket(IPacketReceiverBlockEntity tile, byte key, @Nullable RegistryAccess registryAccess) {
+        PacketCustom packet = new PacketCustom(NET_CHANNEL, NET_TILE_PACKET_TO_SERVER, registryAccess);
         packet.writePos(tile.getBlockPosition());
         packet.writeByte(key);
         return packet;
