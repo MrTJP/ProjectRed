@@ -24,22 +24,19 @@ import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class PneumaticSmokeParticle extends BaseActionParticle {
 
-    public static ResourceLocation SMOKE_PARTICLE_LOCATION = new ResourceLocation(MOD_ID, "textures/particle/smoke.png");
+    public static ResourceLocation SMOKE_PARTICLE_LOCATION = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/particle/smoke.png");
 
     public static TextureAtlasSprite SMOKE_PARTICLE_SPRITE;
 
     private static ParticleRenderType PARTICLE_TYPE_SMOKE = new ParticleRenderType() {
-        public void begin(BufferBuilder buffer, TextureManager textureManager) {
+        @Override
+        public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
             RenderSystem.depthMask(true);
             RenderSystem.setShaderTexture(0, SMOKE_PARTICLE_LOCATION);
             RenderSystem.enableBlend();
             RenderSystem.disableCull();
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
-        }
-
-        public void end(Tesselator tesselator) {
-            tesselator.end();
+            return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
         }
 
         public String toString() {
@@ -123,10 +120,10 @@ public class PneumaticSmokeParticle extends BaseActionParticle {
 
         for (var tf : transforms) {
             VertexConsumer bc = new TransformingVertexConsumer(buffer, tf);
-            bc.vertex(-width, 0, 0)         .uv(u1, v2).color(rCol, gCol, bCol, alpha).uv2(j).endVertex();
-            bc.vertex(-width, length, 0)    .uv(u1, v1).color(rCol, gCol, bCol, alpha).uv2(j).endVertex();
-            bc.vertex(width, length, 0)     .uv(u2, v1).color(rCol, gCol, bCol, alpha).uv2(j).endVertex();
-            bc.vertex(width, 0, 0)          .uv(u2, v2).color(rCol, gCol, bCol, alpha).uv2(j).endVertex();
+            bc.addVertex((float) -width,              0, 0).setUv(u1, v2).setColor(rCol, gCol, bCol, alpha).setLight(j);
+            bc.addVertex((float) -width, (float) length, 0).setUv(u1, v1).setColor(rCol, gCol, bCol, alpha).setLight(j);
+            bc.addVertex((float)  width, (float) length, 0).setUv(u2, v1).setColor(rCol, gCol, bCol, alpha).setLight(j);
+            bc.addVertex((float)  width,              0, 0).setUv(u2, v2).setColor(rCol, gCol, bCol, alpha).setLight(j);
         }
     }
 
@@ -137,6 +134,6 @@ public class PneumaticSmokeParticle extends BaseActionParticle {
 
     public static void onTextureStitchEvent(TextureAtlasStitchedEvent event) {
         if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
-        SMOKE_PARTICLE_SPRITE = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "particle/smoke"));
+        SMOKE_PARTICLE_SPRITE = event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "particle/smoke"));
     }
 }

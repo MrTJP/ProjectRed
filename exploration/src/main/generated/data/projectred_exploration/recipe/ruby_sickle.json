@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "M": {
+      "tag": "forge:gems/ruby"
+    },
+    "S": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    " M ",
+    "  M",
+    "SM "
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_exploration:ruby_sickle"
+  }
+}

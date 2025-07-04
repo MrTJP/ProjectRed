@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class RedUISprites {
 
-    public static final ResourceLocation REDUI_WIDGETS_TEXTURE = new ResourceLocation(ProjectRedCore.MOD_ID, "textures/gui/redui_widgets.png");
+    public static final ResourceLocation REDUI_WIDGETS_TEXTURE = ResourceLocation.fromNamespaceAndPath(ProjectRedCore.MOD_ID, "textures/gui/redui_widgets.png");
     public static final int REDUI_WIDGETS_TEX_SIZE = 256;
 
     // Checkbox

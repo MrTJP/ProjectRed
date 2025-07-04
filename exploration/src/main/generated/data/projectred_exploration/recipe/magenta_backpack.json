@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "projectred_core:woven_cloth"
+    },
+    "D": {
+      "tag": "c:dyes/magenta"
+    }
+  },
+  "pattern": [
+    "CCC",
+    "CDC",
+    "CCC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_exploration:magenta_backpack"
+  }
+}

@@ -12,6 +12,7 @@ import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.IntegrationNetwork;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.decoration.ItemFrame;
@@ -53,14 +54,14 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
     //region save/load
     @Override
-    public void save(CompoundTag tag) {
-        super.save(tag);
+    public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.save(tag, lookupProvider);
         tag.putByte("state2", state2);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.load(tag, lookupProvider);
         state2 = tag.getByte("state2");
     }
 
@@ -259,7 +260,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         void setTimerMax(int t);
 
         static void openFromServer(Player player, GatePart part) {
-            PacketCustom packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.OPEN_TIMER_GUI_FROM_SERVER);
+            PacketCustom packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.OPEN_TIMER_GUI_FROM_SERVER, player.registryAccess());
             IntegrationNetwork.writePartIndex(packet, part);
             packet.sendToPlayer((ServerPlayer) player);
         }
@@ -284,7 +285,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         void setCounterValue(int i);
 
         static void openFromServer(Player player, GatePart part) {
-            PacketCustom packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.OPEN_COUNTER_GUI_FROM_SERVER);
+            PacketCustom packet = new PacketCustom(IntegrationNetwork.NET_CHANNEL, IntegrationNetwork.OPEN_COUNTER_GUI_FROM_SERVER, player.registryAccess());
             IntegrationNetwork.writePartIndex(packet, part);
             packet.sendToPlayer((ServerPlayer) player);
         }
@@ -304,15 +305,15 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
         //region save/load
         @Override
-        public void save(CompoundTag tag) {
-            super.save(tag);
+        public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.save(tag, lookupProvider);
             tag.putInt("pmax", pointer_max);
             tag.putLong("pelapsed", pointer_start < 0 ? -1L : level().getGameTime() - pointer_start);
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            super.load(tag);
+        public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.load(tag, lookupProvider);
             pointer_max = tag.getInt("pmax");
             pointer_start = tag.getLong("pelapsed");
         }
@@ -506,14 +507,14 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
         //region save/load
         @Override
-        public void save(CompoundTag tag) {
-            super.save(tag);
+        public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.save(tag, lookupProvider);
             tag.putInt("pmax", pointer_max);
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            super.load(tag);
+        public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.load(tag, lookupProvider);
             pointer_max = tag.getInt("pmax");
         }
 
@@ -645,8 +646,8 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
         //region save/load
         @Override
-        public void save(CompoundTag tag) {
-            super.save(tag);
+        public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.save(tag, lookupProvider);
             tag.putInt("val", value);
             tag.putInt("max", max);
             tag.putInt("inc", incr);
@@ -654,8 +655,8 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            super.load(tag);
+        public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.load(tag, lookupProvider);
             value = tag.getInt("val");
             max = tag.getInt("max");
             incr = tag.getInt("inc");
@@ -1023,14 +1024,14 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
         //region save/load
         @Override
-        public void save(CompoundTag tag) {
-            super.save(tag);
+        public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.save(tag, lookupProvider);
             tag.putShort("state2", lState2);
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            super.load(tag);
+        public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.load(tag, lookupProvider);
             lState2 = tag.getShort("state2");
         }
         //endregion

@@ -14,11 +14,14 @@ import mrtjp.projectred.illumination.block.IllumarLampBlock;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -60,6 +63,7 @@ public class IllumarLampMicroMaterial extends BlockMicroMaterial {
 
             // Delegate the rest to super material
             //@formatter:off
+            @Override public List<BakedQuad> getQuads(MicroblockPart part, @Nullable Direction side, @Nullable RenderType layer, Iterable<MaskedCuboid> cuboids) { return superMicroMaterial.getQuads(part, side, layer, cuboids); }
             @Override public void renderCuboids(CCRenderState ccrs, @Nullable RenderType layer, Iterable<MaskedCuboid> cuboids) { superMicroMaterial.renderCuboids(ccrs, layer, cuboids); }
             @Override public void addHitEffects(MicroblockPart part, PartRayTraceResult hit, ParticleEngine engine) { superMicroMaterial.addHitEffects(part, hit, engine); }
             @Override public void addDestroyEffects(MicroblockPart part, PartRayTraceResult hit, ParticleEngine engine) { superMicroMaterial.addDestroyEffects(part, hit, engine); }

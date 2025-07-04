@@ -25,9 +25,10 @@ import mrtjp.projectred.integration.client.GateComponentModels;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -147,8 +148,8 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
 
     //region Save/load and descriptions
     @Override
-    public void save(CompoundTag tag) {
-        super.save(tag);
+    public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.save(tag, lookupProvider);
         tag.putByte("orient", orientation);
         tag.putByte("shape", gateShape);
         tag.putInt("connMap", connMap);
@@ -156,8 +157,8 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.load(tag, lookupProvider);
         orientation = tag.getByte("orient");
         gateShape = tag.getByte("shape");
         connMap = tag.getInt("connMap");
@@ -421,9 +422,9 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
 
     //region Activation handling
     @Override
-    public InteractionResult activate(Player player, PartRayTraceResult hit, ItemStack held, InteractionHand hand) {
+    public ItemInteractionResult useItemOn(ItemStack held, Player player, PartRayTraceResult hit, InteractionHand hand) {
         if (gateLogicActivate(player, held, hit))
-            return InteractionResult.sidedSuccess(level().isClientSide);
+            return ItemInteractionResult.sidedSuccess(level().isClientSide);
 
         if (!held.isEmpty() && held.getItem() instanceof IScrewdriver screwdriver) {
             if (!level().isClientSide) {
@@ -432,12 +433,12 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
                 } else {
                     rotate();
                 }
-                screwdriver.damageScrewdriver(player, held);
+                screwdriver.damageScrewdriver(player, hand);
             }
-            return InteractionResult.sidedSuccess(level().isClientSide);
+            return ItemInteractionResult.sidedSuccess(level().isClientSide);
         }
 
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     protected void configure() {

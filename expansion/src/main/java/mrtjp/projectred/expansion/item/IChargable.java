@@ -14,7 +14,7 @@ public interface IChargable {
 
         if (getChargedVariant() != getEmptyVariant() && stack.getItem() == getEmptyVariant()) {
             ItemStack chargedStack = new ItemStack(getChargedVariant(), 1);
-            chargedStack.setTag(stack.getTag());
+            chargedStack.applyComponents(stack.getComponents());
             chargedStack.setDamageValue(chargedStack.getMaxDamage());
             stack = chargedStack;
         }
@@ -36,7 +36,7 @@ public interface IChargable {
 
         if (getChargedVariant() != getEmptyVariant() && stack.getDamageValue() >= stack.getMaxDamage()) {
             ItemStack emptyStack = new ItemStack(getEmptyVariant(), 1);
-//            emptyStack.setTag(stack.getTag()); //TODO Enchanted batteries should transfer tag
+            emptyStack.applyComponents(stack.getComponents());
             stack = emptyStack;
         }
 

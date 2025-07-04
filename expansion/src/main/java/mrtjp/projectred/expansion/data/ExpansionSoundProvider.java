@@ -27,11 +27,11 @@ public class ExpansionSoundProvider extends SoundDefinitionsProvider {
         add(PRESSURIZE, definition()
                 .subtitle(ExpansionUnlocal.UL_SUBTITLE_PRESSURIZE)
                 .with(
-                        sound(new ResourceLocation(MOD_ID, "pressurize_1"))
+                        sound(ResourceLocation.fromNamespaceAndPath(MOD_ID, "pressurize_1"))
                                 .volume(0.8F),
-                        sound(new ResourceLocation(MOD_ID, "pressurize_2"))
+                        sound(ResourceLocation.fromNamespaceAndPath(MOD_ID, "pressurize_2"))
                                 .volume(0.8F),
-                        sound(new ResourceLocation(MOD_ID, "pressurize_3"))
+                        sound(ResourceLocation.fromNamespaceAndPath(MOD_ID, "pressurize_3"))
                                 .volume(0.8F)
                 )
         );
@@ -39,11 +39,11 @@ public class ExpansionSoundProvider extends SoundDefinitionsProvider {
         add(DEPRESSURIZE, definition()
                 .subtitle(ExpansionUnlocal.UL_SUBTITLE_DEPRESSURIZE)
                 .with(
-                        sound(new ResourceLocation(MOD_ID, "depressurize_1"))
+                        sound(ResourceLocation.fromNamespaceAndPath(MOD_ID, "depressurize_1"))
                                 .volume(0.8F),
-                        sound(new ResourceLocation(MOD_ID, "depressurize_2"))
+                        sound(ResourceLocation.fromNamespaceAndPath(MOD_ID, "depressurize_2"))
                                 .volume(0.8F),
-                        sound(new ResourceLocation(MOD_ID, "depressurize_3"))
+                        sound(ResourceLocation.fromNamespaceAndPath(MOD_ID, "depressurize_3"))
                                 .volume(0.8F)
                 )
         );

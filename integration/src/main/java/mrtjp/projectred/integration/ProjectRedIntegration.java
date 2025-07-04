@@ -76,10 +76,11 @@ public class ProjectRedIntegration {
         DataGenerator generator = event.getGenerator();
         PackOutput output = generator.getPackOutput();
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
+        var registries = event.getLookupProvider();
 
         generator.addProvider(event.includeClient(), new IntegrationItemModelProvider(output, fileHelper));
         generator.addProvider(event.includeClient(), new IntegrationLanguageProvider(output));
 
-        generator.addProvider(event.includeServer(), new IntegrationRecipeProvider(output));
+        generator.addProvider(event.includeServer(), new IntegrationRecipeProvider(registries, output));
     }
 }

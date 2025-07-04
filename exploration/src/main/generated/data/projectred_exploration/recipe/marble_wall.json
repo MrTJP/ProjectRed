@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {
+      "tag": "c:stone/marble"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "SSS"
+  ],
+  "result": {
+    "count": 6,
+    "id": "projectred_exploration:marble_wall"
+  }
+}

@@ -21,6 +21,7 @@ import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.lib.VecLib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -161,8 +162,8 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
         //region save/load
         @Override
-        public void save(CompoundTag tag) {
-            super.save(tag);
+        public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.save(tag, lookupProvider);
             saveSignal(tag, "in0", input0);
             saveSignal(tag, "out0", output0);
             saveSignal(tag, "in2", input2);
@@ -170,8 +171,8 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            super.load(tag);
+        public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.load(tag, lookupProvider);
             input0 = loadSignal(tag, "in0");
             output0 = loadSignal(tag, "out0");
             input2 = loadSignal(tag, "in2");
@@ -336,15 +337,15 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
         //region save/load
         @Override
-        public void save(CompoundTag tag) {
-            super.save(tag);
+        public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.save(tag, lookupProvider);
             tag.putShort("in", mask);
             tag.putShort("out", output);
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            super.load(tag);
+        public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.load(tag, lookupProvider);
             mask = tag.getShort("in");
             output = tag.getShort("out");
             unpackDigital(unpackedOut, output);
@@ -511,8 +512,8 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
         //region save/load
         @Override
-        public void save(CompoundTag tag) {
-            super.save(tag);
+        public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.save(tag, lookupProvider);
             tag.putByte("in", rsIn);
             tag.putByte("out", rsOut);
             tag.putShort("in0", bIn);
@@ -521,8 +522,8 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            super.load(tag);
+        public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.load(tag, lookupProvider);
             rsIn = tag.getByte("in");
             rsOut = tag.getByte("out");
             if (tag.getBoolean("revised")) {
@@ -726,15 +727,15 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
         //region save/load
         @Override
-        public void save(CompoundTag tag) {
-            super.save(tag);
+        public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.save(tag, lookupProvider);
             tag.putShort("press", pressMask);
             tag.putShort("mask", bOut);
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            super.load(tag);
+        public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.load(tag, lookupProvider);
             pressMask = tag.getShort("press");
             setbOut(tag.getShort("mask"));
         }
@@ -891,25 +892,15 @@ public abstract class BundledGatePart extends RedstoneGatePart implements IBundl
 
         //region save/load
         @Override
-        public void save(CompoundTag tag) {
-            super.save(tag);
+        public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.save(tag, lookupProvider);
             tag.putShort("in", bInput0);
-            tag.putBoolean("v2", true);
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            super.load(tag);
+        public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+            super.load(tag, lookupProvider);
             bInput0 = tag.getShort("in");
-
-            // TODO: Remove legacy loading
-            if (!tag.getBoolean("v2")) {
-                // V1:
-                // - Lower 8 bits were in state, upper 8 bits in bInput0
-                // - Colour was in separate byte
-                bInput0 = (short) (bInput0 << 8 | state());
-                setState(tag.getByte("col"));
-            }
         }
 
         @Override

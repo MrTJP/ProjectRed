@@ -1,6 +1,6 @@
 package mrtjp.projectred.exploration.init;
 
-import codechicken.lib.inventory.container.ICCLContainerType;
+import codechicken.lib.inventory.container.CCLMenuType;
 import mrtjp.projectred.exploration.inventory.container.BackpackMenu;
 import net.minecraft.world.inventory.MenuType;
 
@@ -17,6 +17,6 @@ public class ExplorationMenus {
 
     public static void register() {
 
-        BACKPACK_MENU = MENU_TYPES.register(ID_BACKPACK_CONTAINER, () -> ICCLContainerType.create(BackpackMenu.FACTORY));
+        BACKPACK_MENU = MENU_TYPES.register(ID_BACKPACK_CONTAINER, () -> CCLMenuType.create(BackpackMenu.FACTORY));
     }
 }

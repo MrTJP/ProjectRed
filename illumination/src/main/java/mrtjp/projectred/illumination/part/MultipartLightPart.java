@@ -17,6 +17,7 @@ import mrtjp.projectred.illumination.MultipartLightProperties;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -72,13 +73,13 @@ public class MultipartLightPart extends BaseMultipart implements SlottedPart, No
     }
 
     @Override
-    public void save(CompoundTag tag) {
+    public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         tag.putBoolean("pow", powered);
         tag.putByte("side", (byte) side);
     }
 
     @Override
-    public void load(CompoundTag tag) {
+    public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         powered = tag.getBoolean("pow");
         side = tag.getByte("side") & 0xFF;
     }

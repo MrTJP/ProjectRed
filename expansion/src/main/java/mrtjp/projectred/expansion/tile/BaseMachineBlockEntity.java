@@ -1,13 +1,14 @@
 package mrtjp.projectred.expansion.tile;
 
-import codechicken.lib.util.ServerUtils;
+import codechicken.lib.inventory.container.CCLMenuType;
 import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -29,8 +30,8 @@ public abstract class BaseMachineBlockEntity extends LowLoadPoweredBlockEntity {
     }
 
     @Override
-    public void saveToNBT(CompoundTag tag) {
-        super.saveToNBT(tag);
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.saveToNBT(tag, lookupProvider);
         tag.putInt("remaining_work", remainingWork);
         tag.putInt("total_work", totalWork);
         tag.putBoolean("working", isWorking);
@@ -38,8 +39,8 @@ public abstract class BaseMachineBlockEntity extends LowLoadPoweredBlockEntity {
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
-        super.loadFromNBT(tag);
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.loadFromNBT(tag, lookupProvider);
         remainingWork = tag.getInt("remaining_work");
         totalWork = tag.getInt("total_work");
         isWorking = tag.getBoolean("working");
@@ -97,18 +98,15 @@ public abstract class BaseMachineBlockEntity extends LowLoadPoweredBlockEntity {
     }
 
     @Override
-    public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
-        ItemStack held = player.getItemInHand(hand);
-
+    public ItemInteractionResult useItemOn(ItemStack held, Player player, InteractionHand hand, BlockHitResult hit) {
         // Try to rotate block
         if (held.getItem() instanceof IScrewdriver screwdriver) {
-
-            if (screwdriver.canUse(player, held)) {
+            if (screwdriver.canUse(player, hand)) {
                 if (!level.isClientSide) {
                     rotateBlock();
-                    screwdriver.damageScrewdriver(player, held);
+                    screwdriver.damageScrewdriver(player, hand);
                 }
-                return InteractionResult.sidedSuccess(level.isClientSide);
+                return ItemInteractionResult.sidedSuccess(level.isClientSide);
             }
         }
 
@@ -116,7 +114,7 @@ public abstract class BaseMachineBlockEntity extends LowLoadPoweredBlockEntity {
         if (!level.isClientSide) {
             openGui(player);
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return ItemInteractionResult.sidedSuccess(level.isClientSide);
     }
 
     private void rotateBlock() {
@@ -127,7 +125,7 @@ public abstract class BaseMachineBlockEntity extends LowLoadPoweredBlockEntity {
     }
 
     private void openGui(Player player) {
-        ServerUtils.openContainer(
+        CCLMenuType.openMenu(
                 (ServerPlayer) player,
                 new SimpleMenuProvider(
                         this::createMenu,

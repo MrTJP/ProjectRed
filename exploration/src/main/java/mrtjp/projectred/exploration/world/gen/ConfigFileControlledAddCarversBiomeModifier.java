@@ -1,6 +1,7 @@
 package mrtjp.projectred.exploration.world.gen;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.exploration.init.ExplorationWorldFeatures;
@@ -30,7 +31,7 @@ public record ConfigFileControlledAddCarversBiomeModifier(HolderSet<Biome> biome
     }
 
     @Override
-    public Codec<? extends BiomeModifier> codec() {
+    public MapCodec<? extends BiomeModifier> codec() {
         return ExplorationWorldFeatures.ADD_CARVER_BIOME_MODIFIER_CODEC.get();
     }
 
@@ -38,8 +39,8 @@ public record ConfigFileControlledAddCarversBiomeModifier(HolderSet<Biome> biome
         return Configurator.worldFeatures.getOrDefault(configKey, false);
     }
 
-    public static Codec<ConfigFileControlledAddCarversBiomeModifier> createCodec() {
-        return RecordCodecBuilder.create(instance -> instance.group(
+    public static MapCodec<ConfigFileControlledAddCarversBiomeModifier> createCodec() {
+        return RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Biome.LIST_CODEC.fieldOf("biomes").forGetter(m -> m.biomes),
                 ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(m -> m.carvers),
                 GenerationStep.Carving.CODEC.fieldOf("step").forGetter(m -> m.step),

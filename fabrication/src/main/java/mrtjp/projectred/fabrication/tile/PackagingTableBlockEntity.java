@@ -2,31 +2,29 @@ package mrtjp.projectred.fabrication.tile;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.util.ServerUtils;
+import codechicken.lib.inventory.container.CCLMenuType;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.core.init.CoreItems;
 import mrtjp.projectred.core.inventory.BaseContainer;
 import mrtjp.projectred.core.tile.IPacketReceiverBlockEntity;
 import mrtjp.projectred.fabrication.engine.ICInterfaceType;
-import mrtjp.projectred.fabrication.engine.InterfaceSpec;
 import mrtjp.projectred.fabrication.init.FabricationBlocks;
 import mrtjp.projectred.fabrication.inventory.container.PackagingTableMenu;
 import mrtjp.projectred.fabrication.item.ValidDieItem;
+import mrtjp.projectred.fabrication.item.component.ICDataComponent;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
-
-import static mrtjp.projectred.fabrication.editor.EditorDataUtils.getInterfaceSpec;
-import static mrtjp.projectred.fabrication.editor.EditorDataUtils.hasFabricationTarget;
 
 public class PackagingTableBlockEntity extends FabricationMachineBlockEntity implements IPacketReceiverBlockEntity {
 
@@ -57,15 +55,15 @@ public class PackagingTableBlockEntity extends FabricationMachineBlockEntity imp
     }
 
     @Override
-    public void saveToNBT(CompoundTag tag) {
-        super.saveToNBT(tag);
-        inventory.saveTo(tag, "inventory");
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.saveToNBT(tag, lookupProvider);
+        inventory.saveTo(tag, "inventory", lookupProvider);
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
-        super.loadFromNBT(tag);
-        inventory.loadFrom(tag, "inventory");
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.loadFromNBT(tag, lookupProvider);
+        inventory.loadFrom(tag, "inventory", lookupProvider);
     }
 
     @Override
@@ -77,14 +75,14 @@ public class PackagingTableBlockEntity extends FabricationMachineBlockEntity imp
     }
 
     @Override
-    public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
+    public ItemInteractionResult useItemOn(ItemStack itemStack, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!getLevel().isClientSide) {
-            ServerUtils.openContainer((ServerPlayer) player,
+            CCLMenuType.openMenu((ServerPlayer) player,
                     new SimpleMenuProvider((id, inv, p) -> new PackagingTableMenu(inv, this, id), getBlockState().getBlock().getName()),
                     p -> p.writePos(getBlockPos()));
         }
 
-        return InteractionResult.sidedSuccess(getLevel().isClientSide);
+        return ItemInteractionResult.sidedSuccess(getLevel().isClientSide);
     }
 
     @Override
@@ -100,13 +98,12 @@ public class PackagingTableBlockEntity extends FabricationMachineBlockEntity imp
 
     @Override
     protected boolean canStartWork() {
-
         problematicSlotMask = 0;
 
         ItemStack dieItem = inventory.getItem(DIE_SLOT);
-        CompoundTag dieTag = dieItem.getTag();
+        var component = ICDataComponent.getComponent(dieItem);
 
-        if (dieItem.isEmpty() || !(dieItem.getItem() instanceof ValidDieItem) || !hasFabricationTarget(dieTag)) {
+        if (dieItem.isEmpty() || !(dieItem.getItem() instanceof ValidDieItem) || component == null) {
             problematicSlotMask |= 1 << DIE_SLOT;
             return false; // Fail-fast. Can't do ingredient checks without valid die item
         }
@@ -116,10 +113,9 @@ public class PackagingTableBlockEntity extends FabricationMachineBlockEntity imp
         }
 
         // Check IO ingredients
-        InterfaceSpec iospec = getInterfaceSpec(dieTag);
         int[] slotMap = { 1, 5, 7, 3 }; // Maps rotation to grid slot
         for (int r = 0; r < 4; r++) {
-            ICInterfaceType type = iospec.getInterfaceType(r);
+            ICInterfaceType type = component.getInterfaceSpec().getInterfaceType(r);
 
             // Each type of IO corresponds to a particular ingredient
             boolean match = inventory.getItem(slotMap[r]).is(switch (type) {

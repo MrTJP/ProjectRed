@@ -2,6 +2,7 @@ package mrtjp.projectred.expansion.part;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
@@ -85,20 +86,20 @@ public class PneumaticTubePayload {
         return itemStack;
     }
 
-    public void save(CompoundTag tag) {
+    public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         tag.putInt("progress", progress); //TODO size
         tag.putInt("speed", speed);
         tag.putInt("input_dir", inputSide);
         tag.putInt("output_dir", outputSide);
-        tag.put("item_stack", itemStack.save(new CompoundTag()));
+        tag.put("item_stack", itemStack.save(lookupProvider));
     }
 
-    public void load(CompoundTag tag) {
+    public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         progress = tag.getInt("progress");
         speed = tag.getInt("speed");
         inputSide = tag.getInt("input_dir");
         outputSide = tag.getInt("output_dir");
-        itemStack = ItemStack.of(tag.getCompound("item_stack"));
+        itemStack = ItemStack.parseOptional(lookupProvider, tag.getCompound("item_stack"));
     }
 
     public void writeDesc(MCDataOutput output) {

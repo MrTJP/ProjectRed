@@ -65,10 +65,6 @@ public class Configurator {
     }
 
     private static void loadValues(ConfigCategory config) {
-
-        //TODO remove later
-        loadAndDeleteLegacyValues(config);
-
         ConfigCategory general = config.getCategory("general").setComment("General settings");
         logicGateSounds = general.getValue("gate_sounds").setDefaultBoolean(logicGateSounds).setComment("If set to false, logic gates will not make sounds").getBoolean();
         logicGateLights = general.getValue("gate_lights").setDefaultBoolean(logicGateLights).setComment("If set to false, logic gates will not emit light").getBoolean();
@@ -100,48 +96,5 @@ public class Configurator {
 
         ConfigCategory fab = config.getCategory("fabrication").setComment("Settings for Fabrication circuit compilation");
         autoCompileTileLimit = fab.getValue("auto_compile_tile_limit").setDefaultInt(autoCompileTileLimit).setComment("Tile count before auto-compile becomes disallowed (-1 to always allow, 0 to never allow). Recommended to keep this very low on servers.").getInt();
-    }
-
-    private static void loadAndDeleteLegacyValues(ConfigCategory config) {
-
-        if (!config.has("General Settings")) {
-            return;
-        }
-
-        ProjectRedCore.LOGGER.warn("Legacy ProjectRed config file detected. Remapping values...");
-
-        ConfigCategory general = config.getCategory("General Settings");
-        logicGateSounds = general.getValue("Logic Sounds").setDefaultBoolean(logicGateSounds).getBoolean();
-        logicGateLights = general.getValue("Logic Gate Lights").setDefaultBoolean(logicGateLights).getBoolean();
-        minTimerTicks = general.getValue("Minimum Timer Ticks").setDefaultInt(minTimerTicks).getInt();
-        unbreakableScrewdriver = general.getValue("Unbreakable Screwdriver").setDefaultBoolean(unbreakableScrewdriver).getBoolean();
-
-        ConfigCategory machines = config.getCategory("Machine Settings");
-        enableDiamondBlockBreaker = machines.getValue("Enable the Diamond Block Breaker").setDefaultBoolean(enableDiamondBlockBreaker).getBoolean();
-
-        ConfigCategory rendering = config.getCategory("Render Settings").setComment("Client render settings");
-        logicwires3D = rendering.getValue("3D Logic Wires").setDefaultBoolean(logicwires3D).getBoolean();
-        staticWires = rendering.getValue("Static Wires").setDefaultBoolean(staticWires).getBoolean();
-        staticGates = rendering.getValue("Static Gates").setDefaultBoolean(staticGates).getBoolean();
-        lightHaloMax = rendering.getValue("Light Halo Render Count").setDefaultInt(lightHaloMax).getInt();
-
-        ConfigCategory gen = config.getCategory("World Gen");
-        gen_Ruby                = gen.getValue("Ruby Ore").setDefaultBoolean(gen_Ruby).getBoolean();
-        gen_Sapphire            = gen.getValue("Sapphire Ore").setDefaultBoolean(gen_Sapphire).getBoolean();
-        gen_Peridot             = gen.getValue("Peridot Ore").setDefaultBoolean(gen_Peridot).getBoolean();
-        gen_Tin                 = gen.getValue("Tin Ore").setDefaultBoolean(gen_Tin).getBoolean();
-        gen_Silver              = gen.getValue("Silver Ore").setDefaultBoolean(gen_Silver).getBoolean();
-        gen_Electrotine         = gen.getValue("Electrotine Ore").setDefaultBoolean(gen_Electrotine).getBoolean();
-        gen_MarbleCave          = gen.getValue("Marble Caves").setDefaultBoolean(gen_MarbleCave).getBoolean();
-
-        ConfigCategory compat = config.getCategory("Compatibility");
-        compat_CCBundledCable = compat.getValue("ComputerCraft: Bundled Cables").setDefaultBoolean(compat_CCBundledCable).getBoolean();
-
-        // Delete all old categories
-        config.delete("General Settings");
-        config.delete("Machine Settings");
-        config.delete("Render Settings");
-        config.delete("World Gen");
-        config.delete("Compatibility");
     }
 }

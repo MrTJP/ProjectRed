@@ -3,33 +3,28 @@ package mrtjp.projectred.fabrication.part;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.multipart.util.MultipartPlaceContext;
-import mrtjp.fengine.api.ICFlatMap;
-import mrtjp.projectred.fabrication.editor.EditorDataUtils;
 import mrtjp.projectred.fabrication.engine.ICSimulationContainer;
-import mrtjp.projectred.fabrication.engine.InterfaceSpec;
 import mrtjp.projectred.fabrication.engine.PRFabricationEngine;
+import mrtjp.projectred.fabrication.init.FabricationDataComponents;
+import mrtjp.projectred.fabrication.item.component.ICDataComponent;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.part.BundledGatePart;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 import java.util.function.Function;
 
 import static mrtjp.projectred.core.BundledSignalsLib.*;
 import static mrtjp.projectred.fabrication.ProjectRedFabrication.LOGGER;
-import static mrtjp.projectred.fabrication.editor.EditorDataUtils.*;
 
 public class FabricatedGatePart extends BundledGatePart {
 
     private final ICSimulationContainer simulationContainer = new ICSimulationContainer();
-    private final InterfaceSpec ifSpec = new InterfaceSpec();
-
-    private CompoundTag itemStackTag = new CompoundTag();
-    private String icName = "untitled";
     private long simulationTimeStart = -1L;
-    private int compileFormat = 0;
+
+    private ICDataComponent icDataComponent = ICDataComponent.EMPTY;
 
     public FabricatedGatePart() {
         super(GateType.FABRICATED_GATE);
@@ -42,92 +37,85 @@ public class FabricatedGatePart extends BundledGatePart {
 
         if (context.getPlayer() == null || context.getPlayer().level().isClientSide()) return false;
 
-        ItemStack stack = context.getItemInHand();
-        if (stack.isEmpty() || !stack.hasTag()) {
+        var stack = context.getItemInHand();
+        var designData = stack.get(FabricationDataComponents.IC_DATA_COMPONENT_TYPE);
+        if (designData == null) {
             LOGGER.warn("Gate placement issue: no NBT on gate item");
             return false;
         }
 
-        CompoundTag tag = stack.getTag();
-        if (!EditorDataUtils.canFabricate(tag)) {
+        if (!designData.canFabricate()) {
             LOGGER.warn("Gate placement issue: gate item contains invalid data");
             return false;
         }
 
-        itemStackTag = EditorDataUtils.createFabricationCopy(tag);
-        icName = tag.getString(KEY_IC_NAME);
-        ICFlatMap flatMap = PRFabricationEngine.instance.deserializeFlatMap(tag.getString(KEY_FLAT_MAP));
+        // Keep ref to data component
+        icDataComponent = designData;
+
+        // Load flat map into simulator
+        var flatMap = PRFabricationEngine.instance.deserializeFlatMap(designData.getFlatMap());
         simulationContainer.setFlatMap(flatMap);
-        ifSpec.loadFrom(tag, KEY_IO_SPEC);
-        compileFormat = tag.getInt(KEY_COMPILE_FORMAT);
 
         return true;
     }
 
     @Override
-    public void save(CompoundTag tag) {
-        super.save(tag);
-        tag.put("item_stack", itemStackTag);
-        tag.putString("ic_name", icName);
+    public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.save(tag, lookupProvider);
+        tag.put("ic_data", icDataComponent.save());
         tag.putLong("sim_time", level().getGameTime() - simulationTimeStart);
-        tag.putInt("compile_format", compileFormat);
         simulationContainer.save(tag);
-        ifSpec.saveTo(tag, "io_spec");
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        itemStackTag = tag.getCompound("item_stack");
-        icName = tag.getString("ic_name");
+    public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.load(tag, lookupProvider);
+        icDataComponent = ICDataComponent.parse(tag.getCompound("ic_data")).orElse(ICDataComponent.EMPTY);
         simulationTimeStart = tag.getLong("sim_time");
-        compileFormat = tag.getInt("compile_format");
+
+        var compileFormat = icDataComponent.getCompileFormat();
         if (compileFormat == PRFabricationEngine.COMPILE_FORMAT) {
             simulationContainer.load(tag);
         } else {
             LOGGER.warn("Fabricated Gate compile format mismatch ({} vs {})", compileFormat, PRFabricationEngine.COMPILE_FORMAT);
         }
-        ifSpec.loadFrom(tag, "io_spec");
     }
 
     @Override
     public void writeDesc(MCDataOutput packet) {
         super.writeDesc(packet);
-        packet.writeCompoundNBT(itemStackTag); // Client needs tag for pick-blcok
-        packet.writeString(icName);
-        ifSpec.writeDesc(packet);
-        packet.writeInt(compileFormat);
+        packet.writeWithRegistryCodec(ICDataComponent.STREAM_CODEC, icDataComponent);
     }
 
     @Override
     public void readDesc(MCDataInput packet) {
         super.readDesc(packet);
-        itemStackTag = Objects.requireNonNullElse(packet.readCompoundNBT(), new CompoundTag());
-        icName = packet.readString();
-        ifSpec.readDesc(packet);
-        compileFormat = packet.readInt();
+        icDataComponent = packet.readWithRegistryCodec(ICDataComponent.STREAM_CODEC);
     }
 
     @Override
     public ItemStack getItem() {
         ItemStack stack = super.getItem();
-        stack.setTag(itemStackTag);
+        ICDataComponent.setComponent(stack, icDataComponent);
         return stack;
     }
 
     //region RedstoneGatePart overrides
     @Override
     protected int outputMask(int shape) {
+        var ifSpec = icDataComponent.getInterfaceSpec();
         return ifSpec.getRedstoneOutputMask() | ifSpec.getAnalogOutputMask();
     }
 
     @Override
     protected int inputMask(int shape) {
+        var ifSpec = icDataComponent.getInterfaceSpec();
         return ifSpec.getRedstoneInputMask() | ifSpec.getAnalogInputMask();
     }
 
     @Override
     protected int getOutput(int r) {
+        var ifSpec = icDataComponent.getInterfaceSpec();
         if (!ifSpec.isOutput(r)) return 0;
 
         return switch (ifSpec.getInterfaceType(r)) {
@@ -141,16 +129,17 @@ public class FabricatedGatePart extends BundledGatePart {
     //region BundledGatePart overrides
     @Override
     protected int bundledInputMask(int shape) {
-        return ifSpec.getBundledInputMask();
+        return icDataComponent.getInterfaceSpec().getBundledInputMask();
     }
 
     @Override
     protected int bundledOutputMask(int shape) {
-        return ifSpec.getBundledOutputMask();
+        return icDataComponent.getInterfaceSpec().getBundledOutputMask();
     }
 
     @Override
     protected @Nullable byte[] getBundledOutput(int r) {
+        var ifSpec = icDataComponent.getInterfaceSpec();
         if (!ifSpec.isOutput(r)) return null;
 
         return switch (ifSpec.getInterfaceType(r)) {
@@ -165,6 +154,7 @@ public class FabricatedGatePart extends BundledGatePart {
     public int state2() {
         // TODO Temporary: state2 contains IO details for rendering
         // TODO May let ifSpec pack this?
+        var ifSpec = icDataComponent.getInterfaceSpec();
         int rsMask = ifSpec.getRedstoneInputMask() | ifSpec.getRedstoneOutputMask();
         int analogMask = ifSpec.getAnalogInputMask() | ifSpec.getAnalogOutputMask();
         int bundledMask = ifSpec.getBundledInputMask() | ifSpec.getBundledOutputMask();
@@ -173,12 +163,12 @@ public class FabricatedGatePart extends BundledGatePart {
 
     @Override
     public String getGateName() {
-        return icName;
+        return icDataComponent.getName();
     }
 
     @Override
     public boolean hasRuntimeError() {
-        return compileFormat != PRFabricationEngine.COMPILE_FORMAT;
+        return icDataComponent.getCompileFormat() != PRFabricationEngine.COMPILE_FORMAT;
     }
     //endregion
 
@@ -248,6 +238,7 @@ public class FabricatedGatePart extends BundledGatePart {
     }
 
     private short getModeBasedInput(int r) {
+        var ifSpec = icDataComponent.getInterfaceSpec();
         if (!ifSpec.isInput(r)) return 0;
 
         return switch (ifSpec.getInterfaceType(r)) {
@@ -267,6 +258,7 @@ public class FabricatedGatePart extends BundledGatePart {
     }
 
     private int getSignalStateMask(Function<Integer, Short> signalSupplier) {
+        var ifSpec = icDataComponent.getInterfaceSpec();
         int mask = 0;
         for (int r = 0; r < 4; r++) {
             short input = signalSupplier.apply(r);

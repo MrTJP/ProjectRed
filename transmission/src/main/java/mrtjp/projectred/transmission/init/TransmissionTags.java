@@ -9,9 +9,9 @@ import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 
 public class TransmissionTags {
 
-    public static final TagKey<Item> INSULATED_WIRE_ITEM_TAG = ItemTags.create(new ResourceLocation(MOD_ID, "insulated_wire"));
-    public static final TagKey<Item> BUNDLED_WIRE_ITEM_TAG = ItemTags.create(new ResourceLocation(MOD_ID, "bundled_wire"));
-    public static final TagKey<Item> FRAMED_INSULATED_WIRE_ITEM_TAG = ItemTags.create(new ResourceLocation(MOD_ID, "framed_insulated_wire"));
-    public static final TagKey<Item> FRAMED_BUNDLED_WIRE_ITEM_TAG = ItemTags.create(new ResourceLocation(MOD_ID, "framed_bundled_wire"));
+    public static final TagKey<Item> INSULATED_WIRE_ITEM_TAG = ItemTags.create(ResourceLocation.fromNamespaceAndPath(MOD_ID, "insulated_wire"));
+    public static final TagKey<Item> BUNDLED_WIRE_ITEM_TAG = ItemTags.create(ResourceLocation.fromNamespaceAndPath(MOD_ID, "bundled_wire"));
+    public static final TagKey<Item> FRAMED_INSULATED_WIRE_ITEM_TAG = ItemTags.create(ResourceLocation.fromNamespaceAndPath(MOD_ID, "framed_insulated_wire"));
+    public static final TagKey<Item> FRAMED_BUNDLED_WIRE_ITEM_TAG = ItemTags.create(ResourceLocation.fromNamespaceAndPath(MOD_ID, "framed_bundled_wire"));
 
 }

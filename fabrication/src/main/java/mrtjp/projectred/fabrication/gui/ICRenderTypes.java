@@ -31,9 +31,9 @@ import static mrtjp.projectred.fabrication.ProjectRedFabrication.MOD_ID;
 @SuppressWarnings("NotNullFieldNotInitialized")
 public class ICRenderTypes {
 
-    public static ResourceLocation PERFBOARD_TEXTURE = new ResourceLocation(MOD_ID, "textures/block/workbench_ui/perfboard.png");
-    public static ResourceLocation PERFBOARD_EDGE_TEXTURE = new ResourceLocation(MOD_ID, "textures/block/workbench_ui/perfboard_edge.png");
-    public static ResourceLocation PERFBOARD_CORNER_TEXTURE = new ResourceLocation(MOD_ID, "textures/block/workbench_ui/perfboard_corner.png");
+    public static ResourceLocation PERFBOARD_TEXTURE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/block/workbench_ui/perfboard.png");
+    public static ResourceLocation PERFBOARD_EDGE_TEXTURE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/block/workbench_ui/perfboard_edge.png");
+    public static ResourceLocation PERFBOARD_CORNER_TEXTURE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/block/workbench_ui/perfboard_corner.png");
 
     public static RenderType layersRenderType = RenderType.create(MOD_ID + ":ic_block", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 10000, false, true,
             RenderType.CompositeState.builder()
@@ -256,8 +256,8 @@ public class ICRenderTypes {
         if ((amask & 1) != 0) {
             for (int y = (int) bounds.min.y; y <= bounds.max.y; y++) {
                 for (int z = (int) bounds.min.z; z <= bounds.max.z; z++) {
-                    vertexConsumer.vertex(pose, (float) bounds.min.x, y, z).color(r, g, b, alpha).normal(1, 0, 0).endVertex();
-                    vertexConsumer.vertex(pose, (float) bounds.max.x, y, z).color(r, g, b, alpha).normal(1, 0, 0).endVertex();
+                    vertexConsumer.addVertex(pose, (float) bounds.min.x, y, z).setColor(r, g, b, alpha).setNormal(1, 0, 0);
+                    vertexConsumer.addVertex(pose, (float) bounds.max.x, y, z).setColor(r, g, b, alpha).setNormal(1, 0, 0);
                 }
             }
         }
@@ -266,8 +266,8 @@ public class ICRenderTypes {
         if ((amask & 2) != 0) {
             for (int x = (int) bounds.min.x; x <= bounds.max.x; x++) {
                 for (int z = (int) bounds.min.z; z <= bounds.max.z; z++) {
-                    vertexConsumer.vertex(pose, x, (float) bounds.min.y, z).color(r, g, b, alpha).normal(0, 1, 0).endVertex();
-                    vertexConsumer.vertex(pose, x, (float) bounds.max.y, z).color(r, g, b, alpha).normal(0, 1, 0).endVertex();
+                    vertexConsumer.addVertex(pose, x, (float) bounds.min.y, z).setColor(r, g, b, alpha).setNormal(0, 1, 0);
+                    vertexConsumer.addVertex(pose, x, (float) bounds.max.y, z).setColor(r, g, b, alpha).setNormal(0, 1, 0);
                 }
             }
         }
@@ -276,8 +276,8 @@ public class ICRenderTypes {
         if ((amask & 4) != 0) {
             for (int x = (int) bounds.min.x; x <= bounds.max.x; x++) {
                 for (int y = (int) bounds.min.y; y <= bounds.max.y; y++) {
-                    vertexConsumer.vertex(pose, x, y, (float) bounds.min.z).color(r, g, b, alpha).normal(0, 0, 1).endVertex();
-                    vertexConsumer.vertex(pose, x, y, (float) bounds.max.z).color(r, g, b, alpha).normal(0, 0, 1).endVertex();
+                    vertexConsumer.addVertex(pose, x, y, (float) bounds.min.z).setColor(r, g, b, alpha).setNormal(0, 0, 1);
+                    vertexConsumer.addVertex(pose, x, y, (float) bounds.max.z).setColor(r, g, b, alpha).setNormal(0, 0, 1);
                 }
             }
         }
@@ -355,10 +355,10 @@ public class ICRenderTypes {
     public static void onTextureStitchEvent(TextureAtlasStitchedEvent event) {
         if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
 
-        icSurfaceIcon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/workbench_ui/perfboard"));
-        icSurfaceBorderIcon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/workbench_ui/perfboard_edge"));
-        icSurfaceCornerIcon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/workbench_ui/perfboard_corner"));
-        rotateIcon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/workbench_ui/rotate"));
-        reflectIcon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/workbench_ui/reflect"));
+        icSurfaceIcon = event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/workbench_ui/perfboard"));
+        icSurfaceBorderIcon = event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/workbench_ui/perfboard_edge"));
+        icSurfaceCornerIcon = event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/workbench_ui/perfboard_corner"));
+        rotateIcon = event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/workbench_ui/rotate"));
+        reflectIcon = event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/workbench_ui/reflect"));
     }
 }

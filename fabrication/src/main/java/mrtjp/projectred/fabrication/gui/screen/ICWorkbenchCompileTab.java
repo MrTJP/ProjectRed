@@ -30,7 +30,7 @@ import static mrtjp.projectred.fabrication.init.FabricationUnlocal.*;
 
 public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNode.IICRenderNodeEventReceiver {
 
-    public static final ResourceLocation TAB_BACKGROUND = new ResourceLocation(ProjectRedFabrication.MOD_ID, "textures/gui/compile_tab.png");
+    public static final ResourceLocation TAB_BACKGROUND = ResourceLocation.fromNamespaceAndPath(ProjectRedFabrication.MOD_ID, "textures/gui/compile_tab.png");
 
     private final ICWorkbenchEditor editor;
 

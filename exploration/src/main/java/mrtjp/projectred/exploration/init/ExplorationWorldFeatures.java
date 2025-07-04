@@ -1,7 +1,7 @@
 package mrtjp.projectred.exploration.init;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.exploration.world.gen.ConfigFileControlledAddCarversBiomeModifier;
 import mrtjp.projectred.exploration.world.gen.ConfigFileControlledAddFeaturesBiomeModifier;
@@ -10,7 +10,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
@@ -50,8 +50,8 @@ public class ExplorationWorldFeatures {
     public static Supplier<WorldCarver<CaveCarverConfiguration>> MARBLE_CAVE_CARVER;
 
     // Biome Modifier Codecs
-    public static Supplier<Codec<ConfigFileControlledAddCarversBiomeModifier>> ADD_CARVER_BIOME_MODIFIER_CODEC;
-    public static Supplier<Codec<ConfigFileControlledAddFeaturesBiomeModifier>> ADD_FEATURES_BIOME_MODIFIER_CODEC;
+    public static Supplier<MapCodec<ConfigFileControlledAddCarversBiomeModifier>> ADD_CARVER_BIOME_MODIFIER_CODEC;
+    public static Supplier<MapCodec<ConfigFileControlledAddFeaturesBiomeModifier>> ADD_FEATURES_BIOME_MODIFIER_CODEC;
 
     /* Dynamic registry entries */
     // Configured carvers
@@ -87,22 +87,22 @@ public class ExplorationWorldFeatures {
     }
 
     public static ResourceKey<ConfiguredWorldCarver<?>> createCarverKey(String name) {
-        return ResourceKey.create(Registries.CONFIGURED_CARVER, new ResourceLocation(MOD_ID, name));
+        return ResourceKey.create(Registries.CONFIGURED_CARVER, ResourceLocation.fromNamespaceAndPath(MOD_ID, name));
     }
 
     public static ResourceKey<ConfiguredFeature<?, ?>> createFeatureKey(String name) {
-        return ResourceKey.create(Registries.CONFIGURED_FEATURE, new ResourceLocation(MOD_ID, name));
+        return ResourceKey.create(Registries.CONFIGURED_FEATURE, ResourceLocation.fromNamespaceAndPath(MOD_ID, name));
     }
 
     public static ResourceKey<PlacedFeature> createPlacedFeatureKey(String name) {
-        return ResourceKey.create(Registries.PLACED_FEATURE, new ResourceLocation(MOD_ID, name));
+        return ResourceKey.create(Registries.PLACED_FEATURE, ResourceLocation.fromNamespaceAndPath(MOD_ID, name));
     }
 
     public static ResourceKey<BiomeModifier> createBiomeModifierKey(String name) {
-        return ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(MOD_ID, name));
+        return ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ResourceLocation.fromNamespaceAndPath(MOD_ID, name));
     }
 
-    public static void bootstrapCarvers(BootstapContext<ConfiguredWorldCarver<?>> context) {
+    public static void bootstrapCarvers(BootstrapContext<ConfiguredWorldCarver<?>> context) {
 
         HolderGetter<Block> blockGetter = context.lookup(Registries.BLOCK);
 
@@ -118,7 +118,7 @@ public class ExplorationWorldFeatures {
                 UniformFloat.of(-1.0F, -0.4F))));
     }
 
-    public static void bootstrapFeatures(BootstapContext<ConfiguredFeature<?, ?>> context) {
+    public static void bootstrapFeatures(BootstrapContext<ConfiguredFeature<?, ?>> context) {
 
         registerOreConfiguration(context, RUBY_ORE_CONFIGURED_FEATURE,        RUBY_ORE_BLOCK, DEEPSLATE_RUBY_ORE_BLOCK,         8);
         registerOreConfiguration(context, SAPPHIRE_ORE_CONFIGURED_FEATURE,    SAPPHIRE_ORE_BLOCK, DEEPSLATE_SAPPHIRE_ORE_BLOCK, 8);
@@ -128,7 +128,7 @@ public class ExplorationWorldFeatures {
         registerOreConfiguration(context, SILVER_ORE_CONFIGURED_FEATURE,      SILVER_ORE_BLOCK, DEEPSLATE_SILVER_ORE_BLOCK,     9);
     }
 
-    public static void bootstrapPlacements(BootstapContext<PlacedFeature> context) {
+    public static void bootstrapPlacements(BootstrapContext<PlacedFeature> context) {
 
         HolderGetter<ConfiguredFeature<?, ?>> features = context.lookup(Registries.CONFIGURED_FEATURE);
 
@@ -140,7 +140,7 @@ public class ExplorationWorldFeatures {
         registerOrePlacement(context, SILVER_ORE_PLACED_FEATURE,      features.getOrThrow(SILVER_ORE_CONFIGURED_FEATURE),      -64, 32, 6);
     }
 
-    public static void bootstrapBiomeModifiers(BootstapContext<BiomeModifier> context) {
+    public static void bootstrapBiomeModifiers(BootstrapContext<BiomeModifier> context) {
 
         HolderGetter<Biome> biomes = context.lookup(Registries.BIOME);
         HolderGetter<ConfiguredWorldCarver<?>> worldCarvers = context.lookup(Registries.CONFIGURED_CARVER);
@@ -161,14 +161,14 @@ public class ExplorationWorldFeatures {
     }
 
     // Registers the actual ore feature. This describes a single cluster of this specific ore type
-    private static void registerOreConfiguration(BootstapContext<ConfiguredFeature<?, ?>> context, ResourceKey<ConfiguredFeature<?, ?>> key, Supplier<Block> standard,  Supplier<Block> deepslate, int veinSize) {
+    private static void registerOreConfiguration(BootstrapContext<ConfiguredFeature<?, ?>> context, ResourceKey<ConfiguredFeature<?, ?>> key, Supplier<Block> standard,  Supplier<Block> deepslate, int veinSize) {
         context.register(key, new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(ImmutableList.of(
                 OreConfiguration.target(new TagMatchTest(BlockTags.STONE_ORE_REPLACEABLES), standard.get().defaultBlockState()),
                 OreConfiguration.target(new TagMatchTest(BlockTags.STONE_ORE_REPLACEABLES), deepslate.get().defaultBlockState())), veinSize)));
     }
 
     // Registers a placement for the given feature. This controls how many of said features spawn and where
-    private static void registerOrePlacement(BootstapContext<PlacedFeature> context, ResourceKey<PlacedFeature> key, Holder<ConfiguredFeature<?, ?>> configuredFeature, int minY, int maxY, int count) {
+    private static void registerOrePlacement(BootstrapContext<PlacedFeature> context, ResourceKey<PlacedFeature> key, Holder<ConfiguredFeature<?, ?>> configuredFeature, int minY, int maxY, int count) {
         List<PlacementModifier> modifiers = ImmutableList.of(
                 CountPlacement.of(count),
                 InSquarePlacement.spread(),

@@ -10,6 +10,7 @@ import mrtjp.projectred.core.RedstonePropagator;
 import mrtjp.projectred.core.part.IPropagationCenterPart;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
 import javax.annotation.Nullable;
@@ -59,14 +60,14 @@ public class FramedBundledCablePart extends BaseCenterWirePart implements IBundl
 
     //region Save/Load
     @Override
-    public void save(CompoundTag tag) {
-        super.save(tag);
+    public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.save(tag, lookupProvider);
         tag.putByteArray("signal", signal);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.load(tag, lookupProvider);
         setSignal(tag.getByteArray("signal"));
     }
     //endregion

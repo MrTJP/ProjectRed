@@ -2,7 +2,7 @@ package mrtjp.projectred.expansion.tile;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.util.ServerUtils;
+import codechicken.lib.inventory.container.CCLMenuType;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.core.inventory.BaseContainer;
 import mrtjp.projectred.core.tile.IPacketReceiverBlockEntity;
@@ -10,12 +10,17 @@ import mrtjp.projectred.core.tile.ProjectRedBlockEntity;
 import mrtjp.projectred.expansion.CraftingHelper;
 import mrtjp.projectred.expansion.init.ExpansionBlocks;
 import mrtjp.projectred.expansion.inventory.container.ProjectBenchMenu;
+import mrtjp.projectred.expansion.item.RecipePlanComponent;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.lib.InventoryLib;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.*;
+import net.minecraft.world.Container;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -56,19 +61,19 @@ public class ProjectBenchBlockEntity extends ProjectRedBlockEntity implements IP
     }
 
     @Override
-    public void saveToNBT(CompoundTag tag) {
-        planInventory.saveTo(tag, "plan_inv");
-        craftingGrid.saveTo(tag, "crafting_inv");
-        storageInventory.saveTo(tag, "storage_inv");
-        planCraftingGrid.saveTo(tag, "plan_crafting_inv");
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        planInventory.saveTo(tag, "plan_inv", lookupProvider);
+        craftingGrid.saveTo(tag, "crafting_inv", lookupProvider);
+        storageInventory.saveTo(tag, "storage_inv", lookupProvider);
+        planCraftingGrid.saveTo(tag, "plan_crafting_inv", lookupProvider);
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
-        planInventory.loadFrom(tag, "plan_inv");
-        craftingGrid.loadFrom(tag, "crafting_inv");
-        storageInventory.loadFrom(tag, "storage_inv");
-        planCraftingGrid.loadFrom(tag, "plan_crafting_inv");
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        planInventory.loadFrom(tag, "plan_inv", lookupProvider);
+        craftingGrid.loadFrom(tag, "crafting_inv", lookupProvider);
+        storageInventory.loadFrom(tag, "storage_inv", lookupProvider);
+        planCraftingGrid.loadFrom(tag, "plan_crafting_inv", lookupProvider);
     }
 
     @Override
@@ -106,9 +111,9 @@ public class ProjectBenchBlockEntity extends ProjectRedBlockEntity implements IP
     }
 
     @Override
-    public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(Player player, BlockHitResult hit) {
         if (!getLevel().isClientSide) {
-            ServerUtils.openContainer(
+            CCLMenuType.openMenu(
                     (ServerPlayer) player,
                     new SimpleMenuProvider(
                             (id, inv, p) -> new ProjectBenchMenu(inv, this, id),
@@ -155,9 +160,10 @@ public class ProjectBenchBlockEntity extends ProjectRedBlockEntity implements IP
             // And plan must be present with recipe
             if (gridEmpty) {
                 ItemStack plan = planInventory.getItem(0);
-                if (RecipePlanItem.hasRecipeInside(plan)) {
-                    isPlanRecipe = true; // This flag changes what inventory is presented to crafting helper
-                    RecipePlanItem.loadPlanInputsToGrid(planCraftingGrid, plan);
+                var recipeData = RecipePlanComponent.getComponent(plan);
+                if (recipeData != null && recipeData.isRecipeValid()) {
+                    // This flag changes what inventory is presented to crafting helper
+                    isPlanRecipe = recipeData.loadPlanInputsToGrid(planCraftingGrid);
                 }
             }
 
@@ -197,7 +203,7 @@ public class ProjectBenchBlockEntity extends ProjectRedBlockEntity implements IP
                 for (int i = 0; i < 9; i++) {
                     inputs[i] = craftingGrid.getItem(i).copy();
                 }
-                RecipePlanItem.savePlan(planStack, inputs, result);
+                RecipePlanComponent.savePlan(planStack, inputs, result);
             }
         }
     }

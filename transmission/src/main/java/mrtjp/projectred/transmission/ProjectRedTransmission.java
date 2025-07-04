@@ -7,6 +7,7 @@ import mrtjp.projectred.transmission.data.*;
 import mrtjp.projectred.transmission.init.TransmissionClientInit;
 import mrtjp.projectred.transmission.init.TransmissionCreativeModeTabs;
 import mrtjp.projectred.transmission.init.TransmissionParts;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
@@ -27,6 +28,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import static mrtjp.projectred.transmission.ProjectRedTransmission.MOD_ID;
 
@@ -77,14 +79,15 @@ public class ProjectRedTransmission {
         DataGenerator generator = event.getGenerator();
         PackOutput output = generator.getPackOutput();
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
+        CompletableFuture<HolderLookup.Provider> provider = event.getLookupProvider();
 
         generator.addProvider(event.includeClient(), new TransmissionItemModelProvider(output, fileHelper));
         generator.addProvider(event.includeClient(), new TransmissionLanguageProvider(output));
 
-        BlockTagsProvider blockTagsProvider = new TransmissionBlockTagsProvider(output, event.getLookupProvider(), fileHelper);
+        BlockTagsProvider blockTagsProvider = new TransmissionBlockTagsProvider(output, provider, fileHelper);
         generator.addProvider(event.includeServer(), blockTagsProvider);
-        generator.addProvider(event.includeServer(), new TransmissionItemTagsProvider(output, event.getLookupProvider(), blockTagsProvider.contentsGetter(), fileHelper));
-        generator.addProvider(event.includeServer(), new TransmissionRecipeProvider(output));
+        generator.addProvider(event.includeServer(), new TransmissionItemTagsProvider(output, provider, blockTagsProvider.contentsGetter(), fileHelper));
+        generator.addProvider(event.includeServer(), new TransmissionRecipeProvider(provider, output));
     }
 
     private void onServerStartEvent(final ServerAboutToStartEvent event) {

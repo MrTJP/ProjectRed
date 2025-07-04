@@ -32,7 +32,6 @@ public class FabricationCreativeModeTab {
                             output.accept(BLANK_PHOTOMASK_ITEM.get());
                             output.accept(PHOTOMASK_SET_ITEM.get());
                             output.accept(ROUGH_SILICON_WAFER_ITEM.get());
-                            output.accept(ETCHED_SILICON_WAFER_ITEM.get());
                             output.accept(VALID_DIE_ITEM.get());
                             output.accept(INVALID_DIE_ITEM.get());
                         })

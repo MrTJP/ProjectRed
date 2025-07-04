@@ -72,6 +72,14 @@ public class ICEditorStateMachine {
         return compilerLog;
     }
 
+    public int getLastCompiledFormat() {
+        return lastCompiledFormat;
+    }
+
+    public String getLastCompiledFlatMap() {
+        return lastCompiledFlatMap;
+    }
+
     public void save(CompoundTag tag) {
         tag.putByte(KEY_COMP_STATE, (byte) currentState);
         tag.putInt(KEY_COMPILE_FORMAT, lastCompiledFormat);

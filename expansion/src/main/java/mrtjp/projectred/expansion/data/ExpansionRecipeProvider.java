@@ -2,11 +2,14 @@ package mrtjp.projectred.expansion.data;
 
 import codechicken.lib.datagen.recipe.RecipeProvider;
 import mrtjp.projectred.expansion.TubeType;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
+
+import java.util.concurrent.CompletableFuture;
 
 import static mrtjp.projectred.core.init.CoreItems.COPPER_COIL_ITEM;
 import static mrtjp.projectred.core.init.CoreItems.MOTOR_ITEM;
@@ -18,8 +21,8 @@ import static mrtjp.projectred.expansion.init.ExpansionItems.*;
 
 public class ExpansionRecipeProvider extends RecipeProvider {
 
-    public ExpansionRecipeProvider(PackOutput output) {
-        super(output, MOD_ID);
+    public ExpansionRecipeProvider(CompletableFuture<HolderLookup.Provider> registries, PackOutput output) {
+        super(registries, output, MOD_ID);
     }
 
     @Override
@@ -34,7 +37,7 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .patternLine("SLS");
 
         shapedRecipe(PROJECT_BENCH_BLOCK.get(), 1)
-                .key('S', Tags.Items.STONE)
+                .key('S', Tags.Items.STONES)
                 .key('W', ItemTags.PLANKS)
                 .key('B', Blocks.CRAFTING_TABLE)
                 .key('C', Blocks.CHEST)
@@ -52,7 +55,7 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .patternLine("IEI");
 
         shapedRecipe(CHARGING_BENCH_BLOCK.get(), 1)
-                .key('S', Tags.Items.STONE)
+                .key('S', Tags.Items.STONES)
                 .key('C', COPPER_COIL_ITEM.get())
                 .key('W', ItemTags.PLANKS)
                 .key('B', BATTERY_ITEM.get())
@@ -63,7 +66,7 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .patternLine("IEI");
 
         shapedRecipe(AUTO_CRAFTER_BLOCK.get(), 1)
-                .key('S', Tags.Items.STONE)
+                .key('S', Tags.Items.STONES)
                 .key('B', Blocks.CRAFTING_TABLE)
                 .key('I', Tags.Items.INGOTS_IRON)
                 .key('C', Blocks.CHEST)
@@ -87,7 +90,7 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .key('I', Tags.Items.INGOTS_IRON)
                 .key('R', Tags.Items.DUSTS_REDSTONE)
                 .key('M', MOTOR_ITEM.get())
-                .key('S', Tags.Items.STONE)
+                .key('S', Tags.Items.STONES)
                 .key('E', ELECTROTINE_ALLOY_INGOT_TAG)
                 .patternLine("WIW")
                 .patternLine("RMR")
@@ -97,7 +100,7 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .key('W', ItemTags.PLANKS)
                 .key('I', Tags.Items.INGOTS_IRON)
                 .key('C', COPPER_COIL_ITEM.get())
-                .key('S', Tags.Items.STONE)
+                .key('S', Tags.Items.STONES)
                 .key('E', ELECTROTINE_ALLOY_INGOT_TAG)
                 .patternLine("WIW")
                 .patternLine("CIC")
@@ -105,7 +108,7 @@ public class ExpansionRecipeProvider extends RecipeProvider {
 
         shapedRecipe(TRANSPOSER_BLOCK.get(), 1)
                 .key('W', ItemTags.PLANKS)
-                .key('S', Tags.Items.COBBLESTONE)
+                .key('S', Tags.Items.COBBLESTONES)
                 .key('P', Blocks.PISTON)
                 .key('R', Tags.Items.DUSTS_REDSTONE)
                 .patternLine("WWW")
@@ -113,7 +116,7 @@ public class ExpansionRecipeProvider extends RecipeProvider {
                 .patternLine("SRS");
 
         shapedRecipe(BLOCK_BREAKER_BLOCK.get(), 1)
-                .key('S', Tags.Items.COBBLESTONE)
+                .key('S', Tags.Items.COBBLESTONES)
                 .key('A', Items.IRON_PICKAXE)
                 .key('P', Blocks.PISTON)
                 .key('R', Tags.Items.DUSTS_REDSTONE)
@@ -123,7 +126,7 @@ public class ExpansionRecipeProvider extends RecipeProvider {
 
         shapedRecipe(DEPLOYER_BLOCK.get(), 1)
                 .key('C', Blocks.CHEST)
-                .key('S', Tags.Items.COBBLESTONE)
+                .key('S', Tags.Items.COBBLESTONES)
                 .key('P', Blocks.PISTON)
                 .key('R', Tags.Items.DUSTS_REDSTONE)
                 .patternLine("SCS")

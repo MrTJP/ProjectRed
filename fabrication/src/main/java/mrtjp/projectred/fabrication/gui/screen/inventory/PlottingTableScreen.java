@@ -12,7 +12,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class PlottingTableScreen extends RedUIContainerScreen<PlottingTableMenu> {
 
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(ProjectRedFabrication.MOD_ID, "textures/gui/plotting_table.png");
+    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(ProjectRedFabrication.MOD_ID, "textures/gui/plotting_table.png");
 
     public PlottingTableScreen(PlottingTableMenu container, Inventory playerInventory, Component title) {
         super(176, 171, container, playerInventory, title);

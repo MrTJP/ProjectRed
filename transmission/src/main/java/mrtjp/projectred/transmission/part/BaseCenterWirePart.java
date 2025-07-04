@@ -10,6 +10,7 @@ import codechicken.microblock.api.MicroMaterial;
 import codechicken.microblock.api.SlottedHollowConnect;
 import codechicken.microblock.init.CBMicroblockModContent;
 import codechicken.microblock.item.ItemMicroBlock;
+import codechicken.microblock.item.MicroMaterialComponent;
 import codechicken.microblock.util.MicroMaterialRegistry;
 import codechicken.multipart.api.part.MultiPart;
 import codechicken.multipart.api.part.NormalOcclusionPart;
@@ -22,10 +23,11 @@ import mrtjp.projectred.core.part.IConnectableCenterPart;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -96,8 +98,8 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
 
     //region TMultiPart overrides
     @Override
-    public void save(CompoundTag tag) {
-        super.save(tag);
+    public void save(CompoundTag tag, HolderLookup.Provider registries) {
+        super.save(tag, registries);
         tag.putInt("connMap", connMap);
         if (material != null) {
             tag.putString("mat", Objects.requireNonNull(material.getRegistryName()).toString());
@@ -105,8 +107,8 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void load(CompoundTag tag, HolderLookup.Provider registries) {
+        super.load(tag, registries);
         connMap = tag.getInt("connMap");
         material = tag.contains("mat") ? MicroMaterialRegistry.getMaterial(tag.getString("mat")) : null;
     }
@@ -263,8 +265,8 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
     }
 
     @Override
-    public InteractionResult activate(Player player, PartRayTraceResult hit, ItemStack held, InteractionHand hand) {
-        var result = super.activate(player, hit, held, hand);
+    public ItemInteractionResult useItemOn(ItemStack held, Player player, PartRayTraceResult hit, InteractionHand hand) {
+        var result = super.useItemOn(held, player, hit, hand);
         if (result.consumesAction()) return result;
 
         // Couch + right click with empty hand removes material
@@ -276,17 +278,20 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
                 material = null;
                 sendMaterialUpdate();
             }
-            return InteractionResult.sidedSuccess(level().isClientSide);
+            return ItemInteractionResult.sidedSuccess(level().isClientSide);
         }
 
+        // Retrieve micro material from held item
+        MicroMaterialComponent matComp = MicroMaterialComponent.getComponent(held);
+
         // Right click with cover Microblock allows adding a cover material
-        if (!held.isEmpty() && held.getItem() == CBMicroblockModContent.MICRO_BLOCK_ITEM.get() && ItemMicroBlock.getFactory(held) == CBMicroblockModContent.FACE_MICROBLOCK_PART.get() && ItemMicroBlock.getSize(held) == 1) {
-            MicroMaterial newMat = ItemMicroBlock.getMaterialFromStack(held);
-            if (newMat != null && (material == null || newMat != material)) {
+        if (matComp != null && matComp.factory() == CBMicroblockModContent.FACE_MICROBLOCK_PART.get() && matComp.size() == 1) {
+            MicroMaterial newMat = matComp.material();
+            if (material == null || newMat != material) {
                 if (!level().isClientSide) {
                     // Exclude incompatible materials
                     if (newMat.isTransparent()) {
-                        return InteractionResult.PASS;
+                        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
                     }
 
                     // Drop old material if player is not in creative
@@ -309,11 +314,11 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
                         held.shrink(1);
                     }
                 }
-                return InteractionResult.sidedSuccess(level().isClientSide);
+                return ItemInteractionResult.sidedSuccess(level().isClientSide);
             }
         }
 
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     //region IConnectableCenterPart overrides

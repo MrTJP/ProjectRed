@@ -14,7 +14,7 @@ import static mrtjp.projectred.expansion.ProjectRedExpansion.MOD_ID;
 
 public class ExpansionNetwork {
 
-    public static final ResourceLocation NET_CHANNEL = new ResourceLocation(MOD_ID, "network");
+    public static final ResourceLocation NET_CHANNEL = ResourceLocation.fromNamespaceAndPath(MOD_ID, "network");
 
     // Server to client messages
     public static final int MM_FROM_SERVER = 1;

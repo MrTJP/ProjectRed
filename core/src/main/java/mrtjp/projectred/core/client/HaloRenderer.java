@@ -241,7 +241,7 @@ public class HaloRenderer {
         if (isFabulous() && postChainFlushPending) {
             postChainFlushPending = false;
             assert HALO_POST_CHAIN != null;
-            HALO_POST_CHAIN.process(event.getPartialTick());
+            HALO_POST_CHAIN.process(event.getPartialTick().getGameTimeDeltaTicks());
             Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
         }
     }

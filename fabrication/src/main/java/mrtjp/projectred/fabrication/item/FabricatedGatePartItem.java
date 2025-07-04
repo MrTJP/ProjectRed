@@ -1,13 +1,12 @@
 package mrtjp.projectred.fabrication.item;
 
+import mrtjp.projectred.fabrication.init.FabricationDataComponents;
 import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.item.BaseGatePartItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -18,7 +17,7 @@ public class FabricatedGatePartItem extends BaseGatePartItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipList, TooltipFlag flag) {
-        ICBlueprintItem.buildTooltip(stack.getTag(), tooltipList);
+    public void appendHoverText(ItemStack stack, TooltipContext tooltipContext, List<Component> tooltipList, TooltipFlag flag) {
+        stack.addToTooltip(FabricationDataComponents.IC_DATA_COMPONENT_TYPE, tooltipContext, tooltipList::add, flag);
     }
 }

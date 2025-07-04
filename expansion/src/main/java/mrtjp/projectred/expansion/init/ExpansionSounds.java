@@ -21,7 +21,7 @@ public class ExpansionSounds {
 
     public static void register() {
 
-        PRESSURIZE = ProjectRedExpansion.SOUNDS.register(SOUND_PRESSURIZE, () -> SoundEvent.createFixedRangeEvent(new ResourceLocation(MOD_ID, SOUND_PRESSURIZE), 16F));
-        DEPRESSURIZE = ProjectRedExpansion.SOUNDS.register(SOUND_DEPRESSURIZE, () -> SoundEvent.createFixedRangeEvent(new ResourceLocation(MOD_ID, SOUND_DEPRESSURIZE), 16F));
+        PRESSURIZE = ProjectRedExpansion.SOUNDS.register(SOUND_PRESSURIZE, () -> SoundEvent.createFixedRangeEvent(ResourceLocation.fromNamespaceAndPath(MOD_ID, SOUND_PRESSURIZE), 16F));
+        DEPRESSURIZE = ProjectRedExpansion.SOUNDS.register(SOUND_DEPRESSURIZE, () -> SoundEvent.createFixedRangeEvent(ResourceLocation.fromNamespaceAndPath(MOD_ID, SOUND_DEPRESSURIZE), 16F));
     }
 }

@@ -3,6 +3,7 @@ package mrtjp.projectred.illumination.data;
 import mrtjp.projectred.illumination.BlockLightType;
 import mrtjp.projectred.illumination.ProjectRedIllumination;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
@@ -12,21 +13,23 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import static mrtjp.projectred.illumination.init.IlluminationBlocks.ILLUMAR_SMART_LAMP;
 
 public class IlluminationLootTableProvider extends LootTableProvider {
 
-    public IlluminationLootTableProvider(PackOutput output) {
+    public IlluminationLootTableProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         super(output, Set.of(), List.of(
-                new LootTableProvider.SubProviderEntry(BlockLootTable::new, LootContextParamSets.BLOCK))
+                new LootTableProvider.SubProviderEntry(BlockLootTable::new, LootContextParamSets.BLOCK)),
+                registries
         );
     }
 
     private static final class BlockLootTable extends BlockLootSubProvider {
 
-        public BlockLootTable() {
-            super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+        public BlockLootTable(HolderLookup.Provider provider) {
+            super(Set.of(), FeatureFlags.REGISTRY.allFlags(), provider);
         }
 
         @Override

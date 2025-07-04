@@ -1,6 +1,7 @@
 package mrtjp.projectred.core.inventory;
 
 import mrtjp.projectred.core.ProjectRedCore;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.SimpleContainer;
@@ -16,72 +17,74 @@ public class BaseContainer extends SimpleContainer {
 
     private static final String TAG_ITEMS = "items";
     private static final String TAG_SLOT = "slot";
-    private static final String TAG_ITEM_COUNT = "item_count";
 
     public BaseContainer(int size) {
         super(size);
     }
 
-    public CompoundTag save(CompoundTag tag) {
+    public BaseContainer(ItemStack... stacks) {
+        super(stacks);
+    }
+
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         ListTag list = new ListTag();
         for (int i = 0; i < getContainerSize(); i++) {
             ItemStack stack = getItem(i);
             if (!stack.isEmpty()) {
                 CompoundTag itemTag = new CompoundTag();
                 itemTag.putInt(TAG_SLOT, i);
-                stack.save(itemTag);
-                list.add(itemTag);
+                list.add(stack.save(lookupProvider, itemTag));
             }
         }
         tag.put(TAG_ITEMS, list);
-        tag.putInt(TAG_ITEM_COUNT, list.size());
 
         return tag;
     }
 
-    public void load(CompoundTag tag) {
+    public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         clearContent();
         ListTag list = tag.getList(TAG_ITEMS, 10);
         for (int i = 0; i < list.size(); i++) {
             CompoundTag itemTag = list.getCompound(i);
-            int slot = itemTag.contains("index") ? itemTag.getInt("index") : itemTag.getInt(TAG_SLOT); //TODO remove legacy support
+            int slot = itemTag.getInt(TAG_SLOT);
             if (slot >= 0 && slot < getContainerSize()) {
-                setItem(slot, ItemStack.of(itemTag));
+                ItemStack.parse(lookupProvider, itemTag)
+                        .ifPresent(stack -> setItem(slot, stack));
             }
         }
     }
 
-    public void saveTo(CompoundTag parent, String key) {
-        parent.put(key, save(new CompoundTag()));
+    public void saveTo(CompoundTag parent, String key, HolderLookup.Provider lookupProvider) {
+        parent.put(key, save(new CompoundTag(), lookupProvider));
     }
 
-    public void loadFrom(CompoundTag parent, String key) {
+    public void loadFrom(CompoundTag parent, String key, HolderLookup.Provider lookupProvider) {
         // Check if list-format tags are present
         ListTag itemList = parent.getList(key, 10);
         if (!itemList.isEmpty()) {
-            fromTag(itemList);
+            fromTag(itemList, lookupProvider);
             ProjectRedCore.LOGGER.warn("Inventory {} loaded from non-ordered data. Its contents may have shuffled", this);
         } else {
             // Otherwise, use new compound format
-            load(parent.getCompound(key));
+            load(parent.getCompound(key), lookupProvider);
         }
     }
 
     public static int getItemCount(CompoundTag tag) {
-        return tag.contains(TAG_ITEM_COUNT) ? tag.getInt(TAG_ITEM_COUNT) : tag.getList(TAG_ITEMS, 10).size(); //TODO remove legacy support
+        return tag.getList(TAG_ITEMS, 10).size();
     }
 
     //region Deprecate vanilla save/load as it does not load back to correct slots
     @Override
     @Deprecated // Use saveTo or save
-    public ListTag createTag() {
-        return super.createTag();
+    public ListTag createTag(HolderLookup.Provider lookupProvider) {
+        return super.createTag(lookupProvider);
     }
 
     @Override
     @Deprecated // Use loadFrom or load
-    public void fromTag(ListTag pContainerNbt) {
-        super.fromTag(pContainerNbt);
+    public void fromTag(ListTag pContainerNbt, HolderLookup.Provider lookupProvider) {
+        super.fromTag(pContainerNbt, lookupProvider);
     }
     //endregion
 }

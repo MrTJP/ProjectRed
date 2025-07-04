@@ -17,6 +17,7 @@ import mrtjp.projectred.lib.InventoryLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.WorldlyContainer;
@@ -63,17 +64,17 @@ public class PneumaticTubePart extends GraphContainerTubePart implements Pneumat
 
     //region Save/load
     @Override
-    public void save(CompoundTag tag) {
-        super.save(tag);
+    public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.save(tag, lookupProvider);
         tag.putByte("last_dir", (byte) lastRoundRobinDir);
-        transport.save(tag);
+        transport.save(tag, lookupProvider);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.load(tag, lookupProvider);
         lastRoundRobinDir = tag.getByte("last_dir");
-        transport.load(tag);
+        transport.load(tag, lookupProvider);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package mrtjp.projectred.expansion.tile;
 
-import codechicken.lib.util.ServerUtils;
+import codechicken.lib.inventory.container.CCLMenuType;
 import codechicken.lib.vec.Vector3;
 import com.mojang.authlib.GameProfile;
 import mrtjp.projectred.core.inventory.BaseContainer;
@@ -9,13 +9,11 @@ import mrtjp.projectred.expansion.inventory.container.DeployerMenu;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -28,6 +26,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
@@ -54,15 +53,15 @@ public class DeployerBlockEntity extends BaseDeviceBlockEntity {
 
     //region Save/load
     @Override
-    public void saveToNBT(CompoundTag tag) {
-        super.saveToNBT(tag);
-        inventory.saveTo(tag, "inventory");
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.saveToNBT(tag, lookupProvider);
+        inventory.saveTo(tag, "inventory", lookupProvider);
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
-        super.loadFromNBT(tag);
-        inventory.loadFrom(tag, "inventory");
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.loadFromNBT(tag, lookupProvider);
+        inventory.loadFrom(tag, "inventory", lookupProvider);
     }
     //endregion
 
@@ -73,16 +72,16 @@ public class DeployerBlockEntity extends BaseDeviceBlockEntity {
     }
 
     @Override
-    public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
+    public ItemInteractionResult useItemOn(ItemStack itemStack, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!getLevel().isClientSide) {
-            ServerUtils.openContainer(
+            CCLMenuType.openMenu(
                     (ServerPlayer) player,
                     new SimpleMenuProvider(
                             (id, inv, p) -> new DeployerMenu(inv, this, id),
                             getBlockState().getBlock().getName()),
                     p -> p.writePos(getBlockPos()));
         }
-        return InteractionResult.sidedSuccess(getLevel().isClientSide);
+        return ItemInteractionResult.sidedSuccess(getLevel().isClientSide);
     }
 
     @Override
@@ -176,7 +175,7 @@ public class DeployerBlockEntity extends BaseDeviceBlockEntity {
 
         // Item gets the first use call
         UseOnContext ctx = new UseOnContext(player, InteractionHand.MAIN_HAND, hit);
-        if (event.getUseItem() != Event.Result.DENY) {
+        if (!event.getUseItem().isFalse()) {
             InteractionResult result = player.getMainHandItem().onItemUseFirst(ctx);
             if (result != InteractionResult.PASS) {
                 return result;
@@ -184,15 +183,17 @@ public class DeployerBlockEntity extends BaseDeviceBlockEntity {
         }
 
         // Block gets the second use call. It can optionally consume the right-click
-        if (event.getUseBlock() != Event.Result.DENY) {
-            InteractionResult result = getLevel().getBlockState(usePos).use(getLevel(), player, InteractionHand.MAIN_HAND, hit);
-            if (result.consumesAction()) {
-                return result;
+        if (!event.getUseBlock().isFalse()) {
+            BlockState blockstate = getLevel().getBlockState(usePos);
+            ItemInteractionResult interactionResult = blockstate.useItemOn(player.getItemInHand(InteractionHand.MAIN_HAND), getLevel(), player, InteractionHand.MAIN_HAND, hit);
+            if (interactionResult.consumesAction()) {
+                // If the block consumed the action, return the result
+                return interactionResult.result();
             }
         }
 
-        // If event cancelled the item use, don't run the remaining item use calls
-        if (event.getUseItem() == Event.Result.DENY) {
+        // If event canceled the item use, don't run the remaining item use calls
+        if (event.getUseItem().isFalse()) {
             return InteractionResult.PASS;
         }
 

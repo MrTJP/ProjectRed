@@ -15,10 +15,11 @@ import mrtjp.projectred.core.part.IPropagationCenterPart;
 import mrtjp.projectred.core.part.IRedstonePropagationPart;
 import mrtjp.projectred.core.part.IRedwirePart;
 import mrtjp.projectred.expansion.TubeType;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.SoundType;
@@ -46,15 +47,15 @@ public class RedstoneTubePart extends BaseTubePart implements IRedstonePropagati
 
     //region save/load
     @Override
-    public void save(CompoundTag tag) {
-        super.save(tag);
+    public void save(CompoundTag tag, HolderLookup.Provider registries) {
+        super.save(tag, registries);
         tag.putBoolean("has_redstone", hasRedstone);
         tag.putByte("signal", signal);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void load(CompoundTag tag, HolderLookup.Provider registries) {
+        super.load(tag, registries);
         hasRedstone = tag.getBoolean("has_redstone");
         signal = tag.getByte("signal");
     }
@@ -95,8 +96,8 @@ public class RedstoneTubePart extends BaseTubePart implements IRedstonePropagati
 
     //region Multipart events
     @Override
-    public InteractionResult activate(Player player, PartRayTraceResult hit, ItemStack held, InteractionHand hand) {
-        var result = super.activate(player, hit, held, hand);
+    public ItemInteractionResult useItemOn(ItemStack held, Player player, PartRayTraceResult hit, InteractionHand hand) {
+        var result = super.useItemOn(held, player, hit, hand);
         if (result.consumesAction()) return result;
 
         // Couch + right click with empty hand removes redstone
@@ -109,7 +110,7 @@ public class RedstoneTubePart extends BaseTubePart implements IRedstonePropagati
                 tile().notifyPartChange(null);
                 sendSignalUpdate();
             }
-            return InteractionResult.sidedSuccess(level().isClientSide);
+            return ItemInteractionResult.sidedSuccess(level().isClientSide);
         }
 
         // Right click with red alloy adds redstone wiring to pipe
@@ -129,10 +130,10 @@ public class RedstoneTubePart extends BaseTubePart implements IRedstonePropagati
                     held.shrink(1);
                 }
             }
-            return InteractionResult.sidedSuccess(level().isClientSide);
+            return ItemInteractionResult.sidedSuccess(level().isClientSide);
         }
 
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override

@@ -24,9 +24,11 @@ import mrtjp.projectred.core.part.IConnectableCenterPart;
 import mrtjp.projectred.expansion.TubeType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -107,7 +109,7 @@ public abstract class BaseTubePart extends BaseMultipart implements IConnectable
 
     //region TMultiPart overrides
     @Override
-    public void save(CompoundTag tag) {
+    public void save(CompoundTag tag, HolderLookup.Provider registries) {
         tag.putInt("connMap", connMap);
         if (material != null) {
             tag.putString("mat", Objects.requireNonNull(material.getRegistryName()).toString());
@@ -115,7 +117,7 @@ public abstract class BaseTubePart extends BaseMultipart implements IConnectable
     }
 
     @Override
-    public void load(CompoundTag tag) {
+    public void load(CompoundTag tag, HolderLookup.Provider registries) {
         connMap = tag.getInt("connMap");
         material = tag.contains("mat") ? MicroMaterialRegistry.getMaterial(tag.getString("mat")) : null;
     }
@@ -313,8 +315,8 @@ public abstract class BaseTubePart extends BaseMultipart implements IConnectable
     }
 
     @Override
-    public InteractionResult activate(Player player, PartRayTraceResult hit, ItemStack held, InteractionHand hand) {
-        return super.activate(player, hit, held, hand);
+    public ItemInteractionResult useItemOn(ItemStack held, Player player, PartRayTraceResult hit, InteractionHand hand) {
+        return super.useItemOn(held, player, hit, hand);
 
         //TODO Uncomment to deal with material application
         //     * Implement model generation and rendering in TubeModelRenderer (or rather, move FramedJacketedWireModelBuilder to core)

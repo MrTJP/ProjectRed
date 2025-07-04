@@ -15,6 +15,7 @@ import mrtjp.projectred.core.part.IPropagationCenterPart;
 import mrtjp.projectred.core.part.IRedstonePropagationPart;
 import mrtjp.projectred.core.part.IRedwirePart;
 import mrtjp.projectred.transmission.WireType;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
 import static mrtjp.projectred.core.RedstonePropagator.FORCE;
@@ -31,14 +32,14 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
     }
 
     @Override
-    public void save(CompoundTag tag) {
-        super.save(tag);
+    public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.save(tag, lookupProvider);
         tag.putByte("signal", signal);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.load(tag, lookupProvider);
         signal = tag.getByte("signal");
     }
 

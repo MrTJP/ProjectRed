@@ -3,6 +3,7 @@ package mrtjp.projectred.core.tile;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -33,12 +34,12 @@ public abstract class BaseConnectableBlockEntity extends ProjectRedBlockEntity i
     }
 
     @Override
-    public void saveToNBT(CompoundTag tag) {
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         tag.putLong("connMap", connMap);
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         connMap = tag.getLong("connMap");
     }
 

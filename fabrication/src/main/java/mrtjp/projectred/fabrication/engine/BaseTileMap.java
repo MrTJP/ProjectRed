@@ -129,9 +129,7 @@ public class BaseTileMap implements FETileMap {
     }
 
     public InterfaceSpec getInterfaceSpec() {
-        InterfaceSpec spec = new InterfaceSpec();
-        spec.setFromIOTiles(ioTiles);
-        return spec;
+        return InterfaceSpec.fromIOTiles(ioTiles);
     }
 
     public void save(CompoundTag tag) {

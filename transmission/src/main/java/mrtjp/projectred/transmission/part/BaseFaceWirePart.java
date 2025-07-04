@@ -19,6 +19,7 @@ import mrtjp.projectred.core.part.IConnectableFacePart;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.UseOnContext;
@@ -76,15 +77,15 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
     //endregion
 
     @Override
-    public void save(CompoundTag tag) {
-        super.save(tag);
+    public void save(CompoundTag tag, HolderLookup.Provider registries) {
+        super.save(tag, registries);
         tag.putInt("connMap", connMap);
         tag.putByte("side", side);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void load(CompoundTag tag, HolderLookup.Provider registries) {
+        super.load(tag, registries);
         connMap = tag.getInt("connMap");
         side = tag.getByte("side");
     }

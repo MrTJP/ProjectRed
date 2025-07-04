@@ -2,10 +2,13 @@ package mrtjp.projectred.exploration.data;
 
 import mrtjp.projectred.exploration.ProjectRedExploration;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
@@ -18,6 +21,7 @@ import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import static mrtjp.projectred.core.init.CoreItems.*;
 import static mrtjp.projectred.exploration.init.ExplorationBlocks.*;
@@ -26,16 +30,16 @@ import static mrtjp.projectred.exploration.init.ExplorationItems.RAW_TIN_ITEM;
 
 public class ExplorationLootTableProvider extends LootTableProvider {
 
-    public ExplorationLootTableProvider(PackOutput output) {
+    public ExplorationLootTableProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         super(output, Set.of(), List.of(
                 new LootTableProvider.SubProviderEntry(BlockLootTable::new, LootContextParamSets.BLOCK)
-        ));
+        ), registries);
     }
 
     private static final class BlockLootTable extends BlockLootSubProvider {
 
-        BlockLootTable() {
-            super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+        BlockLootTable(HolderLookup.Provider provider) {
+            super(Set.of(), FeatureFlags.REGISTRY.allFlags(), provider);
         }
 
         @Override
@@ -90,13 +94,14 @@ public class ExplorationLootTableProvider extends LootTableProvider {
         }
 
         private LootTable.Builder createOreMultiDrops(Block oreBlock, ItemLike dropItem, float min, float max) {
+            HolderLookup.RegistryLookup<Enchantment> registrylookup = this.registries.lookupOrThrow(Registries.ENCHANTMENT);
             return createSilkTouchDispatchTable(
                     oreBlock,
                     this.applyExplosionDecay(
                             oreBlock,
                             LootItem.lootTableItem(dropItem)
                                     .apply(SetItemCountFunction.setCount(UniformGenerator.between(min, max)))
-                                    .apply(ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE))
+                                    .apply(ApplyBonusCount.addOreBonusCount(registrylookup.getOrThrow(Enchantments.FORTUNE)))
                     )
             );
         }

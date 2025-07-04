@@ -12,6 +12,7 @@ import mrtjp.projectred.core.part.IConnectableFacePart;
 import mrtjp.projectred.core.part.IPropagationFacePart;
 import mrtjp.projectred.transmission.WireType;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
 import javax.annotation.Nullable;
@@ -61,14 +62,14 @@ public class BundledCablePart extends BaseFaceWirePart implements IBundledCableP
 
     //region TMultiPart overrides
     @Override
-    public void save(CompoundTag tag) {
-        super.save(tag);
+    public void save(CompoundTag tag, HolderLookup.Provider registries) {
+        super.save(tag, registries);
         tag.putByteArray("signal", signal);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void load(CompoundTag tag, HolderLookup.Provider registries) {
+        super.load(tag, registries);
         setSignal(tag.getByteArray("signal"));
     }
     //endregion

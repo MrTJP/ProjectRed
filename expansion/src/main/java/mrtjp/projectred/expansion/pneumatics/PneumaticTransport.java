@@ -3,6 +3,7 @@ package mrtjp.projectred.expansion.pneumatics;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import mrtjp.projectred.expansion.part.PneumaticTubePayload;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 
@@ -28,26 +29,26 @@ public class PneumaticTransport {
     }
 
     //region save/load
-    public void save(CompoundTag tag) {
+    public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         ListTag payloadList = new ListTag();
         for (var e : payloads.entrySet()) {
             CompoundTag payloadTag = new CompoundTag();
             payloadTag.putInt("id", e.getKey());
-            e.getValue().save(payloadTag);
+            e.getValue().save(payloadTag, lookupProvider);
             payloadList.add(payloadTag);
         }
         tag.put("payloads", payloadList);
         tag.putInt("nextId", nextId);
     }
 
-    public void load(CompoundTag tag) {
+    public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         payloads.clear();
         ListTag payloadList = tag.getList("payloads", ListTag.TAG_COMPOUND);
         for (int i = 0; i < payloadList.size(); i++) {
             CompoundTag payloadTag = payloadList.getCompound(i);
             int id = payloadTag.getInt("id");
             PneumaticTubePayload payload = new PneumaticTubePayload();
-            payload.load(payloadTag);
+            payload.load(payloadTag, lookupProvider);
             payloads.put(id, payload);
         }
         nextId = tag.getInt("nextId");

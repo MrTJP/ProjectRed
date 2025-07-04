@@ -3,10 +3,13 @@ package mrtjp.projectred.illumination.data;
 import codechicken.lib.datagen.recipe.RecipeProvider;
 import mrtjp.projectred.illumination.BlockLightType;
 import mrtjp.projectred.illumination.MultipartLightType;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
+
+import java.util.concurrent.CompletableFuture;
 
 import static mrtjp.projectred.core.init.CoreItems.*;
 import static mrtjp.projectred.illumination.ProjectRedIllumination.MOD_ID;
@@ -14,8 +17,8 @@ import static mrtjp.projectred.illumination.init.IlluminationBlocks.ILLUMAR_SMAR
 
 public class IlluminationRecipeProvider extends RecipeProvider {
 
-    public IlluminationRecipeProvider(PackOutput output) {
-        super(output, MOD_ID);
+    public IlluminationRecipeProvider(CompletableFuture<HolderLookup.Provider> registries, PackOutput output) {
+        super(registries, output, MOD_ID);
     }
 
     @Override

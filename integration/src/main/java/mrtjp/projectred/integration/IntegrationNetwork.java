@@ -25,7 +25,7 @@ import static mrtjp.projectred.integration.ProjectRedIntegration.MOD_ID;
 
 public class IntegrationNetwork {
 
-    public static final ResourceLocation NET_CHANNEL = new ResourceLocation(MOD_ID, "network");
+    public static final ResourceLocation NET_CHANNEL = ResourceLocation.fromNamespaceAndPath(MOD_ID, "network");
 
     // Server to client messages
     public static final int OPEN_TIMER_GUI_FROM_SERVER = 1;

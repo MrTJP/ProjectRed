@@ -5,10 +5,10 @@ import codechicken.lib.util.ResourceUtils;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.core.gui.screen.inventory.ElectrotineGeneratorScreen;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -23,13 +23,10 @@ public class CoreClientInit {
     public static void init(IEventBus modEventBus) {
         modEventBus.addListener(CoreClientInit::clientSetup);
         modEventBus.addListener(CoreClientInit::onRegisterShaders);
+        modEventBus.addListener(CoreClientInit::onRegisterScreens);
     }
 
     private static void clientSetup(final FMLClientSetupEvent event) {
-
-        // Register screens
-        MenuScreens.register(ELECTROTINE_GENERATOR_MENU.get(), ElectrotineGeneratorScreen::new);
-
         // Init Halo Renderer
         HaloRenderer.init();
 
@@ -40,8 +37,13 @@ public class CoreClientInit {
         ResourceUtils.registerReloadListener(HaloRenderer::onResourceManagerReload);
     }
 
+    private static void onRegisterScreens(RegisterMenuScreensEvent event) {
+        // Register screens
+        event.register(ELECTROTINE_GENERATOR_MENU.get(), ElectrotineGeneratorScreen::new);
+    }
+
     private static void onRegisterShaders(RegisterShadersEvent event) {
-        event.registerShader(CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(MOD_ID, "halo"), DefaultVertexFormat.POSITION_COLOR), e -> {
+        event.registerShader(CCShaderInstance.create(event.getResourceProvider(), ResourceLocation.fromNamespaceAndPath(MOD_ID, "halo"), DefaultVertexFormat.POSITION_COLOR), e -> {
             HALO_SHADER = (CCShaderInstance) e;
         });
     }

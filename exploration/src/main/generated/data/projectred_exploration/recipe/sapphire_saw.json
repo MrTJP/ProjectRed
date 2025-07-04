@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "M": {
+      "tag": "forge:gems/sapphire"
+    },
+    "R": {
+      "item": "cb_microblock:stone_rod"
+    },
+    "S": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    "SRR",
+    "SMM"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_exploration:sapphire_saw"
+  }
+}

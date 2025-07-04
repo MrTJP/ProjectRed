@@ -4,6 +4,7 @@ import codechicken.lib.colour.EnumColour;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mrtjp.projectred.expansion.ProjectRedExpansion;
 import mrtjp.projectred.expansion.inventory.container.ProjectBenchMenu;
+import mrtjp.projectred.expansion.item.RecipePlanComponent;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.expansion.tile.ProjectBenchBlockEntity;
 import mrtjp.projectred.lib.Point;
@@ -20,7 +21,7 @@ import org.lwjgl.glfw.GLFW;
 
 public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchMenu> {
 
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(ProjectRedExpansion.MOD_ID, "textures/gui/project_bench.png");
+    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(ProjectRedExpansion.MOD_ID, "textures/gui/project_bench.png");
 
     private boolean isShiftDown = false;
 
@@ -112,9 +113,10 @@ public class ProjectBenchScreen extends RedUIContainerScreen<ProjectBenchMenu> {
 
         for (Slot slot : getMenu().slots) {
             ItemStack stack = slot.getItem();
-            if (RecipePlanItem.hasRecipeInside(stack)) {
+            var recipeData = RecipePlanComponent.getComponent(stack);
+            if (recipeData != null && recipeData.isRecipeValid()) {
 
-                ItemStack output = RecipePlanItem.loadPlanOutput(stack);
+                ItemStack output = recipeData.getOutput();
                 int colour = EnumColour.LIGHT_BLUE.argb(0xCC);
                 graphics.fillGradient(xPos + slot.x, yPos + slot.y, xPos + slot.x + 16, yPos + slot.y + 16, colour, colour);
 

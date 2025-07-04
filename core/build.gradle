@@ -17,7 +17,7 @@ runs {
         systemProperty 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
         workingDirectory file('run')
-        programArguments.addAll '--mod', mod_id, '--all', '--output', file("src/main/generated"), '--existing', file("src/main/resources")
+        arguments.addAll '--mod', mod_id, '--all', '--output', file("src/main/generated").absolutePath, '--existing', file("src/main/resources").absolutePath
         modSource sourceSets.main
     }
 }

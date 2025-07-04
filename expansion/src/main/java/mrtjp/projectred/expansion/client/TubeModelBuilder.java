@@ -114,7 +114,7 @@ public class TubeModelBuilder {
     }
 
     public static Map<String, CCModel> loadModels(String path, BiConsumer<String, CCModel> operation) {
-        Map<String, CCModel> models = new OBJParser(new ResourceLocation(MOD_ID, "obj/" + path + ".obj"))
+        Map<String, CCModel> models = new OBJParser(ResourceLocation.fromNamespaceAndPath(MOD_ID, "obj/" + path + ".obj"))
                 .ignoreMtl()
                 .quads()
                 .parse();

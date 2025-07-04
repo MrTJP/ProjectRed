@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,10 +33,10 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -115,10 +116,8 @@ public class MovementManager {
         LOGGER.debug("Level {} loaded", event.getLevel());
     }
 
-    public static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            getInstance(event.level).tick(event.level);
-        }
+    public static void onLevelTick(LevelTickEvent.Post event) {
+        getInstance(event.getLevel()).tick(event.getLevel());
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -153,7 +152,7 @@ public class MovementManager {
         for (MovingStructure structure : manager.structures.values()) {
 
             // Set up render offset based on progress of movement
-            Vector3 offset = structure.getRenderOffset(event.getPartialTick());
+            Vector3 offset = structure.getRenderOffset(event.getPartialTick().getGameTimeDeltaPartialTick(false));
             stack.pushPose();
             stack.translate(offset.x, offset.y, offset.z);
 
@@ -221,7 +220,7 @@ public class MovementManager {
                 // Cancel move
                 structure.cancelMove(level);
                 // Tell client
-                sendCancelMove(structure);
+                sendCancelMove(structure, level);
                 // Remove
                 removed.add(structure.id);
             }
@@ -262,7 +261,7 @@ public class MovementManager {
                 structure.executePreMove(level);
 
                 // Tell client to execute both pre-move and post-move
-                sendExecuteMove(structure);
+                sendExecuteMove(structure, level);
 
                 // Execute post-move. Block updates can be done here since client has moved blocks already
                 structure.executePostMove(level);
@@ -296,7 +295,7 @@ public class MovementManager {
 
         // Add structure and send to client
         structures.put(structure.id, structure);
-        sendNewStructureDescription(structure);
+        sendNewStructureDescription(structure, level);
 
         // Begin move (client does this when structure received from above call)
         structure.beginMove(level);
@@ -316,8 +315,8 @@ public class MovementManager {
     }
 
     //region Network
-    private PacketCustom createPacket(int key) {
-        return new PacketCustom(ExpansionNetwork.NET_CHANNEL, ExpansionNetwork.MM_FROM_SERVER)
+    private PacketCustom createPacket(int key, RegistryAccess registryAccess) {
+        return new PacketCustom(ExpansionNetwork.NET_CHANNEL, ExpansionNetwork.MM_FROM_SERVER, registryAccess)
                 .writeByte(key);
     }
 
@@ -390,7 +389,7 @@ public class MovementManager {
         Collection<MovingStructure> structs = getStructuresIntersectingChunks(posSet);
         if (structs.isEmpty()) return;
 
-        PacketCustom packet = createPacket(KEY_BULK_DESC);
+        PacketCustom packet = createPacket(KEY_BULK_DESC, player.registryAccess());
 
         // Write structs
         packet.writeShort(structs.size());
@@ -400,8 +399,8 @@ public class MovementManager {
         packet.sendToPlayer(player);
     }
 
-    private void sendNewStructureDescription(MovingStructure structure) {
-        PacketCustom packet = createPacket(KEY_NEW_STRUCT);
+    private void sendNewStructureDescription(MovingStructure structure, Level level) {
+        PacketCustom packet = createPacket(KEY_NEW_STRUCT, level.registryAccess());
 
         // Write struct
         structure.writeDesc(packet);
@@ -412,8 +411,8 @@ public class MovementManager {
         }
     }
 
-    private void sendExecuteMove(MovingStructure structure) {
-        PacketCustom packet = createPacket(KEY_EXECUTE_MOVE);
+    private void sendExecuteMove(MovingStructure structure, Level level) {
+        PacketCustom packet = createPacket(KEY_EXECUTE_MOVE, level.registryAccess());
         packet.writeShort(structure.id);
 
         for (ServerPlayer player : playersWatchingStructure(structure)) {
@@ -421,8 +420,8 @@ public class MovementManager {
         }
     }
 
-    private void sendCancelMove(MovingStructure structure) {
-        PacketCustom packet = createPacket(KEY_CANCEL_MOVE);
+    private void sendCancelMove(MovingStructure structure, Level level) {
+        PacketCustom packet = createPacket(KEY_CANCEL_MOVE, level.registryAccess());
         packet.writeShort(structure.id);
 
         for (ServerPlayer player : playersWatchingStructure(structure)) {

@@ -1,6 +1,6 @@
 package mrtjp.projectred.core.init;
 
-import codechicken.lib.inventory.container.ICCLContainerType;
+import codechicken.lib.inventory.container.CCLMenuType;
 import mrtjp.projectred.core.inventory.container.ElectrotineGeneratorMenu;
 import net.minecraft.world.inventory.MenuType;
 
@@ -16,6 +16,6 @@ public class CoreMenus {
 
     public static void register() {
 
-        ELECTROTINE_GENERATOR_MENU = MENU_TYPES.register(ID_ELECTROTINE_GENERATOR, () -> ICCLContainerType.create(ElectrotineGeneratorMenu.FACTORY));
+        ELECTROTINE_GENERATOR_MENU = MENU_TYPES.register(ID_ELECTROTINE_GENERATOR, () -> CCLMenuType.create(ElectrotineGeneratorMenu.FACTORY));
     }
 }

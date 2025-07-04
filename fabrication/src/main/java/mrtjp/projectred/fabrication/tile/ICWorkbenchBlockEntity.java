@@ -14,10 +14,11 @@ import mrtjp.projectred.fabrication.editor.IICWorkbenchEditorNetwork;
 import mrtjp.projectred.fabrication.gui.screen.ICWorkbenchScreen;
 import mrtjp.projectred.fabrication.init.FabricationBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -65,12 +66,12 @@ public class ICWorkbenchBlockEntity extends ProjectRedBlockEntity implements IPa
     }
 
     @Override
-    public void saveToNBT(CompoundTag tag) {
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         editor.save(tag);
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         editor.load(tag);
     }
 
@@ -91,8 +92,7 @@ public class ICWorkbenchBlockEntity extends ProjectRedBlockEntity implements IPa
     }
 
     @Override
-    public InteractionResult onBlockActivated(Player player, InteractionHand hand, BlockHitResult hit) {
-
+    public ItemInteractionResult useItemOn(ItemStack itemStack, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!getLevel().isClientSide()) {
 
             ItemStack stackInHand = player.getItemInHand(hand);
@@ -102,7 +102,7 @@ public class ICWorkbenchBlockEntity extends ProjectRedBlockEntity implements IPa
 
             if (!blueprintOnTable && blueprintInHand) {
                 // load blueprint and activate editor
-                editor.readBlueprintTagAndActivate(stackInHand.getTag());
+                editor.readBlueprintTagAndActivate(stackInHand);
                 stackInHand.shrink(1);
                 setBlueprintBlockState(true);
                 sendEditorDescription();
@@ -120,7 +120,7 @@ public class ICWorkbenchBlockEntity extends ProjectRedBlockEntity implements IPa
             }
         }
 
-        return InteractionResult.sidedSuccess(getLevel().isClientSide);
+        return ItemInteractionResult.sidedSuccess(getLevel().isClientSide);
     }
 
     @Override
@@ -133,7 +133,7 @@ public class ICWorkbenchBlockEntity extends ProjectRedBlockEntity implements IPa
 
     private ItemStack createBlueprintStack() {
         ItemStack stack = new ItemStack(IC_BLUEPRINT_ITEM.get());
-        editor.writeBlueprintTagAndDeactivate(stack.getOrCreateTag());
+        editor.writeBlueprintTagAndDeactivate(stack);
         return stack;
     }
 
@@ -218,8 +218,8 @@ public class ICWorkbenchBlockEntity extends ProjectRedBlockEntity implements IPa
     public MCDataOutput getBufferedStream(int streamKey, int frameKey) {
         MCDataOutput out =  editorBufferedStreams.computeIfAbsent(streamKey, k -> {
             PacketCustom packet = getLevel().isClientSide ?
-                    CoreNetwork.createTileServerPacket(this, (byte) KEY_EDITOR_PACKET) :
-                    CoreNetwork.createTileClientPacket(this, (byte) KEY_EDITOR_PACKET);
+                    CoreNetwork.createTileServerPacket(this, (byte) KEY_EDITOR_PACKET, getLevel().registryAccess()) :
+                    CoreNetwork.createTileClientPacket(this, (byte) KEY_EDITOR_PACKET, getLevel().registryAccess());
             packet.writeByte(k); // One-time key that identifies the entire stream
             return packet;
         });

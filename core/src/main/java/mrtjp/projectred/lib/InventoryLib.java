@@ -125,7 +125,7 @@ public class InventoryLib {
     //endregion
 
     public static boolean areStackable(ItemStack a, ItemStack b) {
-        return ItemStack.isSameItemSameTags(a, b) && a.getMaxStackSize() > 1 && b.getMaxStackSize() > 1;
+        return ItemStack.isSameItemSameComponents(a, b) && a.getMaxStackSize() > 1 && b.getMaxStackSize() > 1;
     }
 
     public static void addPlayerInventory(Inventory playerInventory, int x, int y, Consumer<Slot> slotConsumer) {

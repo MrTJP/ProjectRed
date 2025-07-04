@@ -4,11 +4,13 @@ import codechicken.multipart.api.MultipartType;
 import mrtjp.projectred.compatibility.ComputerCraftCompatibility;
 import mrtjp.projectred.core.data.*;
 import mrtjp.projectred.core.init.*;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ComplexItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -16,7 +18,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.OptionalMod;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -30,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
 
@@ -91,7 +94,8 @@ public class ProjectRedCore {
         // Load compatibility modules
         if (Configurator.compat_CCBundledCable) {
             //noinspection Convert2MethodRef
-            OptionalMod.of("computercraft").ifPresent(mod -> ComputerCraftCompatibility.init(mod));
+            ModList.get().getModContainerById("computercraft")
+                    .ifPresent(mod -> ComputerCraftCompatibility.init(mod));
         }
     }
 
@@ -100,17 +104,18 @@ public class ProjectRedCore {
         DataGenerator generator = event.getGenerator();
         PackOutput output = generator.getPackOutput();
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
+        CompletableFuture<HolderLookup.Provider> registries = event.getLookupProvider();
 
         generator.addProvider(event.includeClient(), new CoreBlockStateModelProvider(output, fileHelper));
         generator.addProvider(event.includeClient(), new CoreItemModelProvider(output, fileHelper));
         generator.addProvider(event.includeClient(), new CoreLanguageProvider(output));
 
-        generator.addProvider(event.includeServer(), new CoreRecipeProvider(output));
-        generator.addProvider(event.includeServer(), new CoreLootTableProvider(output));
+        generator.addProvider(event.includeServer(), new CoreRecipeProvider(registries, output));
+        generator.addProvider(event.includeServer(), new CoreLootTableProvider(output, registries));
 
-        BlockTagsProvider blockTagsProvider = new CoreBlockTagsProvider(output, event.getLookupProvider(), fileHelper);
+        BlockTagsProvider blockTagsProvider = new CoreBlockTagsProvider(output, registries, fileHelper);
         generator.addProvider(event.includeServer(), blockTagsProvider);
-        generator.addProvider(event.includeServer(), new CoreItemTagsProvider(output, event.getLookupProvider(), blockTagsProvider.contentsGetter(), fileHelper));
+        generator.addProvider(event.includeServer(), new CoreItemTagsProvider(output, registries, blockTagsProvider.contentsGetter(), fileHelper));
     }
 
     public void onRegisterCaps(RegisterCapabilitiesEvent event) {

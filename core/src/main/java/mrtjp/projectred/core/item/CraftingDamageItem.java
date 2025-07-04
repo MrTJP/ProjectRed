@@ -16,7 +16,7 @@ public class CraftingDamageItem extends Item {
 
     @Override
     public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
-        if (canBeDepleted()) {
+        if (isDamageable(itemStack)) {
             ItemStack ret = itemStack.copy();
             ret.setDamageValue(ret.getDamageValue() + 1);
             return ret;

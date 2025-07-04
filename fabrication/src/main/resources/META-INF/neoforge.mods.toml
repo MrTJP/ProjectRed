@@ -1,0 +1,58 @@
+modLoader="javafml"
+loaderVersion="[2,)"
+issueTrackerURL="https://github.com/MrTJP/ProjectRed"
+license="MIT"
+
+[[mods]]
+    modId="projectred_fabrication"
+    displayName="ProjectRed Fabrication"
+    version="${file.jarVersion}"
+
+    updateJSONURL="https://version-check.covers1624.net/check/?mod=ProjectRed&mc=${mc_version}"
+    displayURL="https://github.com/MrTJP/ProjectRed"
+    authors="MrTJP, Chicken Bones, covers1624"
+    description='''
+Redstone. The way it was meant to be.
+    '''
+[[dependencies.projectred_fabrication]]
+    modId="neoforge"
+    type="required"
+    versionRange="[${forge_version},)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.projectred_fabrication]]
+    modId="minecraft"
+    type="required"
+    versionRange="[1.21.1]"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.projectred_fabrication]]
+    modId="codechickenlib"
+    type="required"
+    versionRange="[${ccl_version},)"
+    ordering="AFTER"
+    side="BOTH"
+[[dependencies.projectred_fabrication]]
+    modId="cb_multipart"
+    type="required"
+    versionRange="[${cbm_version},)"
+    ordering="AFTER"
+    side="BOTH"
+[[dependencies.projectred_fabrication]]
+    modId="projectred_core"
+    type="required"
+    versionRange="[${file.jarVersion},)"
+    ordering="AFTER"
+    side="BOTH"
+[[dependencies.projectred_fabrication]]
+    modId="projectred_integration"
+    type="required"
+    versionRange="[${file.jarVersion},)"
+    ordering="AFTER"
+    side="BOTH"
+[[dependencies.projectred_fabrication]]
+    modId="projectred_transmission"
+    type="required"
+    versionRange="[${file.jarVersion},)"
+    ordering="AFTER"
+    side="BOTH"

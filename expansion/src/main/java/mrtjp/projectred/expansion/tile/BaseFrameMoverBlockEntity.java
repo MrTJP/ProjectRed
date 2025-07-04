@@ -11,6 +11,7 @@ import mrtjp.projectred.core.tile.IOrientableBlockEntity;
 import mrtjp.projectred.expansion.MovementManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -33,14 +34,14 @@ public abstract class BaseFrameMoverBlockEntity extends LowLoadPoweredBlockEntit
 
     //region Save/load
     @Override
-    public void saveToNBT(CompoundTag tag) {
-        super.saveToNBT(tag);
+    public void saveToNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.saveToNBT(tag, lookupProvider);
         tag.putBoolean("powered", powered);
     }
 
     @Override
-    public void loadFromNBT(CompoundTag tag) {
-        super.loadFromNBT(tag);
+    public void loadFromNBT(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.loadFromNBT(tag, lookupProvider);
         powered = tag.getBoolean("powered");
     }
     //endregion

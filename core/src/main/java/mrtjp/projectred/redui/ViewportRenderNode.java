@@ -12,6 +12,7 @@ import mrtjp.projectred.lib.Size;
 import mrtjp.projectred.lib.Vec2;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import org.joml.Matrix4fStack;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -91,9 +92,9 @@ public abstract class ViewportRenderNode extends AbstractGuiNode {
         RenderSystem.backupProjectionMatrix();
         RenderSystem.setProjectionMatrix(pvMatrix.getProjectionMatrix().toMatrix4f(), VertexSorting.ORTHOGRAPHIC_Z);
 
-        PoseStack mvStack = RenderSystem.getModelViewStack();
-        mvStack.pushPose();
-        mvStack.setIdentity();
+        Matrix4fStack mvStack = RenderSystem.getModelViewStack();
+        mvStack.pushMatrix();
+        mvStack.identity();
         RenderSystem.applyModelViewMatrix();
 
         /*
@@ -108,7 +109,7 @@ public abstract class ViewportRenderNode extends AbstractGuiNode {
         renderInViewport(pStack, getFrame().ndc(mouse), partialFrame, isFirstHit(mouse));
 
         // Restore previous matrices
-        mvStack.popPose();
+        mvStack.popMatrix();
         RenderSystem.applyModelViewMatrix();
 
         RenderSystem.restoreProjectionMatrix();

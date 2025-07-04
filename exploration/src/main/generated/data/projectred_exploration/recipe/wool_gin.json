@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": {
+      "item": "projectred_core:iron_coil"
+    },
+    "S": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    "SIS",
+    "SSS",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_exploration:wool_gin"
+  }
+}

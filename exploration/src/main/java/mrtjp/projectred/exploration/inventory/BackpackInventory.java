@@ -2,9 +2,9 @@ package mrtjp.projectred.exploration.inventory;
 
 import mrtjp.projectred.core.inventory.BaseContainer;
 import mrtjp.projectred.exploration.item.BackpackItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 
 public class BackpackInventory extends BaseContainer {
 
@@ -12,26 +12,12 @@ public class BackpackInventory extends BaseContainer {
         super(inventorySize);
     }
 
-    public void loadInventoryFromMainHand(Inventory playerInventory) {
-
-        ItemStack backpack = playerInventory.player.getMainHandItem();
-        if (BackpackItem.isBackpack(backpack)) {
-            CompoundTag inventoryTag = BackpackItem.getBackpackInventoryTag(backpack);
-            load(inventoryTag);
-            // Delete inventory from stack. It will be saved back once container closes
-            BackpackItem.deleteBackpackInventory(backpack);
-            BackpackItem.setBackpackOpenedFlag(backpack, true);
-        }
+    public BackpackInventory(ItemStack... stacks) {
+        super(stacks);
     }
 
-    public void saveInventoryToMainHand(Inventory playerInventory) {
-        ItemStack backpack = playerInventory.player.getMainHandItem();
-        if (BackpackItem.isBackpack(backpack)) {
-            CompoundTag inventoryTag = new CompoundTag();
-            save(inventoryTag);
-            BackpackItem.saveBackpackInventory(backpack, inventoryTag);
-            BackpackItem.setBackpackOpenedFlag(backpack, false);
-        }
+    public BackpackInventory(List<ItemStack> inventory) {
+        super(inventory.toArray(new ItemStack[0]));
     }
 
     @Override

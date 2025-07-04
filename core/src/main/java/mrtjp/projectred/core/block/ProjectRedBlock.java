@@ -4,6 +4,7 @@ import mrtjp.projectred.core.tile.IBlockEventBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -75,10 +76,15 @@ public abstract class ProjectRedBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         BlockEntity tile = world.getBlockEntity(pos);
-        if (tile instanceof IBlockEventBlockEntity) return ((IBlockEventBlockEntity) tile).onBlockActivated(player, hand, hit);
-        return InteractionResult.FAIL;
+        if (tile instanceof IBlockEventBlockEntity) return ((IBlockEventBlockEntity) tile).useItemOn(stack, player, hand, hit);
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState p_60503_, Level p_60504_, BlockPos p_60505_, Player p_60506_, BlockHitResult p_60508_) {
+        return super.useWithoutItem(p_60503_, p_60504_, p_60505_, p_60506_, p_60508_);
     }
 
     @Override

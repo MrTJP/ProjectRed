@@ -52,7 +52,7 @@ public class CageLightProperties extends MultipartLightProperties {
     @OnlyIn(Dist.CLIENT)
     public void onTextureStitchEvent(TextureAtlasStitchedEvent event) {
         if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
-        icon = event.getAtlas().getSprite(new ResourceLocation(MOD_ID, "block/cage_lamp"));
+        icon = event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/cage_lamp"));
     }
 
     @Override

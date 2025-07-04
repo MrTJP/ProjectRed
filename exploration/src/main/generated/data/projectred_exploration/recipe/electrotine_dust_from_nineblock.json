@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "projectred_exploration:electrotine_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "projectred_core:electrotine_dust"
+  }
+}

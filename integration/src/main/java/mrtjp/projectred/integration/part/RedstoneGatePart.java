@@ -14,6 +14,7 @@ import mrtjp.projectred.integration.GateType;
 import mrtjp.projectred.integration.client.GateModelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -50,14 +51,14 @@ public abstract class RedstoneGatePart extends GatePart implements FaceRedstoneP
 
     //region Save/load and description
     @Override
-    public void save(CompoundTag tag) {
-        super.save(tag);
+    public void save(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.save(tag, lookupProvider);
         tag.putByte("state", gateState);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.load(tag, lookupProvider);
         gateState = tag.getByte("state");
     }
 

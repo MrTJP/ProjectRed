@@ -1,8 +1,9 @@
 package mrtjp.projectred.expansion.inventory.container;
 
-import codechicken.lib.inventory.container.ICCLContainerFactory;
+import codechicken.lib.inventory.container.CCLMenuType;
 import mrtjp.projectred.core.inventory.container.SimpleDataSlot;
 import mrtjp.projectred.expansion.init.ExpansionMenus;
+import mrtjp.projectred.expansion.item.RecipePlanComponent;
 import mrtjp.projectred.expansion.item.RecipePlanItem;
 import mrtjp.projectred.expansion.tile.AutoCrafterBlockEntity;
 import mrtjp.projectred.lib.InventoryLib;
@@ -15,7 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class AutoCrafterMenu extends BaseMachineMenu {
 
-    public static final ICCLContainerFactory<AutoCrafterMenu> FACTORY = (windowId, playerInv, packet) -> {
+    public static final CCLMenuType<AutoCrafterMenu> FACTORY = (windowId, playerInv, packet) -> {
         BlockEntity tile = playerInv.player.level().getBlockEntity(packet.readPos());
         if (!(tile instanceof AutoCrafterBlockEntity)) return null;
         return new AutoCrafterMenu(playerInv, (AutoCrafterBlockEntity) tile, windowId);
@@ -52,7 +53,8 @@ public class AutoCrafterMenu extends BaseMachineMenu {
 
     public ItemStack getPlanOutput() {
         ItemStack planStack = tile.getPlanInventory().getItem(planSlot);
-        return RecipePlanItem.loadPlanOutput(planStack);
+        var recipeData = RecipePlanComponent.getComponent(planStack);
+        return recipeData != null ? recipeData.getOutput() : ItemStack.EMPTY;
     }
 
     public int getPlanSlot() {
@@ -141,7 +143,8 @@ public class AutoCrafterMenu extends BaseMachineMenu {
 
         @Override
         public boolean mayPlace(ItemStack stack) {
-            return RecipePlanItem.hasRecipeInside(stack);
+            var recipeData = RecipePlanComponent.getComponent(stack);
+            return recipeData != null && recipeData.isRecipeValid();
         }
 
         @Override

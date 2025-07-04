@@ -14,7 +14,6 @@ import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.TierSortingRegistry;
 
 import java.util.List;
 import java.util.UUID;
@@ -49,7 +48,7 @@ public class BlockBreakerBlockEntity extends BasePneumaticDeviceBlockEntity impl
         var state = getLevel().getBlockState(pos);
 
         if (state.isAir() || state.is(Blocks.BEDROCK)) return;
-        if (!TierSortingRegistry.isCorrectTierForDrops(getBreakingTier(), state)) return;
+        if (state.is(getBreakingTier().getIncorrectBlocksForDrops())) return;
 
         // Get drops
         List<ItemStack> drops = Block.getDrops(state, (ServerLevel) getLevel(), pos, getLevel().getBlockEntity(pos));

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "M": {
+      "tag": "forge:gems/peridot"
+    }
+  },
+  "pattern": [
+    "M M",
+    "M M"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_exploration:peridot_boots"
+  }
+}

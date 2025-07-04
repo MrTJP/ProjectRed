@@ -154,7 +154,7 @@ public class MovementRegistry {
             LevelChunk chunk2 = w.getChunkAt(pos2);
 
             BlockState state = w.getBlockState(pos); //ok, doesnt alert anything
-            CompoundTag tag = chunk.getBlockEntityNbtForSaving(pos); // Save existing tile to nbt
+            CompoundTag tag = chunk.getBlockEntityNbtForSaving(pos, w.registryAccess()); // Save existing tile to nbt
 
             // Remove old block and tile
             silentSetBlockState(chunk, pos, Blocks.AIR.defaultBlockState());

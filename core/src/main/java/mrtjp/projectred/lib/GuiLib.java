@@ -39,16 +39,15 @@ public class GuiLib {
         float f = (argb >> 16 & 255) / 255.0F;
         float f1 = (argb >> 8 & 255) / 255.0F;
         float f2 = (argb & 255) / 255.0F;
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        bufferbuilder.begin(QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferbuilder.vertex(p_238460_0_, (float) r1.dx, (float) r1.dy, 0.0F).color(f, f1, f2, f3).endVertex();
-        bufferbuilder.vertex(p_238460_0_, (float) r2.dx, (float) r2.dy, 0.0F).color(f, f1, f2, f3).endVertex();
-        bufferbuilder.vertex(p_238460_0_, (float) r3.dx, (float) r3.dy, 0.0F).color(f, f1, f2, f3).endVertex();
-        bufferbuilder.vertex(p_238460_0_, (float) r4.dx, (float) r4.dy, 0.0F).color(f, f1, f2, f3).endVertex();
-        BufferUploader.draw(bufferbuilder.end());
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(QUADS, DefaultVertexFormat.POSITION_COLOR);
+        bufferbuilder.addVertex(p_238460_0_, (float) r1.dx, (float) r1.dy, 0.0F).setColor(f, f1, f2, f3);
+        bufferbuilder.addVertex(p_238460_0_, (float) r2.dx, (float) r2.dy, 0.0F).setColor(f, f1, f2, f3);
+        bufferbuilder.addVertex(p_238460_0_, (float) r3.dx, (float) r3.dy, 0.0F).setColor(f, f1, f2, f3);
+        bufferbuilder.addVertex(p_238460_0_, (float) r4.dx, (float) r4.dy, 0.0F).setColor(f, f1, f2, f3);
+        BufferUploader.draw(bufferbuilder.buildOrThrow());
         RenderSystem.disableBlend();
     }
 }

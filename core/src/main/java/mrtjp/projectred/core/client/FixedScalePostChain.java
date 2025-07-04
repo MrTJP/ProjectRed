@@ -38,7 +38,7 @@ public class FixedScalePostChain extends PostChain {
     }
 
     public FixedScalePostChain(String modId, String filename) throws IOException {
-        this(new ResourceLocation(modId, "shaders/post/" + filename + ".json"));
+        this(ResourceLocation.fromNamespaceAndPath(modId, "shaders/post/" + filename + ".json"));
     }
 
     /**
