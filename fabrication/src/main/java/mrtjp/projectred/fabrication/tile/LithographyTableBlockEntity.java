@@ -76,7 +76,7 @@ public class LithographyTableBlockEntity extends FabricationMachineBlockEntity {
                     p -> p.writePos(getBlockPos()));
         }
 
-        return InteractionResult.SUCCESS;
+        return InteractionResult.sidedSuccess(getLevel().isClientSide);
     }
 
     @Override

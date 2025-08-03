@@ -84,7 +84,7 @@ public class PackagingTableBlockEntity extends FabricationMachineBlockEntity imp
                     p -> p.writePos(getBlockPos()));
         }
 
-        return InteractionResult.SUCCESS;
+        return InteractionResult.sidedSuccess(getLevel().isClientSide);
     }
 
     @Override

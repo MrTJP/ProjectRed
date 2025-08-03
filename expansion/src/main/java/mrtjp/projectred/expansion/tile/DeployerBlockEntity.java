@@ -178,7 +178,7 @@ public class DeployerBlockEntity extends BaseDeviceBlockEntity {
         UseOnContext ctx = new UseOnContext(player, InteractionHand.MAIN_HAND, hit);
         if (event.getUseItem() != Event.Result.DENY) {
             InteractionResult result = player.getMainHandItem().onItemUseFirst(ctx);
-            if (result.consumesAction()) {
+            if (result != InteractionResult.PASS) {
                 return result;
             }
         }

@@ -76,7 +76,7 @@ public class ElectrotineGeneratorBlockEntity extends BasePoweredBlockEntity impl
                     p -> p.writePos(getBlockPos()));
         }
 
-        return InteractionResult.SUCCESS;
+        return InteractionResult.sidedSuccess(getLevel().isClientSide);
     }
 
     @Override
