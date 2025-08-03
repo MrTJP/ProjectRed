@@ -86,9 +86,6 @@ public class HaloRenderer {
     private static final LinkedList<HaloRenderData> entityHalos = new LinkedList<>();
     // Global offset for moving block entities
     private static final Vector3 offset = Vector3.ZERO.copy();
-    // Used for Forge bug workaround. See onRenderLevelStageEvent
-    // TODO remove when porting to > 1.20.1
-    private static @Nullable PoseStack capturedPoseStack = null;
 
     //region Init and event handlers
     public static void init() {
@@ -111,20 +108,7 @@ public class HaloRenderer {
     public static void onRenderLevelStageEvent(final RenderLevelStageEvent event) {
         if (event.getStage().equals(AFTER_PARTICLES)) {
             onRenderStageAfterParticles(event);
-            capturedPoseStack = event.getPoseStack();
         } else if (event.getStage().equals(AFTER_LEVEL)) {
-            // Workaround for non-backported Forge bug where the AFTER_LEVEL call gets the wrong PoseStack. We will retain the valid
-            // PoseStack from the AFTER_PARTICLE call and reuse it here.
-            // https://github.com/neoforged/NeoForge/pull/231
-            // https://github.com/MrTJP/ProjectRed/issues/1868
-            // TODO remove when porting to > 1.20.1
-            if (capturedPoseStack != null) {
-                var e2 = new RenderLevelStageEvent(event.getStage(), event.getLevelRenderer(), capturedPoseStack, event.getProjectionMatrix(), event.getRenderTick(), event.getPartialTick(), event.getCamera(), event.getFrustum());
-                capturedPoseStack = null;
-                onRenderStageAfterLevel(e2);
-                return;
-            }
-
             onRenderStageAfterLevel(event);
         }
     }
