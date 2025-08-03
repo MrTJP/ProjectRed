@@ -264,19 +264,19 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
 
     @Override
     public InteractionResult activate(Player player, PartRayTraceResult hit, ItemStack held, InteractionHand hand) {
-
-        if (super.activate(player, hit, held, hand).shouldSwing()) return InteractionResult.SUCCESS;
+        var result = super.activate(player, hit, held, hand);
+        if (result.consumesAction()) return result;
 
         // Couch + right click with empty hand removes material
         if (held.isEmpty() && player.isCrouching() && material != null) {
             if (!level().isClientSide) {
-                if (material != null && !player.isCreative()) {
+                if (!player.isCreative()) {
                     PlacementLib.dropTowardsPlayer(level(), pos(), ItemMicroBlock.create(0, 1, material), player);
                 }
                 material = null;
                 sendMaterialUpdate();
             }
-            return InteractionResult.SUCCESS;
+            return InteractionResult.sidedSuccess(level().isClientSide);
         }
 
         // Right click with cover Microblock allows adding a cover material
@@ -309,7 +309,7 @@ public abstract class BaseCenterWirePart extends BaseWirePart implements IConnec
                         held.shrink(1);
                     }
                 }
-                return InteractionResult.SUCCESS;
+                return InteractionResult.sidedSuccess(level().isClientSide);
             }
         }
 

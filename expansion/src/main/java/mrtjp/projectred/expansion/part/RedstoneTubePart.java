@@ -2,8 +2,6 @@ package mrtjp.projectred.expansion.part;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.microblock.api.MicroMaterial;
-import codechicken.microblock.item.ItemMicroBlock;
 import codechicken.multipart.api.RedstoneInteractions;
 import codechicken.multipart.api.part.MultiPart;
 import codechicken.multipart.api.part.redstone.MaskedRedstonePart;
@@ -98,7 +96,8 @@ public class RedstoneTubePart extends BaseTubePart implements IRedstonePropagati
     //region Multipart events
     @Override
     public InteractionResult activate(Player player, PartRayTraceResult hit, ItemStack held, InteractionHand hand) {
-        if (super.activate(player, hit, held, hand).shouldSwing()) return InteractionResult.SUCCESS;
+        var result = super.activate(player, hit, held, hand);
+        if (result.consumesAction()) return result;
 
         // Couch + right click with empty hand removes redstone
         if (held.isEmpty() && player.isCrouching() && hasRedstone) {
@@ -110,12 +109,11 @@ public class RedstoneTubePart extends BaseTubePart implements IRedstonePropagati
                 tile().notifyPartChange(null);
                 sendSignalUpdate();
             }
-            return InteractionResult.SUCCESS;
+            return InteractionResult.sidedSuccess(level().isClientSide);
         }
 
         // Right click with red alloy adds redstone wiring to pipe
         if (!held.isEmpty() && held.is(CoreTags.RED_ALLOY_INGOT_TAG) && !hasRedstone) {
-            MicroMaterial newMat = ItemMicroBlock.getMaterialFromStack(held);
             if (!level().isClientSide) {
                 // Swap the material
                 hasRedstone = true;
@@ -131,7 +129,7 @@ public class RedstoneTubePart extends BaseTubePart implements IRedstonePropagati
                     held.shrink(1);
                 }
             }
-            return InteractionResult.SUCCESS;
+            return InteractionResult.sidedSuccess(level().isClientSide);
         }
 
         return InteractionResult.PASS;

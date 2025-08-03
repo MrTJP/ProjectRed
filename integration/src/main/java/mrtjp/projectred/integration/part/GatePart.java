@@ -422,7 +422,8 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
     //region Activation handling
     @Override
     public InteractionResult activate(Player player, PartRayTraceResult hit, ItemStack held, InteractionHand hand) {
-        if (gateLogicActivate(player, held, hit)) return InteractionResult.SUCCESS;
+        if (gateLogicActivate(player, held, hit))
+            return InteractionResult.sidedSuccess(level().isClientSide);
 
         if (!held.isEmpty() && held.getItem() instanceof IScrewdriver screwdriver) {
             if (!level().isClientSide) {
@@ -433,7 +434,7 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
                 }
                 screwdriver.damageScrewdriver(player, held);
             }
-            return InteractionResult.SUCCESS;
+            return InteractionResult.sidedSuccess(level().isClientSide);
         }
 
         return InteractionResult.PASS;
