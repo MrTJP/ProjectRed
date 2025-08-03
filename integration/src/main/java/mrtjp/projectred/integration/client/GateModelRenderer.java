@@ -1920,11 +1920,11 @@ public class GateModelRenderer {
 
             CompoundTag ifspecTag = tag.getCompound("io_spec");
             byte rMask = ifspecTag.getByte("rmask");
-            byte aMask = 0; //TODO analog stuff
+            byte aMask = ifspecTag.getByte("amask");
             byte bMask = ifspecTag.getByte("bmask");
 
             simpleWires.sidemask = rMask & 0xF | (rMask >> 4) & 0xF;
-            analogWires.sidemask = aMask;
+            analogWires.sidemask = aMask & 0xF | (aMask >> 4) & 0xF;
             bundledWires.sidemask = bMask & 0xF | (bMask >> 4) & 0xF;
         }
 
