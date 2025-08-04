@@ -42,12 +42,6 @@ public class LithographyTableMenu extends FabricationMachineMenu {
         addSlot(new TakeOnlySlot(tile.getInventory(), 3, 110, 49)); // invalid die output
     }
 
-    //TODO copied from superclass due to compile bug. Retest in 1.20.4
-    @Override
-    public boolean stillValid(Player pPlayer) {
-        return Container.stillValidBlockEntity(tile, pPlayer);
-    }
-
     public ItemStack quickMoveStack(Player player, int slotIndex) {
 
         Slot slot = slots.get(slotIndex);
@@ -124,7 +118,7 @@ public class LithographyTableMenu extends FabricationMachineMenu {
     //@formatter:on
 
     private boolean isPhotomaskSet(ItemStack stack) {
-        return stack.getItem() instanceof PhotomaskSetItem; //TODO check tag
+        return stack.getItem() instanceof PhotomaskSetItem;
     }
 
     private boolean isSiliconWafer(ItemStack stack) {

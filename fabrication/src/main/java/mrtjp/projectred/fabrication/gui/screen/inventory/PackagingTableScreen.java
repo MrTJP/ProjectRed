@@ -17,7 +17,7 @@ public class PackagingTableScreen extends RedUIContainerScreen<PackagingTableMen
     public static final ResourceLocation BACKGROUND = new ResourceLocation(ProjectRedFabrication.MOD_ID, "textures/gui/packaging_table.png");
 
     public PackagingTableScreen(PackagingTableMenu container, Inventory playerInventory, Component title) {
-        super(176, 171, container, playerInventory, title); //TODO size
+        super(176, 171, container, playerInventory, title);
 
         inventoryLabelX = 8;
         inventoryLabelY = 79;

@@ -47,12 +47,6 @@ public class PackagingTableMenu extends FabricationMachineMenu {
         addSlot(new TakeOnlySlot(tile.getInventory(), 9, 135, 40));
     }
 
-    //TODO copied from superclass due to compile bug. Retest in 1.20.4
-    @Override
-    public boolean stillValid(Player pPlayer) {
-        return Container.stillValidBlockEntity(tile, pPlayer);
-    }
-
     @Override
     public ItemStack quickMoveStack(Player player, int slotIndex) {
 
@@ -127,6 +121,6 @@ public class PackagingTableMenu extends FabricationMachineMenu {
     //@formatter:on
 
     private boolean isValidDie(ItemStack stack) {
-        return stack.getItem() instanceof ValidDieItem; //TODO check tag
+        return stack.getItem() instanceof ValidDieItem;
     }
 }

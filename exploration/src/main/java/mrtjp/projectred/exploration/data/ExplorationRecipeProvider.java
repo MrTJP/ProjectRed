@@ -159,7 +159,6 @@ public class ExplorationRecipeProvider extends RecipeProvider {
             backpackRecipe(getBackpackByColor(i));
         }
 
-        //TODO Now we have to hardcode CraftingBookCategory.MISC?
         special(new ResourceLocation(MOD_ID, "backpack_dye"), () -> new BackpackDyeRecipe(CraftingBookCategory.MISC));
     }
 

@@ -44,12 +44,6 @@ public class ChargingBenchMenu extends BasePoweredBlockEntityMenu {
         InventoryLib.addInventory(tile.getInventory(), 8, 88, 57, 4, 2, ChargeableItemSlot::new, this::addSlot);
     }
 
-    //TODO copied from superclass due to compile bug. Retest in 1.20.4
-    @Override
-    public boolean stillValid(Player pPlayer) {
-        return Container.stillValidBlockEntity(tile, pPlayer);
-    }
-
     @Override
     public ItemStack quickMoveStack(Player player, int slotIndex) {
 

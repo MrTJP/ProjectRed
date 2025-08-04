@@ -41,12 +41,6 @@ public class PlottingTableMenu extends FabricationMachineMenu {
         addSlot(new TakeOnlySlot(tile.getInventory(), 2, 116, 40)); // output
     }
 
-    //TODO copied from superclass due to compile bug. Retest in 1.20.4
-    @Override
-    public boolean stillValid(Player pPlayer) {
-        return Container.stillValidBlockEntity(tile, pPlayer);
-    }
-
     @Override
     public ItemStack quickMoveStack(Player player, int slotIndex) {
 
@@ -123,7 +117,7 @@ public class PlottingTableMenu extends FabricationMachineMenu {
     //@formatter:on
 
     private boolean isBlueprint(ItemStack stack) {
-        return stack.getItem() instanceof ICBlueprintItem; //TODO check tag
+        return stack.getItem() instanceof ICBlueprintItem;
     }
 
     private boolean isBlankPhotomask(ItemStack stack) {

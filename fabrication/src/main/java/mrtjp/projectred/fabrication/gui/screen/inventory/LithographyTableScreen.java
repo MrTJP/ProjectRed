@@ -15,7 +15,7 @@ public class LithographyTableScreen extends RedUIContainerScreen<LithographyTabl
     public static final ResourceLocation BACKGROUND = new ResourceLocation(ProjectRedFabrication.MOD_ID, "textures/gui/lithography_table.png");
 
     public LithographyTableScreen(LithographyTableMenu container, Inventory playerInventory, Component title) {
-        super(176, 171, container, playerInventory, title); //TODO size
+        super(176, 171, container, playerInventory, title);
 
         inventoryLabelX = 8;
         inventoryLabelY = 79;
