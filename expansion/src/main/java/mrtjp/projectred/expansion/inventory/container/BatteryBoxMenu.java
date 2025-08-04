@@ -45,12 +45,6 @@ public class BatteryBoxMenu extends BasePoweredBlockEntityMenu {
         addSlot(new BatterySlot(tile.getInventory(), 1, 80, 53)); // discharge slot
     }
 
-    //TODO copied from superclass due to compile bug. Retest in 1.20.4
-    @Override
-    public boolean stillValid(Player pPlayer) {
-        return Container.stillValidBlockEntity(tile, pPlayer);
-    }
-
     @Override
     public ItemStack quickMoveStack(Player player, int slotIndex) {
 

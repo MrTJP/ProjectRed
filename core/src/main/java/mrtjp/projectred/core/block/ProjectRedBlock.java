@@ -78,7 +78,7 @@ public abstract class ProjectRedBlock extends Block implements EntityBlock {
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof IBlockEventBlockEntity) return ((IBlockEventBlockEntity) tile).onBlockActivated(player, hand, hit);
-        return InteractionResult.FAIL; //TODO pass?
+        return InteractionResult.FAIL;
     }
 
     @Override
