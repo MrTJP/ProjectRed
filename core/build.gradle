@@ -34,9 +34,9 @@ dependencies {
     runtimeOnly("mezz.jei:jei-${mc_version}-neoforge:${jei_version}")
 
     // CCTweaked
-    // compileOnly("cc.tweaked:cc-tweaked-${mc_version}-core-api:${cct_version}")
-    // compileOnly(fg.deobf("cc.tweaked:cc-tweaked-${mc_version}-forge-api:${cct_version}"))
-    // runtimeOnly(fg.deobf("cc.tweaked:cc-tweaked-${mc_version}-forge:${cct_version}"))
+    compileOnly("cc.tweaked:cc-tweaked-${mc_version}-core-api:${cct_version}")
+    compileOnly("cc.tweaked:cc-tweaked-${mc_version}-forge-api:${cct_version}")
+    runtimeOnly("cc.tweaked:cc-tweaked-${mc_version}-forge:${cct_version}")
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
