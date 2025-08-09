@@ -216,6 +216,7 @@ jobs:
         with:
           body_path: CHANGELOG.md
           tag_name: ${{ steps.versioning.outputs.version_tag }}
+          target_commitish: ${{ github.sha }}
           files: |
             */build/libs/ProjectRed-*.jar
             CHANGELOG.md
