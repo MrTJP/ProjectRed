@@ -78,3 +78,116 @@ dependencies {
 
 ### Usage
 The primary entrypoint into the API is `mrtjp.projectred.api.ProjectRedAPI` where you will find static fields for each module of ProjectRed. If a module is installed, its corresponding field will be a non-null implementor of that module's API. See the javadocs for more information.
+
+## Contributing Translations
+
+We welcome community translations to make ProjectRed accessible to players worldwide! This section provides guidance for translators who want to contribute language files to the project.
+
+### Language File Structure
+The English language files are auto-generated. They are located in each module's `generated` directory:
+```
+<module>/src/main/generated/assets/projectred_<module>/lang/en_us.json
+```
+Translations should be placed in the `resources` directory:
+```
+<module>/src/main/resources/assets/projectred_<module>/lang/
+```
+
+### Getting Started
+
+1. **Find the English reference files**: English translations are auto-generated and located in:
+   ```
+   <module>/src/main/generated/assets/projectred_<module>/lang/en_us.json
+   ```  
+
+2. **Create your translation file**: Add your language file in the `resources` directory:
+   ```
+   <module>/src/main/resources/assets/projectred_<module>/lang/<your_language>.json
+   ```
+   Use standard Minecraft language codes (e.g., `de_de.json` for German, `fr_fr.json` for French, `es_es.json` for Spanish).
+
+3. **Copy the structure**: Start by copying the English file and translating the values while keeping the keys unchanged.
+
+### Translation Verification Tool
+
+We provide a Python utility to help ensure your translations are complete and correctly formatted. It is recommended that
+you use it as it is automatically run on every pull request to ensure translations are correct.
+
+#### Requirements
+- Python 3.10 or higher
+- No additional dependencies required
+
+#### Basic Usage
+
+**Check all language files:**
+```bash
+python3 .github/verify_lang_files.py
+```
+
+**Check a specific module:**
+```bash
+python3 .github/verify_lang_files.py --submodule core
+```
+
+**Check a specific language:**
+```bash
+python3 .github/verify_lang_files.py --language de_de
+```
+
+**Get detailed output:**
+```bash
+python3 .github/verify_lang_files.py --verbose
+```
+
+#### Auto-Fix Mode
+
+The tool can automatically fix common issues in your translation files:
+
+```bash
+python3 .github/verify_lang_files.py --fix
+```
+
+This will:
+- Add missing translation keys (using English text as placeholder)
+- Fix key ordering to match the English reference
+- Correct JSON formatting issues
+
+#### What the Tool Checks
+
+✅ **Completeness**: Ensures all keys from English files are present  
+✅ **Key Ordering**: Verifies keys are in the same order as English files  
+✅ **JSON Format**: Validates proper JSON structure and formatting  
+✅ **Data Quality**: Identifies empty values and potential duplicate translations
+
+#### Understanding the Output
+
+The tool provides categorized feedback:
+
+- **❌ ERRORS**: Issues that must be fixed (missing keys, formatting problems)
+- **⚠️ WARNINGS**: Potential issues to review (extra keys, empty values, duplicates)
+- **🔧 FIXES APPLIED**: Automatic corrections made in fix mode
+
+#### Example Workflow
+
+1. Create or update your translation file
+2. Run the verification tool:
+   ```bash
+   python3 .github/verify_lang_files.py --language your_lang --verbose
+   ```
+3. Fix any reported issues
+4. Use auto-fix for common problems:
+   ```bash
+   python3 .github/verify_lang_files.py --language your_lang --fix
+   ```
+5. Verify everything is correct:
+   ```bash
+   python3 .github/verify_lang_files.py --language your_lang
+   ```
+6. Commit your changes and submit a pull request
+
+### Translation Guidelines
+- **Maintain formatting**: Don't change indentation, etc.
+- **Be consistent**: Use consistent terminology throughout all modules
+- **No minimum!**: Feel free to submit partial translations. Any contribution is appreciated, and you can always update it later.
+
+Thank you for helping make ProjectRed accessible to the global Minecraft community! 🌍

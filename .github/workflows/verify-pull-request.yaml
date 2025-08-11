@@ -21,6 +21,22 @@ jobs:
       with:
         configFile: .github/commitlint.config.js
 
+  lang_check:
+    name: Lang file verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v3
+
+      - name: Install Python 3.12.1
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12.1
+
+      - name: Verify language files
+        run: python3 .github/verify_lang_files.py --verbose
+        shell: bash
+
   build_test:
     name: Build and Test
     runs-on: ubuntu-latest
