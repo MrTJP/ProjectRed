@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "projectred_core:draw_plate"
+    },
+    "G": {
+      "tag": "c:ingots/gold"
+    }
+  },
+  "pattern": [
+    "GD"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_core:gold_coil"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "projectred_core:copper_coil"
+    },
+    "E": {
+      "tag": "c:ingots/electrotine_alloy"
+    },
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "S": {
+      "tag": "c:stones"
+    },
+    "W": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "pattern": [
+    "WIW",
+    "CIC",
+    "SES"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_expansion:frame_actuator"
+  }
+}

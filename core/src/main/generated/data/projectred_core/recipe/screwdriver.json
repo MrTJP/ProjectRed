@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "c:dyes/blue"
+    },
+    "I": {
+      "tag": "c:ingots/iron"
+    }
+  },
+  "pattern": [
+    "I  ",
+    " IB",
+    " BI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_core:screwdriver"
+  }
+}

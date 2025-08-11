@@ -1,6 +1,6 @@
 {
   "values": [
-    "#forge:raw_materials/tin",
-    "#forge:raw_materials/silver"
+    "#c:raw_materials/tin",
+    "#c:raw_materials/silver"
   ]
 }

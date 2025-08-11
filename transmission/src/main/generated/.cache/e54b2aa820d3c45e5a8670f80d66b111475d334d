@@ -1,5 +1,5 @@
-// 1.20.4	2024-11-23T20:04:13.697007	ProjectRed-Transmission Item Tags
-946c13729332ac057e694b19d5f346f5cc988720 data/projectred_transmission/tags/items/bundled_wire.json
-e3811a48b41aa59405dff97fc2b0e20dd2eb8e2e data/projectred_transmission/tags/items/framed_bundled_wire.json
-29175698d4c23dcd00104b141f048063721eb7ee data/projectred_transmission/tags/items/framed_insulated_wire.json
-5b36d46bc127611adfba1625fe56efd3aef29440 data/projectred_transmission/tags/items/insulated_wire.json
+// 1.21.1	2025-08-10T20:40:13.738721	ProjectRed-Transmission Item Tags
+946c13729332ac057e694b19d5f346f5cc988720 data/projectred_transmission/tags/item/bundled_wire.json
+e3811a48b41aa59405dff97fc2b0e20dd2eb8e2e data/projectred_transmission/tags/item/framed_bundled_wire.json
+29175698d4c23dcd00104b141f048063721eb7ee data/projectred_transmission/tags/item/framed_insulated_wire.json
+5b36d46bc127611adfba1625fe56efd3aef29440 data/projectred_transmission/tags/item/insulated_wire.json

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": {
+      "item": "projectred_core:plate"
+    },
+    "R": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "pattern": [
+    " R ",
+    "RRR",
+    "PPP"
+  ],
+  "result": {
+    "count": 3,
+    "id": "projectred_core:anode"
+  }
+}

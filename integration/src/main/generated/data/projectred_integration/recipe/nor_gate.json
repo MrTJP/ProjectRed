@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "projectred_core:anode"
+    },
+    "C": {
+      "item": "projectred_core:cathode"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    },
+    "W": {
+      "item": "projectred_core:conductive_plate"
+    }
+  },
+  "pattern": [
+    "PAP",
+    "WCW",
+    "PWP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_integration:nor_gate"
+  }
+}

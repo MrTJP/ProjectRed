@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "c:ingots/copper"
+    },
+    "G": {
+      "tag": "c:glass_panes"
+    }
+  },
+  "pattern": [
+    "BGB",
+    "BGB",
+    "BGB"
+  ],
+  "result": {
+    "count": 8,
+    "id": "projectred_expansion:pneumatic_tube"
+  }
+}

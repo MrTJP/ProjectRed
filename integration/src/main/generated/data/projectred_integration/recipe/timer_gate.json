@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "projectred_core:anode"
+    },
+    "C": {
+      "item": "projectred_core:cathode"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    },
+    "T": {
+      "item": "projectred_core:pointer"
+    },
+    "W": {
+      "item": "projectred_core:conductive_plate"
+    }
+  },
+  "pattern": [
+    "ACA",
+    "WTW",
+    "PWP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_integration:timer_gate"
+  }
+}

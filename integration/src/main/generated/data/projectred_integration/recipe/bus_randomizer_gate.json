@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "projectred_core:bundled_plate"
+    },
+    "G": {
+      "item": "projectred_core:energized_silicon_chip"
+    },
+    "R": {
+      "item": "projectred_core:conductive_plate"
+    }
+  },
+  "pattern": [
+    "BBB",
+    "RGR",
+    "BBB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_integration:bus_randomizer_gate"
+  }
+}

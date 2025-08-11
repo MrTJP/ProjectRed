@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": {
+      "tag": "c:ingots/red_alloy"
+    },
+    "W": {
+      "tag": "c:wools/light_blue"
+    }
+  },
+  "pattern": [
+    "WRW",
+    "WRW",
+    "WRW"
+  ],
+  "result": {
+    "count": 12,
+    "id": "projectred_transmission:light_blue_insulated_wire"
+  }
+}

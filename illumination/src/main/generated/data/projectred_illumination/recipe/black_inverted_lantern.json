@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "tag": "c:glass_panes/colorless"
+    },
+    "I": {
+      "item": "projectred_core:black_illumar"
+    },
+    "N": {
+      "tag": "c:nuggets/gold"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    },
+    "R": {
+      "item": "minecraft:redstone_torch"
+    }
+  },
+  "pattern": [
+    "PNP",
+    "GIG",
+    "PRP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_illumination:black_inverted_lantern"
+  }
+}

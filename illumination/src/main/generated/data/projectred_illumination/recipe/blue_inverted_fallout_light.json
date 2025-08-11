@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:iron_bars"
+    },
+    "I": {
+      "item": "projectred_core:blue_illumar"
+    },
+    "N": {
+      "tag": "c:nuggets/gold"
+    },
+    "P": {
+      "item": "projectred_core:cathode"
+    }
+  },
+  "pattern": [
+    "CCC",
+    "CIC",
+    "NPN"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_illumination:blue_inverted_fallout_light"
+  }
+}
