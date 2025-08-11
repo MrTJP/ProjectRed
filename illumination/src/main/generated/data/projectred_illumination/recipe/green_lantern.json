@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "tag": "c:glass_panes/colorless"
+    },
+    "I": {
+      "item": "projectred_core:green_illumar"
+    },
+    "N": {
+      "tag": "c:nuggets/gold"
+    },
+    "P": {
+      "item": "projectred_core:plate"
+    },
+    "R": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "pattern": [
+    "PNP",
+    "GIG",
+    "PRP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_illumination:green_lantern"
+  }
+}

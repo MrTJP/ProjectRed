@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "g": {
+      "tag": "c:glass_panes"
+    },
+    "q": {
+      "tag": "c:gems/quartz"
+    }
+  },
+  "pattern": [
+    "ggg",
+    "gqg",
+    "ggg"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_fabrication:blank_photomask"
+  }
+}

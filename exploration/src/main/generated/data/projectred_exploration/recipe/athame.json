@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "S": {
-      "tag": "forge:ingots/silver"
+      "tag": "c:ingots/silver"
     },
     "W": {
       "tag": "c:rods/wooden"

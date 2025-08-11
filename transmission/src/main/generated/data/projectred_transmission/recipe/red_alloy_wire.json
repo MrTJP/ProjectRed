@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": {
+      "tag": "c:ingots/red_alloy"
+    }
+  },
+  "pattern": [
+    " R ",
+    " R ",
+    " R "
+  ],
+  "result": {
+    "count": 12,
+    "id": "projectred_transmission:red_alloy_wire"
+  }
+}

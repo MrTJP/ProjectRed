@@ -4,7 +4,6 @@
   "block.projectred_fabrication.packaging_table": "Packaging Table",
   "block.projectred_fabrication.plotting_table": "Plotting Table",
   "item.projectred_fabrication.blank_photomask": "Blank Photomask",
-  "item.projectred_fabrication.etched_silicon_wafer": "Etched Silicon Wafer",
   "item.projectred_fabrication.fabricated_gate": "Fabricated Gate",
   "item.projectred_fabrication.ic_blueprint": "IC Blueprint",
   "item.projectred_fabrication.invalid_die": "Invalid Die",

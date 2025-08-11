@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "R": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "pattern": [
+    "RRR",
+    "RIR",
+    "RRR"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_core:red_iron_comp"
+  }
+}

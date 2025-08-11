@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "c:wools/blue"
+    },
+    "I": {
+      "tag": "c:ingots/electrotine_alloy"
+    },
+    "Y": {
+      "tag": "c:wools/yellow"
+    }
+  },
+  "pattern": [
+    "BIB",
+    "YIY",
+    "BIB"
+  ],
+  "result": {
+    "count": 12,
+    "id": "projectred_transmission:low_load_power_wire"
+  }
+}

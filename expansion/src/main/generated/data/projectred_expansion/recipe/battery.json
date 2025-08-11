@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "tag": "c:ingots/copper"
+    },
+    "E": {
+      "tag": "c:dusts/electrotine"
+    },
+    "T": {
+      "tag": "c:ingots/tin"
+    }
+  },
+  "pattern": [
+    "ETE",
+    "ECE",
+    "ETE"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_expansion:battery"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "projectred_core:anode"
+    },
+    "C": {
+      "item": "projectred_core:cathode"
+    },
+    "S": {
+      "item": "projectred_core:silicon_chip"
+    },
+    "W": {
+      "item": "projectred_core:conductive_plate"
+    }
+  },
+  "pattern": [
+    "WCW",
+    "SAS",
+    "WWW"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_integration:synchronizer_gate"
+  }
+}
