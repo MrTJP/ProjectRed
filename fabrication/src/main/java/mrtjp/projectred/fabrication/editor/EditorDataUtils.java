@@ -16,8 +16,10 @@ public class EditorDataUtils {
     public static final String KEY_FORMAT = "format"; // int
     public static final String KEY_ACTIVE = "active"; // boolean
     public static final String KEY_IC_NAME = "ic_name"; // String
+    public static final String KEY_IC_AUTHOR = "ic_author"; // String
     public static final String KEY_TILE_MAP = "tile_map"; // CompoundTag
     public static final String KEY_TILE_COUNT = "tile_count"; // int
+    public static final String KEY_DIMENSIONS = "dimensions"; // int
     public static final String KEY_IS_BUILT = "is_built"; // boolean
     public static final String KEY_IO_SPEC = "io_spec";
 
@@ -82,7 +84,9 @@ public class EditorDataUtils {
         copy.putInt(KEY_COMPILE_FORMAT, editorTag.getInt(KEY_COMPILE_FORMAT));
         copy.putBoolean(KEY_IS_BUILT, editorTag.getBoolean(KEY_IS_BUILT));
         copy.putString(KEY_IC_NAME, editorTag.getString(KEY_IC_NAME));
+        copy.putString(KEY_IC_AUTHOR, editorTag.getString(KEY_IC_AUTHOR));
         copy.putInt(KEY_TILE_COUNT, editorTag.getInt(KEY_TILE_COUNT));
+        copy.putString(KEY_DIMENSIONS, editorTag.getString(KEY_DIMENSIONS));
         copy.put(KEY_IO_SPEC, editorTag.getCompound(KEY_IO_SPEC));
         copy.putString(KEY_FLAT_MAP, editorTag.getString(KEY_FLAT_MAP));
         return copy;

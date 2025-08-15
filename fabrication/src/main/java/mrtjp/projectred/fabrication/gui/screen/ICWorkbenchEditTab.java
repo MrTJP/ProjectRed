@@ -10,6 +10,9 @@ import mrtjp.projectred.lib.Rect;
 import mrtjp.projectred.redui.AbstractGuiNode;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+
+import static mrtjp.projectred.fabrication.init.FabricationUnlocal.UL_BLUEPRINT_TITLE;
 
 public class ICWorkbenchEditTab extends AbstractGuiNode {
 
@@ -80,8 +83,20 @@ public class ICWorkbenchEditTab extends AbstractGuiNode {
 
         graphics.blit(ICWorkbenchScreen.BACKGROUND, frame.x(), frame.y(), 0, 0, frame.width(), frame.height(), 512, 512);
 
+        String icName = editor.getIcName();
+        String icAuthor = editor.getIcAuthor();
+
         // Blueprint name in top left corner
-        graphics.drawString(fontRenderer, editor.getIcName(), frame.x() + 8, frame.y() + 6, EnumColour.GRAY.argb(), false);
+        graphics.drawString(
+                fontRenderer,
+                !icAuthor.isEmpty() ?
+                        Component.translatable(UL_BLUEPRINT_TITLE, icName, icAuthor).getString() :
+                        icName,
+                frame.x() + 8,
+                frame.y() + 6,
+                EnumColour.GRAY.argb(),
+                false
+        );
     }
 
     @Override

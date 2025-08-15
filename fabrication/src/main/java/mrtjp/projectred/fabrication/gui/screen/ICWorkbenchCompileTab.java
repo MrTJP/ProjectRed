@@ -103,8 +103,20 @@ public class ICWorkbenchCompileTab extends AbstractGuiNode implements ICRenderNo
         RenderSystem.setShaderTexture(0, TAB_BACKGROUND);
         graphics.blit(TAB_BACKGROUND, getFrame().x(), getFrame().y(), 0, 0, getFrame().width(), getFrame().height(), 512, 512);
 
+        String icName = editor.getIcName();
+        String icAuthor = editor.getIcAuthor();
+
         // Blueprint name in top left corner
-        graphics.drawString(getRoot().getFontRenderer(), editor.getIcName(), getFrame().x() + 8, getFrame().y() + 6, EnumColour.GRAY.argb(), false);
+        graphics.drawString(
+                getRoot().getFontRenderer(),
+                !icAuthor.isEmpty() ?
+                    Component.translatable(UL_BLUEPRINT_TITLE, icName, icAuthor).getString() :
+                    icName,
+                getFrame().x() + 8,
+                getFrame().y() + 6,
+                EnumColour.GRAY.argb(),
+                false
+        );
 
         // Progress bar
         RenderSystem.setShaderTexture(0, TAB_BACKGROUND);

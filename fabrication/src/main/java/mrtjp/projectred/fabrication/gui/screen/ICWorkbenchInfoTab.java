@@ -4,6 +4,7 @@ import codechicken.lib.colour.EnumColour;
 import mrtjp.fengine.TileCoord;
 import mrtjp.projectred.fabrication.ProjectRedFabrication;
 import mrtjp.projectred.fabrication.editor.ICWorkbenchEditor;
+import mrtjp.projectred.fabrication.editor.WorkbenchDimension;
 import mrtjp.projectred.fabrication.gui.ButtonArrayNode;
 import mrtjp.projectred.fabrication.gui.PipelineDiagramNode;
 import mrtjp.projectred.fabrication.gui.VerticalListNode;
@@ -48,22 +49,24 @@ public class ICWorkbenchInfoTab extends AbstractGuiNode {
         listNode.setSize(280, 198);
         addChild(listNode);
 
+        listNode.addTitleRow(Component.translatable(UL_BLUEPRINT_INFO));
+
         NameTextBox nameTextBox = new NameTextBox();
         nameTextBox.setSize(80, 18);
-
-        listNode.addTitleRow(Component.translatable(UL_BLUEPRINT_INFO));
         listNode.addTextWithNodeRow(Component.translatable(UL_BLUEPRINT_NAME), nameTextBox);
-        listNode.addKeyValueRow(Component.translatable(UL_BLUEPRINT_OWNER), () -> Component.literal("//TODO"));
 
-        listNode.addKeyValueRow(Component.translatable(UL_BLUEPRINT_DIM), () -> {
-            TileCoord dimensions = editor.getTileMap().getDimensions();
-            return Component.translatable(UL_DIMENSIONS_TILES, dimensions.x, dimensions.z);
-        });
+        AuthorTextBox authorTextBox = new AuthorTextBox();
+        authorTextBox.setSize(80, 18);
+        listNode.addTextWithNodeRow(Component.translatable(UL_BLUEPRINT_OWNER), authorTextBox);
 
-        listNode.addKeyValueRow(Component.translatable(UL_BLUEPRINT_LAYERS), () -> {
-            TileCoord dimensions = editor.getTileMap().getDimensions();
-            return Component.literal(String.valueOf(dimensions.y));
-        });
+        ButtonArrayNode dimensionButtons = createDimensionButtons();
+        dimensionButtons.setGridSize(128, 18);
+        listNode.addTextWithNodeRow(Component.translatable(UL_BLUEPRINT_DIM), dimensionButtons);
+
+        LayersTextBox layersTextBox = new LayersTextBox();
+        layersTextBox.setSize(80, 18);
+        listNode.addTextWithNodeRow(Component.translatable(UL_BLUEPRINT_LAYERS), layersTextBox);
+
 
         listNode.addTitleRow(Component.translatable(UL_YIELD_CALCULATOR));
 
@@ -117,12 +120,63 @@ public class ICWorkbenchInfoTab extends AbstractGuiNode {
     public void drawBack(GuiGraphics graphics, Point mouse, float partialFrame) {
         graphics.blit(TAB_BACKGROUND, getFrame().x(), getFrame().y(), 0, 0, getFrame().width(), getFrame().height(), 512, 512);
 
+        String icName = editor.getIcName();
+        String icAuthor = editor.getIcAuthor();
+
         // Blueprint name in top left corner
-        graphics.drawString(getRoot().getFontRenderer(), editor.getIcName(), getFrame().x() + 8, getFrame().y() + 6, EnumColour.GRAY.argb(), false);
+        graphics.drawString(
+                getRoot().getFontRenderer(),
+                !icAuthor.isEmpty() ?
+                        Component.translatable(UL_BLUEPRINT_TITLE, icName, icAuthor).getString() :
+                        icName,
+                getFrame().x() + 8,
+                getFrame().y() + 6,
+                EnumColour.GRAY.argb(),
+                false
+        );
+    }
+
+    private ButtonArrayNode createDimensionButtons() {
+        ButtonArrayNode.Listener listener = new ButtonArrayNode.Listener() {
+            @Override
+            public String getButtonText(int index) {
+                return WorkbenchDimension.values()[index].getUnlocalizedName();
+            }
+
+            @Override
+            public void onButtonClicked(int index) {
+                WorkbenchDimension dimension = WorkbenchDimension.values()[index];
+
+                editor.sendNewICDimensions(
+                        new TileCoord(dimension.getMinBounds().x, editor.getTileMap().getMinBounds().y, dimension.getMinBounds().z),
+                        new TileCoord(dimension.getMaxBounds().x, editor.getTileMap().getMaxBounds().y, dimension.getMaxBounds().z)
+                );
+            }
+
+            @Override
+            public boolean isButtonEnabled(int index) {
+                return true;
+            }
+
+            @Override
+            public boolean isButtonSelected(int index) {
+                WorkbenchDimension dimension = WorkbenchDimension.values()[index];
+
+                TileCoord minBounds = editor.getTileMap().getMinBounds();
+                TileCoord maxBounds = editor.getTileMap().getMaxBounds();
+
+                return minBounds.x == dimension.getMinBounds().x &&
+                        minBounds.z == dimension.getMinBounds().z &&
+                        maxBounds.x == dimension.getMaxBounds().x &&
+                        maxBounds.z == dimension.getMaxBounds().z;
+            }
+        };
+
+        return new ButtonArrayNode(listener, 1, WorkbenchDimension.values().length, 2);
     }
 
     private ButtonArrayNode createPipelineButtons() {
-        ButtonArrayNode.Listener listener =  new ButtonArrayNode.Listener() {
+        ButtonArrayNode.Listener listener = new ButtonArrayNode.Listener() {
             @Override
             public String getButtonText(int index) {
                 return LithographyPipeline.values()[index].getUnlocalizedName();
@@ -204,7 +258,6 @@ public class ICWorkbenchInfoTab extends AbstractGuiNode {
     }
 
     private class NameTextBox extends TextBoxNode {
-
         public NameTextBox() {
             super(editor.getIcName());
         }
@@ -229,6 +282,71 @@ public class ICWorkbenchInfoTab extends AbstractGuiNode {
         @Override
         protected void onReturnPressed() {
             editor.sendNewICName(getText());
+        }
+    }
+
+    private class AuthorTextBox extends TextBoxNode {
+        public AuthorTextBox() {
+            super(editor.getIcAuthor());
+        }
+
+        @Override
+        public void update() {
+            super.update();
+            if (!getText().equals(editor.getIcAuthor()) && !isEditing()) {
+                setText(editor.getIcAuthor());
+            }
+        }
+
+        @Override
+        protected String getSuggestionString() {
+            return editor.getIcAuthor();
+        }
+
+        @Override
+        protected void onTextChanged() {
+        }
+
+        @Override
+        protected void onReturnPressed() {
+            editor.sendNewICAuthor(getText());
+        }
+    }
+
+    private class LayersTextBox extends TextBoxNode {
+        public LayersTextBox() {
+            super(String.valueOf(editor.getTileMap().getDimensions().y));
+        }
+
+        @Override
+        public void update() {
+            super.update();
+            if (!getText().equals(String.valueOf(editor.getTileMap().getDimensions().y)) && !isEditing()) {
+                setText(String.valueOf(editor.getTileMap().getDimensions().y));
+            }
+        }
+
+        @Override
+        protected String getSuggestionString() {
+            return String.valueOf(editor.getTileMap().getDimensions().y);
+        }
+
+        @Override
+        protected void onTextChanged() {
+            setText(getText().replaceAll("[^0-9]", ""));
+        }
+
+        @Override
+        protected void onReturnPressed() {
+            TileCoord minBounds = editor.getTileMap().getMinBounds();
+            TileCoord maxBounds = editor.getTileMap().getMaxBounds();
+
+            int layers = Integer.parseInt(getText());
+
+            editor.sendNewICDimensions(
+                    minBounds,
+                    new TileCoord(maxBounds.x, layers - 1, maxBounds.z)
+            );
         }
     }
 }
