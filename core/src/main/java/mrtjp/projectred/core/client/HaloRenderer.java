@@ -220,6 +220,7 @@ public class HaloRenderer {
             Vec3 cam = event.getCamera().getPosition();
             PoseStack stack = event.getPoseStack();
             stack.pushPose();
+            stack.mulPose(event.getModelViewMatrix()); // AFTER_LEVEL no longer has MV matrix pre-applied in RenderSystem
             stack.translate(-cam.x, -cam.y, -cam.z);
 
             CCRenderState ccrs = CCRenderState.instance();
