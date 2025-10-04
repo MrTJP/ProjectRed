@@ -1,0 +1,32 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/aluminum"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "M": {
+      "tag": "c:ingots/aluminum"
+    },
+    "R": {
+      "item": "cb_microblock:stone_rod"
+    },
+    "S": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    "SRR",
+    "SMM"
+  ],
+  "result": {
+    "count": 1,
+    "id": "projectred_exploration:aluminum_saw"
+  }
+}

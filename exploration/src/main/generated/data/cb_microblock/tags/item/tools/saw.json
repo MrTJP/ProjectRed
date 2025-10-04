@@ -3,6 +3,17 @@
     "projectred_exploration:gold_saw",
     "projectred_exploration:ruby_saw",
     "projectred_exploration:sapphire_saw",
-    "projectred_exploration:peridot_saw"
+    "projectred_exploration:peridot_saw",
+    "projectred_exploration:copper_saw",
+    "projectred_exploration:tin_saw",
+    "projectred_exploration:silver_saw",
+    "projectred_exploration:nickel_saw",
+    "projectred_exploration:aluminum_saw",
+    "projectred_exploration:bronze_saw",
+    "projectred_exploration:netherite_saw",
+    "projectred_exploration:platinum_saw",
+    "projectred_exploration:lead_saw",
+    "projectred_exploration:invar_saw",
+    "projectred_exploration:electrum_saw"
   ]
 }

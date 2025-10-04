@@ -124,6 +124,17 @@ public class ExplorationRecipeProvider extends RecipeProvider {
         swordRecipe(SAPPHIRE_SWORD.get(), SAPPHIRE_GEM_TAG);
         swordRecipe(PERIDOT_SWORD.get(), PERIDOT_GEM_TAG);
 
+        sawRecipe(COPPER_SAW.get(), Tags.Items.INGOTS_COPPER);
+        sawRecipe(TIN_SAW.get(), TIN_INGOT_TAG);
+        sawRecipe(SILVER_SAW.get(), SILVER_INGOT_TAG);
+        sawRecipe(NICKEL_SAW.get(), NICKEL_INGOT_TAG);
+        sawRecipe(ALUMINUM_SAW.get(), ALUMINUM_INGOT_TAG);
+        sawRecipe(BRONZE_SAW.get(), BRONZE_INGOT_TAG);
+        sawRecipe(NETHERITE_SAW.get(), Tags.Items.INGOTS_NETHERITE);
+        sawRecipe(PLATINUM_SAW.get(), PLATINUM_INGOT_TAG);
+        sawRecipe(LEAD_SAW.get(), LEAD_INGOT_TAG);
+        sawRecipe(INVAR_SAW.get(), INVAR_INGOT_TAG);
+        sawRecipe(ELECTRUM_SAW.get(), ELECTRUM_INGOT_TAG);
         sawRecipe(GOLD_SAW.get(), Tags.Items.INGOTS_GOLD);
         sawRecipe(RUBY_SAW.get(), RUBY_GEM_TAG);
         sawRecipe(SAPPHIRE_SAW.get(), SAPPHIRE_GEM_TAG);
