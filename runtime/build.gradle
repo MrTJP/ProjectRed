@@ -2,36 +2,27 @@
  * Used only for generating run configs that include all ProjectRed modules in the classpath.
  */
 plugins {
-    id 'net.neoforged.gradle.userdev'
+    id 'net.neoforged.moddev'
 }
 
-minecraft {
-    accessTransformers.file file("../core/src/main/resources/META-INF/accesstransformer.cfg")
-}
+neoForge {
+    version = forge_version
 
-runs {
-    configureEach {
-        modSource project(":core").sourceSets.main
-        modSource project(":expansion").sourceSets.main
-        modSource project(":exploration").sourceSets.main
-        modSource project(":fabrication").sourceSets.main
-        modSource project(":illumination").sourceSets.main
-        modSource project(":integration").sourceSets.main
-        modSource project(":transmission").sourceSets.main
-    }
+    accessTransformers.from "../core/src/main/resources/META-INF/accesstransformer.cfg"
 
-    client {
-        workingDirectory file('run')
-    }
+    runs {
+        configureEach {
+        }
 
-    server {
-        workingDirectory file('run_server')
+        client {
+        }
+
+        server {
+        }
     }
 }
 
 dependencies {
-    implementation "net.neoforged:neoforge:${forge_version}"
-
     runtimeOnly project(":core")
     runtimeOnly project(":expansion")
     runtimeOnly project(":exploration")

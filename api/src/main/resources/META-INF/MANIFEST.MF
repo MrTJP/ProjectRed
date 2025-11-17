@@ -1,0 +1,4 @@
+COMMENT: This file exists purely for dev time,
+ anything added here should be mirrored in the build.gradle.
+FMLModType: GAMELIBRARY
+Automatic-Module-Name: projectred_api

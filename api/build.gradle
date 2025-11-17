@@ -1,7 +1,10 @@
 plugins {
-    id 'net.neoforged.gradle.userdev'
+    id 'net.neoforged.moddev'
+}
+
+neoForge {
+    version = forge_version
 }
 
 dependencies {
-    implementation "net.neoforged:neoforge:${forge_version}"
 }
