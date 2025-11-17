@@ -1,32 +1,37 @@
 plugins {
-    id 'net.neoforged.gradle.userdev'
+    id 'net.neoforged.moddev'
 }
 
 String mod_id = 'projectred_core'
 
-// Include all sources from API project
-sourceSets.main.java.srcDirs += ['../api/src/main/java']
+neoForge {
+    version = forge_version
 
-minecraft {
-    accessTransformers.file file("src/main/resources/META-INF/accesstransformer.cfg")
-}
+    accessTransformers {
+        publish file("src/main/resources/META-INF/accesstransformer.cfg")
+    }
 
-runs {
-    data {
-        systemProperty 'mixin.env.remapRefMap', 'true'
-        systemProperty 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+    runs {
+        data {
+            data()
+            programArguments.addAll '--mod', mod_id, '--all', '--output', file("src/main/generated").absolutePath, '--existing', file("src/main/resources").absolutePath
+        }
+    }
 
-        workingDirectory file('run')
-        arguments.addAll '--mod', mod_id, '--all', '--output', file("src/main/generated").absolutePath, '--existing', file("src/main/resources").absolutePath
-        modSource sourceSets.main
+    unitTest {
+        enable()
     }
 }
 
 dependencies {
-    implementation "net.neoforged:neoforge:${forge_version}"
-
     implementation "io.codechicken:CodeChickenLib:${mc_version}-${ccl_version}"
     implementation "io.codechicken:CBMultipart:${mc_version}-${cbm_version}"
+
+    accessTransformers "io.codechicken:CodeChickenLib:${mc_version}-${ccl_version}"
+    accessTransformers "io.codechicken:CBMultipart:${mc_version}-${cbm_version}"
+
+    // ProjectRed API
+    jarJar(implementation project(":api")) // Use JarJar to bake within Core jar
 
     // JEI
     compileOnly("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
@@ -40,5 +45,10 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+}
+
+test {
+    useJUnitPlatform()
+    jvmArgs('-Xmx3G', '-Xms1G')
 }
 

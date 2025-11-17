@@ -1,48 +1,34 @@
 plugins {
-    id 'net.neoforged.gradle.userdev'
-    id 'com.github.johnrengelman.shadow'
+    id 'net.neoforged.moddev'
 }
 
 String mod_id = 'projectred_fabrication'
 
-minecraft {
-    accessTransformers.file file("../core/src/main/resources/META-INF/accesstransformer.cfg")
-}
+neoForge {
+    version = forge_version
 
-runs {
-    data {
-        systemProperty 'mixin.env.remapRefMap', 'true'
-        systemProperty 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+    accessTransformers.from "../core/src/main/resources/META-INF/accesstransformer.cfg"
 
-        workingDirectory file('run')
-        arguments.addAll '--mod', mod_id, '--all', '--output', file("src/main/generated").absolutePath, '--existing', file("src/main/resources").absolutePath
-        modSource sourceSets.main
+    runs {
+        data {
+            data()
+            programArguments.addAll '--mod', mod_id, '--all', '--output', file("src/main/generated").absolutePath, '--existing', file("src/main/resources").absolutePath
+        }
     }
 }
 
 dependencies {
-    implementation "net.neoforged:neoforge:${forge_version}"
-
     implementation "io.codechicken:CodeChickenLib:${mc_version}-${ccl_version}"
     implementation "io.codechicken:CBMultipart:${mc_version}-${cbm_version}"
 
-    implementation project(":core")
+    accessTransformers "io.codechicken:CodeChickenLib:${mc_version}-${ccl_version}"
+    accessTransformers "io.codechicken:CBMultipart:${mc_version}-${cbm_version}"
 
-    // Note: Fails if transitives are included. Possible ForgeGradle bug
-    implementation(project(":integration")) { transitive = false }
-    implementation(project(":transmission")) { transitive = false }
+    implementation project(":api")
+    implementation project(":core")
+    implementation project(":integration")
+    implementation project(":transmission")
 
     // Dependencies to be packed into jar
-    shadow("io.github.mrtjp:fabrication-engine:${fabrication_version}") { transitive = false }
+    jarJar(implementation("io.github.mrtjp:fabrication-engine:${fabrication_version}") { transitive = false })
 }
-
-// Jar settings
-jar.enabled = false
-shadowJar {
-    // Jar configurations
-    archiveClassifier = jar.archiveClassifier
-    configurations = [project.configurations.shadow]
-}
-
-build.dependsOn shadowJar
-

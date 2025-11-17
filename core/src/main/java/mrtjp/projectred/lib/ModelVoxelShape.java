@@ -147,7 +147,7 @@ public class ModelVoxelShape extends VoxelShape {
             this.v1 = v1;
             this.v2 = v2;
             this.normal = VectorUtils.calculateNormal(v0, v1, v2);
-            this.side = Objects.requireNonNull(VectorUtils.findSideE(normal));
+            this.side = Objects.requireNonNull(findClosestSideE(normal));
 
             // Precompute some constants to speed up tracing
             u = v1.copy().subtract(v0);
@@ -211,6 +211,23 @@ public class ModelVoxelShape extends VoxelShape {
             if (t < 0.0 || (s + t) > 1.0) return null; // I is outside the triangle
 
             return intersection;
+        }
+    }
+
+    //TODO use VectorUtils.findClosestSideE once this is merged
+    private static @Nullable Direction findClosestSideE(Vector3 normal) {
+        var absx = Math.abs(normal.x);
+        var absy = Math.abs(normal.y);
+        var absz = Math.abs(normal.z);
+
+        if (absy > absx && absy > absz) {
+            return normal.y > 0 ? Direction.UP : Direction.DOWN;
+        } else if (absz > absx && absz > absy) {
+            return normal.z > 0 ? Direction.SOUTH : Direction.NORTH;
+        } else if (absx > absy && absx > absz) {
+            return normal.x > 0 ? Direction.WEST : Direction.EAST;
+        } else {
+            return null;
         }
     }
 }
