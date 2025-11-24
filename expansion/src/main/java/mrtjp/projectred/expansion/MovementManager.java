@@ -622,6 +622,11 @@ public class MovementManager {
                 markChunksForRender();
             }
 
+            // Mark chunks as changed
+            for (ChunkPos p : getChunkSet()) {
+                level.getChunk(p.x, p.z).setUnsaved(true);
+            }
+
             //TODO Tick rescheduling
             status = FINISHED;
         }
