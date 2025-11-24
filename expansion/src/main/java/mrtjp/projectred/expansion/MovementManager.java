@@ -147,6 +147,7 @@ public class MovementManager {
         Vec3 cam = event.getCamera().getPosition();
         PoseStack stack = event.getPoseStack();
         stack.pushPose();
+        stack.mulPose(event.getModelViewMatrix());
         stack.translate(-cam.x, -cam.y, -cam.z);
 
         for (MovingStructure structure : manager.structures.values()) {
