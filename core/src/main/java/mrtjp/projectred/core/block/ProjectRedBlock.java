@@ -83,8 +83,10 @@ public abstract class ProjectRedBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState p_60503_, Level p_60504_, BlockPos p_60505_, Player p_60506_, BlockHitResult p_60508_) {
-        return super.useWithoutItem(p_60503_, p_60504_, p_60505_, p_60506_, p_60508_);
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        BlockEntity tile = level.getBlockEntity(pos);
+        if (tile instanceof IBlockEventBlockEntity) return ((IBlockEventBlockEntity) tile).useWithoutItem(player, hit);
+        return InteractionResult.PASS;
     }
 
     @Override
