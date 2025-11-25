@@ -228,7 +228,9 @@ public class PneumaticTubePart extends GraphContainerTubePart implements Pneumat
     protected void onRemovalSeveredLink() {
         super.onRemovalSeveredLink();
         // On removal, we must've severed an active link. Play pressure sound
-        level().playSound(null, pos(), ExpansionSounds.DEPRESSURIZE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+        level().playSound(null, pos(), ExpansionSounds.DEPRESSURIZE.get(), SoundSource.BLOCKS,
+                0.7F + level().getRandom().nextFloat() * 0.3F, //Volume
+                1.0F);
     }
 
     @Override
@@ -278,7 +280,10 @@ public class PneumaticTubePart extends GraphContainerTubePart implements Pneumat
                     )
             );
             Minecraft.getInstance().particleEngine.add(p);
-            ((ClientLevel)(level())).playLocalSound(pos(), ExpansionSounds.DEPRESSURIZE.get(), SoundSource.BLOCKS, 1.0F, 1.0F, true);
+            level().playLocalSound(pos(), ExpansionSounds.DEPRESSURIZE.get(), SoundSource.BLOCKS,
+                    0.7F + level().getRandom().nextFloat() * 0.3F, //Volume
+                    1.0F,
+                    true);
         }
     }
 
@@ -296,7 +301,10 @@ public class PneumaticTubePart extends GraphContainerTubePart implements Pneumat
                     )
             );
             Minecraft.getInstance().particleEngine.add(p);
-            ((ClientLevel)(level())).playLocalSound(pos(), ExpansionSounds.PRESSURIZE.get(), SoundSource.BLOCKS, 1.0F, 1.0F, true);
+            level().playLocalSound(pos(), ExpansionSounds.PRESSURIZE.get(), SoundSource.BLOCKS,
+                    0.7F + level().getRandom().nextFloat() * 0.3F, //Volume
+                    1.0F,
+                    true);
         }
     }
     //endregion

@@ -3,15 +3,45 @@
     "sounds": [
       {
         "name": "projectred_expansion:depressurize_1",
-        "volume": 0.8
+        "volume": 0.15
+      },
+      {
+        "name": "projectred_expansion:depressurize_1",
+        "pitch": 0.9,
+        "volume": 0.15
+      },
+      {
+        "name": "projectred_expansion:depressurize_1",
+        "pitch": 0.8,
+        "volume": 0.15
       },
       {
         "name": "projectred_expansion:depressurize_2",
-        "volume": 0.8
+        "volume": 0.15
+      },
+      {
+        "name": "projectred_expansion:depressurize_2",
+        "pitch": 0.9,
+        "volume": 0.15
+      },
+      {
+        "name": "projectred_expansion:depressurize_2",
+        "pitch": 0.8,
+        "volume": 0.15
       },
       {
         "name": "projectred_expansion:depressurize_3",
-        "volume": 0.8
+        "volume": 0.15
+      },
+      {
+        "name": "projectred_expansion:depressurize_3",
+        "pitch": 0.9,
+        "volume": 0.15
+      },
+      {
+        "name": "projectred_expansion:depressurize_3",
+        "pitch": 0.8,
+        "volume": 0.15
       }
     ],
     "subtitle": "projectred-expansion.subtitle.depressurize"
@@ -20,15 +50,45 @@
     "sounds": [
       {
         "name": "projectred_expansion:pressurize_1",
-        "volume": 0.8
+        "volume": 0.15
+      },
+      {
+        "name": "projectred_expansion:pressurize_1",
+        "pitch": 0.9,
+        "volume": 0.15
+      },
+      {
+        "name": "projectred_expansion:pressurize_1",
+        "pitch": 0.8,
+        "volume": 0.15
       },
       {
         "name": "projectred_expansion:pressurize_2",
-        "volume": 0.8
+        "volume": 0.15
+      },
+      {
+        "name": "projectred_expansion:pressurize_2",
+        "pitch": 0.9,
+        "volume": 0.15
+      },
+      {
+        "name": "projectred_expansion:pressurize_2",
+        "pitch": 0.8,
+        "volume": 0.15
       },
       {
         "name": "projectred_expansion:pressurize_3",
-        "volume": 0.8
+        "volume": 0.15
+      },
+      {
+        "name": "projectred_expansion:pressurize_3",
+        "pitch": 0.9,
+        "volume": 0.15
+      },
+      {
+        "name": "projectred_expansion:pressurize_3",
+        "pitch": 0.8,
+        "volume": 0.15
       }
     ],
     "subtitle": "projectred-expansion.subtitle.pressurize"
