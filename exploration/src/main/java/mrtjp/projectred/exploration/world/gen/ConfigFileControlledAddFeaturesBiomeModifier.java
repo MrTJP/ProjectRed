@@ -36,7 +36,7 @@ public record ConfigFileControlledAddFeaturesBiomeModifier(HolderSet<Biome> biom
     }
 
     private boolean isEnabled() {
-        return Configurator.worldFeatures.getOrDefault(configKey, false);
+        return Configurator.SERVER.isWorldFeatureEnabled(configKey);
     }
 
     public static MapCodec<ConfigFileControlledAddFeaturesBiomeModifier> createCodec() {

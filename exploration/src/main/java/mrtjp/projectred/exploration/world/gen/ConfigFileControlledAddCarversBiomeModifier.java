@@ -16,7 +16,7 @@ import net.neoforged.neoforge.common.world.BiomeModifiers;
 import net.neoforged.neoforge.common.world.ModifiableBiomeInfo;
 
 /**
- * For some reason, Forge does not provide this in {@link BiomeModifiers}. This one also allows for
+ * A custom version of {@link BiomeModifiers.AddCarversBiomeModifier} that allows
  * dynamic control via ProjectRed's mod config file.
  */
 public record ConfigFileControlledAddCarversBiomeModifier(HolderSet<Biome> biomes, HolderSet<ConfiguredWorldCarver<?>> carvers, GenerationStep.Carving step, String configKey) implements BiomeModifier {
@@ -36,7 +36,7 @@ public record ConfigFileControlledAddCarversBiomeModifier(HolderSet<Biome> biome
     }
 
     private boolean isEnabled() {
-        return Configurator.worldFeatures.getOrDefault(configKey, false);
+        return Configurator.SERVER.isWorldFeatureEnabled(configKey);
     }
 
     public static MapCodec<ConfigFileControlledAddCarversBiomeModifier> createCodec() {

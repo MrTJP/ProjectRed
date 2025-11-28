@@ -83,7 +83,7 @@ public class RedstoneTubePart extends BaseTubePart implements IRedstonePropagati
             case KEY_SIGNAL -> {
                 hasRedstone = packet.readBoolean();
                 signal = packet.readByte();
-                if (Configurator.staticWires) tile().markRender();
+                if (Configurator.CLIENT.staticWires.get()) tile().markRender();
             }
             default -> super.read(packet, key);
         }

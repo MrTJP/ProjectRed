@@ -31,7 +31,7 @@ public class ScrewdriverItem extends Item implements IScrewdriver {
 
     @Override
     public void damageScrewdriver(Player player, InteractionHand hand) {
-        if (!Configurator.unbreakableScrewdriver) {
+        if (!Configurator.SERVER.unbreakableScrewdriver.get()) {
             player.getItemInHand(hand).hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
         }
     }

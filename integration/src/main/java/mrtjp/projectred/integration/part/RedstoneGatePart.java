@@ -81,7 +81,7 @@ public abstract class RedstoneGatePart extends GatePart implements FaceRedstoneP
         switch (key) {
             case KEY_STATE:
                 gateState = packet.readByte();
-                if (Configurator.staticGates) {
+                if (Configurator.CLIENT.staticGates.get()) {
                     tile().markRender();
                 }
                 break;
@@ -183,7 +183,7 @@ public abstract class RedstoneGatePart extends GatePart implements FaceRedstoneP
     }
 
     protected void tickSound() {
-        if (Configurator.logicGateSounds) {
+        if (Configurator.SERVER.logicGateSounds.get()) {
             level().playSound(null, pos(), SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.15F, 0.5f);
         }
     }

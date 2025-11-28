@@ -35,6 +35,7 @@ public interface IChargable {
         stack.setDamageValue(stack.getDamageValue() + toDraw);
 
         if (getChargedVariant() != getEmptyVariant() && stack.getDamageValue() >= stack.getMaxDamage()) {
+            //TODO do not copy damage components
             ItemStack emptyStack = new ItemStack(getEmptyVariant(), 1);
             emptyStack.applyComponents(stack.getComponents());
             stack = emptyStack;

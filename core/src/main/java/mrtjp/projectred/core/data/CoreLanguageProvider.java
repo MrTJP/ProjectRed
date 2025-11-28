@@ -75,5 +75,64 @@ public class CoreLanguageProvider extends LanguageProvider {
         add(DRAW_PLATE_ITEM.get(), "Draw Plate");
         add(SCREWDRIVER_ITEM.get(), "Screwdriver");
         add(MULTIMETER_ITEM.get(), "Multimeter");
+
+        addConfigKey("title", "Project Red Configuration");
+        addConfigKey("section.projectred.client.toml", "Client Settings");
+        addConfigKey("section.projectred.server.toml", "Server Settings");
+        addConfigKey("section.projectred.client.toml.title", "Project Red Client Settings");
+        addConfigKey("section.projectred.server.toml.title", "Project Red Server Settings");
+
+        addConfigKey("gameplay", "Gameplay Settings", "Settings that effect gameplay, balance, progression, etc.");
+        addConfigKey("infinite_screwdriver", "Unbreakable Screwdriver", "If set to ON, the basic screwdriver will not take damage");
+        addConfigKey("gate_sounds", "Logic Gate Sounds", "If set to OFF, logic gates will not make sounds");
+
+        addConfigKey("performance", "Performance Settings", "Settings that effect performance");
+        addConfigKey("gate_lights", "Logic Gate Lights",
+                "If set to OFF, logic gates will not emit light. Can help reduce light updates "
+                    + "on particularly large and fast-updating redstone circuits.");
+        addConfigKey("gate_min_timer_ticks", "Logic Gate Minimum Timer Ticks",
+                "Minimum amount of ticks the timer gates can be set to (min 4). Can be used to enforce "
+                    + "lower update rates.");
+        addConfigKey("frame_move_limit", "Frame Structure Move Limit",
+                "Max blocks in a moving frame structure. Limiting this can improve performance on servers where "
+                    + "lots of structures are being moved.");
+        addConfigKey("auto_compile_tile_limit", "Auto-Compile Tile Limit",
+                "Max number of tiles allowed in IC Workbench before auto-compile becomes disallowed (-1 to always "
+                        + "allow, 0 to never allow). Recommended to keep this very low on servers.");
+
+        addConfigKey("world_gen", "World Gen", "World generation settings for ores, structures, etc.");
+        addConfigKey("ruby_ore", "Enable Ruby Ores");
+        addConfigKey("sapphire_ore", "Enable Sapphire Ores");
+        addConfigKey("peridot_ore", "Enable Peridot Ores");
+        addConfigKey("tin_ore", "Enable Tin Ores");
+        addConfigKey("silver_ore", "Enable Silver Ores");
+        addConfigKey("electrotine_ore", "Enable Electrotine Ores");
+        addConfigKey("marble_cave", "Enable Marble Caves");
+
+        addConfigKey("rendering", "Rendering Settings", "Settings that effect rendering and special effects");
+        addConfigKey("gate_3d_wires", "3D Logic Gate Wires",
+                "If set to OFF, flat wire textures will be used for logic gates. "
+                    + "Can improve performance significantly for large circuits");
+        addConfigKey("static_wire_renderer", "Static Wire Rendering",
+                "If set to OFF, wires will be rendered by a Block Entity renderer rather than the World Renderer");
+        addConfigKey("static_gate_renderer", "Static Gate Rendering",
+                "If set to OFF, gates will be rendered by a Block Entity renderer rather than the World Renderer");
+
+        addConfigKey("lighting", "Lighting Settings", "Settings that effect ProjectRed light sources (lamps, etc)");
+        addConfigKey("max_lights", "Light Render Limit",
+                "Max lights on screen at a time, -1 for unlimited. This limits the number of light halos that can be rendered"
+                        + " around ProjectRed light sources. Lower values improve performance.");
+        addConfigKey("fabulous_lights", "Fabulous Light Rendering",
+                "Use fabulous shader pipeline for lights when on Fabulous Graphics mode. This creates a screenspace"
+                        + "blooming effect when looking towards ProjectRed light sources.");
+    }
+
+    private void addConfigKey(String key, String value) {
+        add(MOD_ID + ".configuration." + key, value);
+    }
+
+    private void addConfigKey(String key, String value, String tooltip) {
+        add(MOD_ID + ".configuration." + key, value);
+        add(MOD_ID + ".configuration." + key + ".tooltip", tooltip);
     }
 }

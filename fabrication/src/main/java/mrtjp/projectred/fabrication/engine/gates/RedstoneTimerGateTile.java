@@ -92,7 +92,7 @@ public abstract class RedstoneTimerGateTile extends TimedStateGateTile {
 
     private void addTimerMax(int delta) {
         int newMax = pointerMax + delta;
-        int min = Math.max(4, Configurator.minTimerTicks) - 2;
+        int min = Math.max(4, Configurator.SERVER.minTimerTicks.get()) - 2;
         if (newMax < min) newMax = min;
 
         if (newMax != pointerMax) {

@@ -371,7 +371,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
         @Override
         public void setTimerMax(int t) {
-            int minTime = Math.max(4, Configurator.minTimerTicks);
+            int minTime = Math.max(4, Configurator.SERVER.minTimerTicks.get());
             if (t < minTime) t = minTime;
             if (t != pointer_max) { //TODO check this, should be - 2 here i think
                 pointer_max = t - 2;
@@ -556,7 +556,7 @@ public abstract class ComplexGatePart extends RedstoneGatePart {
 
         @Override
         public void setTimerMax(int t) {
-            int minTime = Math.max(4, Configurator.minTimerTicks);
+            int minTime = Math.max(4, Configurator.SERVER.minTimerTicks.get());
             if (t < minTime) t = minTime;
             if (t != pointer_max) {
                 pointer_max = t;

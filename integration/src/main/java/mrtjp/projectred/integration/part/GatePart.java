@@ -205,13 +205,13 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
                 break;
             case KEY_ORIENTATION:
                 orientation = packet.readByte();
-                if (Configurator.staticGates) {
+                if (Configurator.CLIENT.staticGates.get()) {
                     tile().markRender();
                 }
                 break;
             case KEY_SHAPE:
                 gateShape = packet.readByte();
-                if (Configurator.staticGates) {
+                if (Configurator.CLIENT.staticGates.get()) {
                     tile().markRender();
                 }
                 break;
@@ -404,7 +404,7 @@ public abstract class GatePart extends BaseMultipart implements IConnectableFace
 
     @Override
     public int getLightEmission() {
-        return Configurator.logicGateLights ? 7 : 0;
+        return Configurator.SERVER.logicGateLights.get() ? 7 : 0;
     }
 
     @Override

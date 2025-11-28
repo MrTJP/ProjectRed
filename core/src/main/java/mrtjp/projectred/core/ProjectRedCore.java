@@ -10,7 +10,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.ComplexItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -20,9 +19,12 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -64,6 +66,14 @@ public class ProjectRedCore {
     public ProjectRedCore(ModContainer container, IEventBus modEventBus) {
         ProjectRedCore.container = container;
 
+        // Register config
+        container.registerConfig(ModConfig.Type.SERVER, Configurator.serverSpec, "projectred-server.toml");
+        container.registerConfig(ModConfig.Type.CLIENT, Configurator.clientSpec, "projectred-client.toml");
+        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+
+        // Register config event handlers
+        modEventBus.addListener(Configurator::onLoad);
+
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::onGatherDataEvent);
         modEventBus.addListener(this::onRegisterCaps);
@@ -88,15 +98,10 @@ public class ProjectRedCore {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        // Load config file
-        Configurator.load();
-
         // Load compatibility modules
-        if (Configurator.compat_CCBundledCable) {
-            //noinspection Convert2MethodRef
-            ModList.get().getModContainerById("computercraft")
-                    .ifPresent(mod -> ComputerCraftCompatibility.init(mod));
-        }
+        //noinspection Convert2MethodRef
+        ModList.get().getModContainerById("computercraft")
+                .ifPresent(mod -> ComputerCraftCompatibility.init(mod));
     }
 
     private void onGatherDataEvent(final GatherDataEvent event) {

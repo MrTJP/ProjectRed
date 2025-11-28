@@ -60,7 +60,7 @@ public abstract class FramedRedwirePart extends BaseCenterWirePart implements IR
         switch (key) {
             case KEY_SIGNAL:
                 signal = packet.readByte();
-                if (Configurator.staticWires) tile().markRender();
+                if (Configurator.CLIENT.staticWires.get()) tile().markRender();
                 break;
             default:
                 super.read(packet, key);
