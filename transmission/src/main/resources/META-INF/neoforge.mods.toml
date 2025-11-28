@@ -6,10 +6,9 @@ license="MIT"
 [[mods]]
     modId="projectred_transmission"
     displayName="ProjectRed Transmission"
-    entryClass="mrtjp.projectred.ProjectRedTransmission"
     version="${file.jarVersion}"
 
-    updateJSONURL="https://version-check.covers1624.net/check/?mod=ProjectRed&mc=${mc_version}"
+    updateJSONURL = "https://api.modrinth.com/updates/dXmH4rEw/forge_updates.json?neoforge=only"
     displayURL="https://github.com/MrTJP/ProjectRed"
     authors="MrTJP, Chicken Bones, covers1624"
     description='''

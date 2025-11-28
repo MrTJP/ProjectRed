@@ -8,7 +8,7 @@ license="MIT"
     displayName="ProjectRed Expansion"
     version="${file.jarVersion}"
 
-    updateJSONURL="https://version-check.covers1624.net/check/?mod=ProjectRed&mc=${mc_version}"
+    updateJSONURL = "https://api.modrinth.com/updates/fn5zBLFv/forge_updates.json?neoforge=only"
     displayURL="https://github.com/MrTJP/ProjectRed"
     authors="MrTJP, Chicken Bones, covers1624"
     description='''
