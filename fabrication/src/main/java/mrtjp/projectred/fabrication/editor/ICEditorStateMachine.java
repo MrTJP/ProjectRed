@@ -196,9 +196,9 @@ public class ICEditorStateMachine {
     }
 
     private boolean checkAutoCompileAvailable() {
-        if (Configurator.autoCompileTileLimit == -1) return true;
-        if (Configurator.autoCompileTileLimit == 0) return false;
-        return editor.getTileMap().getTileCount() <= Configurator.autoCompileTileLimit;
+        if (Configurator.SERVER.autoCompileTileLimit.get() == -1) return true;
+        if (Configurator.SERVER.autoCompileTileLimit.get() == 0) return false;
+        return editor.getTileMap().getTileCount() <= Configurator.SERVER.autoCompileTileLimit.get();
     }
 
     private void setAutoCompileAndSend(boolean enable) {

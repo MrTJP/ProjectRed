@@ -109,7 +109,7 @@ public abstract class BaseFaceWirePart extends BaseWirePart implements IConnecta
         switch (key) {
             case KEY_CONN_MAP:
                 connMap = packet.readInt();
-                if (Configurator.staticWires) {
+                if (Configurator.CLIENT.staticWires.get()) {
                     tile().markRender();
                 }
                 break;

@@ -278,7 +278,7 @@ public class MovementManager {
 
     public MovementDescriptor beginMove(Level level, Set<BlockPos> blocks, int dir, double speed) {
 
-        if (blocks.size() > Configurator.frameMoveLimit) {
+        if (blocks.size() > Configurator.SERVER.frameMoveLimit.get()) {
             return InternalMovementInfo.failedMovement(blocks.size());
         }
 

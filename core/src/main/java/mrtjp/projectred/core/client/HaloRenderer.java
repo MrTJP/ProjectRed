@@ -139,7 +139,7 @@ public class HaloRenderer {
 
     private static void addHalo(LinkedList<HaloRenderData> list, HaloRenderData data) {
         list.add(data);
-        if (Configurator.lightHaloMax > -1 && list.size() > Configurator.lightHaloMax) {
+        if (Configurator.CLIENT.lightHaloMax.get() > -1 && list.size() > Configurator.CLIENT.lightHaloMax.get()) {
             list.poll();
         }
     }
@@ -285,7 +285,7 @@ public class HaloRenderer {
     }
 
     private static boolean isFabulous() {
-        return Configurator.fabulousLights && Minecraft.getInstance().options.graphicsMode().get().getId() >= GraphicsStatus.FABULOUS.getId();
+        return Configurator.CLIENT.fabulousLights.get() && Minecraft.getInstance().options.graphicsMode().get().getId() >= GraphicsStatus.FABULOUS.getId();
     }
     //endregion
 

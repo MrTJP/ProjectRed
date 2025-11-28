@@ -149,15 +149,15 @@ public class ExplorationWorldFeatures {
         HolderSet<Biome> overworldBiomes = biomes.getOrThrow(BiomeTags.IS_OVERWORLD);
 
         // Add overworld ores
-        context.register(createBiomeModifierKey("add_ruby_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(RUBY_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.rubyOreKey));
-        context.register(createBiomeModifierKey("add_sapphire_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(SAPPHIRE_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.sapphireOreKey));
-        context.register(createBiomeModifierKey("add_peridot_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(PERIDOT_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.peridotOreKey));
-        context.register(createBiomeModifierKey("add_electrotine_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(ELECTROTINE_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.electrotineOreKey));
-        context.register(createBiomeModifierKey("add_tin_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(TIN_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.tinOreKey));
-        context.register(createBiomeModifierKey("add_silver_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(SILVER_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.silverOreKey));
+        context.register(createBiomeModifierKey("add_ruby_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(RUBY_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.Server.RUBY_ORE_KEY));
+        context.register(createBiomeModifierKey("add_sapphire_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(SAPPHIRE_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.Server.SAPPHIRE_ORE_KEY));
+        context.register(createBiomeModifierKey("add_peridot_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(PERIDOT_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.Server.PERIDOT_ORE_KEY));
+        context.register(createBiomeModifierKey("add_electrotine_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(ELECTROTINE_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.Server.ELECTROTINE_ORE_KEY));
+        context.register(createBiomeModifierKey("add_tin_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(TIN_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.Server.TIN_ORE_KEY));
+        context.register(createBiomeModifierKey("add_silver_ore_to_overworld"), new ConfigFileControlledAddFeaturesBiomeModifier(overworldBiomes, HolderSet.direct(placedFeatures.getOrThrow(SILVER_ORE_PLACED_FEATURE)), GenerationStep.Decoration.UNDERGROUND_ORES, Configurator.Server.SILVER_ORE_KEY));
 
         // Add overworld carvers
-        context.register(createBiomeModifierKey("add_marble_cave_to_overworld"), new ConfigFileControlledAddCarversBiomeModifier(overworldBiomes, HolderSet.direct(worldCarvers.getOrThrow(MARBLE_CAVE_CONFIGURED_CARVER)), GenerationStep.Carving.AIR, Configurator.marbleCaveKey));
+        context.register(createBiomeModifierKey("add_marble_cave_to_overworld"), new ConfigFileControlledAddCarversBiomeModifier(overworldBiomes, HolderSet.direct(worldCarvers.getOrThrow(MARBLE_CAVE_CONFIGURED_CARVER)), GenerationStep.Carving.AIR, Configurator.Server.MARBLE_CAVE_KEY));
     }
 
     // Registers the actual ore feature. This describes a single cluster of this specific ore type

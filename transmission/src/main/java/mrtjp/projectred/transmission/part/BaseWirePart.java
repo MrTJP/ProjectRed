@@ -96,7 +96,7 @@ public abstract class BaseWirePart extends BaseMultipart implements IconHitEffec
     }
 
     public boolean useStaticRenderer() {
-        return Configurator.staticWires;
+        return Configurator.CLIENT.staticWires.get();
     }
 
     @Override
