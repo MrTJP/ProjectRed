@@ -8,3 +8,10 @@ neoForge {
 
 dependencies {
 }
+
+jar {
+    manifest {
+        // Required since API uses Minecraft classes
+        attributes 'FMLModType': 'GAMELIBRARY'
+    }
+}
