@@ -31,7 +31,7 @@ dependencies {
     accessTransformers "io.codechicken:CBMultipart:${mc_version}-${cbm_version}"
 
     // ProjectRed API
-    jarJar(implementation project(":api")) // Use JarJar to bake within Core jar
+    jarJar(api project(":api")) // Use JarJar to bake within Core jar
 
     // JEI
     compileOnly("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
