@@ -222,6 +222,53 @@ jobs:
             CHANGELOG.md
             CHANGELOG.txt
 
+      - name: Mark versions in version checker
+        if: ${{ steps.release_type.outputs.publish_launchers == 'true' }}
+        run: |
+          # Function to mark a version in the version checker
+          mark_version() {
+            local mod_id=$1
+            local type=$2
+            echo "Marking $mod_id as $type..."
+            python .github/version_checker.py \
+              --mod_id "$mod_id" \
+              --mc_version "$MC_VERSION" \
+              --mod_version "$MOD_VERSION" \
+              --homepage "https://github.com/MrTJP/ProjectRed" \
+              --api_key "$API_KEY" \
+              --type "$type"
+          }
+
+          # List of all modules with their mod IDs
+          # Note: Mod name "ProjectRed" marked as well for backwards compatibility
+          MODS=(
+            "ProjectRed"
+            "projectred_core"
+            "projectred_expansion"
+            "projectred_exploration"
+            "projectred_fabrication"
+            "projectred_illumination"
+            "projectred_integration"
+            "projectred_transmission"
+          )
+
+          # Mark all modules as latest
+          for MOD_ID in "${MODS[@]}"; do
+            mark_version "$MOD_ID" "latest"
+          done
+
+          # Also mark as recommended if this is a full release
+          if [ "$PUBLISH_GH_RELEASE" = "true" ]; then
+            for MOD_ID in "${MODS[@]}"; do
+              mark_version "$MOD_ID" "recommended"
+            done
+          fi
+        env:
+          MC_VERSION: ${{ env.mc_version || '1.21.1' }}
+          MOD_VERSION: ${{ steps.versioning.outputs.version }}
+          PUBLISH_GH_RELEASE: ${{ steps.release_type.outputs.publish_gh_release }}
+          API_KEY: ${{ secrets.VERSION_CHECK_API_KEY }}
+
       - name: Update badge
         continue-on-error: true
         uses: schneegans/dynamic-badges-action@v1.7.0
