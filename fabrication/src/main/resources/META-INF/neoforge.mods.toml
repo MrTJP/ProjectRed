@@ -8,7 +8,7 @@ license="MIT"
     displayName="ProjectRed Fabrication"
     version="${file.jarVersion}"
 
-    updateJSONURL = "https://api.modrinth.com/updates/5H1VMCiY/forge_updates.json?neoforge=only"
+    updateJSONURL="https://version-check.covers1624.net/check/?mod=${mod_id}&mc=${mc_version}"
     displayURL="https://github.com/MrTJP/ProjectRed"
     authors="MrTJP, Chicken Bones, covers1624"
     description='''
