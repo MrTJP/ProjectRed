@@ -7,9 +7,12 @@ import mrtjp.projectred.core.client.HaloRenderer;
 import mrtjp.projectred.core.gui.screen.inventory.ElectrotineGeneratorScreen;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 
 import static mrtjp.projectred.core.ProjectRedCore.MOD_ID;
@@ -20,7 +23,10 @@ public class CoreClientInit {
 
     public static CCShaderInstance HALO_SHADER;
 
-    public static void init(IEventBus modEventBus) {
+    public static void init(ModContainer container, IEventBus modEventBus) {
+        // Enable in-game config screen
+        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+
         modEventBus.addListener(CoreClientInit::clientSetup);
         modEventBus.addListener(CoreClientInit::onRegisterShaders);
         modEventBus.addListener(CoreClientInit::onRegisterScreens);
