@@ -84,6 +84,13 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r .github/requirements.txt
 
+      - name: Extract Minecraft version
+        id: mc_version
+        run: |
+          mc_version=$(grep '^mc_version=' gradle.properties | cut -d'=' -f2)
+          echo "mc_version=$mc_version"
+          echo "mc_version=$mc_version" >> $GITHUB_OUTPUT
+
       - name: Generate version
         id: versioning
         run: |
@@ -135,7 +142,7 @@ jobs:
             -k    $API_TOKEN \
             -rt   $RELEASE_TYPE \
             -v    'Java 17' \
-            -v    1.21.1 \
+            -v    $MC_VERSION \
             -v    NeoForge \
             -c    ./CHANGELOG.md \
             --required-dep codechicken-lib-1-8 \
@@ -164,6 +171,7 @@ jobs:
           python -m curseuploadpy "${MODULE_ARGS[@]}" -p 478939 -f transmission/build/libs/*-transmission.jar
 
         env:
+          MC_VERSION: ${{ steps.mc_version.outputs.mc_version }}
           RELEASE_TYPE: ${{ steps.release_type.outputs.release_type }}
           API_TOKEN: ${{ secrets.CURSE_TOKEN }}
 
@@ -177,7 +185,7 @@ jobs:
             create-version \
             -v    "$MOD_VERSION" \
             -c    ./CHANGELOG.md \
-            -gv   1.21.1 \
+            -gv   $MC_VERSION \
             -vt   $RELEASE_TYPE \
             -l    neoforge \
             --required-dep codechicken-lib \
@@ -206,6 +214,7 @@ jobs:
           python -m modrinthpy "${MODULE_ARGS[@]}" -p project-red-transmission  -n "Project Red Transmission v$MOD_VERSION" -f transmission/build/libs/*-transmission.jar
 
         env:
+          MC_VERSION: ${{ steps.mc_version.outputs.mc_version }}
           RELEASE_TYPE: ${{ steps.release_type.outputs.release_type }}
           API_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           MOD_VERSION: ${{ steps.versioning.outputs.version }}
@@ -264,7 +273,7 @@ jobs:
             done
           fi
         env:
-          MC_VERSION: ${{ env.mc_version || '1.21.1' }}
+          MC_VERSION: ${{ steps.mc_version.outputs.mc_version }}
           MOD_VERSION: ${{ steps.versioning.outputs.version }}
           PUBLISH_GH_RELEASE: ${{ steps.release_type.outputs.publish_gh_release }}
           API_KEY: ${{ secrets.VERSION_CHECK_API_KEY }}
