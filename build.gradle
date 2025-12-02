@@ -49,17 +49,22 @@ subprojects { p ->
 
     // Replace version tokens in mods.toml
     processResources {
-        inputs.property 'mod_version', mod_version
-        inputs.property 'mc_version', mc_version
+        def expandMap = [
+                'file': ['jarVersion': mod_version],
+                'mod_id': "projectred_${p.name}",
+                'mod_version': mod_version,
+                'mc_version': mc_version,
+                'forge_version': forge_version,
+                'lang_version': forge_version.split('\\.')[0],
+                'ccl_version': ccl_version,
+                'cbm_version': cbm_version,
+                'cct_version': cct_version
+        ]
+
+        inputs.properties(expandMap)
 
         filesMatching('META-INF/neoforge.mods.toml') {
-            expand 'file': ['jarVersion': mod_version],
-                    'mc_version': mc_version,
-                    'forge_version': forge_version,
-                    'lang_version': forge_version.split('\\.')[0],
-                    'ccl_version': ccl_version,
-                    'cbm_version': cbm_version,
-                    'cct_version': cct_version
+            expand(expandMap)
         }
     }
 }
