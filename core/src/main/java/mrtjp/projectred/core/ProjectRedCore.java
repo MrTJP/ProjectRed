@@ -23,8 +23,6 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -69,7 +67,6 @@ public class ProjectRedCore {
         // Register config
         container.registerConfig(ModConfig.Type.SERVER, Configurator.serverSpec, "projectred-server.toml");
         container.registerConfig(ModConfig.Type.CLIENT, Configurator.clientSpec, "projectred-client.toml");
-        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
         // Register config event handlers
         modEventBus.addListener(Configurator::onLoad);
@@ -79,7 +76,7 @@ public class ProjectRedCore {
         modEventBus.addListener(this::onRegisterCaps);
 
         if (FMLEnvironment.dist.isClient()) {
-            CoreClientInit.init(modEventBus);
+            CoreClientInit.init(container, modEventBus);
         }
 
         // Init packet handler
