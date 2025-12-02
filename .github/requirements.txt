@@ -1,3 +1,4 @@
 fire==0.4.0
+requests>=2.31.0
 curseuploadpy @ git+https://github.com/MrTJP/curseuploadpy.git@dev
 modrinthpy @ git+https://github.com/MrTJP/modrinthpy.git@dev
