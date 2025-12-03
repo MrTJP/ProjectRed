@@ -32,7 +32,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -172,7 +171,7 @@ public class MovementManager {
                     stack.translate(p.getX(), p.getY(), p.getZ());
 
                     MovingBlockSuppressorRenderer.allowMovingRenderOnRenderThread = true;
-                    Minecraft.getInstance().getBlockRenderer().renderBatched(state, p, level, stack, buffers.getBuffer(renderType), false, random, ModelData.EMPTY, renderType);
+                    Minecraft.getInstance().getBlockRenderer().renderBatched(state, p, level, stack, buffers.getBuffer(renderType), false, random, level.getModelData(p), renderType);
                     MovingBlockSuppressorRenderer.allowMovingRenderOnRenderThread = false;
 
                     stack.popPose(); //p
