@@ -1,5 +1,6 @@
 package mrtjp.projectred.expansion.item;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -14,7 +15,7 @@ public interface IChargable {
 
         if (getChargedVariant() != getEmptyVariant() && stack.getItem() == getEmptyVariant()) {
             ItemStack chargedStack = new ItemStack(getChargedVariant(), 1);
-            chargedStack.applyComponents(stack.getComponents());
+            chargedStack.set(DataComponents.ENCHANTMENTS, stack.get(DataComponents.ENCHANTMENTS));
             chargedStack.setDamageValue(chargedStack.getMaxDamage());
             stack = chargedStack;
         }
@@ -35,9 +36,8 @@ public interface IChargable {
         stack.setDamageValue(stack.getDamageValue() + toDraw);
 
         if (getChargedVariant() != getEmptyVariant() && stack.getDamageValue() >= stack.getMaxDamage()) {
-            //TODO do not copy damage components
             ItemStack emptyStack = new ItemStack(getEmptyVariant(), 1);
-            emptyStack.applyComponents(stack.getComponents());
+            emptyStack.set(DataComponents.ENCHANTMENTS, stack.get(DataComponents.ENCHANTMENTS));
             stack = emptyStack;
         }
 
