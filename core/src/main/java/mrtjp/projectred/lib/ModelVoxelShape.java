@@ -225,7 +225,7 @@ public class ModelVoxelShape extends VoxelShape {
         } else if (absz > absx && absz > absy) {
             return normal.z > 0 ? Direction.SOUTH : Direction.NORTH;
         } else if (absx > absy && absx > absz) {
-            return normal.x > 0 ? Direction.WEST : Direction.EAST;
+            return normal.x > 0 ? Direction.EAST : Direction.WEST;
         } else {
             return null;
         }
