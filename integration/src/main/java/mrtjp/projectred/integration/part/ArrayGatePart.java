@@ -124,8 +124,8 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
             if ((propagationMask & 1 << r) == 0) { continue; }
             int s;
 
-            if (maskConnectsCorner(r)) {
-                FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
+            if (maskConnectsInside(r)) {
+                FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
                 s = RedstoneFaceLookup.resolveSignal(lookup, true);
 
             } else if (maskConnectsStraight(r)) {
@@ -135,8 +135,8 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
                     s = RedstoneFaceLookup.resolveVanillaSignal(lookup, this, true, true);
                 }
 
-            } else if (maskConnectsInside(r)) {
-                FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
+            } else if (maskConnectsCorner(r)) {
+                FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
                 s = RedstoneFaceLookup.resolveSignal(lookup, true);
 
             } else { // For non-connected sides, just do a vanilla signal lookup
