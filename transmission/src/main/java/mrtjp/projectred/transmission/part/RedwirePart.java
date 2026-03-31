@@ -170,8 +170,8 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
 
         for (int r = 0; r < 4; r++) {
             int s = 0;
-            if (maskConnectsCorner(r)) {
-                FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
+            if (maskConnectsInside(r)) {
+                FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
                 s = resolveSignal(lookup);
 
             } else if (maskConnectsStraight(r)) {
@@ -181,8 +181,8 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
                     s = RedstoneFaceLookup.resolveVanillaSignal(lookup, this, true, true);
                 }
 
-            } else if (maskConnectsInside(r)) {
-                FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
+            } else if (maskConnectsCorner(r)) {
+                FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
                 s = resolveSignal(lookup);
             }
 
