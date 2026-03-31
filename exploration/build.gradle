@@ -24,5 +24,6 @@ dependencies {
     accessTransformers "io.codechicken:CodeChickenLib:${mc_version}-${ccl_version}"
     accessTransformers "io.codechicken:CBMultipart:${mc_version}-${cbm_version}"
 
+    compileOnly project(":api")
     implementation project(":core")
 }
