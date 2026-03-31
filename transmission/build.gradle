@@ -14,6 +14,23 @@ neoForge {
             data()
             programArguments.addAll '--mod', mod_id, '--all', '--output', file("src/main/generated").absolutePath, '--existing', file("src/main/resources").absolutePath
         }
+
+        gameTestServer {
+            type = "gameTestServer"
+            gameDirectory = project.file('runs/gameTestServer')
+            systemProperty 'neoforge.enableGameTest', 'true'
+            systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
+        }
+
+        configureEach {
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
     }
 }
 
