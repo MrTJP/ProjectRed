@@ -11,13 +11,16 @@ neoForge {
     accessTransformers.from "../core/src/main/resources/META-INF/accesstransformer.cfg"
 
     runs {
-        configureEach {
-        }
-
         client {
+            client()
         }
 
         server {
+            server()
+        }
+
+        configureEach {
+            logLevel = org.slf4j.event.Level.DEBUG
         }
     }
 }
@@ -31,4 +34,3 @@ dependencies {
     runtimeOnly project(":integration")
     runtimeOnly project(":transmission")
 }
-
