@@ -50,7 +50,7 @@ public class CraftingHelper {
     private final InventorySource inputSource;
 
     private @Nullable RecipeHolder<CraftingRecipe> recipe = null;
-    private CraftingInput craftingInput = CraftingInput.EMPTY;
+    private CraftingInput.Positioned posCraftingInput = CraftingInput.Positioned.EMPTY;
     private CraftingResult result = CraftingResult.EMPTY;
 
     public CraftingHelper(InventorySource inputSource) {
@@ -61,7 +61,7 @@ public class CraftingHelper {
     public void clear() {
         recipe = null;
         craftingInventory.clearContent();
-        craftingInput = CraftingInput.EMPTY;
+        posCraftingInput = CraftingInput.Positioned.EMPTY;
     }
 
     public void onInventoryChanged() {
@@ -87,14 +87,14 @@ public class CraftingHelper {
         for (int i = 0; i < 9; i++) {
             craftingInventory.setItem(i, craftingMatrix.getItem(i).copy());
         }
-        craftingInput = craftingInventory.asCraftInput();
+        posCraftingInput = craftingInventory.asPositionedCraftInput();
     }
 
     public void loadRecipe() {
         recipe = inputSource.getWorld().getRecipeManager()
-                .getRecipeFor(RecipeType.CRAFTING, craftingInput, inputSource.getWorld()).orElse(null);
+                .getRecipeFor(RecipeType.CRAFTING, posCraftingInput.input(), inputSource.getWorld()).orElse(null);
 
-        craftResultInventory.setItem(0, recipe == null ? ItemStack.EMPTY : recipe.value().assemble(craftingInput, inputSource.getWorld().registryAccess()));
+        craftResultInventory.setItem(0, recipe == null ? ItemStack.EMPTY : recipe.value().assemble(posCraftingInput.input(), inputSource.getWorld().registryAccess()));
     }
 
     public void loadOutput() {
@@ -133,19 +133,20 @@ public class CraftingHelper {
 
         // Re-obtain remaining items in case "setCraftingPlayer" changes remaining items
         CommonHooks.setCraftingPlayer(player);
-        NonNullList<ItemStack> remainingStacks = recipe.value().getRemainingItems(craftingInput); // Skip re-searching for recipe, should be ok
+        NonNullList<ItemStack> remainingStacks = recipe.value().getRemainingItems(posCraftingInput.input()); // Skip re-searching for recipe, should be ok
         CommonHooks.setCraftingPlayer(null);
 
         Container craftingGird = inputSource.getCraftingMatrix();
         Container storage = inputSource.getStorage();
 
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < remainingStacks.size(); i++) {
             ItemStack remaining = remainingStacks.get(i);
             if (remaining.isEmpty()) continue;
 
             // If allowed, leave remaining in crafting grid just like Vanilla crafting bench
             if (leaveRemainingInGrid && craftingGird.getItem(i).isEmpty()) {
-                craftingGird.setItem(i, remaining.split(remaining.getCount()));
+                int ccSlot = craftingInputSlotToContainer(craftingInventory, posCraftingInput, i);
+                craftingGird.setItem(ccSlot, remaining.split(remaining.getCount()));
                 continue;
             }
 
@@ -187,9 +188,9 @@ public class CraftingHelper {
     private CraftingResult craftFromSource(Container source, boolean simulate) {
         if (recipe == null) return CraftingResult.EMPTY;
 
-        if (!recipe.value().matches(craftingInput, inputSource.getWorld())) return CraftingResult.EMPTY;
+        if (!recipe.value().matches(posCraftingInput.input(), inputSource.getWorld())) return CraftingResult.EMPTY;
 
-        ItemStack result = recipe.value().assemble(craftingInput, inputSource.getWorld().registryAccess());
+        ItemStack result = recipe.value().assemble(posCraftingInput.input(), inputSource.getWorld().registryAccess());
         if (result.isEmpty()) return CraftingResult.EMPTY;
 
         if (simulate) {
@@ -227,7 +228,7 @@ public class CraftingHelper {
             return CraftingResult.missingIngredients(missingIngredientMask);
         }
 
-        return new CraftingResult(result, recipe.value().getRemainingItems(craftingInput), 0, simulate ? source : copyInventory(source));
+        return new CraftingResult(result, recipe.value().getRemainingItems(posCraftingInput.input()), 0, simulate ? source : copyInventory(source));
     }
 
     private boolean consumeIngredient(Container storage, int startIndex, Predicate<ItemStack> matchFunc) {
@@ -316,5 +317,28 @@ public class CraftingHelper {
         }
 
         Level getWorld(); // Required for recipe lookup
+    }
+
+    /**
+     * Maps the slot index from within a CraftingInput (which is a sub-square within a crafting container)
+     * into a slot index of this outer crafting container.
+     * <p>
+     * For example, if the matrix is 3x3, and the crafting input is 2x2 in bottom left, then
+     * slot 0 in the 2x2 input corresponds with slot 4 in the 3x3 matrix.
+     *
+     * @param matrix      The CraftingContainer that the CraftingInput is in
+     * @param pCraftInput A CraftingInput positioned somewhere inside matrix
+     * @param pSlot       A slot index inside pCraftInput
+     * @return The corresponding slot index in matrix
+     */
+    private static int craftingInputSlotToContainer(CraftingContainer matrix, CraftingInput.Positioned pCraftInput, int pSlot) {
+        // xy within the crafting input
+        int ix = pSlot % pCraftInput.input().width();
+        int iy = pSlot / pCraftInput.input().width();
+        // xy within outer grid
+        int x = pCraftInput.left() + ix;
+        int y = pCraftInput.top() + iy;
+        // Outer index
+        return y * matrix.getWidth() + x;
     }
 }
