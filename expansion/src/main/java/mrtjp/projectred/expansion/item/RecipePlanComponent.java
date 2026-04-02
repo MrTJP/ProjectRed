@@ -7,12 +7,10 @@ import net.covers1624.quack.collection.FastStream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
 
@@ -121,13 +119,13 @@ public class RecipePlanComponent implements TooltipProvider {
     //region Codecs
     // Codecs
     public static final Codec<RecipePlanComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.list(ItemStack.CODEC).fieldOf("inputs").forGetter(c -> c.inputs),
-            ItemStack.CODEC.fieldOf("output").forGetter(c -> c.output)
+            Codec.list(ItemStack.OPTIONAL_CODEC).fieldOf("inputs").forGetter(c -> c.inputs),
+            ItemStack.OPTIONAL_CODEC.fieldOf("output").forGetter(c -> c.output)
     ).apply(instance, RecipePlanComponent::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, RecipePlanComponent> STREAM_CODEC = StreamCodec.composite(
-            ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()), c -> c.inputs,
-            ItemStack.STREAM_CODEC, c -> c.output,
+            ItemStack.OPTIONAL_LIST_STREAM_CODEC, c -> c.inputs,
+            ItemStack.OPTIONAL_STREAM_CODEC, c -> c.output,
             RecipePlanComponent::new
     );
     //endregion
