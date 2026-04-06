@@ -144,8 +144,8 @@ public class CraftingHelper {
             if (remaining.isEmpty()) continue;
 
             // If allowed, leave remaining in crafting grid just like Vanilla crafting bench
-            if (leaveRemainingInGrid && craftingGird.getItem(i).isEmpty()) {
-                int ccSlot = craftingInputSlotToContainer(craftingInventory, posCraftingInput, i);
+            int ccSlot = craftingInputSlotToContainer(craftingInventory, posCraftingInput, i);
+            if (leaveRemainingInGrid && craftingGird.getItem(ccSlot).isEmpty()) {
                 craftingGird.setItem(ccSlot, remaining.split(remaining.getCount()));
                 continue;
             }
