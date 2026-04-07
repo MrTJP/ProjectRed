@@ -15,6 +15,17 @@ neoForge {
             programArguments.addAll '--mod', mod_id, '--all', '--output', file("src/main/generated").absolutePath, '--existing', file("src/main/resources").absolutePath
         }
     }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+
+    unitTest {
+        enable()
+        testedMod = mods.getByName(mod_id)
+    }
 }
 
 dependencies {
@@ -26,4 +37,14 @@ dependencies {
 
     compileOnly project(":api")
     implementation project(":core")
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly    'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation 'org.mockito:mockito-core:5.14.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.14.2'
+}
+
+test {
+    useJUnitPlatform()
+    jvmArgs('-Xmx3G', '-Xms1G')
 }

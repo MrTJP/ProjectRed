@@ -1,11 +1,10 @@
 package mrtjp.projectred.expansion;
 
 import mrtjp.projectred.core.inventory.BaseContainer;
+import mrtjp.projectred.core.inventory.OverlayContainer;
 import mrtjp.projectred.lib.InventoryLib;
-import net.covers1624.quack.util.LazyValue;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.ResultContainer;
@@ -18,7 +17,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.CommonHooks;
 
 import javax.annotation.Nullable;
-import java.util.function.Predicate;
 
 public class CraftingHelper {
 
@@ -52,18 +50,30 @@ public class CraftingHelper {
     private @Nullable RecipeHolder<CraftingRecipe> recipe = null;
     private CraftingInput.Positioned posCraftingInput = CraftingInput.Positioned.EMPTY;
     private CraftingResult result = CraftingResult.EMPTY;
+    private boolean canFitResultsIntoSource = false;
 
     public CraftingHelper(InventorySource inputSource) {
         this.inputSource = inputSource;
     }
 
     //region Inventory events
+
+    /**
+     * Clears internal state such as located recipe, crafting result, etc.
+     */
     public void clear() {
-        recipe = null;
         craftingInventory.clearContent();
+        craftResultInventory.clearContent();
+        recipe = null;
         posCraftingInput = CraftingInput.Positioned.EMPTY;
+        result = CraftingResult.EMPTY;
+        canFitResultsIntoSource = false;
     }
 
+    /**
+     * Refreshes recipe from crafting matrix and re-calculates feasibility of
+     * crafting the recipe output.
+     */
     public void onInventoryChanged() {
         loadInputs();
         loadRecipe();
@@ -81,7 +91,7 @@ public class CraftingHelper {
     }
     //region
 
-    public void loadInputs() {
+    private void loadInputs() {
         Container craftingMatrix = inputSource.getCraftingMatrix();
         // Copy recipe matrix to internal Crafting Inventory
         for (int i = 0; i < 9; i++) {
@@ -90,57 +100,110 @@ public class CraftingHelper {
         posCraftingInput = craftingInventory.asPositionedCraftInput();
     }
 
-    public void loadRecipe() {
+    private void loadRecipe() {
         recipe = inputSource.getWorld().getRecipeManager()
                 .getRecipeFor(RecipeType.CRAFTING, posCraftingInput.input(), inputSource.getWorld()).orElse(null);
 
         craftResultInventory.setItem(0, recipe == null ? ItemStack.EMPTY : recipe.value().assemble(posCraftingInput.input(), inputSource.getWorld().registryAccess()));
     }
 
-    public void loadOutput() {
+    private void loadOutput() {
+        OverlayContainer overlay = createAvailableStorageOverlay();
+        result = craftFromSource(overlay, null);
 
-        result = craftFromStorageOrMatrix(true);
+        if (result.isCraftable()) {
+            NonNullList<ItemStack> allResults = result.getOutputAndRemaining();
+            canFitResultsIntoSource = InventoryLib.injectAllItemStacks(overlay, allResults, true);
+        }
     }
 
+    //region Public interface
+
+    /**
+     * Check if crafting matrix holds valid recipe ingredients.
+     * <p>
+     * Refreshed on {@link #onInventoryChanged()}
+     *
+     * @return True if matrix matches recipe
+     */
     public boolean hasRecipe() {
         return recipe != null;
     }
 
-    public ItemStack getRecipeOutout() {
+    /**
+     * Returns output item of the current recipe in the crafting matrix
+     * <p>
+     * Refreshed on {@link #onInventoryChanged()}
+     *
+     * @return The recipe output item
+     */
+    public ItemStack getRecipeOutput() {
         return craftResultInventory.getItem(0);
     }
 
+    /**
+     * Checks if the crafting ingredient sources contains enough ingredients to craft the current recipe.
+     * <p>
+     * Refreshed on {@link #onInventoryChanged()}
+     *
+     * @return True if crafting is possible
+     */
     public boolean canTake() {
         return result.isCraftable();
     }
 
+    /**
+     * Checks if sources contain the necessary ingredients to craft, and then also has the space to
+     * take in the results and remaining items post-craft.
+     * <p>
+     * Refreshed on {@link #onInventoryChanged()}
+     *
+     * @return True if crafting and storing is possible
+     */
     public boolean canTakeIntoStorage() {
-        return canTake() && result.canStorageAcceptResults();
+        return canTake() && canFitResultsIntoSource;
     }
 
+    /**
+     * A 9-bit mask representing slots of the 3x3 matrix. Bits are high if ingredient is missing.
+     * <p>
+     * Refreshed on {@link #onInventoryChanged()}
+     *
+     * @return Missing ingredient mask
+     */
     public int getMissingIngredientMask() {
         return result.missingIngredientMask;
     }
 
+    /**
+     * Executes a player-based craft, typically from an output slot's onTake() method. This will consume ingredients from the source
+     * containers.
+     * <p>
+     * Contract:
+     * - Will succeed and return true if canTake() is true
+     * - Source containers left unaltered on failure
+     *
+     * @param player               The crafting player
+     * @param leaveRemainingInGrid If remaining items should be left in grid. False returns them to storage.
+     * @return True if crafting was successful (ingredients consumed, remaining stored or dropped)
+     */
     public boolean onCraftedByPlayer(Player player, boolean leaveRemainingInGrid) {
         if (recipe == null) return false;
 
-        CraftingResult result = craftFromStorageOrMatrix(false);
+        // Attempt to consume ingredients and craft
+        OverlayContainer overlay = createAvailableStorageOverlay();
+        CraftingResult result = craftFromSource(overlay, player);
+        if (!result.isCraftable()) return false;
 
-        if (!result.isCraftable()) {
-            return false;
-        }
+        // Crafting successful. Finalize removal of ingredients
+        overlay.commitChanges();
 
-        // Re-obtain remaining items in case "setCraftingPlayer" changes remaining items
-        CommonHooks.setCraftingPlayer(player);
-        NonNullList<ItemStack> remainingStacks = recipe.value().getRemainingItems(posCraftingInput.input()); // Skip re-searching for recipe, should be ok
-        CommonHooks.setCraftingPlayer(null);
-
+        // Put remaining items back
         Container craftingGird = inputSource.getCraftingMatrix();
         Container storage = inputSource.getStorage();
 
-        for (int i = 0; i < remainingStacks.size(); i++) {
-            ItemStack remaining = remainingStacks.get(i);
+        for (int i = 0; i < result.getRemainingItems().size(); i++) {
+            ItemStack remaining = result.getRemainingItems().get(i);
             if (remaining.isEmpty()) continue;
 
             // If allowed, leave remaining in crafting grid just like Vanilla crafting bench
@@ -159,43 +222,46 @@ public class CraftingHelper {
         return true;
     }
 
+    /**
+     * Crafts the recipe and puts result and all remaining items back into storage container.
+     * <p>
+     * Contracts:
+     * - Will succeed and return true if canTakeIntoStorage is true
+     * - Source containers left unaltered on failure
+     * - Items can be consumed from matrix if enabled, but result and remaining items will NEVER go back to matrix
+     *
+     * @return True if successful
+     */
     public boolean onCraftedIntoStorage() {
+        // Create overlay and attempt to consume ingredients
+        OverlayContainer overlay = createAvailableStorageOverlay();
+        CraftingResult result = craftFromSource(overlay, null);
+        if (!result.isCraftable()) return false;
 
-        CraftingResult result = craftFromStorage(false);
+        // Try to store result items back into storage after ingredients are consumed
+        NonNullList<ItemStack> allResults = result.getOutputAndRemaining();
+        // Note: This directly assumes first X slots are storage (See createAvailableStorageOverlay)
+        int storageSize = inputSource.getStorage().getContainerSize();
+        boolean fits = InventoryLib.injectAllItemStacks(overlay, allResults, 0, storageSize, true);
 
-        if (!result.isCraftable() || !result.canFitResultsIntoStorage()) return false;
-
-        NonNullList<ItemStack> allResults = result.getCopyOfAllResults();
-        InventoryLib.injectAllItemStacks(inputSource.getStorage(), allResults, true);
-
-        return true;
-    }
-
-    private CraftingResult craftFromStorageOrMatrix(boolean simulate) {
-        CraftingResult result = craftFromStorage(simulate);
-        if (!result.isCraftable() && inputSource.canConsumeFromCraftingMatrix()) {
-            // TODO maybe merge the missingIngredientMasks of these two results?
-            result = craftFromSource(inputSource.getCraftingMatrix(), simulate);
+        // Commit if everything fits
+        if (fits) {
+            overlay.commitChanges();
+            return true;
         }
-        // TODO Hybrid craft that consumes from both sources instead of one or the other?
-        return result;
-    }
 
-    private CraftingResult craftFromStorage(boolean simulate) {
-        return craftFromSource(inputSource.getStorage(), simulate);
+        return false;
     }
+    //endregion
 
-    private CraftingResult craftFromSource(Container source, boolean simulate) {
+    //region Utils
+    private CraftingResult craftFromSource(Container source, @Nullable Player player) {
         if (recipe == null) return CraftingResult.EMPTY;
 
         if (!recipe.value().matches(posCraftingInput.input(), inputSource.getWorld())) return CraftingResult.EMPTY;
 
         ItemStack result = recipe.value().assemble(posCraftingInput.input(), inputSource.getWorld().registryAccess());
         if (result.isEmpty()) return CraftingResult.EMPTY;
-
-        if (simulate) {
-            source = copyInventory(source);
-        }
 
         // Try to consume all ingredients
         int missingIngredientMask = 0;
@@ -204,7 +270,7 @@ public class CraftingHelper {
             ItemStack previousInput = craftingInventory.getItem(slot);
             if (previousInput.isEmpty()) continue;
 
-            boolean isPresent = consumeIngredient(source, 0, input -> {
+            int removed = InventoryLib.removeItems(source, input -> {
                 // Candidate ingredient must be same item
                 if (!ItemStack.isSameItem(input, previousInput)) return false;
 
@@ -217,9 +283,9 @@ public class CraftingHelper {
                 craftingInventory.setItem(slot, previousInput);
 
                 return canStillCraft;
-            });
+            }, 1, false);
 
-            if (!isPresent) {
+            if (removed == 0) {
                 missingIngredientMask |= 1 << i;
             }
         }
@@ -228,63 +294,50 @@ public class CraftingHelper {
             return CraftingResult.missingIngredients(missingIngredientMask);
         }
 
-        return new CraftingResult(result, recipe.value().getRemainingItems(posCraftingInput.input()), 0, simulate ? source : copyInventory(source));
+        // Obtain remaining items using the crafting player hook if player object was provided.
+        // (See ResultSlot#onTake(Player, ItemStack))
+        //noinspection DataFlowIssue
+        CommonHooks.setCraftingPlayer(player);
+        NonNullList<ItemStack> remainingStacks = recipe.value().getRemainingItems(posCraftingInput.input()); // Skip re-searching for recipe, should be ok
+        //noinspection DataFlowIssue
+        CommonHooks.setCraftingPlayer(null);
+
+        return CraftingResult.success(result, remainingStacks);
     }
 
-    private boolean consumeIngredient(Container storage, int startIndex, Predicate<ItemStack> matchFunc) {
-
-        int i = startIndex;
-        do {
-            ItemStack stack = storage.getItem(i);
-            if (!stack.isEmpty() && matchFunc.test(stack)) {
-                ItemStack taken = storage.removeItem(i, 1);
-                if (!taken.isEmpty()) {
-                    return true;
-                }
-            }
-            i = (i + 1) % storage.getContainerSize();
-        } while (i != startIndex);
-
-        return false;
-    }
-
-    private static Container copyInventory(Container inventory) {
-        //TODO create more accurate copy
-        SimpleContainer copy = new SimpleContainer(inventory.getContainerSize());
-        for (int i = 0; i < inventory.getContainerSize(); i++) {
-            copy.setItem(i, inventory.getItem(i).copy());
+    private OverlayContainer createAvailableStorageOverlay() {
+        var builder = OverlayContainer.builder()
+                .addItems(inputSource.getStorage());
+        if (inputSource.canConsumeFromCraftingMatrix()) {
+            builder.addItems(inputSource.getCraftingMatrix());
         }
-        return copy;
-    }
 
+        return builder.build();
+    }
+    //endregion
+
+    /**
+     * Holds result of a crafting attempt. Internal.
+     */
     private static final class CraftingResult {
 
-        private static final CraftingResult EMPTY = new CraftingResult(ItemStack.EMPTY, NonNullList.create(), 0, null);
+        private static final CraftingResult EMPTY = new CraftingResult(ItemStack.EMPTY, NonNullList.create(), 0);
 
-        public final ItemStack outputStack;
-        public final NonNullList<ItemStack> remainingItems;
-        public final int missingIngredientMask;
-        public final @Nullable Container remainingStorage;
+        private final ItemStack outputStack;
+        private final NonNullList<ItemStack> remainingItems;
+        private final int missingIngredientMask;
 
-        private final LazyValue<Boolean> canStorageAcceptResults = new LazyValue<>(this::canFitResultsIntoStorage);
-
-        public CraftingResult(ItemStack outputStack, NonNullList<ItemStack> remainingItems, int missingIngredientMask, @Nullable Container remainingStorage) {
+        private CraftingResult(ItemStack outputStack, NonNullList<ItemStack> remainingItems, int missingIngredientMask) {
             this.outputStack = outputStack;
             this.remainingItems = remainingItems;
             this.missingIngredientMask = missingIngredientMask;
-            this.remainingStorage = remainingStorage;
         }
 
         public boolean isCraftable() {
             return !outputStack.isEmpty() && missingIngredientMask == 0;
         }
 
-        public boolean canStorageAcceptResults() {
-            return canStorageAcceptResults.get();
-        }
-
-        public NonNullList<ItemStack> getCopyOfAllResults() {
-
+        public NonNullList<ItemStack> getOutputAndRemaining() {
             NonNullList<ItemStack> allResults = NonNullList.withSize(remainingItems.size() + 1, ItemStack.EMPTY);
             int i = 0;
             allResults.set(i++, outputStack.copy());
@@ -295,17 +348,27 @@ public class CraftingHelper {
             return allResults;
         }
 
-        private boolean canFitResultsIntoStorage() {
-            assert remainingStorage != null;
-            Container storage = copyInventory(remainingStorage); // Don't mutate original list
-            return InventoryLib.injectAllItemStacks(storage, getCopyOfAllResults(), true);
+        public NonNullList<ItemStack> getRemainingItems() {
+            NonNullList<ItemStack> copy = NonNullList.withSize(remainingItems.size(), ItemStack.EMPTY);
+            for (int i = 0; i < remainingItems.size(); i++) {
+                copy.set(i, remainingItems.get(i).copy());
+            }
+            return copy;
         }
 
         public static CraftingResult missingIngredients(int missingIngredientMask) {
-            return new CraftingResult(ItemStack.EMPTY, NonNullList.create(), missingIngredientMask, null);
+            return new CraftingResult(ItemStack.EMPTY, NonNullList.create(), missingIngredientMask);
+        }
+
+        public static CraftingResult success(ItemStack outputStack, NonNullList<ItemStack> remainingItems) {
+            return new CraftingResult(outputStack, remainingItems, 0);
         }
     }
 
+    /**
+     * The holder of a CraftingHelper. Provides access to required objects such as crafting matrix,
+     * storage container, and level. Also provides some configurations.
+     */
     public interface InventorySource {
 
         Container getCraftingMatrix();

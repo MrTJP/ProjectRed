@@ -196,7 +196,7 @@ public class ProjectBenchBlockEntity extends ProjectRedBlockEntity implements IP
 
         if (craftingHelper.hasRecipe() && !isPlanRecipe) {
             ItemStack planStack = planInventory.getItem(0);
-            ItemStack result = craftingHelper.getRecipeOutout();
+            ItemStack result = craftingHelper.getRecipeOutput();
 
             if (!planStack.isEmpty() && !result.isEmpty()) {
                 ItemStack[] inputs = new ItemStack[9];
