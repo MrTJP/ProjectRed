@@ -18,8 +18,15 @@ neoForge {
         }
     }
 
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+
     unitTest {
         enable()
+        testedMod = mods.getByName(mod_id)
     }
 }
 
@@ -43,6 +50,8 @@ dependencies {
     compileOnly("cc.tweaked:cc-tweaked-${mc_version}-core-api:${cct_version}")
     compileOnly("cc.tweaked:cc-tweaked-${mc_version}-forge-api:${cct_version}")
     runtimeOnly("cc.tweaked:cc-tweaked-${mc_version}-forge:${cct_version}")
+
+    testRuntimeOnly project(":api") // api is compileOnly (JarJar'd into jar), but needed at test runtime since we run from source classes
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'

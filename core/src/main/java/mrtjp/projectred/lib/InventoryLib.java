@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class InventoryLib {
 
@@ -68,6 +69,30 @@ public class InventoryLib {
 
             if (stack.isEmpty()) break;
         }
+    }
+
+    public static int removeItems(Container inventory, Predicate<ItemStack> matchFunc, int amount, boolean reverse) {
+        return removeItems(inventory, matchFunc, amount, 0, inventory.getContainerSize(), reverse);
+    }
+
+    public static int removeItems(Container inventory, Predicate<ItemStack> matchFunc, int amount, int startIndex, int endIndex, boolean reverse) {
+        int removed = 0;
+        for (int i = startIndex; i < endIndex; i++) {
+            int index = reverse ? endIndex - i - 1 : i;
+
+            ItemStack stackInSlot = inventory.getItem(index);
+            if (stackInSlot.isEmpty() || !matchFunc.test(stackInSlot)) continue;
+
+            int amountToExtract = Math.min(amount, stackInSlot.getCount());
+            ItemStack taken = inventory.removeItem(index, amountToExtract);
+            if (!taken.isEmpty()) {
+                amount -= taken.getCount();
+                removed += taken.getCount();
+            }
+            if (amount <= 0) break;
+        }
+
+        return removed;
     }
 
     //region Worldly Container utilities
