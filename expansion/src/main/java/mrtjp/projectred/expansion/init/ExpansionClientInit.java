@@ -6,6 +6,7 @@ import mrtjp.projectred.expansion.GraphDebugManager;
 import mrtjp.projectred.expansion.MovementManager;
 import mrtjp.projectred.expansion.TubeType;
 import mrtjp.projectred.expansion.client.*;
+import mrtjp.projectred.expansion.compatibility.EmbeddiumCompatibility;
 import mrtjp.projectred.expansion.gui.screen.inventory.*;
 import mrtjp.projectred.expansion.item.BatteryBoxStorageComponent;
 import mrtjp.projectred.expansion.item.RecipePlanComponent;
@@ -15,6 +16,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -25,7 +27,6 @@ import static mrtjp.projectred.expansion.init.ExpansionItems.RECIPE_PLAN_ITEM;
 import static mrtjp.projectred.expansion.init.ExpansionMenus.*;
 import static mrtjp.projectred.expansion.init.ExpansionParts.FRAME_PART;
 
-@SuppressWarnings("DataFlowIssue")
 public class ExpansionClientInit {
 
     public static final ResourceLocation ITEM_MODEL_PROPERTY_CHARGE_LEVEL = ResourceLocation.fromNamespaceAndPath(MOD_ID, "charge_level");
@@ -62,7 +63,6 @@ public class ExpansionClientInit {
         BlockRenderingRegistry.registerRenderer(FRAME_BLOCK.get(), FrameBlockRenderer.INSTANCE);
         ItemBlockRenderTypes.setRenderLayer(FRAME_MOTOR_BLOCK.get(), RenderType.solid());
         BlockRenderingRegistry.registerRenderer(FRAME_MOTOR_BLOCK.get(), FrameMotorBlockRenderer.INSTANCE);
-        BlockRenderingRegistry.registerGlobalRenderer(MovingBlockSuppressorRenderer.INSTANCE);
 
         // Register part renderers
         MultipartClientRegistry.register(FRAME_PART.get(), FramePartRenderer.INSTANCE);
@@ -72,6 +72,11 @@ public class ExpansionClientInit {
             // Block renderer
             MultipartClientRegistry.register(type.getPartType(), SneakyUtils.unsafeCast(TubePartRenderer.INSTANCE));
         }
+
+        // Load compatibility modules
+        //noinspection Convert2MethodRef
+        ModList.get().getModContainerById("embeddium")
+                .ifPresent(mod -> EmbeddiumCompatibility.initClient(mod));
     }
 
     private static void onRegisterMenuScreensEvent(RegisterMenuScreensEvent event) {

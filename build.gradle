@@ -45,6 +45,7 @@ subprojects { p ->
         maven { url = "https://maven.covers1624.net/" }
         maven { url = "https://maven.squiddev.cc" }
         maven { url = "https://maven.blamejared.com/" }
+        maven { url = "https://api.modrinth.com/maven" }
     }
 
     // Replace version tokens in mods.toml
@@ -58,7 +59,8 @@ subprojects { p ->
                 'lang_version': forge_version.split('\\.')[0],
                 'ccl_version': ccl_version,
                 'cbm_version': cbm_version,
-                'cct_version': cct_version
+                'cct_version': cct_version,
+                'embeddium_version': embeddium_version,
         ]
 
         inputs.properties(expandMap)

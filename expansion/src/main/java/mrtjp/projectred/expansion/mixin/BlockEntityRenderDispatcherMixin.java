@@ -50,19 +50,4 @@ public class BlockEntityRenderDispatcherMixin {
             MovementClientRegistry.dispatchPostRender();
         }
     }
-
-//    @Inject(
-//            method = "setupAndRender(Lnet/minecraft/client/renderer/blockentity/BlockEntityRenderer;Lnet/minecraft/world/level/block/entity/BlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)V",
-//            at = @At("HEAD"),
-//            cancellable = true
-//    )
-//    private static <E extends BlockEntity> void preSetupAndRender(BlockEntityRenderer<E> renderer, E blockEntity, float partialTicks, PoseStack pStack, MultiBufferSource buffers, CallbackInfo ci) {
-//    }
-//
-//    @Inject(
-//            method = "setupAndRender(Lnet/minecraft/client/renderer/blockentity/BlockEntityRenderer;Lnet/minecraft/world/level/block/entity/BlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)V",
-//            at = @At("RETURN")
-//    )
-//    private static <E extends BlockEntity> void postSetupAndRender(BlockEntityRenderer<E> renderer, E blockEntity, float partialTicks, PoseStack pStack, MultiBufferSource buffers, CallbackInfo ci) {
-//    }
 }
