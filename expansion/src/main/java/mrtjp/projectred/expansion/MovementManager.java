@@ -9,7 +9,6 @@ import mrtjp.projectred.api.BlockMover;
 import mrtjp.projectred.api.MovementController;
 import mrtjp.projectred.api.MovementDescriptor;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.expansion.client.MovingBlockSuppressorRenderer;
 import mrtjp.projectred.lib.VecLib;
 import net.covers1624.quack.collection.FastStream;
 import net.covers1624.quack.util.LazyValue;
@@ -169,11 +168,7 @@ public class MovementManager {
                     // Render the moving block
                     stack.pushPose();
                     stack.translate(p.getX(), p.getY(), p.getZ());
-
-                    MovingBlockSuppressorRenderer.allowMovingRenderOnRenderThread = true;
                     Minecraft.getInstance().getBlockRenderer().renderBatched(state, p, level, stack, buffers.getBuffer(renderType), false, random, level.getModelData(p), renderType);
-                    MovingBlockSuppressorRenderer.allowMovingRenderOnRenderThread = false;
-
                     stack.popPose(); //p
                 }
             }

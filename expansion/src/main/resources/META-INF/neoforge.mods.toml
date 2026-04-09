@@ -44,3 +44,9 @@ Redstone. The way it was meant to be.
     versionRange="[${file.jarVersion},)"
     ordering="AFTER"
     side="BOTH"
+[[dependencies.projectred_expansion]]
+    modId="embeddium"
+    type="optional"
+    versionRange="[${embeddium_version},)"
+    ordering="AFTER"
+    side="CLIENT"
