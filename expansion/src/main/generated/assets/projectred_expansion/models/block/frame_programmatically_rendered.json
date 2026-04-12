@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/block",
-  "textures": {
-    "particle": "projectred_expansion:block/frame"
-  }
-}

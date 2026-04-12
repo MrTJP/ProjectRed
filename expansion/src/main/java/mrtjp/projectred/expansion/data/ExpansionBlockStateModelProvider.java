@@ -1,7 +1,11 @@
 package mrtjp.projectred.expansion.data;
 
+import codechicken.lib.datagen.ClassModelLoaderBuilder;
 import mrtjp.projectred.core.block.ProjectRedBlock;
 import mrtjp.projectred.expansion.block.BatteryBoxBlock;
+import mrtjp.projectred.expansion.client.FrameBlockModel;
+import mrtjp.projectred.expansion.client.FrameMotorBlockModel;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
@@ -37,8 +41,8 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
         addSidedOppositeMatchingFacesDeviceBlock(DEPLOYER_BLOCK.get());
 
         // Advanced models rendered programmatically. Only Particle info provided by model file
-        addProgrammaticWithParticleTexture(FRAME_BLOCK.get(), "");
-        addProgrammaticWithParticleTexture(FRAME_MOTOR_BLOCK.get(), "_top");
+        addDynamicModel(FRAME_BLOCK.get(), FrameBlockModel.class);
+        addDynamicModel(FRAME_MOTOR_BLOCK.get(), FrameMotorBlockModel.class);
     }
 
     private void addProgrammaticWithParticleTexture(Block block, String texSuffix) {
@@ -48,6 +52,16 @@ public class ExpansionBlockStateModelProvider extends BlockStateProvider {
                 .withExistingParent(blockName + "_programmatically_rendered", "block")
                 .texture("particle", "block/" + texName);
         simpleBlock(block, dummy);
+    }
+
+    private void addDynamicModel(Block block, Class<? extends BakedModel> clazz) {
+        String blockName = BuiltInRegistries.BLOCK.getKey(block).getPath();
+        ModelFile model = models()
+                .withExistingParent(blockName, "block")
+                .customLoader(ClassModelLoaderBuilder::new)
+                .clazz(clazz)
+                .end();
+        simpleBlock(block, model);
     }
 
     private void addRotatableOppositeMatchingFacesBlock(Block block) {

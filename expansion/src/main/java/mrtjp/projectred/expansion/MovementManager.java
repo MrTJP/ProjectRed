@@ -13,9 +13,10 @@ import mrtjp.projectred.lib.VecLib;
 import net.covers1624.quack.collection.FastStream;
 import net.covers1624.quack.util.LazyValue;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.RegistryAccess;
@@ -31,6 +32,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -156,19 +158,24 @@ public class MovementManager {
             stack.translate(offset.x, offset.y, offset.z);
 
             MultiBufferSource.BufferSource buffers = Minecraft.getInstance().renderBuffers().bufferSource();
+            BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
 
             for (MovingRow row : structure.rows) {
                 Iterator<BlockPos> it = row.iteratePreMove();
                 while (it.hasNext()) {
                     BlockPos p = it.next();
                     BlockState state = level.getBlockState(p);
+                    BakedModel model = blockRenderer.getBlockModel(state);
+                    ModelData data = level.getModelData(p);
 
-                    if (!ItemBlockRenderTypes.getRenderLayers(state).contains(renderType)) continue;
+                    if (!model.getRenderTypes(state, random, data).contains(renderType)) {
+                        continue;
+                    }
 
                     // Render the moving block
                     stack.pushPose();
                     stack.translate(p.getX(), p.getY(), p.getZ());
-                    Minecraft.getInstance().getBlockRenderer().renderBatched(state, p, level, stack, buffers.getBuffer(renderType), false, random, level.getModelData(p), renderType);
+                    blockRenderer.renderBatched(state, p, level, stack, buffers.getBuffer(renderType), false, random, data, renderType);
                     stack.popPose(); //p
                 }
             }
