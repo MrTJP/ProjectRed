@@ -13,6 +13,7 @@ import codechicken.multipart.api.part.*;
 import codechicken.multipart.util.PartRayTraceResult;
 import mrtjp.projectred.api.Frame;
 import mrtjp.projectred.expansion.block.FrameBlock;
+import mrtjp.projectred.expansion.client.FrameModelData;
 import mrtjp.projectred.expansion.client.FrameModelRenderer;
 import mrtjp.projectred.expansion.init.ExpansionParts;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -25,17 +26,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 
 import static mrtjp.projectred.expansion.init.ExpansionBlocks.FRAME_BLOCK;
 
-public class FramePart extends BaseMultipart implements NormalOcclusionPart, IconHitEffectsPart, Frame {
+public class FramePart extends BaseMultipart implements NormalOcclusionPart, IconHitEffectsPart, Frame, ModelRenderPart {
 
     public static final Cuboid6[] oBounds = new Cuboid6[6];
     public static final VoxelShape[] oShapes = new VoxelShape[6];
@@ -226,6 +229,22 @@ public class FramePart extends BaseMultipart implements NormalOcclusionPart, Ico
     @Override
     public TextureAtlasSprite getBrokenIcon(int side) {
         return FrameModelRenderer.getFrameIcon();
+    }
+    //endregion
+
+    //region Model properties
+    @Override
+    public BlockState getCurrentState() {
+        // Bind to Frame block's model
+        return FRAME_BLOCK.get().defaultBlockState();
+    }
+
+    @Override
+    public ModelData getModelData() {
+        return ModelData.of(
+                FrameModelData.DATA,
+                new FrameModelData(getOccludedSideMask())
+        );
     }
     //endregion
 }

@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "projectred_expansion:block/frame_programmatically_rendered"
+      "model": "projectred_expansion:block/frame"
     }
   }
 }
