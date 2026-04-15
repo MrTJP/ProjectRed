@@ -40,6 +40,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import static mrtjp.projectred.api.MovementDescriptor.MovementStatus.*;
@@ -56,7 +57,7 @@ public class MovementManager {
     private static final int KEY_CANCEL_MOVE = 0x3;
 
     private final ResourceKey<Level> dimension;
-    private final Map<Integer, MovingStructure> structures = new HashMap<>();
+    private final Map<Integer, MovingStructure> structures = new ConcurrentHashMap<>();
     private final HashMap<ServerPlayer, Set<ChunkPos>> watchingPlayers = new HashMap<>();
     private final HashMap<ServerPlayer, Set<ChunkPos>> newWatchers = new HashMap<>();
 
