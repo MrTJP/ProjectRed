@@ -4,7 +4,5 @@
   "package": "mrtjp.projectred.expansion.mixin",
   "target": "@env(DEFAULT)",
   "compatibilityLevel": "JAVA_17",
-  "client": [
-    "BlockEntityRenderDispatcherMixin", "SectionCompilerMixin"
-  ]
+  "client": [ "BlockEntityRenderDispatcherMixin", "SectionCompilerMixin", "SodiumAbstractBlockRenderContextMixin", "SodiumBlockRendererMixin" ]
 }
