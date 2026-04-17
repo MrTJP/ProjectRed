@@ -1,38 +1,16 @@
 package mrtjp.projectred.expansion;
 
 import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.vec.Vector3;
-import com.mojang.blaze3d.vertex.PoseStack;
-import mrtjp.projectred.api.BlockMover;
-import mrtjp.projectred.api.MovementController;
 import mrtjp.projectred.api.MovementDescriptor;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.lib.VecLib;
-import net.covers1624.quack.collection.FastStream;
-import net.covers1624.quack.util.LazyValue;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -41,9 +19,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
-import static mrtjp.projectred.api.MovementDescriptor.MovementStatus.*;
+import static mrtjp.projectred.api.MovementDescriptor.MovementStatus.PENDING_FINALIZATION;
 import static mrtjp.projectred.expansion.ProjectRedExpansion.LOGGER;
 
 public class MovementManager {
@@ -119,73 +96,6 @@ public class MovementManager {
 
     public static void onLevelTick(LevelTickEvent.Post event) {
         getInstance(event.getLevel()).tick(event.getLevel());
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        //TODO move to separate class
-
-        Level level = Minecraft.getInstance().level;
-        if (level == null) return;
-
-        MovementManager manager = getInstance(level);
-        if (manager.structures.isEmpty()) return;
-
-        // Get the renderType for this stage, and skip if we dont care about it
-        List<RenderType> renderTypes = List.of(RenderType.solid(), RenderType.cutout(), RenderType.cutoutMipped(), RenderType.translucent());
-        RenderType renderType = null;
-        for (RenderType type : renderTypes) {
-            if (RenderLevelStageEvent.Stage.fromRenderType(type) == event.getStage()) {
-                renderType = type;
-                break;
-            }
-        }
-        if (renderType == null) return;
-
-        RandomSource random = RandomSource.create();
-
-        // Set up camera pose
-        Vec3 cam = event.getCamera().getPosition();
-        PoseStack stack = event.getPoseStack();
-        stack.pushPose();
-        stack.mulPose(event.getModelViewMatrix());
-        stack.translate(-cam.x, -cam.y, -cam.z);
-
-        for (MovingStructure structure : manager.structures.values()) {
-
-            // Set up render offset based on progress of movement
-            Vector3 offset = structure.getRenderOffset(event.getPartialTick().getGameTimeDeltaPartialTick(false));
-            stack.pushPose();
-            stack.translate(offset.x, offset.y, offset.z);
-
-            MultiBufferSource.BufferSource buffers = Minecraft.getInstance().renderBuffers().bufferSource();
-            BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
-
-            for (MovingRow row : structure.rows) {
-                Iterator<BlockPos> it = row.iteratePreMove();
-                while (it.hasNext()) {
-                    BlockPos p = it.next();
-                    BlockState state = level.getBlockState(p);
-                    BakedModel model = blockRenderer.getBlockModel(state);
-                    ModelData data = level.getModelData(p);
-
-                    if (!model.getRenderTypes(state, random, data).contains(renderType)) {
-                        continue;
-                    }
-
-                    // Render the moving block
-                    stack.pushPose();
-                    stack.translate(p.getX(), p.getY(), p.getZ());
-                    blockRenderer.renderBatched(state, p, level, stack, buffers.getBuffer(renderType), false, random, data, renderType);
-                    stack.popPose(); //p
-                }
-            }
-
-            buffers.endBatch();
-            stack.popPose(); //offset
-        }
-
-        stack.popPose(); //cam
     }
 
     private void addChunkWatcher(ChunkPos pos, ServerPlayer player) {
@@ -281,19 +191,10 @@ public class MovementManager {
     public MovementDescriptor beginMove(Level level, Set<BlockPos> blocks, int dir, double speed) {
 
         if (blocks.size() > Configurator.SERVER.frameMoveLimit.get()) {
-            return InternalMovementInfo.failedMovement(blocks.size());
+            return MovingStructureInfo.failedMovement(blocks.size());
         }
 
-        // Split set of blocks into rows going the opposite direction of the move
-        Set<List<BlockPos>> rows = VecLib.resolveRows(blocks, dir^1);
-
-        // Create MovingRows
-        List<MovingRow> movingRows = new ArrayList<>(rows.size());
-        for (List<BlockPos> row : rows) {
-            movingRows.add(new MovingRow(row, dir));
-        }
-
-        MovingStructure structure = new MovingStructure(getNextStructureId(), speed, dir, movingRows);
+        MovingStructure structure = MovingStructure.fromBlockSet(getNextStructureId(), speed, dir, blocks);
         if (!structure.canMove(level)) return structure;
 
         // Add structure and send to client
@@ -310,11 +211,15 @@ public class MovementManager {
         return structures.isEmpty();
     }
 
-    public InternalMovementInfo getMovementInfo(BlockPos pos) {
+    public Collection<MovingStructure> getMovingStructures() {
+        return structures.values();
+    }
+
+    public MovingStructureInfo getMovementInfo(BlockPos pos) {
         for (MovingStructure structure : structures.values()) {
             if (structure.contains(pos)) return structure;
         }
-        return InternalMovementInfo.NO_MOVEMENT_INFO;
+        return MovingStructureInfo.NO_MOVEMENT_INFO;
     }
 
     //region Network
@@ -460,416 +365,4 @@ public class MovementManager {
     }
     //endregion
 
-    private static class MovingStructure implements InternalMovementInfo {
-        public final int id;
-
-        private final double speed;
-        private final int dir;
-        private final List<MovingRow> rows;
-        private final int totalSize;
-
-        private final LazyValue<HashSet<ChunkPos>> intersectingChunks = new LazyValue<>(this::computeIntersectingChunks);
-        private final LazyValue<HashSet<SectionPos>> renderChunks = new LazyValue<>(this::computeRenderChunks);
-
-        private MovementStatus status;
-        private double progress;
-
-        public MovingStructure(int id, double speed, int dir, List<MovingRow> rows, MovementStatus status, double progress) {
-            this.id = id;
-            this.speed = speed;
-            this.dir = dir;
-            this.rows = Collections.unmodifiableList(rows);
-            this.status = status;
-            this.progress = progress;
-            this.totalSize = FastStream.of(rows).intSum(r -> r.size);
-        }
-
-        public MovingStructure(int id, double speed, int dir, List<MovingRow> rows) {
-            this(id, speed, dir, rows, PENDING_START, 0D);
-        }
-
-        //region Network
-        public void writeDesc(MCDataOutput output) {
-            output.writeShort(id);
-            output.writeDouble(speed);
-            output.writeByte(dir);
-            output.writeShort(rows.size());
-            for (MovingRow row : rows) {
-                output.writePos(row.pos);
-                output.writeShort(row.size);
-            }
-            output.writeByte(status.ordinal());
-            output.writeDouble(progress); //TODO use integers instead
-        }
-
-        public static MovingStructure fromDesc(MCDataInput input) {
-            int id = input.readUShort();
-            double speed = input.readDouble();
-            int dir = input.readUByte();
-            int size = input.readUShort();
-            List<MovingRow> rows = new ArrayList<>(size);
-            for (int i = 0; i < size; i++) {
-                rows.add(new MovingRow(input.readPos(), dir, input.readUShort()));
-            }
-            MovementStatus status = MovementStatus.values()[input.readUByte()];
-            double progress = input.readDouble();
-
-            return new MovingStructure(id, speed, dir, rows, status, progress);
-        }
-        //endregion
-
-        //region Movement description
-        @Override
-        public MovementStatus getStatus() {
-            return status;
-        }
-
-        @Override
-        public boolean isMoving() {
-            return getStatus() == MOVING || getStatus() == PENDING_FINALIZATION;
-        }
-
-        @Override
-        public double getProgress() {
-            return progress;
-        }
-
-        @Override
-        public int getSize() {
-            return totalSize;
-        }
-
-        @Override
-        public Vector3 getRenderOffset(float partialTicks) {
-            double p = Math.min(progress + speed * partialTicks, 1D);
-            return Vector3.fromBlockPos(BlockPos.ZERO.relative(Direction.values()[dir])).multiply(p);
-        }
-        //endregion
-
-        public HashSet<ChunkPos> getChunkSet() {
-            return intersectingChunks.get();
-        }
-
-        public boolean intersects(ChunkPos pos) {
-            return intersectingChunks.get().contains(pos);
-        }
-
-        public boolean contains(BlockPos pos) {
-            for (MovingRow row : rows) {
-                if (row.contains(pos)) return true;
-            }
-            return false;
-        }
-
-        public void tickProgress(Level level) {
-
-            // Should not be ticking progress otherwise
-            assert status == MOVING || status == PENDING_FINALIZATION;
-
-            if (status == MOVING) {
-                progress = Math.min(progress + speed, 1D);
-                FastStream.of(rows).forEach(r -> r.pushEntities(level, progress));
-
-                if (progress >= 1D) {
-                    status = PENDING_FINALIZATION;
-                }
-            }
-        }
-
-        public boolean canMove(Level level) {
-            for (MovingRow row : rows) {
-                if (!row.canMove(level)) return false;
-            }
-            return true;
-        }
-
-        public void beginMove(Level level) {
-            assert status == MovementStatus.PENDING_START;
-            status = MOVING;
-
-            FastStream.of(rows).forEach(r -> r.beginMove(level));
-
-            if (level.isClientSide) {
-                // Force chunk to re-render so rendering of moving block can be suppressed by MovingBlockSuppressorRenderer
-                markChunksForRender();
-            }
-        }
-
-        public void executePreMove(Level level) {
-            // Silently moves blocks to new position
-            FastStream.of(rows).forEach(r -> r.moveBlocks(level));
-        }
-
-        public void executePostMove(Level level) {
-            // Completes the movement by alerting the tile itself, etc
-            FastStream.of(rows).forEach(r -> r.postMove(level));
-            FastStream.of(rows).forEach(r -> r.endMove(level));
-
-            // Update neighbors
-            Set<BlockPos> changes = new HashSet<>();
-            FastStream.of(rows).forEach(r -> r.addNeighborChanges(level, changes));
-
-            for (BlockPos pos : changes) {
-                BlockState state = level.getBlockState(pos);
-                state.updateNeighbourShapes(level, pos, 0, 0);
-                state.updateIndirectNeighbourShapes(level, pos, 0, 0);
-                level.neighborChanged(pos, Blocks.AIR, pos); //TODO use better context here
-            }
-
-            // Update lighting
-            markBlocksForLightUpdate(level);
-
-            // Update chunk rendering
-            if (level.isClientSide) {
-                markChunksForRender();
-            }
-
-            // Mark chunks as changed
-            for (ChunkPos p : getChunkSet()) {
-                level.getChunk(p.x, p.z).setUnsaved(true);
-            }
-
-            //TODO Tick rescheduling
-            status = FINISHED;
-        }
-
-        public void cancelMove(Level level) {
-            // Shouldn't need to do anything. Nothing happens until the animation is finished
-            // TODO MovementController notification for this?
-            assert status == MOVING || status == PENDING_FINALIZATION;
-            status = CANCELLED;
-        }
-
-        @OnlyIn(Dist.CLIENT)
-        private void markChunksForRender() {
-            FastStream.of(renderChunks.get()).forEach(p -> Minecraft.getInstance().levelRenderer.setSectionDirty(p.x(), p.y(), p.z(), true));
-        }
-
-        private void markBlocksForLightUpdate(Level level) {
-            FastStream.of(rows).forEach(r -> r.forEachAll(p -> level.getLightEngine().checkBlock(p)));
-        }
-
-        private HashSet<ChunkPos> computeIntersectingChunks() {
-            HashSet<ChunkPos> chunks = new HashSet<>();
-            FastStream.of(rows).forEach(r -> r.forEachAll(p -> chunks.add(new ChunkPos(p))));
-            return chunks;
-        }
-
-        private HashSet<SectionPos> computeRenderChunks() {
-            HashSet<SectionPos> chunks = new HashSet<>();
-            FastStream.of(rows).forEach(r -> r.forEachAll(p -> {
-                // Add all neighbors of blocks as well to update culled faces
-                for (int s = 0; s < 6; s++) {
-                    chunks.add(SectionPos.of(p.relative(Direction.values()[s])));
-                }
-                // Note: no need to add position itself, as it *must* be in one of above chunks
-            }));
-            return chunks;
-        }
-
-        @Override
-        public String toString() {
-            return "MovingStructure{" +
-                    "id=" + id +
-                    ", speed=" + speed +
-                    ", dir=" + dir +
-                    ", progress=" + progress +
-                    ", rows=" + rows +
-                    '}';
-        }
-    }
-
-    private static final class MovingRow {
-
-        public final BlockPos pos;
-        public final int dir;
-        public final int size;
-
-        private MovingRow(BlockPos pos, int dir, int size) {
-            this.pos = pos;
-            this.dir = dir;
-            this.size = size;
-        }
-
-        private MovingRow(List<BlockPos> row, int dir) {
-            // Row's head should be the next block towards dir where everything will move,
-            // then followed by the rest of the row
-            this.pos = row.get(0).relative(Direction.values()[dir]);
-            this.dir = dir;
-            this.size = row.size() + 1;
-        }
-
-        public boolean contains(BlockPos pos) {
-
-            BlockPos p1 = VecLib.projectDir(this.pos, dir);
-            BlockPos p2 = VecLib.projectDir(pos, dir);
-
-            // If projections towards dir plane are not equal, they cannot be on same axis
-            if (!p1.equals(p2)) return false;
-
-            // pos is on the same line as this row. Check if its between start and end
-            int a1 = VecLib.rejectComponent(this.pos, dir);
-            int a2 = VecLib.rejectComponent(this.pos.relative(Direction.values()[dir ^ 1], size - 1), dir);
-            int b = VecLib.rejectComponent(pos, dir);
-
-            return Math.min(a1, a2) <= b && b <= Math.max(a1, a2);
-        }
-
-        public boolean canMove(Level level) {
-            if (!level.isLoaded(pos)) return false;
-            BlockState state = level.getBlockState(pos);
-            if (!(state.isAir() || state.canBeReplaced())) return false;
-
-            Iterator<BlockPos> it = iteratePreMove();
-            while (it.hasNext()) {
-                BlockPos pos = it.next();
-
-                BlockMover mover = MovementRegistry.getMover(level, pos);
-                if (!mover.canMove(level, pos)) return false;
-
-                MovementController controller = MovementRegistry.getMovementController(level, pos);
-                // Allow hooks to conditionally block movement
-                if (controller != null && !controller.isMovable(level, pos, Direction.values()[dir])) return false;
-            }
-
-            return true;
-        }
-
-        public void beginMove(Level level) {
-            //TODO spawn movement blocks
-
-            if (!level.isClientSide) {
-                // Notify blocks/BEs conforming to MovementController about move
-                forEachPreMove(p -> {
-                    MovementController controller = MovementRegistry.getMovementController(level, p);
-                    if (controller != null) controller.onMovementStarted(level, p, Direction.values()[dir]);
-                });
-            }
-        }
-
-        public void pushEntities(Level level, double progress) {
-            //TODO
-        }
-
-        public void moveBlocks(Level level) {
-            forEachPreMove(p -> {
-                BlockMover mover = MovementRegistry.getMover(level, p);
-                mover.move(level, p, Direction.values()[dir]);
-            });
-        }
-
-        public void postMove(Level level) {
-            forEachPostMove(p -> {
-                BlockMover mover = MovementRegistry.getMover(level, p);
-                mover.postMove(level, p);
-            });
-        }
-
-        public void endMove(Level level) {
-            if (!level.isClientSide) {
-                forEachPostMove(p -> {
-                    MovementController controller = MovementRegistry.getMovementController(level, pos);
-                    if (controller != null) controller.onMovementFinished(level, pos);
-                });
-            }
-        }
-
-        public void addNeighborChanges(Level level, Set<BlockPos> changes) {
-            forEachAll(p -> {
-                changes.add(p);
-                for (int s = 0; s < 6; s++) {
-                    changes.add(p.relative(Direction.values()[s]));
-                }
-            });
-        }
-
-        private RowIterator iteratePreMove() {
-            return new RowIterator(1, size);
-        }
-
-        private RowIterator iteratePostMove() {
-            return new RowIterator(0, size - 1);
-        }
-
-        private RowIterator iterateAll() {
-            return new RowIterator(0, size);
-        }
-
-        private void forEachPreMove(Consumer<BlockPos> action) {
-            Iterator<BlockPos> it = iteratePreMove();
-            while (it.hasNext()) {
-                action.accept(it.next());
-            }
-        }
-
-        private void forEachPostMove(Consumer<BlockPos> action) {
-            Iterator<BlockPos> it = iteratePostMove();
-            while (it.hasNext()) {
-                action.accept(it.next());
-            }
-        }
-
-        private void forEachAll(Consumer<BlockPos> action) {
-            Iterator<BlockPos> it = iterateAll();
-            while (it.hasNext()) {
-                action.accept(it.next());
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "MovingRow[" +
-                    "pos={" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + "}" +
-                    ", size=" + size + ']';
-        }
-
-        private class RowIterator implements Iterator<BlockPos> {
-
-            private final int size;
-            private final BlockPos.MutableBlockPos mpos = new BlockPos.MutableBlockPos();
-            private int i;
-
-            public RowIterator(int start, int size) {
-                this.size = size;
-                this.i = start;
-            }
-
-            @Override
-            public boolean hasNext() {
-                return i < size;
-            }
-
-            @Override
-            public BlockPos next() {
-                return mpos.set(pos).move(Direction.values()[dir].getOpposite(), i++);
-            }
-        }
-    }
-
-    public interface InternalMovementInfo extends MovementDescriptor {
-
-        InternalMovementInfo NO_MOVEMENT_INFO = new InternalMovementInfo() {
-            //@formatter:off
-            @Override public Vector3 getRenderOffset(float partialTicks) { return Vector3.ZERO; }
-            @Override public MovementStatus getStatus() { return MovementStatus.UNKNOWN; }
-            @Override public boolean isMoving() { return false; }
-            @Override public double getProgress() { return 0; }
-            @Override public int getSize() { return 0; }
-            //@formatter:on
-        };
-
-        private static InternalMovementInfo failedMovement(int size) {
-            return new InternalMovementInfo() {
-                //@formatter:off
-                @Override public Vector3 getRenderOffset(float partialTicks) { return Vector3.ZERO; }
-                @Override public MovementStatus getStatus() { return MovementStatus.FAILED; }
-                @Override public boolean isMoving() { return false; }
-                @Override public double getProgress() { return 0; }
-                @Override public int getSize() { return size; }
-                //@formatter:on
-            };
-        }
-
-        Vector3 getRenderOffset(float partialTicks);
-    }
 }
