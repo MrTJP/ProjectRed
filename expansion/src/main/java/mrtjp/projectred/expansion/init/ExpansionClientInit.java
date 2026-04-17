@@ -3,12 +3,8 @@ package mrtjp.projectred.expansion.init;
 import codechicken.multipart.api.MultipartClientRegistry;
 import codechicken.multipart.api.part.render.PartBakedModelRenderer;
 import mrtjp.projectred.expansion.GraphDebugManager;
-import mrtjp.projectred.expansion.MovementManager;
 import mrtjp.projectred.expansion.TubeType;
-import mrtjp.projectred.expansion.client.FrameModelRenderer;
-import mrtjp.projectred.expansion.client.FrameMotorBlockModel;
-import mrtjp.projectred.expansion.client.PneumaticSmokeParticle;
-import mrtjp.projectred.expansion.client.TubePartRenderer;
+import mrtjp.projectred.expansion.client.*;
 import mrtjp.projectred.expansion.compatibility.EmbeddiumCompatibility;
 import mrtjp.projectred.expansion.gui.screen.inventory.*;
 import mrtjp.projectred.expansion.item.BatteryBoxStorageComponent;
@@ -40,7 +36,7 @@ public class ExpansionClientInit {
         modEventBus.addListener(ExpansionClientInit::onRegisterMenuScreensEvent);
 
         // MovementManager hooks
-        NeoForge.EVENT_BUS.addListener(MovementManager::onRenderLevelStage);
+        NeoForge.EVENT_BUS.addListener(MovingBlockRenderManager::onRenderLevelStage);
 
         // GraphDebugManager hooks
         NeoForge.EVENT_BUS.addListener(GraphDebugManager::onRenderLevelStage);

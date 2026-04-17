@@ -2,6 +2,7 @@ package mrtjp.projectred.expansion.mixin;
 
 import codechicken.lib.vec.Vector3;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mrtjp.projectred.expansion.MovingStructureInfo;
 import mrtjp.projectred.expansion.MovementManager;
 import mrtjp.projectred.expansion.client.MovementClientRegistry;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -31,7 +32,7 @@ public class BlockEntityRenderDispatcherMixin {
         }
 
         // Get movement info
-        MovementManager.InternalMovementInfo info = MovementManager.getInstance(blockEntity.getLevel()).getMovementInfo(blockEntity.getBlockPos());
+        MovingStructureInfo info = MovementManager.getInstance(blockEntity.getLevel()).getMovementInfo(blockEntity.getBlockPos());
 
         // Translate stack if moving
         if (info.isMoving()) {
