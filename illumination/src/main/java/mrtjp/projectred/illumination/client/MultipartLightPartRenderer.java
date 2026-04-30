@@ -20,7 +20,7 @@ public class MultipartLightPartRenderer implements PartRenderer<MultipartLightPa
     @Override
     public void renderStatic(MultipartLightPart part, @Nullable RenderType layer, CCRenderState ccrs) {
         if (layer == null || layer == RenderType.cutout()) {
-            ccrs.setBrightness(part.level(), part.pos());
+            ccrs.brightness = 0;
             part.getProperties().render(part, Vector3.ZERO, ccrs);
         }
     }
