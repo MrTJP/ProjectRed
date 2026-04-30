@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static mrtjp.projectred.api.MovementDescriptor.MovementStatus.MOVING;
 import static mrtjp.projectred.api.MovementDescriptor.MovementStatus.PENDING_FINALIZATION;
 import static mrtjp.projectred.expansion.ProjectRedExpansion.LOGGER;
 
@@ -51,6 +52,11 @@ public class MovementManager {
            return null;
         }
         return CLIENT_INSTANCE.get(clientLevel.dimension());
+    }
+
+    public static @Nullable MovementManager getInstanceNullable(Level level) {
+        var map = level.isClientSide() ? CLIENT_INSTANCE : SERVER_INSTANCE;
+        return map.get(level.dimension());
     }
 
     public MovementManager(ResourceKey<Level> dimension) {
@@ -270,6 +276,19 @@ public class MovementManager {
         if (structure == null) {
             LOGGER.error("Pre-move executed for unknown structure id {}. Adding it for post-move.", id);
             return;
+        }
+
+        assert structure.getStatus() == MOVING || structure.getStatus() == PENDING_FINALIZATION;
+
+        // The client is usually behind by some ticks. Tick progress rapidly to complete the move.
+        // TODO Add tickProgressToEnd() method. Pushing entities is more efficient if done all at
+        int ticksBehind = 0;
+        while (structure.getStatus() == MOVING) {
+            structure.tickProgress(level);
+            ticksBehind++;
+        }
+        if (ticksBehind > 1) {
+            LOGGER.warn("Client structure with id {} was {} ticks behind!", id, ticksBehind);
         }
 
         // Execute pre-move and post-move operations. Server has only done pre-move so far.

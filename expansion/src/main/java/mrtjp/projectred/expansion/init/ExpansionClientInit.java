@@ -37,6 +37,7 @@ public class ExpansionClientInit {
 
         // MovementManager hooks
         NeoForge.EVENT_BUS.addListener(MovingBlockRenderManager::onRenderLevelStage);
+        NeoForge.EVENT_BUS.addListener(MovingBlockRenderManager::onDrawHighlight);
 
         // GraphDebugManager hooks
         NeoForge.EVENT_BUS.addListener(GraphDebugManager::onRenderLevelStage);
