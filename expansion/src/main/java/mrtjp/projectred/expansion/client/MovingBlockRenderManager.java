@@ -1,9 +1,14 @@
 package mrtjp.projectred.expansion.client;
 
+import codechicken.lib.render.RenderUtils;
+import codechicken.lib.render.buffer.TransformingVertexConsumer;
 import codechicken.lib.vec.Vector3;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import mrtjp.projectred.expansion.MovementManager;
 import mrtjp.projectred.expansion.MovingStructure;
+import mrtjp.projectred.expansion.MovingStructureInfo;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -15,13 +20,16 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class MovingBlockRenderManager {
 
@@ -98,5 +106,35 @@ public class MovingBlockRenderManager {
         }
 
         stack.popPose(); //cam
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void onDrawHighlight(RenderHighlightEvent.Block event) {
+        // Check for movement. Return if not moving
+        MovementManager manager = MovementManager.getClientInstanceNullable();
+        if (manager == null || manager.hasNoMovingStructures()) return;
+        MovingStructureInfo info = manager.getMovementInfo(event.getTarget().getBlockPos());
+        if (!info.isMoving()) return;
+
+        Level level = Objects.requireNonNull(Minecraft.getInstance().level);
+        BlockPos pos = event.getTarget().getBlockPos();
+        BlockState state = level.getBlockState(pos);
+        if (state.isAir() || !level.getWorldBorder().isWithinBounds(pos)) return;
+
+        Camera camera = event.getCamera();
+        PoseStack pStack = event.getPoseStack();
+        pStack.pushPose();
+        pStack.translate(-camera.getPosition().x, -camera.getPosition().y, -camera.getPosition().z);
+
+        VoxelShape shape = state.getShape(level, pos);
+        var offset = info.getRenderOffset(event.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+        pStack.translate(pos.getX(), pos.getY(), pos.getZ());
+        pStack.translate(offset.x, offset.y, offset.z);
+        VertexConsumer consumer = new TransformingVertexConsumer(event.getMultiBufferSource().getBuffer(RenderType.lines()), pStack);
+        RenderUtils.bufferShapeOutline(consumer, shape, 0, 0, 0, 0.4F); // RGBA from LevelRenderer#renderHitOutline
+
+        pStack.popPose();
+
+        event.setCanceled(true);
     }
 }

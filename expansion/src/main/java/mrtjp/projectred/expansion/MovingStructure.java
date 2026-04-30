@@ -12,10 +12,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -121,6 +124,17 @@ public class MovingStructure implements MovingStructureInfo {
     }
 
     @Override
+    public Direction getDirection() {
+        return Direction.values()[dir];
+    }
+
+    @Override
+    public Vector3 getMovementOffset() {
+        double p = Math.min(progress, 1D);
+        return Vector3.fromBlockPos(BlockPos.ZERO.relative(Direction.values()[dir])).multiply(p);
+    }
+
+    @Override
     public Vector3 getRenderOffset(float partialTicks) {
         double p = Math.min(progress + speed * partialTicks, 1D);
         return Vector3.fromBlockPos(BlockPos.ZERO.relative(Direction.values()[dir])).multiply(p);
@@ -171,8 +185,10 @@ public class MovingStructure implements MovingStructureInfo {
         assert status == MOVING || status == PENDING_FINALIZATION;
 
         if (status == MOVING) {
+            double oldProgress = progress;
             progress = Math.min(progress + speed, 1D);
-            FastStream.of(rows).forEach(r -> r.pushEntities(level, progress));
+            double delta = progress - oldProgress;
+            FastStream.of(rows).forEach(r -> r.pushEntities(level, progress, delta));
 
             if (progress >= 1D) {
                 status = PENDING_FINALIZATION;
@@ -390,8 +406,41 @@ public class MovingStructure implements MovingStructureInfo {
             }
         }
 
-        public void pushEntities(Level level, double progress) {
-            //TODO
+        public void pushEntities(Level level, double progress, double delta) {
+            // Gather touching entities
+            var firstPos = pos.relative(Direction.values()[dir].getOpposite());
+            var lastPos = pos.relative(Direction.values()[dir].getOpposite(), size);
+            var norm = Direction.values()[dir].getNormal();
+            AABB aabb = AABB.encapsulatingFullBlocks(firstPos, lastPos)
+                    .move(Vector3.fromVec3i(norm).multiply(progress).vec3());
+
+            // Box around entire row, plus a little more on top for standing entities
+            var searchBox = aabb.inflate(
+                    norm.getX() * (1/16D),
+                    1/16D,
+                    norm.getZ() * (1/16D));
+
+            level.getEntities((Entity) null, searchBox, e -> true).forEach(e -> {
+                // Calculate by how much the entity is colliding in dir of movement
+                var eBox = e.getBoundingBox();
+                var collisionDist = switch (dir) {
+                    case 0 -> eBox.maxY - aabb.minY;
+                    case 1 -> aabb.maxY - eBox.minY;
+                    case 2 -> eBox.maxZ - aabb.minZ;
+                    case 3 -> aabb.maxZ - eBox.minZ;
+                    case 4 -> eBox.maxX - aabb.minX;
+                    case 5 -> aabb.maxX - eBox.minX;
+                    default -> throw new IllegalStateException("Invalid movement direction: " + dir);
+                };
+
+                // If entity is intersecting, push it out of collision. Otherwise, push by progress %
+                boolean collides = aabb.intersects(eBox);
+                var pushDist = (collides ? Math.max(collisionDist, delta) : delta);
+
+                // Push entity
+                Vector3 push = Vector3.fromVec3i(Direction.values()[dir].getNormal()).multiply(pushDist);
+                e.move(MoverType.PISTON, push.vec3());
+            });
         }
 
         /**
