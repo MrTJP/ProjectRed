@@ -18,7 +18,7 @@ public class CenterWirePartRenderer implements PartRenderer<BaseCenterWirePart> 
     @Override
     public void renderStatic(BaseCenterWirePart part, @Nullable RenderType layer, CCRenderState ccrs) {
         if (layer == null || (layer == RenderType.cutout() && part.useStaticRenderer())) {
-            ccrs.setBrightness(part.level(), part.pos());
+            ccrs.brightness = 0;
             FramedWireModelRenderer.render(ccrs, part);
         }
     }

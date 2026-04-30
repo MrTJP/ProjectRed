@@ -33,7 +33,7 @@ public class TubePartRenderer implements PartRenderer<BaseTubePart> {
     @Override
     public void renderStatic(BaseTubePart part, @Nullable RenderType layer, CCRenderState ccrs) {
         if (layer == null || (layer == RenderType.cutout() && part.useStaticRenderer())) {
-            ccrs.setBrightness(part.level(), part.pos());
+            ccrs.brightness = 0;
             TubeModelRenderer.render(ccrs, part);
         }
     }

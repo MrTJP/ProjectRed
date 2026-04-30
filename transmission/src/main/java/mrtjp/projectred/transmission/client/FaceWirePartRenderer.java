@@ -20,7 +20,7 @@ public class FaceWirePartRenderer implements PartRenderer<BaseFaceWirePart> {
     @Override
     public void renderStatic(BaseFaceWirePart part, @Nullable RenderType layer, CCRenderState ccrs) {
         if (layer == null || (layer == RenderType.solid() && useStaticRenderer(part))) {
-            ccrs.setBrightness(part.level(), part.pos());
+            ccrs.brightness = 0;
             WireModelRenderer.render(ccrs, part);
         }
     }
