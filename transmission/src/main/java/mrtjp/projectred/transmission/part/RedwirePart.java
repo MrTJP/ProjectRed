@@ -124,10 +124,12 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
     public boolean discoverStraightOverride(int absDir) {
         boolean prevCanConnectRW = RedstonePropagator.canConnectRedwires();
         RedstonePropagator.setCanConnectRedwires(true);
-        boolean discovered = (RedstoneInteractions.otherConnectionMask(level(), pos(), absDir, false) &
-                RedstoneInteractions.connectionMask(this, absDir)) != 0;
-        RedstonePropagator.setCanConnectRedwires(prevCanConnectRW);
-        return discovered;
+        try {
+            return (RedstoneInteractions.otherConnectionMask(level(), pos(), absDir, false) &
+                    RedstoneInteractions.connectionMask(this, absDir)) != 0;
+        } finally {
+            RedstonePropagator.setCanConnectRedwires(prevCanConnectRW);
+        }
     }
 
     @Override
@@ -165,46 +167,47 @@ public abstract class RedwirePart extends BaseFaceWirePart implements IRedstoneP
     public int calculateSignal() {
         RedstonePropagator.setDustProvidesPower(false);
         RedstonePropagator.setRedwiresProvidePower(false);
+        try {
+            int signal = 0;
 
-        int signal = 0;
+            for (int r = 0; r < 4; r++) {
+                int s = 0;
+                if (maskConnectsInside(r)) {
+                    FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
+                    s = resolveSignal(lookup);
 
-        for (int r = 0; r < 4; r++) {
-            int s = 0;
-            if (maskConnectsInside(r)) {
-                FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
-                s = resolveSignal(lookup);
+                } else if (maskConnectsStraight(r)) {
+                    FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
+                    s = resolveSignal(lookup);
+                    if (s <= 0) {
+                        s = RedstoneFaceLookup.resolveVanillaSignal(lookup, this, true, true);
+                    }
 
-            } else if (maskConnectsStraight(r)) {
-                FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
-                s = resolveSignal(lookup);
-                if (s <= 0) {
-                    s = RedstoneFaceLookup.resolveVanillaSignal(lookup, this, true, true);
+                } else if (maskConnectsCorner(r)) {
+                    FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
+                    s = resolveSignal(lookup);
                 }
 
-            } else if (maskConnectsCorner(r)) {
-                FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
-                s = resolveSignal(lookup);
+                signal = Math.max(s, signal);
             }
 
-            signal = Math.max(s, signal);
+            if (powerUnderside()) {
+                Direction face = Direction.values()[getSide()];
+                int s = level().getSignal(pos().relative(face), face) * 17;
+                signal = Math.max(s, signal);
+            }
+
+            if (maskConnectsCenter()) {
+                FaceLookup lookup = FaceLookup.lookupInsideCenter(level(), pos(), getSide());
+                int s = resolveSignal(lookup);
+                signal = Math.max(s, signal);
+            }
+
+            return signal;
+        } finally {
+            RedstonePropagator.setDustProvidesPower(true);
+            RedstonePropagator.setRedwiresProvidePower(true);
         }
-
-        if (powerUnderside()) {
-            Direction face = Direction.values()[getSide()];
-            int s = level().getSignal(pos().relative(face), face) * 17;
-            signal = Math.max(s, signal);
-        }
-
-        if (maskConnectsCenter()) {
-            FaceLookup lookup = FaceLookup.lookupInsideCenter(level(), pos(), getSide());
-            int s = resolveSignal(lookup);
-            signal = Math.max(s, signal);
-        }
-
-        RedstonePropagator.setDustProvidesPower(true);
-        RedstonePropagator.setRedwiresProvidePower(true);
-
-        return signal;
     }
     //endregion
 

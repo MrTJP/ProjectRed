@@ -209,10 +209,12 @@ public class RedstoneTubePart extends BaseTubePart implements IRedstonePropagati
 
         boolean prevCanConnectRW = RedstonePropagator.canConnectRedwires();
         RedstonePropagator.setCanConnectRedwires(false);
-        boolean discovered = (RedstoneInteractions.otherConnectionMask(level(), pos(), s, false) &
-                RedstoneInteractions.connectionMask(this, s)) != 0;
-        RedstonePropagator.setCanConnectRedwires(prevCanConnectRW);
-        return discovered;
+        try {
+            return (RedstoneInteractions.otherConnectionMask(level(), pos(), s, false) &
+                    RedstoneInteractions.connectionMask(this, s)) != 0;
+        } finally {
+            RedstonePropagator.setCanConnectRedwires(prevCanConnectRW);
+        }
     }
 
     @Override
@@ -249,28 +251,30 @@ public class RedstoneTubePart extends BaseTubePart implements IRedstonePropagati
 
         RedstonePropagator.setDustProvidesPower(false);
         RedstonePropagator.setRedwiresProvidePower(false);
+        try {
+            int signal = 0;
+            for (int s = 0; s < 6; s++) {
+                int sig = 0;
+                if (maskConnectsIn(s)) {
+                    CenterLookup lookup = CenterLookup.lookupInsideFace(level(), pos(), s);
+                    sig = resolveSignal(lookup);
 
-        int signal = 0;
-        for (int s = 0; s < 6; s++) {
-            int sig = 0;
-            if (maskConnectsIn(s)) {
-                CenterLookup lookup = CenterLookup.lookupInsideFace(level(), pos(), s);
-                sig = resolveSignal(lookup);
-
-            } else if (maskConnectsOut(s)) {
-                CenterLookup lookup = CenterLookup.lookupStraightCenter(level(), pos(), s);
-                sig = resolveSignal(lookup);
-                if (sig == 0) {
-                    sig = RedstoneCenterLookup.resolveVanillaSignal(lookup, this);
+                } else if (maskConnectsOut(s)) {
+                    CenterLookup lookup = CenterLookup.lookupStraightCenter(level(), pos(), s);
+                    sig = resolveSignal(lookup);
+                    if (sig == 0) {
+                        sig = RedstoneCenterLookup.resolveVanillaSignal(lookup, this);
+                    }
                 }
+
+                signal = Math.max(sig, signal);
             }
 
-            signal = Math.max(sig, signal);
+            return signal;
+        } finally {
+            RedstonePropagator.setDustProvidesPower(true);
+            RedstonePropagator.setRedwiresProvidePower(true);
         }
-
-        RedstonePropagator.setDustProvidesPower(true);
-        RedstonePropagator.setRedwiresProvidePower(true);
-        return signal;
     }
 
     @Override

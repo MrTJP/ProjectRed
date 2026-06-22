@@ -118,38 +118,40 @@ public abstract class ArrayGatePart extends RedstoneGatePart implements IRedwire
 
         RedstonePropagator.setDustProvidesPower(false);
         RedstonePropagator.setRedwiresProvidePower(false);
+        try {
+            int signal = 0;
+            for (int r = 0; r < 4; r++) {
+                if ((propagationMask & 1 << r) == 0) { continue; }
+                int s;
 
-        int signal = 0;
-        for (int r = 0; r < 4; r++) {
-            if ((propagationMask & 1 << r) == 0) { continue; }
-            int s;
+                if (maskConnectsInside(r)) {
+                    FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
+                    s = RedstoneFaceLookup.resolveSignal(lookup, true);
 
-            if (maskConnectsInside(r)) {
-                FaceLookup lookup = FaceLookup.lookupInsideFace(level(), pos(), getSide(), r);
-                s = RedstoneFaceLookup.resolveSignal(lookup, true);
+                } else if (maskConnectsStraight(r)) {
+                    FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
+                    s = RedstoneFaceLookup.resolveSignal(lookup, true);
+                    if (s == 0) {
+                        s = RedstoneFaceLookup.resolveVanillaSignal(lookup, this, true, true);
+                    }
 
-            } else if (maskConnectsStraight(r)) {
-                FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
-                s = RedstoneFaceLookup.resolveSignal(lookup, true);
-                if (s == 0) {
+                } else if (maskConnectsCorner(r)) {
+                    FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
+                    s = RedstoneFaceLookup.resolveSignal(lookup, true);
+
+                } else { // For non-connected sides, just do a vanilla signal lookup
+                    FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
                     s = RedstoneFaceLookup.resolveVanillaSignal(lookup, this, true, true);
                 }
 
-            } else if (maskConnectsCorner(r)) {
-                FaceLookup lookup = FaceLookup.lookupCorner(level(), pos(), getSide(), r);
-                s = RedstoneFaceLookup.resolveSignal(lookup, true);
-
-            } else { // For non-connected sides, just do a vanilla signal lookup
-                FaceLookup lookup = FaceLookup.lookupStraight(level(), pos(), getSide(), r);
-                s = RedstoneFaceLookup.resolveVanillaSignal(lookup, this, true, true);
+                signal = Math.max(s, signal);
             }
 
-            signal = Math.max(s, signal);
+            return signal;
+        } finally {
+            RedstonePropagator.setDustProvidesPower(true);
+            RedstonePropagator.setRedwiresProvidePower(true);
         }
-
-        RedstonePropagator.setDustProvidesPower(true);
-        RedstonePropagator.setRedwiresProvidePower(true);
-        return signal;
     }
 
     @Override
