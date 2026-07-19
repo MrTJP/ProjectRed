@@ -1,0 +1,19 @@
+{
+  "type": "forge:ore_shaped",
+  "result": {
+    "item": "projectred_expansion:redstone_tube",
+    "count": 1
+  },
+  "pattern": [
+    "r",
+    "t"
+  ],
+  "key": {
+    "r": {
+      "item": "minecraft:redstone"
+    },
+    "t": {
+      "item": "projectred_expansion:pneumatic_tube"
+    }
+  }
+}
