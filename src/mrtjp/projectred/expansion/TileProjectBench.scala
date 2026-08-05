@@ -244,18 +244,40 @@ class CraftingResultTestHelper
 
         for (i <- 0 until 9) {
             val prevInput = invCrafting.getStackInSlot(i)
-            if (!prevInput.isEmpty && !eatIngredient(0, { input =>
-                invCrafting.setInventorySlotContents(i, input)
-                val resultSame = recipe.matches(invCrafting, w) && ItemStack.areItemStacksEqual(recipe.getCraftingResult(invCrafting), result)
-                invCrafting.setInventorySlotContents(i, prevInput)
-                resultSame
-            })) return (ItemStack.EMPTY, null)
+            if (!prevInput.isEmpty && !eatIngredient(0, getIngredientCount(i, _, result, w)))
+                return (ItemStack.EMPTY, null)
         }
 
         (result, recipe.getRemainingItems(invCrafting))
     }
 
-    private def eatIngredient(startIdx:Int, matchFunc:ItemStack => Boolean):Boolean =
+    // Modded recipes may require more than one item in a crafting slot. Find the
+    // smallest candidate stack that still matches so normal recipes consume one.
+    private def getIngredientCount(slot:Int, input:ItemStack, result:ItemStack, w:World):Int =
+    {
+        val prevInput = invCrafting.getStackInSlot(slot)
+        val testInput = input.copy
+        var count = 1
+
+        try {
+            while (count <= input.getCount) {
+                testInput.setCount(count)
+                invCrafting.setInventorySlotContents(slot, testInput)
+
+                if (recipe.matches(invCrafting, w) &&
+                    ItemStack.areItemStacksEqual(recipe.getCraftingResult(invCrafting), result))
+                    return count
+
+                count += 1
+            }
+        } finally {
+            invCrafting.setInventorySlotContents(slot, prevInput)
+        }
+
+        0
+    }
+
+    private def eatIngredient(startIdx:Int, getCount:ItemStack => Int):Boolean =
     {
         var i = startIdx
         def increment() = {
@@ -263,9 +285,10 @@ class CraftingResultTestHelper
         }
         do {
             val stack2 = storage(i)
-            if (!stack2.isEmpty && matchFunc(stack2)) {
-                if (stack2.getCount >= 1) {
-                    stack2.shrink(1)
+            if (!stack2.isEmpty) {
+                val count = getCount(stack2)
+                if (count > 0) {
+                    stack2.shrink(count)
                     return true
                 }
             }
