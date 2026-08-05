@@ -94,6 +94,17 @@ public class ExplorationItemModelProvider extends ItemModelProvider {
         handheld(SAPPHIRE_SWORD);
         handheld(PERIDOT_SWORD);
 
+        handheld(COPPER_SAW);
+        handheld(TIN_SAW);
+        handheld(SILVER_SAW);
+        handheld(NICKEL_SAW);
+        handheld(ALUMINUM_SAW);
+        handheld(BRONZE_SAW);
+        handheld(NETHERITE_SAW);
+        handheld(PLATINUM_SAW);
+        handheld(LEAD_SAW);
+        handheld(INVAR_SAW);
+        handheld(ELECTRUM_SAW);
         handheld(GOLD_SAW);
         handheld(RUBY_SAW);
         handheld(SAPPHIRE_SAW);

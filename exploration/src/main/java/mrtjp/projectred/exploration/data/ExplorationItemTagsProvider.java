@@ -122,6 +122,17 @@ public class ExplorationItemTagsProvider extends ItemTagsProvider {
         tag(BLACK_BACKPACK_TAG).add(BLACK_BACKPACK.get());
 
         tag(CBMicroblockTags.Items.TOOL_SAW)
+                .add(COPPER_SAW.get())
+                .add(TIN_SAW.get())
+                .add(SILVER_SAW.get())
+                .add(NICKEL_SAW.get())
+                .add(ALUMINUM_SAW.get())
+                .add(BRONZE_SAW.get())
+                .add(NETHERITE_SAW.get())
+                .add(PLATINUM_SAW.get())
+                .add(LEAD_SAW.get())
+                .add(INVAR_SAW.get())
+                .add(ELECTRUM_SAW.get())
                 .add(GOLD_SAW.get())
                 .add(RUBY_SAW.get())
                 .add(SAPPHIRE_SAW.get())

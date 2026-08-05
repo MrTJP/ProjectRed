@@ -64,6 +64,17 @@ public class ExplorationItems {
     public static final String ID_SAPPHIRE_BOOTS = "sapphire_boots";
     public static final String ID_PERIDOT_BOOTS = "peridot_boots";
 
+    public static final String ID_COPPER_SAW = "copper_saw";
+    public static final String ID_TIN_SAW = "tin_saw";
+    public static final String ID_SILVER_SAW = "silver_saw";
+    public static final String ID_NICKEL_SAW = "nickel_saw";
+    public static final String ID_ALUMINUM_SAW = "aluminum_saw";
+    public static final String ID_BRONZE_SAW = "bronze_saw";
+    public static final String ID_NETHERITE_SAW = "netherite_saw";
+    public static final String ID_PLATINUM_SAW = "platinum_saw";
+    public static final String ID_LEAD_SAW = "lead_saw";
+    public static final String ID_ELECTRUM_SAW = "electrum_saw";
+    public static final String ID_INVAR_SAW = "invar_saw";
     public static final String ID_GOLD_SAW = "gold_saw";
     public static final String ID_RUBY_SAW = "ruby_saw";
     public static final String ID_SAPPHIRE_SAW = "sapphire_saw";
@@ -125,6 +136,17 @@ public class ExplorationItems {
     public static Supplier<Item> SAPPHIRE_SWORD;
     public static Supplier<Item> PERIDOT_SWORD;
 
+    public static Supplier<Item> COPPER_SAW;
+    public static Supplier<Item> TIN_SAW;
+    public static Supplier<Item> SILVER_SAW;
+    public static Supplier<Item> NICKEL_SAW;
+    public static Supplier<Item> ALUMINUM_SAW;
+    public static Supplier<Item> BRONZE_SAW;
+    public static Supplier<Item> NETHERITE_SAW;
+    public static Supplier<Item> PLATINUM_SAW;
+    public static Supplier<Item> LEAD_SAW;
+    public static Supplier<Item> INVAR_SAW;
+    public static Supplier<Item> ELECTRUM_SAW;
     public static Supplier<Item> GOLD_SAW;
     public static Supplier<Item> RUBY_SAW;
     public static Supplier<Item> SAPPHIRE_SAW;
@@ -181,6 +203,96 @@ public class ExplorationItems {
             Tiers.DIAMOND.getAttackDamageBonus(),
             30,
             () -> Ingredient.of(SILVER_INGOT_TAG)
+    );
+
+    public static final SimpleTier COPPER_ITEM_TIER = new SimpleTier(
+            BlockTags.INCORRECT_FOR_IRON_TOOL,
+            180,
+            8.00F,
+            3.00F,
+            10,
+            () -> Ingredient.of(COPPER_INGOT_TAG)
+    );
+
+    public static final SimpleTier TIN_ITEM_TIER = new SimpleTier(
+            BlockTags.INCORRECT_FOR_IRON_TOOL,
+            200,
+            8.00F,
+            3.00F,
+            10,
+            () -> Ingredient.of(TIN_INGOT_TAG)
+    );
+
+    public static final SimpleTier SILVER_ITEM_TIER = new SimpleTier(
+            BlockTags.INCORRECT_FOR_IRON_TOOL,
+            200,
+            8.00F,
+            3.00F,
+            10,
+            () -> Ingredient.of(SILVER_INGOT_TAG)
+    );
+
+    public static final SimpleTier NICKEL_ITEM_TIER = new SimpleTier(
+            BlockTags.INCORRECT_FOR_IRON_TOOL,
+            300,
+            8.00F,
+            3.00F,
+            10,
+            () -> Ingredient.of(NICKEL_INGOT_TAG)
+    );
+
+    public static final SimpleTier ALUMINUM_ITEM_TIER = new SimpleTier(
+            BlockTags.INCORRECT_FOR_IRON_TOOL,
+            225,
+            8.00F,
+            3.00F,
+            10,
+            () -> Ingredient.of(ALUMINUM_INGOT_TAG)
+    );
+
+    public static final SimpleTier BRONZE_ITEM_TIER = new SimpleTier(
+            BlockTags.INCORRECT_FOR_IRON_TOOL,
+            500,
+            8.00F,
+            3.00F,
+            10,
+            () -> Ingredient.of(BRONZE_INGOT_TAG)
+    );
+
+    public static final SimpleTier PLATINUM_ITEM_TIER = new SimpleTier(
+            BlockTags.INCORRECT_FOR_IRON_TOOL,
+            1700,
+            8.00F,
+            3.00F,
+            10,
+            () -> Ingredient.of(PLATINUM_INGOT_TAG)
+    );
+
+    public static final SimpleTier LEAD_ITEM_TIER = new SimpleTier(
+            BlockTags.INCORRECT_FOR_IRON_TOOL,
+            150,
+            8.00F,
+            3.00F,
+            10,
+            () -> Ingredient.of(LEAD_INGOT_TAG)
+    );
+
+    public static final SimpleTier INVAR_ITEM_TIER = new SimpleTier(
+            BlockTags.INCORRECT_FOR_IRON_TOOL,
+            450,
+            8.00F,
+            3.00F,
+            10,
+            () -> Ingredient.of(INVAR_INGOT_TAG)
+    );
+
+    public static final SimpleTier ELECTRUM_ITEM_TIER = new SimpleTier(
+            BlockTags.INCORRECT_FOR_IRON_TOOL,
+            100,
+            8.00F,
+            3.00F,
+            10,
+            () -> Ingredient.of(ELECTRUM_INGOT_TAG)
     );
 
     public static final SimpleTier RUBY_ITEM_TIER = new SimpleTier(
@@ -243,6 +355,17 @@ public class ExplorationItems {
         SAPPHIRE_SWORD   = ITEMS.register(ID_SAPPHIRE_SWORD,   () -> createSwordItem(SAPPHIRE_ITEM_TIER, 3, -2.4F));
         PERIDOT_SWORD    = ITEMS.register(ID_PERIDOT_SWORD,    () -> createSwordItem(PERIDOT_ITEM_TIER, 3, -2.4F));
 
+        COPPER_SAW       = ITEMS.register(ID_COPPER_SAW,       () -> createSawItem(COPPER_ITEM_TIER));
+        TIN_SAW          = ITEMS.register(ID_TIN_SAW,          () -> createSawItem(TIN_ITEM_TIER));
+        SILVER_SAW       = ITEMS.register(ID_SILVER_SAW,       () -> createSawItem(SILVER_ITEM_TIER));
+        NICKEL_SAW       = ITEMS.register(ID_NICKEL_SAW,       () -> createSawItem(NICKEL_ITEM_TIER));
+        ALUMINUM_SAW     = ITEMS.register(ID_ALUMINUM_SAW,     () -> createSawItem(ALUMINUM_ITEM_TIER));
+        BRONZE_SAW       = ITEMS.register(ID_BRONZE_SAW,       () -> createSawItem(BRONZE_ITEM_TIER));
+        NETHERITE_SAW    = ITEMS.register(ID_NETHERITE_SAW,    () -> createSawItem(Tiers.NETHERITE));
+        PLATINUM_SAW     = ITEMS.register(ID_PLATINUM_SAW,     () -> createSawItem(PLATINUM_ITEM_TIER));
+        LEAD_SAW         = ITEMS.register(ID_LEAD_SAW,         () -> createSawItem(LEAD_ITEM_TIER));
+        INVAR_SAW        = ITEMS.register(ID_ELECTRUM_SAW,     () -> createSawItem(ELECTRUM_ITEM_TIER));
+        ELECTRUM_SAW     = ITEMS.register(ID_INVAR_SAW,        () -> createSawItem(INVAR_ITEM_TIER));
         GOLD_SAW         = ITEMS.register(ID_GOLD_SAW,         () -> createSawItem(Tiers.GOLD));
         RUBY_SAW         = ITEMS.register(ID_RUBY_SAW,         () -> createSawItem(RUBY_ITEM_TIER));
         SAPPHIRE_SAW     = ITEMS.register(ID_SAPPHIRE_SAW,     () -> createSawItem(SAPPHIRE_ITEM_TIER));

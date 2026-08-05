@@ -14,6 +14,14 @@ public class CoreTags {
     /* Item Tags */
     public static final TagKey<Item> TIN_INGOT_TAG = tag("ingots/tin");
     public static final TagKey<Item> SILVER_INGOT_TAG = tag("ingots/silver");
+    public static final TagKey<Item> NICKEL_INGOT_TAG = tag("ingots/nickel");
+    public static final TagKey<Item> ALUMINUM_INGOT_TAG = tag("ingots/aluminum");
+    public static final TagKey<Item> BRONZE_INGOT_TAG = tag("ingots/bronze");
+    public static final TagKey<Item> COPPER_INGOT_TAG = tag("c:/ingots/copper");
+    public static final TagKey<Item> PLATINUM_INGOT_TAG = tag("c:/ingots/platinum");
+    public static final TagKey<Item> LEAD_INGOT_TAG = tag("c:/ingots/lead");
+    public static final TagKey<Item> INVAR_INGOT_TAG = tag("c:/ingots/invar");
+    public static final TagKey<Item> ELECTRUM_INGOT_TAG = tag("c:/ingots/electrum");
     public static final TagKey<Item> RED_ALLOY_INGOT_TAG = tag("ingots/red_alloy");
     public static final TagKey<Item> ELECTROTINE_ALLOY_INGOT_TAG = tag("ingots/electrotine_alloy");
 

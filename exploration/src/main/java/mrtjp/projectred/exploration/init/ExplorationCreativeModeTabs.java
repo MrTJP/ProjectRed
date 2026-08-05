@@ -98,6 +98,17 @@ public class ExplorationCreativeModeTabs {
                             output.accept(SAPPHIRE_SWORD.get());
                             output.accept(PERIDOT_SWORD.get());
 
+                            output.accept(COPPER_SAW.get());
+                            output.accept(TIN_SAW.get());
+                            output.accept(SILVER_SAW.get());
+                            output.accept(NICKEL_SAW.get());
+                            output.accept(ALUMINUM_SAW.get());
+                            output.accept(BRONZE_SAW.get());
+                            output.accept(NETHERITE_SAW.get());
+                            output.accept(PLATINUM_SAW.get());
+                            output.accept(LEAD_SAW.get());
+                            output.accept(INVAR_SAW.get());
+                            output.accept(ELECTRUM_SAW.get());
                             output.accept(GOLD_SAW.get());
                             output.accept(RUBY_SAW.get());
                             output.accept(SAPPHIRE_SAW.get());

@@ -113,6 +113,17 @@ public class ExplorationLanguageProvider extends LanguageProvider {
         add(PERIDOT_BOOTS.get(), "Peridot Boots");
 
         // Saws
+        add(COPPER_SAW.get(), "Copper Saw");
+        add(TIN_SAW.get(), "Tin Saw");
+        add(SILVER_SAW.get(), "Silver Saw");
+        add(NICKEL_SAW.get(), "Nickel Saw");
+        add(ALUMINUM_SAW.get(), "Aluminum Saw");
+        add(BRONZE_SAW.get(), "Bronze Saw");
+        add(NETHERITE_SAW.get(), "Netherite Saw");
+        add(PLATINUM_SAW.get(), "Platinum Saw");
+        add(LEAD_SAW.get(), "Lead Saw");
+        add(INVAR_SAW.get(), "Invar Saw");
+        add(ELECTRUM_SAW.get(), "Electrum Saw");
         add(GOLD_SAW.get(), "Gold Saw");
         add(RUBY_SAW.get(), "Ruby Saw");
         add(SAPPHIRE_SAW.get(), "Sapphire Saw");
